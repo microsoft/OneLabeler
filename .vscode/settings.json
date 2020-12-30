@@ -1,0 +1,30 @@
+{
+    "python.pythonPath": "D:\\software\\anaconda\\python.exe",
+    "git.ignoreLimitWarning": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "vue",
+    ],
+    "eslint.workingDirectories": [
+        "./client",
+    ],
+    "cSpell.words": [
+        "devtools",
+        "fontawesome",
+        "fortawesome",
+        "ioloop",
+        "linebreak",
+        "postuninstall",
+        "pylint",
+        "pytest",
+        "returnvalue",
+        "scripthost",
+        "scrollbar",
+        "uploadimg",
+        "vetur",
+        "vuetify",
+        "vuex"
+    ],
+    "restructuredtext.confPath": "${workspaceFolder}\\docs"
+}
