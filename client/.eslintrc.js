@@ -12,6 +12,8 @@ module.exports = {
     ecmaVersion: 2020,
   },
   rules: {
+    'no-shadow': 'off', // reference: https://github.com/typescript-eslint/typescript-eslint/issues/2483
+    '@typescript-eslint/no-shadow': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'linebreak-style': process.env.NODE_ENV === 'production' ? 'error' : 'off',

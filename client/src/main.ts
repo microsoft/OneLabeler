@@ -2,8 +2,8 @@ import Vue from 'vue';
 import vuetify from './vuetify';
 import App from './App.vue';
 import store from './store';
-import './style/style.css';
 import './style/scrollbar.css';
+import './style/style.scss';
 
 Vue.config.productionTip = false;
 

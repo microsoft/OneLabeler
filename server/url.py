@@ -1,5 +1,12 @@
-from handlers import ImgHandler
+from handlers import (DataLabelingHandler,
+                      ImageHandler,
+                      UploadHandler)
 
 url = [
-    (r'/uploadimg', ImgHandler)
+    # request for file upload
+    (r'/uploadFile', UploadHandler),
+    # request for image resource
+    (r'/img/(.+)', ImageHandler),
+    # request for data labeling algorithms
+    (r'/dataLabeling/(\w+)', DataLabelingHandler),
 ]

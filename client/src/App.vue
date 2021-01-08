@@ -2,18 +2,42 @@
   <v-app id="app">
     <v-container
       class="pa-0"
-      style="overflow-y: hidden"
       fill-height
       fluid
     >
-      <v-row no-gutters>
-        <NavBarView :height="navBarHeight" />
+      <v-row
+        no-gutters
+        class="pa-0"
+      >
+        <TheNavBarView :height="navBarHeight" />
       </v-row>
       <v-row
         no-gutters
-        :style="`height: calc(100% - ${navBarHeight}px);`"
+        class="pa-1"
+        :style="`height: calc(100% - ${navBarHeight + footerHeight}px);`"
       >
-        <ImageView style="width: 100%;" />
+        <template v-if="showDatasetOverview">
+          <v-col
+            cols="5"
+            class="pr-1"
+          >
+            <TheProjectionView style="height: 100%;" />
+          </v-col>
+          <v-col cols="7">
+            <TheCardMatrixView style="height: 100%;" />
+          </v-col>
+        </template>
+        <template v-else>
+          <v-col cols="12">
+            <TheCardMatrixView style="height: 100%;" />
+          </v-col>
+        </template>
+      </v-row>
+      <v-row
+        no-gutters
+        class="pa-0"
+      >
+        <TheFooterView :height="footerHeight" />
       </v-row>
     </v-container>
   </v-app>
@@ -21,20 +45,29 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import NavBarView from '@/components/TheNavBar.vue';
-import ImageView from '@/components/TheImageView.vue';
+import { mapState } from 'vuex';
+import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
+import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
+import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
+import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 
 @Component({
   name: 'App',
   components: {
-    NavBarView,
-    ImageView,
+    TheNavBarView,
+    TheCardMatrixView,
+    TheProjectionView,
+    TheFooterView,
+  },
+  computed: {
+    ...mapState('settings', ['showDatasetOverview']),
   },
 })
 export default class App extends Vue {
-  data(): { navBarHeight: number } {
+  data(): { navBarHeight: number, footerHeight: number } {
     return {
-      navBarHeight: 40,
+      navBarHeight: 35,
+      footerHeight: 30,
     };
   }
 }

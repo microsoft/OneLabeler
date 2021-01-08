@@ -1,3 +1,3 @@
-# Vue Tornado Template
+# Image Labeler
 
-- Starter template using vue as front end and tornado as backend
+- A system for image labeling

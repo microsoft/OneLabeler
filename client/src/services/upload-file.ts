@@ -5,7 +5,7 @@ import {
   SERVER_PORT,
 } from './http-params';
 
-export default async function uploadImg(file: File): Promise<AxiosResponse<{ imgPath: string }>> {
+export default async function uploadFile(file: File): Promise<AxiosResponse<{ path: string }>> {
   const { name } = file;
   const formData = new FormData();
   formData.append('fileToUpload', file);
@@ -13,7 +13,7 @@ export default async function uploadImg(file: File): Promise<AxiosResponse<{ img
   formData.append('key', name);
 
   return axios.post(
-    `${PROTOCOL}://${IP}:${SERVER_PORT}/uploadimg`,
+    `${PROTOCOL}://${IP}:${SERVER_PORT}/uploadFile`,
     formData,
   );
 }
