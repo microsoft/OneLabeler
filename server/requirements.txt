@@ -1,1 +1,5 @@
+cv2==4.1.1
+numpy==1.16.4
+skimage==0.17.2
+sklearn==0.22.2
 tornado==5.1.1

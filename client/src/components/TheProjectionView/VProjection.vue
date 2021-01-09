@@ -13,11 +13,13 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import * as numeric from 'numeric';
+// import * as numeric from 'numeric';
 import * as d3 from 'd3';
-import { Label, Status } from '@/types';
+import * as projectionAPI from '@/services/projection-api';
+import { Label, Status } from '@/commons/types';
 import Scatterplot, { IScatterplot } from '@/plugins/d3.scatterplot';
 
+/*
 const svd = (X: number[][], nComponents: number): number[][] => {
   const svdOutput = numeric.svd(X);
   const { U } = svdOutput;
@@ -25,6 +27,13 @@ const svd = (X: number[][], nComponents: number): number[][] => {
   const VTruncated = V.map((ele) => ele.slice(0, nComponents));
   return numeric.dot(U, VTruncated) as number[][];
 };
+*/
+
+export enum ProjectionMethod {
+  PCA = 'PCA',
+  MDS = 'MDS',
+  TSNE = 't-SNE',
+}
 
 export default Vue.extend({
   name: 'VProjection',
@@ -53,14 +62,22 @@ export default Vue.extend({
       type: Array as PropType<number[]>,
       required: true,
     },
+    projectionMethod: {
+      type: String as PropType<ProjectionMethod>,
+      required: true,
+    },
   },
-  data(): { chart: IScatterplot | null } {
+  data(): {
+    chart: IScatterplot | null,
+    projection: number[][] | null,
+    } {
     return {
       chart: null,
+      projection: null,
     };
   },
   computed: {
-    isFeatureValuesValid() {
+    isFeatureValuesValid(): boolean {
       const { featureValues } = this;
       if (
         featureValues.length === 0
@@ -73,7 +90,12 @@ export default Vue.extend({
     },
   },
   watch: {
-    featureValues() {
+    async projectionMethod() {
+      this.projection = await this.computeProjection();
+      this.rerender();
+    },
+    async featureValues() {
+      this.projection = await this.computeProjection();
       this.rerender();
     },
     labels() {
@@ -90,10 +112,28 @@ export default Vue.extend({
     this.rerender();
   },
   methods: {
-    rerender() {
-      if (!this.isFeatureValuesValid) return;
+    async computeProjection(): Promise<number[][] | null> {
+      if (!this.isFeatureValuesValid) return null;
+      const { featureValues, projectionMethod } = this;
+      if (projectionMethod === ProjectionMethod.PCA) {
+        return projectionAPI.PCA(featureValues, 2);
+      }
+      if (projectionMethod === ProjectionMethod.MDS) {
+        return projectionAPI.MDS(featureValues, 2);
+      }
+      if (projectionMethod === ProjectionMethod.TSNE) {
+        return projectionAPI.TSNE(featureValues, 2);
+      }
+      return null;
+    },
+    rerender(): void {
+      if (this.projection === null) {
+        // clear svg
+        (this.$refs.svg as HTMLElement).innerHTML = '';
+        return;
+      }
       const {
-        featureValues,
+        projection,
         labels,
         classes,
         unlabeledMark,
@@ -101,7 +141,7 @@ export default Vue.extend({
       const { svg } = this.$refs;
       if (svg === undefined) return;
       this.renderScatterplot(
-        featureValues,
+        projection,
         labels,
         classes,
         unlabeledMark,
@@ -109,15 +149,12 @@ export default Vue.extend({
       );
     },
     renderScatterplot(
-      featureValues: number[][],
+      projection: number[][],
       labels: Label[],
       classes: Label[],
       unlabeledMark: Label,
       svg: SVGSVGElement,
-    ) {
-      if (!this.isFeatureValuesValid) return;
-
-      const projections = svd(featureValues, 2);
+    ): void {
       const labelstr2fill = d3.scaleOrdinal(['#bbbbbb', ...d3.schemeCategory10])
         .domain([unlabeledMark, ...classes].map((d) => String(d)));
 
@@ -134,7 +171,7 @@ export default Vue.extend({
         .xAccessor((d: unknown) => (d as number[])[0])
         .yAccessor((d: unknown) => (d as number[])[1])
         .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])));
-      chart.render(svg, projections as Record<number, number>[]);
+      chart.render(svg, projection as Record<number, number>[]);
       this.chart = chart;
     },
   },

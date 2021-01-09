@@ -11,7 +11,7 @@
       aria-hidden="true"
       :small="small"
     >
-      $vuetify.icons.values.openFolder
+      {{ icon }}
     </v-icon>
   </v-btn>
 </template>
@@ -25,6 +25,7 @@ enum UploadTarget {
 }
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
+type KeyboardTrigger = ((e: KeyboardEvent) => boolean) | null
 
 export default Vue.extend({
   name: 'VUploadButton',
@@ -49,19 +50,23 @@ export default Vue.extend({
       default: false,
       type: Boolean,
     },
-    keyboardShortcut: {
-      default: false,
-      type: Boolean,
+    icon: {
+      default: '+',
+      type: String,
+    },
+    keyboardTrigger: {
+      default: null,
+      type: [Function, null] as PropType<KeyboardTrigger>,
     },
   },
   created(): void {
-    if (this.keyboardShortcut) {
+    if (this.keyboardTrigger !== null) {
       // enable label flipping by number key
       window.addEventListener('keydown', this.onKey);
     }
   },
   beforeDestroy(): void {
-    if (this.keyboardShortcut) {
+    if (this.keyboardTrigger !== null) {
       // remove listener before distroy,
       // otherwise the onKey method will be called multiple times
       window.removeEventListener('keydown', this.onKey);
@@ -83,10 +88,11 @@ export default Vue.extend({
       input.click();
     },
     onKey(e: KeyboardEvent): void {
-      // shortcut for file load: ctrl + o
-      const { ctrlKey, key } = e;
-      if (key === 'o' && ctrlKey) {
-        // override brower default ctrl + o function for loading file to the brower
+      // shortcut for file load
+      const { keyboardTrigger } = this;
+      if (keyboardTrigger === null) return;
+      if (keyboardTrigger(e)) {
+        // override brower default short cut
         e.preventDefault();
         this.onClick();
       }

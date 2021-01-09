@@ -1,10 +1,8 @@
-# pylint: disable=missing-docstring
 import json
+
 import tornado.web
 
 from .algorithms.data_labeling.api import DataLabelingAPI
-
-PATH_SAVE_FOLDER = './uploads'
 
 
 class DataLabelingHandler(tornado.web.RequestHandler):
@@ -12,7 +10,7 @@ class DataLabelingHandler(tornado.web.RequestHandler):
     The handler for image labeling.
     """
 
-    def post(self, key):
+    def post(self, key: str):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
         if key == 'sampleDataObjects':

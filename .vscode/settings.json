@@ -35,6 +35,7 @@
         "sklearn",
         "sobel",
         "tolist",
+        "tsne",
         "uuidv",
         "vetur",
         "vuejs",

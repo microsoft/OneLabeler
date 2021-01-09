@@ -1,6 +1,10 @@
 <template>
   <v-card>
-    <TheProjectionViewHeader />
+    <TheProjectionViewHeader
+      :projection-method-menu="projectionMethodMenu"
+      :selected-projection-method="selectedProjectionMethod"
+      @click-projection-method="onClickProjectionMethod"
+    />
     <v-divider />
     <v-card-actions
       class="pa-0"
@@ -14,6 +18,7 @@
         :classes="classes"
         :unlabeled-mark="unlabeledMark"
         :query-indices="queryIndices"
+        :projection-method="selectedProjectionMethod"
       />
     </v-card-actions>
   </v-card>
@@ -23,7 +28,7 @@
 import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
-import VProjection from './VProjection.vue';
+import VProjection, { ProjectionMethod } from './VProjection.vue';
 
 export default Vue.extend({
   name: 'TheProjectionView',
@@ -31,18 +36,38 @@ export default Vue.extend({
     TheProjectionViewHeader,
     VProjection,
   },
+  data() {
+    return {
+      projectionMethodMenu: {
+        options: [
+          ProjectionMethod.PCA,
+          ProjectionMethod.MDS,
+          ProjectionMethod.TSNE,
+        ],
+        optionsText: [
+          ProjectionMethod.PCA,
+          ProjectionMethod.MDS,
+          ProjectionMethod.TSNE,
+        ],
+      },
+      selectedProjectionMethod: ProjectionMethod.PCA,
+    };
+  },
   computed: {
     ...mapState([
       'dataObjects',
       'labels',
       'statuses',
-      'classes',
       'unlabeledMark',
       'queryIndices',
     ]),
-    ...mapGetters([
-      'featureValues',
-    ]),
+    ...mapState('workflow', ['classes']),
+    ...mapGetters(['featureValues']),
+  },
+  methods: {
+    onClickProjectionMethod(method: ProjectionMethod) {
+      this.selectedProjectionMethod = method;
+    },
   },
 });
 </script>

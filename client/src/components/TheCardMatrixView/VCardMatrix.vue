@@ -58,7 +58,7 @@
  */
 
 import Vue, { PropType } from 'vue';
-import { IImage, Label } from '@/types';
+import { IImage, Label } from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
 
 export default Vue.extend({

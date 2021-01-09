@@ -6,7 +6,7 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import showProgressBar from '@/plugins/nprogress-interceptor';
-import { IImage, Status } from '@/types';
+import { IImage, Status } from '@/commons/types';
 import {
   PROTOCOL,
   IP,

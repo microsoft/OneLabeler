@@ -19,6 +19,7 @@
         type="file"
         color="grey"
         small
+        :icon="$vuetify.icons.values.open"
         @upload-file="onUploadFile"
       />
 
@@ -35,7 +36,7 @@
           aria-hidden="true"
           small
         >
-          $vuetify.icons.values.export
+          $vuetify.icons.values.save
         </v-icon>
       </v-btn>
 
@@ -74,29 +75,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import { saveAs } from 'file-saver';
+import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
 import VUploadButton from './VUploadButton.vue';
 import VMenusFlat from './VMenusFlat.vue';
-
-const exportObject = (exportedObject: {[key: string]: unknown}): void => {
-  const json = JSON.stringify(exportedObject);
-  const blob = new Blob([json], { type: 'application/json' });
-  saveAs(blob, 'workflow.config.json');
-};
-
-const JSONFileToObject = (file: File): Promise<{[key: string]: unknown}> => {
-  const promise = new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const { result } = event.target as FileReader;
-      const parsedObject = JSON.parse(result as string) as {[key: string]: unknown};
-      resolve(parsedObject);
-    };
-    reader.readAsText(file);
-  }) as Promise<{[key: string]: unknown}>;
-  return promise;
-};
 
 export default Vue.extend({
   name: 'TheNavBarViewDialogButton',
@@ -138,8 +120,9 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['classes', 'nBatch']),
-    ...mapState('settings', [
+    ...mapState('workflow', [
+      'classes',
+      'nBatch',
       'itemsPerRow',
       'itemsPerCol',
       'showDatasetOverview',
@@ -160,11 +143,9 @@ export default Vue.extend({
     },
   },
   methods: {
-    ...mapActions([
+    ...mapActions('workflow', [
       'setClasses',
       'setNBatch',
-    ]),
-    ...mapActions('settings', [
       'setItemsPerRow',
       'setItemsPerCol',
       'setShowDatasetOverview',
@@ -177,13 +158,13 @@ export default Vue.extend({
         itemsPerCol,
         showDatasetOverview,
       } = this;
-      exportObject({
+      saveObjectAsJSONFile({
         classes,
         nBatch,
         itemsPerRow,
         itemsPerCol,
         showDatasetOverview,
-      });
+      }, 'workflow.config.json');
     },
     onClickReset(): void {
       // reset workflow configurations

@@ -1,96 +1,29 @@
 import { ActionContext } from 'vuex';
-import * as API from '@/services/data-labeling-api';
-import { ICommand, Label, Status } from '@/types';
+import {
+  ICommand,
+  IDataObject,
+  Label,
+  Status,
+} from '@/commons/types';
 import * as types from './mutation-types';
-import { State } from './types';
+import { IState } from './state';
 
-export const extractDataObjects = async (
-  { commit, state }: ActionContext<State, State>,
-  files: FileList,
-): Promise<void> => {
-  const { unlabeledMark } = state;
-
-  // Extract data objects.
-  const dataObjects = (await API.extractDataObjects(files));
+export const setDataObjects = (
+  { commit }: ActionContext<IState, IState>,
+  dataObjects: IDataObject[],
+): void => {
   commit(types.SET_DATA_OBJECTS, dataObjects);
+};
 
-  // Initialize labels and label statuses.
-  const labels = Array(dataObjects.length).fill(unlabeledMark);
-  const statuses = Array(dataObjects.length).fill(Status.NEW);
+export const setLabels = (
+  { commit }: ActionContext<IState, IState>,
+  labels: Label[],
+): void => {
   commit(types.SET_LABELS, labels);
-  commit(types.SET_STATUSES, statuses);
-};
-
-export const extractFeatures = async (
-  { commit, state }: ActionContext<State, State>,
-): Promise<void> => {
-  const { dataObjects } = state;
-
-  // Extract data objects.
-  const response = (await API.extractFeatures(dataObjects));
-  const updatedDataObjects = response.dataObjects;
-  const { featureNames } = response;
-  commit(types.SET_DATA_OBJECTS, updatedDataObjects);
-  commit(types.SET_FEATURE_NAMES, featureNames);
-};
-
-export const sampleDataObjects = async (
-  { commit, state }: ActionContext<State, State>,
-): Promise<void> => {
-  const {
-    dataObjects,
-    labels,
-    statuses,
-    nBatch,
-    queryIndices,
-    unlabeledMark,
-  } = state;
-
-  // Set the labels of samples in the last batch confirmed
-  const newStatuses = [...statuses];
-  queryIndices.forEach((index: number) => {
-    const isUnlabeled = labels[index] === unlabeledMark;
-    newStatuses[index] = isUnlabeled ? Status.SKIPPED : Status.LABELED;
-  });
-
-  // Sample data objects.
-  const newQueryIndices = (await API.sampleDataObjects(dataObjects, statuses, nBatch));
-  commit(types.SET_QUERY_INDICES, newQueryIndices);
-
-  // Set the labels of samples in the current batch viewed.
-  newQueryIndices.forEach((index: number) => {
-    newStatuses[index] = Status.VIEWED;
-  });
-  commit(types.SET_STATUSES, newStatuses);
-};
-
-export const resetState = (
-  { commit }: ActionContext<State, State>,
-): void => {
-  commit(types.SET_DATA_OBJECTS, []);
-  commit(types.SET_LABELS, []);
-  commit(types.SET_CLASSES, []);
-  commit(types.SET_QUERY_INDICES, []);
-  commit(types.SET_STATUSES, []);
-};
-
-export const addClassOption = (
-  { commit, state }: ActionContext<State, State>,
-  className: Label,
-): void => {
-  const { classes } = state;
-  commit(types.SET_CLASSES, [...classes, className]);
-};
-
-export const setClasses = (
-  { commit }: ActionContext<State, State>,
-  classes: Label[],
-): void => {
-  commit(types.SET_CLASSES, classes);
 };
 
 export const setDataObjectLabel = (
-  { commit }: ActionContext<State, State>,
+  { commit }: ActionContext<IState, IState>,
   {
     uuid,
     label,
@@ -101,7 +34,7 @@ export const setDataObjectLabel = (
 };
 
 export const setDataObjectLabels = (
-  { commit }: ActionContext<State, State>,
+  { commit }: ActionContext<IState, IState>,
   {
     uuids,
     labels,
@@ -111,8 +44,36 @@ export const setDataObjectLabels = (
   commit(types.SET_DATA_OBJECT_LABELS, { uuids, labels, inQueryIndices });
 };
 
+export const setStatuses = (
+  { commit }: ActionContext<IState, IState>,
+  statuses: Status[],
+): void => {
+  commit(types.SET_STATUSES, statuses);
+};
+
+export const setUnlabeledMark = (
+  { commit }: ActionContext<IState, IState>,
+  unlabeledMark: Label,
+): void => {
+  commit(types.SET_UNLABELED_MARK, unlabeledMark);
+};
+
+export const setFeatureNames = (
+  { commit }: ActionContext<IState, IState>,
+  featureNames: string[],
+): void => {
+  commit(types.SET_FEATURE_NAMES, featureNames);
+};
+
+export const setQueryIndices = (
+  { commit }: ActionContext<IState, IState>,
+  queryIndices: number[],
+): void => {
+  commit(types.SET_QUERY_INDICES, queryIndices);
+};
+
 export const pushCommandHistory = (
-  { commit, state }: ActionContext<State, State>,
+  { commit, state }: ActionContext<IState, IState>,
   command: ICommand,
 ): void => {
   const { commandHistory } = state;
@@ -121,7 +82,7 @@ export const pushCommandHistory = (
 };
 
 export const popCommandHistory = (
-  { commit, state }: ActionContext<State, State>,
+  { commit, state }: ActionContext<IState, IState>,
 ): void => {
   const { commandHistory } = state;
   if (commandHistory.length === 0) {
@@ -132,30 +93,13 @@ export const popCommandHistory = (
   commit(types.SET_COMMAND_HISTORY, newCommandHistory);
 };
 
-export const setQueryIndices = (
-  { commit }: ActionContext<State, State>,
-  queryIndices: number[],
+export const resetState = (
+  { commit }: ActionContext<IState, IState>,
 ): void => {
-  commit(types.SET_QUERY_INDICES, queryIndices);
-};
-
-export const setStatuses = (
-  { commit }: ActionContext<State, State>,
-  statuses: Status[],
-): void => {
-  commit(types.SET_STATUSES, statuses);
-};
-
-export const setNBatch = (
-  { commit }: ActionContext<State, State>,
-  nBatch: number,
-): void => {
-  commit(types.SET_N_BATCH, nBatch);
-};
-
-export const setQueryStrategy = (
-  { commit }: ActionContext<State, State>,
-  queryStrategy: string,
-): void => {
-  commit(types.SET_QUERY_STRATEGY, queryStrategy);
+  commit(types.SET_DATA_OBJECTS, []);
+  commit(types.SET_LABELS, []);
+  commit(types.SET_STATUSES, []);
+  commit(types.SET_FEATURE_NAMES, []);
+  commit(types.SET_QUERY_INDICES, []);
+  commit(types.SET_COMMAND_HISTORY, []);
 };

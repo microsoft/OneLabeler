@@ -27,7 +27,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { IDataObject, Label } from '@/types';
+import { IDataObject, Label } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VCardMatrix from './VCardMatrix.vue';
@@ -40,8 +40,8 @@ export default Vue.extend({
     TheCardMatrixViewHeader,
   },
   computed: {
-    ...mapState(['dataObjects', 'labels', 'classes', 'queryIndices']),
-    ...mapState('settings', ['itemsPerRow', 'itemsPerCol']),
+    ...mapState(['dataObjects', 'labels', 'queryIndices']),
+    ...mapState('workflow', ['classes', 'itemsPerRow', 'itemsPerCol']),
     ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels']),
   },
   created(): void {
@@ -54,11 +54,13 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'addClassOption',
-      'sampleDataObjects',
       'setDataObjectLabel',
       'setDataObjectLabels',
       'pushCommandHistory',
+    ]),
+    ...mapActions('workflow', [
+      'addClassOption',
+      'sampleDataObjects',
     ]),
     onKey(e: KeyboardEvent): void {
       // shortcut for confirm labels: enter

@@ -41,7 +41,8 @@ export default Vue.extend({
     },
   },
   computed: {
-    ...mapState(['dataObjects', 'classes']),
+    ...mapState(['dataObjects']),
+    ...mapState('workflow', ['classes']),
     ...mapGetters(['unlabeledIndices']),
   },
 });

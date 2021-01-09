@@ -4,6 +4,7 @@ The implementation of the generic MI3 pipeline.
 
 from abc import abstractmethod, ABCMeta
 from typing import List, NoReturn, Optional, Tuple
+
 import numpy as np
 
 

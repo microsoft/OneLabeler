@@ -60,7 +60,7 @@ import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
     TheFooterView,
   },
   computed: {
-    ...mapState('settings', ['showDatasetOverview']),
+    ...mapState('workflow', ['showDatasetOverview']),
   },
 })
 export default class App extends Vue {

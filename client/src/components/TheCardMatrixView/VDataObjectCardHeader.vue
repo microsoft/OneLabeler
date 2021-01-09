@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Label } from '@/types';
+import { Label } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',

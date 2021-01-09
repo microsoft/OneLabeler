@@ -1,12 +1,36 @@
+import {
+  ICommand,
+  IDataObject,
+  Label,
+  Status,
+} from '@/commons/types';
+
+export interface IState {
+  dataObjects: IDataObject[],
+  labels: Label[],
+  statuses: Status[],
+  unlabeledMark: Label,
+  featureNames: string[],
+  queryIndices: number[],
+  commandHistory: ICommand[],
+}
+
 export default {
-  dataObjects: [], // the data objects to be labeled
-  labels: [], // the data object labels
-  classes: [], // the label options
-  queryIndices: [], // the indices of sampled data objects
-  statuses: [], // the label statuses of the data objects
-  unlabeledMark: -1, // the label mark of unlabeled data objects
-  nBatch: 32, // the number of data objects to sample each time
-  queryStrategy: 'random', // the sample strategy for determining which data objects to label for the next batch
-  commandHistory: [], // the history of label editing commands (used to support undo command)
-  featureNames: [], // the names of data object features
-};
+  /** The data labeling project record attributes. */
+  /** The data objects to be labeled */
+  dataObjects: [],
+  /** The data object labels. */
+  labels: [],
+  /** The label statuses of the data objects. */
+  statuses: [],
+  /** The label mark of unlabeled data objects. */
+  unlabeledMark: -1,
+  /** The names of data object features. */
+  featureNames: [],
+
+  /** The data labeling system status attributes. */
+  /** The indices of sampled data objects. */
+  queryIndices: [],
+  /** The history of label editing commands (used for undo command). */
+  commandHistory: [],
+} as IState;

@@ -4,7 +4,7 @@ import state from './modules/state';
 import mutations from './modules/mutations';
 import * as actions from './modules/actions';
 import * as getters from './modules/getters';
-import settings from './modules/settings';
+import workflow from './modules/workflow';
 
 Vue.use(Vuex);
 
@@ -16,6 +16,6 @@ export default new Vuex.Store({
   actions,
   getters,
   modules: {
-    settings,
+    workflow,
   },
 });

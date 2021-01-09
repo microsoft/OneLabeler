@@ -1,4 +1,4 @@
-import { IDataObject, Label, ICommand } from '@/types';
+import { IDataObject, Label, ICommand } from '@/commons/types';
 
 export default class EditSingleCommand implements ICommand {
   // The data object to be edited.

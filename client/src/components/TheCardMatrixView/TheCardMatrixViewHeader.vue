@@ -94,7 +94,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { Label } from '@/types';
+import { Label } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({

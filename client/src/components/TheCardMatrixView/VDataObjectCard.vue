@@ -39,7 +39,7 @@
  */
 
 import Vue, { PropType } from 'vue';
-import { IImage, Label } from '@/types';
+import { IImage, Label } from '@/commons/types';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
 import VDataObjectDisplay from './VDataObjectDisplay.vue';
 

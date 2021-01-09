@@ -7,9 +7,11 @@ Vue.use(Vuetify);
 
 const icons = {
   image: 'fas fa-image',
-  openFolder: 'fas fa-folder-open',
+  new: 'fas fa-folder-plus',
+  open: 'fas fa-folder-open',
+  save: 'fas fa-save',
   reset: 'fas fa-trash',
-  confirm: 'far fa-check-circle',
+  confirm: 'fas fa-check-circle',
   add: 'fas fa-plus-circle',
   close: 'fas fa-times',
   start: 'fas fa-play-circle',

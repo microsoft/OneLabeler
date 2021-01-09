@@ -1,4 +1,4 @@
-import { IDataObject, Label, ICommand } from '@/types';
+import { IDataObject, Label, ICommand } from '@/commons/types';
 
 export default class EditBatchCommand implements ICommand {
   // The data objects to be edited.

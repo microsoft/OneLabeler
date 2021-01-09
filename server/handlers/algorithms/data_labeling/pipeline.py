@@ -54,12 +54,21 @@ def random_sampling(data_objects: ListLike,
     return query_indices
 
 
-def handcraft_feature_extraction(imgs: np.ndarray) -> np.ndarray:
+def feature_extraction_handcraft(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
     """
+    Extract handcrafted features for each image.
+
     Args
     ----
     imgs : np.ndarray
         The images to extract features.
+    
+    Returns
+    -------
+    X : np.ndarray
+        The extracted feature values.
+    feature_names : List[str]
+        The names of features.
     """
 
     feature_names = [
@@ -123,6 +132,38 @@ def handcraft_feature_extraction(imgs: np.ndarray) -> np.ndarray:
     return X, feature_names
 
 
+def feature_extraction_flatten(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
+    """
+    Extract features for each image by simply flattening the image.
+
+    Args
+    ----
+    imgs : np.ndarray
+        The images to extract features.
+    
+    Returns
+    -------
+    X : np.ndarray
+        The extracted feature values.
+    feature_names : List[str]
+        The names of features.
+    """
+
+    h, w = 8, 8
+    imgs_resized = []
+    for img in imgs:
+        img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        img_resized = cv.resize(img_gray, (h, w), interpolation = cv.INTER_AREA)
+        imgs_resized.append(img_resized)
+    imgs_resized = np.array(imgs_resized)
+    n_samples = len(imgs)
+    X = imgs_resized.reshape((n_samples, h * w))
+    feature_names = []
+    for i in  range(h):
+        for j in range(w):
+            feature_names.append(f'({i}, {j})')
+    return X, feature_names
+
 class DataLabelingPipeline(GenericPipeline):
     @staticmethod
     def sample_data_objects(data_objects: ListLike,
@@ -163,7 +204,8 @@ class DataLabelingPipeline(GenericPipeline):
             data_object['width'] = img.shape[1]
             data_object['height'] = img.shape[0]
         imgs = np.array(imgs)
-        X, feature_names = handcraft_feature_extraction(imgs)
+        #X, feature_names = feature_extraction_handcraft(imgs)
+        X, feature_names = feature_extraction_flatten(imgs)
         for i, data_object in enumerate(data_objects):
             data_objects[i]['features'] = X[i]
         return data_objects, feature_names
