@@ -86,7 +86,7 @@ export const extractFeatures = async (
   commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
 };
 
-export const sampleDataObjects = async (
+export const sampleDataObjectsAlgorithmic = async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
   const { nBatch } = state;
@@ -111,6 +111,34 @@ export const sampleDataObjects = async (
     statuses,
     nBatch,
   ));
+  commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
+
+  // Set the labels of samples in the current batch viewed.
+  newQueryIndices.forEach((index: number) => {
+    newStatuses[index] = Status.VIEWED;
+  });
+  commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
+};
+
+export const sampleDataObjectsManual = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  newQueryIndices: number[],
+): Promise<void> => {
+  const {
+    labels,
+    statuses,
+    queryIndices,
+    unlabeledMark,
+  } = rootState;
+
+  // Set the labels of samples in the last batch confirmed
+  const newStatuses = [...statuses];
+  queryIndices.forEach((index: number) => {
+    const isUnlabeled = labels[index] === unlabeledMark;
+    newStatuses[index] = isUnlabeled ? Status.SKIPPED : Status.LABELED;
+  });
+
+  // Sample data objects.
   commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
 
   // Set the labels of samples in the current batch viewed.

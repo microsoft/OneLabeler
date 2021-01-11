@@ -66,8 +66,8 @@ export interface IScatterplot {
   /** Set accessor to stroke colors of the scatter dots. */
   strokeAccessor(value: ColorStringAccessor): this;
 
-  /** The rendering function of the chart. */
-  render(svgElement: SVGSVGElement, data: Data): void;
+  /** Render/Update a scatterplot with the data on the root element. */
+  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void;
 }
 
 export default class Scatterplot implements IScatterplot {
@@ -240,7 +240,7 @@ export default class Scatterplot implements IScatterplot {
     return this;
   }
 
-  render(svgElement: SVGSVGElement, data: Data): void {
+  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void {
     const width = this.#width;
     const height = this.#height;
     const margin = this.#margin;
@@ -270,16 +270,16 @@ export default class Scatterplot implements IScatterplot {
     const yExtent = d3.extent(data, yAccessor) as [number, number];
     y.domain(yExtent).nice();
 
-    const svg = d3.select<SVGSVGElement, undefined>(svgElement);
-
     // Draw a container:
     // Create a g for the container if doesn't exist.
-    svg.selectAll<SVGGElement, null>(`.${classContainer}`)
+    d3.select<T, unknown>(root)
+      .selectAll<SVGGElement, null>(`.${classContainer}`)
       .data([null])
       .enter()
       .append<SVGGElement>('g')
       .attr('class', classContainer);
-    const g = svg.selectAll<SVGGElement, null>(`.${classContainer}`);
+    const g = d3.select<T, unknown>(root)
+      .selectAll<SVGGElement, null>(`.${classContainer}`);
     // Apply attribute to the container's g
     // (no matter newly created or not).
     g.transition()

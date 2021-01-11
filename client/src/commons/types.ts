@@ -1,5 +1,5 @@
 export interface IDataObject {
-  uuid: string | null, // the universal unique id of the data object
+  uuid: string, // the universal unique id of the data object
   features?: number[], // the features of the data object
 }
 

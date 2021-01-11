@@ -1,33 +1,19 @@
 <template>
-  <v-container
-    ref="container"
-    class="pa-0"
-    fluid
-  >
-    <svg
-      ref="svg"
-      style="height: 100%; width: 100%;"
-    />
-  </v-container>
+  <svg
+    ref="svg"
+    style="height: 100%; width: 100%;"
+  />
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-// import * as numeric from 'numeric';
 import * as d3 from 'd3';
+import Lasso, { ILasso, LassoEventType } from '@/plugins/d3.lasso';
+import Scatterplot, { IScatterplot } from '@/plugins/d3.scatterplot';
 import * as projectionAPI from '@/services/projection-api';
 import { Label, Status } from '@/commons/types';
-import Scatterplot, { IScatterplot } from '@/plugins/d3.scatterplot';
 
-/*
-const svd = (X: number[][], nComponents: number): number[][] => {
-  const svdOutput = numeric.svd(X);
-  const { U } = svdOutput;
-  const { V } = svdOutput;
-  const VTruncated = V.map((ele) => ele.slice(0, nComponents));
-  return numeric.dot(U, VTruncated) as number[][];
-};
-*/
+type Datum = { x: number, y: number, uuid: string };
 
 export enum ProjectionMethod {
   PCA = 'PCA',
@@ -40,6 +26,10 @@ export default Vue.extend({
   props: {
     featureValues: {
       type: Array as PropType<number[][]>,
+      required: true,
+    },
+    uuids: {
+      type: Array as PropType<string[]>,
       required: true,
     },
     labels: {
@@ -69,11 +59,15 @@ export default Vue.extend({
   },
   data(): {
     chart: IScatterplot | null,
+    lassoInstance: ILasso | null,
     projection: number[][] | null,
+    dotRadius: number,
     } {
     return {
       chart: null,
+      lassoInstance: null,
       projection: null,
+      dotRadius: 3,
     };
   },
   computed: {
@@ -107,6 +101,19 @@ export default Vue.extend({
     unlabeledMark() {
       this.rerender();
     },
+    queryIndices(queryIndices: number[]) {
+      // TODO: check if this function significantly slow down the frontend.
+      const { svg } = this.$refs as { svg: SVGSVGElement};
+      const { uuids, dotRadius } = this;
+      const queryUuids: Set<string> = new Set(queryIndices.map((d) => uuids[d]));
+      d3.select(svg)
+        .selectAll<SVGCircleElement, Datum>('circle')
+        .each(function _(d: Datum) {
+          const { uuid } = d;
+          const highlight = queryUuids.has(uuid);
+          this.setAttribute('r', String(highlight ? dotRadius * 2 : dotRadius));
+        });
+    },
   },
   mounted() {
     this.rerender();
@@ -126,30 +133,64 @@ export default Vue.extend({
       }
       return null;
     },
+    emptyDisplay(): void {
+      (this.$refs.svg as HTMLElement).innerHTML = '';
+      this.lassoInstance = null;
+    },
+    getSelectedUuids(lassoPolygon: [number, number][]): string[] {
+      const { svg } = this.$refs as { svg: SVGSVGElement};
+      const margin = (this.chart as Scatterplot).margin();
+
+      const selectedUuids: string[] = [];
+      d3.select(svg)
+        .selectAll<SVGCircleElement, Datum>('circle')
+        .each(function _(d: Datum) {
+          const x = +(this.getAttribute('cx') as string);
+          const y = +(this.getAttribute('cy') as string);
+          const { uuid } = d;
+          if (d3.polygonContains(
+            lassoPolygon,
+            [x + margin.left, y + margin.top],
+          )) {
+            selectedUuids.push(uuid);
+          }
+        });
+      return selectedUuids;
+    },
     rerender(): void {
       if (this.projection === null) {
-        // clear svg
-        (this.$refs.svg as HTMLElement).innerHTML = '';
+        this.emptyDisplay();
         return;
       }
       const {
         projection,
+        uuids,
         labels,
         classes,
         unlabeledMark,
       } = this;
-      const { svg } = this.$refs;
+      const { svg } = this.$refs as { svg: SVGSVGElement};
       if (svg === undefined) return;
       this.renderScatterplot(
         projection,
+        uuids,
         labels,
         classes,
         unlabeledMark,
-        svg as SVGSVGElement,
+        svg,
       );
+
+      this.lassoInstance = new Lasso()
+        .on(LassoEventType.end, (lassoPolygon: [number, number][]) => {
+          (this.lassoInstance as Lasso).removePath();
+          const selectedUuids = this.getSelectedUuids(lassoPolygon);
+          this.$emit('select-uuids', selectedUuids);
+        });
+      this.lassoInstance.render(svg);
     },
     renderScatterplot(
       projection: number[][],
+      uuids: string[],
       labels: Label[],
       classes: Label[],
       unlabeledMark: Label,
@@ -157,6 +198,11 @@ export default Vue.extend({
     ): void {
       const labelstr2fill = d3.scaleOrdinal(['#bbbbbb', ...d3.schemeCategory10])
         .domain([unlabeledMark, ...classes].map((d) => String(d)));
+      const data: Datum[] = uuids.map((d, i) => ({
+        uuid: d,
+        x: projection[i][0],
+        y: projection[i][1],
+      }));
 
       // Note: clientWidth, clientHeight is the rounded value of the real size
       // thus, need to minus 1 to make sure the size doesn't overflow
@@ -168,10 +214,11 @@ export default Vue.extend({
         .duration(0)
         .xAxis(null)
         .yAxis(null)
-        .xAccessor((d: unknown) => (d as number[])[0])
-        .yAccessor((d: unknown) => (d as number[])[1])
-        .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])));
-      chart.render(svg, projection as Record<number, number>[]);
+        .xAccessor((d: unknown) => ((d as Datum).x))
+        .yAccessor((d: unknown) => ((d as Datum).y))
+        .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])))
+        .rAccessor(() => this.dotRadius);
+      chart.render(svg, data as Datum[]);
       this.chart = chart;
     },
   },

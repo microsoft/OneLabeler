@@ -11,6 +11,11 @@ export const featureValues = (state: IState): number[][] | undefined[] => {
   }) as number[][] | undefined[];
 };
 
+export const uuids = (state: IState): string[] => {
+  const { dataObjects } = state;
+  return dataObjects.map((d: IDataObject) => d.uuid);
+};
+
 export const sampledDataObjects = (state: IState): IDataObject[] => {
   const { dataObjects, queryIndices } = state;
   return queryIndices.map((index: number) => dataObjects[index]);

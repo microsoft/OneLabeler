@@ -11,6 +11,7 @@ export interface IState {
   statuses: Status[],
   unlabeledMark: Label,
   featureNames: string[],
+  uuidToIdx: { [key: string]: number },
   queryIndices: number[],
   commandHistory: ICommand[],
 }
@@ -27,6 +28,8 @@ export default {
   unlabeledMark: -1,
   /** The names of data object features. */
   featureNames: [],
+  /** The mapping from uuids to data object index. */
+  uuidToIdx: {},
 
   /** The data labeling system status attributes. */
   /** The indices of sampled data objects. */

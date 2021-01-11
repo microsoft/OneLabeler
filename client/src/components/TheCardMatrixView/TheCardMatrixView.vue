@@ -60,7 +60,7 @@ export default Vue.extend({
     ]),
     ...mapActions('workflow', [
       'addClassOption',
-      'sampleDataObjects',
+      'sampleDataObjectsAlgorithmic',
     ]),
     onKey(e: KeyboardEvent): void {
       // shortcut for confirm labels: enter
@@ -82,7 +82,7 @@ export default Vue.extend({
       this.addClassOption(className);
     },
     onClickConfirmBatchLabels(): void {
-      this.sampleDataObjects();
+      this.sampleDataObjectsAlgorithmic();
     },
     onClickSetBatchLabels(label: Label): void {
       const dataObjects = this.sampledDataObjects;

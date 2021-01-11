@@ -237,7 +237,7 @@ export default Vue.extend({
     ...mapActions('workflow', [
       'extractDataObjects',
       'extractFeatures',
-      'sampleDataObjects',
+      'sampleDataObjectsAlgorithmic',
     ]),
     onKey(e: KeyboardEvent): void {
       // shortcut for undo: Ctrl + Z
@@ -292,7 +292,7 @@ export default Vue.extend({
       this.resetState();
     },
     onClickStart(): void {
-      this.sampleDataObjects();
+      this.sampleDataObjectsAlgorithmic();
     },
     onClickUndo(): void {
       if (this.lastCommand !== null) {

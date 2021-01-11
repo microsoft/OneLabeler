@@ -10,6 +10,11 @@ import * as types from './mutation-types';
 export default {
   [types.SET_DATA_OBJECTS](state: IState, dataObjects: IDataObject[]): void {
     state.dataObjects = dataObjects;
+    const uuidToIdx: { [key: string]: number} = {};
+    dataObjects.forEach((dataObject, i) => {
+      uuidToIdx[dataObject.uuid] = i;
+    });
+    state.uuidToIdx = uuidToIdx;
   },
   [types.SET_LABELS](state: IState, labels: Label[]): void {
     state.labels = labels;
