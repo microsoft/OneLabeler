@@ -15,6 +15,7 @@
   },
   "main": "background.ts",
   "dependencies": {
+    "ajv": "^7.0.3",
     "axios": "^0.21.1",
     "core-js": "^3.8.2",
     "d3": "^6.3.1",

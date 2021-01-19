@@ -1,39 +1,53 @@
 import {
+  DefaultLabelingModelType,
   ICommand,
   IDataObject,
+  IMessage,
+  IModel,
   Label,
   Status,
 } from '@/commons/types';
 
 export interface IState {
-  dataObjects: IDataObject[],
-  labels: Label[],
-  statuses: Status[],
-  unlabeledMark: Label,
-  featureNames: string[],
-  uuidToIdx: { [key: string]: number },
-  queryIndices: number[],
-  commandHistory: ICommand[],
-}
-
-export default {
   /** The data labeling project record attributes. */
   /** The data objects to be labeled */
-  dataObjects: [],
+  dataObjects: IDataObject[],
   /** The data object labels. */
-  labels: [],
+  labels: Label[],
   /** The label statuses of the data objects. */
-  statuses: [],
+  statuses: Status[],
+  /** The model for default labeling and active sampling. */
+  model: IModel,
   /** The label mark of unlabeled data objects. */
-  unlabeledMark: -1,
+  unlabeledMark: Label,
   /** The names of data object features. */
-  featureNames: [],
+  featureNames: string[],
   /** The mapping from uuids to data object index. */
-  uuidToIdx: {},
+  uuidToIdx: { [key: string]: number },
 
   /** The data labeling system status attributes. */
   /** The indices of sampled data objects. */
-  queryIndices: [],
+  queryIndices: number[],
   /** The history of label editing commands (used for undo command). */
+  commandHistory: ICommand[],
+  /** The popup message to be shown in the interface. */
+  message: IMessage | null,
+}
+
+export const createInitialState = (): IState => ({
+  dataObjects: [],
+  labels: [],
+  statuses: [],
+  model: {
+    type: DefaultLabelingModelType.Null,
+    content: null,
+  },
+  unlabeledMark: '-1',
+  featureNames: [],
+  uuidToIdx: {},
+  queryIndices: [],
   commandHistory: [],
-} as IState;
+  message: null,
+});
+
+export default createInitialState();

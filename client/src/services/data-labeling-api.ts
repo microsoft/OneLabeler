@@ -6,7 +6,13 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import showProgressBar from '@/plugins/nprogress-interceptor';
-import { IImage, Status } from '@/commons/types';
+import {
+  IDataObject,
+  IImage,
+  IModel,
+  Label,
+  Status,
+} from '@/commons/types';
 import {
   PROTOCOL,
   IP,
@@ -65,14 +71,14 @@ export const extractFeatures = showProgressBar(async (
 });
 
 /**
- * Workflow Component - Data Object Sampling
+ * Workflow Component - Data Object Sampling (Algorithmic)
  * Sample a batch of data objects from the pool of data objects.
  * @param dataObjects The data objects to be sampled from.
  * @param nBatch The number of data objects to sample.
  * @returns queryIndices - the indices of sampled data objects.
  */
 export const sampleDataObjects = showProgressBar(async (
-  dataObjects: IImage[],
+  dataObjects: IDataObject[],
   statuses: Status[],
   nBatch: number,
 ): Promise<number[]> => {
@@ -87,4 +93,61 @@ export const sampleDataObjects = showProgressBar(async (
     )
   ).data;
   return queryIndices;
+});
+
+/**
+ * Workflow Component - Default Labeling
+ * Assign default labels to a batch of data objects (for the user to verify).
+ * @param dataObjects The data objects to be assigned default labels.
+ * @param model The default labeling model.
+ * @returns defaultLabels - the default labels of the selected data objects.
+ */
+export const assignDefaultLabels = showProgressBar(async (
+  dataObjects: IDataObject[],
+  model: IModel,
+  classes: Label[],
+  unlabeledMark: Label,
+): Promise<Label[]> => {
+  const { defaultLabels } = (
+    await axios.post(
+      formatter(SERVER_PORT, 'assignDefaultLabels'),
+      JSON.stringify({
+        dataObjects,
+        model,
+        classes,
+        unlabeledMark,
+      }),
+    )
+  ).data;
+  return defaultLabels;
+});
+
+/**
+ * Workflow Components - Default Label Model Update & Sampling Model Update
+ * Update the default labeling and active sampling model
+ * with the partially user-labeled data object set.
+ * @param dataObjects The data objects to be assigned default labels.
+ * @param labels The labels of the data objects.
+ * @param statuses The label statuses of the data objects.
+ * @param model The model to be updated.
+ * @returns modelUpdated - the updated model.
+ */
+export const updateModel = showProgressBar(async (
+  dataObjects: IDataObject[],
+  labels: Label[],
+  statuses: Status[],
+  model: IModel,
+): Promise<IModel> => {
+  const modelUpdated = (
+    await axios.post(
+      formatter(SERVER_PORT, 'updateModel'),
+      JSON.stringify({
+        dataObjects,
+        labels,
+        statuses,
+        model,
+      }),
+    )
+  ).data.model;
+  return modelUpdated;
 });

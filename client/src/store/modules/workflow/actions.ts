@@ -1,6 +1,12 @@
 import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
-import { IImage, Label, Status } from '@/commons/types';
+import {
+  DefaultLabelingModelType,
+  IImage,
+  IModel,
+  Label,
+  Status,
+} from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import { IState } from './state';
@@ -33,6 +39,24 @@ export const setQueryStrategy = (
   queryStrategy: string,
 ): void => {
   commit(types.SET_QUERY_STRATEGY, queryStrategy);
+};
+
+export const setDefaultLabelingModelType = (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  defaultLabelingModelType: DefaultLabelingModelType,
+): void => {
+  commit(types.SET_DEFAULT_LABELING_MODEL_TYPE, defaultLabelingModelType);
+
+  // After changing the default labeling model type,
+  // reset the current model.
+  const { model } = rootState;
+  if (model.type !== defaultLabelingModelType) {
+    const modelUpdated: IModel = {
+      type: defaultLabelingModelType,
+      content: null,
+    };
+    commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
+  }
 };
 
 export const setNBatch = (
@@ -107,7 +131,7 @@ export const sampleDataObjectsAlgorithmic = async (
 
   // Sample data objects.
   const newQueryIndices = (await API.sampleDataObjects(
-    dataObjects as IImage[],
+    dataObjects,
     statuses,
     nBatch,
   ));
@@ -146,4 +170,51 @@ export const sampleDataObjectsManual = async (
     newStatuses[index] = Status.VIEWED;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
+};
+
+export const assignDefaultLabels = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+): Promise<void> => {
+  const { classes } = state;
+  const {
+    dataObjects,
+    queryIndices,
+    model,
+    unlabeledMark,
+  } = rootState;
+
+  // Assign default labels to the sampled data objects.
+  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
+  const uuids = sampledDataObjects.map((d) => d.uuid);
+  const defaultLabels = (await API.assignDefaultLabels(
+    sampledDataObjects,
+    model,
+    classes,
+    unlabeledMark,
+  ));
+  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
+    uuids,
+    labels: defaultLabels,
+    inQueryIndices: true,
+  }, { root: true });
+};
+
+export const updateModel = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+): Promise<void> => {
+  const {
+    dataObjects,
+    labels,
+    statuses,
+    model,
+  } = rootState;
+
+  // Update the model.
+  const modelUpdated = (await API.updateModel(
+    dataObjects,
+    labels,
+    statuses,
+    model,
+  ));
+  commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
 };

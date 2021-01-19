@@ -1,9 +1,10 @@
-import { Label } from '@/commons/types';
+import { DefaultLabelingModelType, Label } from '@/commons/types';
 
 export interface IState {
   classes: Label[],
   showDatasetOverview: boolean,
   queryStrategy: string,
+  defaultLabelingModelType: DefaultLabelingModelType,
   nBatch: number,
   itemsPerRow: number,
   itemsPerCol: number,
@@ -17,6 +18,8 @@ export default {
   showDatasetOverview: false,
   /** The data sampling strategy. */
   queryStrategy: 'random',
+  /** The default labeling model type. */
+  defaultLabelingModelType: DefaultLabelingModelType.Null,
   /** The number of data objects to sample each time. */
   nBatch: 32,
   /** The number of data objects per row in the thumbnail matrix. */

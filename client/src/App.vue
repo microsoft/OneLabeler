@@ -40,6 +40,7 @@
         <TheFooterView :height="footerHeight" />
       </v-row>
     </v-container>
+    <TheMessageView />
   </v-app>
 </template>
 
@@ -50,6 +51,7 @@ import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
+import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 
 @Component({
   name: 'App',
@@ -58,6 +60,7 @@ import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
     TheCardMatrixView,
     TheProjectionView,
     TheFooterView,
+    TheMessageView,
   },
   computed: {
     ...mapState('workflow', ['showDatasetOverview']),

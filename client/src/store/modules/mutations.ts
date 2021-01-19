@@ -1,6 +1,8 @@
 import {
   ICommand,
   IDataObject,
+  IMessage,
+  IModel,
   Label,
   Status,
 } from '@/commons/types';
@@ -60,6 +62,9 @@ export default {
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;
   },
+  [types.SET_MODEL](state: IState, model: IModel): void {
+    state.model = model;
+  },
   [types.SET_UNLABELED_MARK](state: IState, unlabeledMark: Label): void {
     state.unlabeledMark = unlabeledMark;
   },
@@ -71,5 +76,8 @@ export default {
   },
   [types.SET_COMMAND_HISTORY](state: IState, commandHistory: ICommand[]): void {
     state.commandHistory = commandHistory;
+  },
+  [types.SET_MESSAGE](state: IState, message: IMessage): void {
+    state.message = message;
   },
 };

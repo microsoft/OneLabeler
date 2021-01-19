@@ -2,11 +2,12 @@ import { ActionContext } from 'vuex';
 import {
   ICommand,
   IDataObject,
+  IMessage,
   Label,
   Status,
 } from '@/commons/types';
 import * as types from './mutation-types';
-import { IState } from './state';
+import { IState, createInitialState } from './state';
 
 export const setDataObjects = (
   { commit }: ActionContext<IState, IState>,
@@ -93,13 +94,34 @@ export const popCommandHistory = (
   commit(types.SET_COMMAND_HISTORY, newCommandHistory);
 };
 
+export const setMessage = (
+  { commit }: ActionContext<IState, IState>,
+  message: IMessage,
+): void => {
+  commit(types.SET_MESSAGE, message);
+};
+
 export const resetState = (
   { commit }: ActionContext<IState, IState>,
 ): void => {
-  commit(types.SET_DATA_OBJECTS, []);
-  commit(types.SET_LABELS, []);
-  commit(types.SET_STATUSES, []);
-  commit(types.SET_FEATURE_NAMES, []);
-  commit(types.SET_QUERY_INDICES, []);
-  commit(types.SET_COMMAND_HISTORY, []);
+  const {
+    dataObjects,
+    labels,
+    statuses,
+    model,
+    unlabeledMark,
+    featureNames,
+    queryIndices,
+    commandHistory,
+    message,
+  } = createInitialState();
+  commit(types.SET_DATA_OBJECTS, dataObjects);
+  commit(types.SET_LABELS, labels);
+  commit(types.SET_STATUSES, statuses);
+  commit(types.SET_MODEL, model);
+  commit(types.SET_UNLABELED_MARK, unlabeledMark);
+  commit(types.SET_FEATURE_NAMES, featureNames);
+  commit(types.SET_QUERY_INDICES, queryIndices);
+  commit(types.SET_COMMAND_HISTORY, commandHistory);
+  commit(types.SET_MESSAGE, message);
 };

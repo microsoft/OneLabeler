@@ -144,12 +144,99 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
+import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
-import { ICommand, IImage } from '@/commons/types';
+import {
+  ICommand,
+  IDataObject,
+  IImage,
+  IMessage,
+  Label,
+  MessageType,
+  Status,
+} from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VUploadButton from './VUploadButton.vue';
 import TheNavBarViewDialogButton from './TheNavBarViewDialogButton.vue';
+
+type ProjectData = {
+  dataObjects: IDataObject[],
+  labels: Label[],
+  statuses: Status[],
+  unlabeledMark: Label,
+  featureNames: string[],
+}
+
+const ajv = new Ajv();
+const schema: JSONSchemaType<ProjectData> = {
+  type: 'object',
+  required: [
+    'dataObjects',
+    'labels',
+    'statuses',
+    'unlabeledMark',
+    'featureNames',
+  ],
+  properties: {
+    dataObjects: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: [
+          'uuid',
+          'features',
+        ],
+        properties: {
+          uuid: { type: 'string' },
+          features: {
+            type: 'array',
+            items: { type: 'number' },
+          },
+        },
+        additionalProperties: true,
+      },
+    },
+    labels: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    statuses: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    unlabeledMark: { type: 'string' },
+    featureNames: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+  },
+  additionalProperties: false,
+};
+const validate = ajv.compile(schema);
+
+/** Raise alert according to the error message when validation failed. */
+const computeErrorMessage = (err: DefinedError): IMessage | null => {
+  if (err.keyword === 'required') {
+    return {
+      content: `UPLOAD FAILED: ${err.message}.`,
+      type: MessageType.error,
+    };
+  }
+  if (err.keyword === 'type') {
+    return {
+      content: `UPLOAD FAILED: ${err.dataPath} ${err.message}.`,
+      type: MessageType.error,
+    };
+  }
+  if (err.keyword === 'additionalProperties') {
+    return {
+      content: `UPLOAD FAILED: ${err.message} '${err.params.additionalProperty}'.`,
+      type: MessageType.error,
+    };
+  }
+  return null;
+};
 
 export default Vue.extend({
   name: 'TheNavBarView',
@@ -228,6 +315,7 @@ export default Vue.extend({
     ...mapActions([
       'setDataObjects',
       'setLabels',
+      'setMessage',
       'setStatuses',
       'setUnlabeledMark',
       'setFeatureNames',
@@ -237,7 +325,9 @@ export default Vue.extend({
     ...mapActions('workflow', [
       'extractDataObjects',
       'extractFeatures',
+      'updateModel',
       'sampleDataObjectsAlgorithmic',
+      'assignDefaultLabels',
     ]),
     onKey(e: KeyboardEvent): void {
       // shortcut for undo: Ctrl + Z
@@ -255,21 +345,36 @@ export default Vue.extend({
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
       await this.extractDataObjects(files);
-      this.extractFeatures();
+      await this.extractFeatures();
+      this.setMessage({
+        content: 'Project Data Uploaded.',
+        type: MessageType.success,
+      });
     },
     async onLoadProject(file: File): Promise<void> {
-      const {
-        dataObjects,
-        labels,
-        statuses,
-        unlabeledMark,
-        featureNames,
-      } = await JSONFileToObject(file);
-      this.setDataObjects(dataObjects);
-      this.setLabels(labels);
-      this.setStatuses(statuses);
-      this.setUnlabeledMark(unlabeledMark);
-      this.setFeatureNames(featureNames);
+      const data = await JSONFileToObject(file);
+      if (validate(data)) {
+        const {
+          dataObjects,
+          labels,
+          statuses,
+          unlabeledMark,
+          featureNames,
+        } = data;
+        this.setDataObjects(dataObjects);
+        this.setLabels(labels);
+        this.setStatuses(statuses);
+        this.setUnlabeledMark(unlabeledMark);
+        this.setFeatureNames(featureNames);
+        this.setMessage({
+          content: 'Project Progress Uploaded.',
+          type: MessageType.success,
+        });
+      } else {
+        const errors = validate.errors as DefinedError[];
+        const message = computeErrorMessage(errors[0]);
+        this.setMessage(message);
+      }
     },
     onClickSave(): void {
       const {
@@ -291,8 +396,10 @@ export default Vue.extend({
       // reset root store
       this.resetState();
     },
-    onClickStart(): void {
-      this.sampleDataObjectsAlgorithmic();
+    async onClickStart(): Promise<void> {
+      await this.sampleDataObjectsAlgorithmic();
+      await this.updateModel();
+      await this.assignDefaultLabels();
     },
     onClickUndo(): void {
       if (this.lastCommand !== null) {

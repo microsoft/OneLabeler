@@ -67,7 +67,7 @@ export interface IScatterplot {
   strokeAccessor(value: ColorStringAccessor): this;
 
   /** Render/Update a scatterplot with the data on the root element. */
-  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void;
+  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void | Promise<void>;
 }
 
 export default class Scatterplot implements IScatterplot {
@@ -240,7 +240,7 @@ export default class Scatterplot implements IScatterplot {
     return this;
   }
 
-  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void {
+  render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): Promise<void> {
     const width = this.#width;
     const height = this.#height;
     const margin = this.#margin;
@@ -380,7 +380,7 @@ export default class Scatterplot implements IScatterplot {
       .attr('class', classDot);
     dots.exit().remove();
 
-    g.selectAll<SVGCircleElement, Data>(`.${classDot}`)
+    const transition = g.selectAll<SVGCircleElement, Data>(`.${classDot}`)
       .transition()
       .duration(duration)
       .attr('r', rAccessor)
@@ -389,5 +389,6 @@ export default class Scatterplot implements IScatterplot {
       .style('fill', fillAccessor)
       .style('stroke', strokeAccessor)
       .style('stroke-width', '1px');
+    return transition.end();
   }
 }

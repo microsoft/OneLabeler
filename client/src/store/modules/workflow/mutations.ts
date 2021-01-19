@@ -1,3 +1,4 @@
+import { DefaultLabelingModelType, Label } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
@@ -10,6 +11,12 @@ export default {
   },
   [types.SET_QUERY_STRATEGY](state: IState, queryStrategy: string): void {
     state.queryStrategy = queryStrategy;
+  },
+  [types.SET_DEFAULT_LABELING_MODEL_TYPE](
+    state: IState,
+    defaultLabelingModelType: DefaultLabelingModelType,
+  ): void {
+    state.defaultLabelingModelType = defaultLabelingModelType;
   },
   [types.SET_N_BATCH](state: IState, nBatch: number): void {
     state.nBatch = nBatch;

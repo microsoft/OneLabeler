@@ -137,6 +137,11 @@ export default Vue.extend({
     page(val) {
       this.$emit('click-page', val, this.dataObjectsInPage);
     },
+    dataObjects() {
+      // Reset the page number to the first page when
+      // the data objects to be shown are changed.
+      this.page = 1;
+    },
   },
   mounted() {
     this.updateCardSize();

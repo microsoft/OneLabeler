@@ -115,12 +115,14 @@ export default class Lasso implements ILasso {
         .attr('fill', '#bbb')
         .attr('fill-opacity', 0.1)
         .attr('stroke', '#bbb')
+        .attr('stroke-width', '2')
         .attr('stroke-dasharray', '2, 2');
 
       this.#closeLine = g.append('line')
         .attr('x2', lassoPolygon[0][0])
         .attr('y2', lassoPolygon[0][1])
-        .attr('stroke', '#bbb')
+        .attr('stroke', '#000')
+        .attr('stroke-width', '2')
         .attr('stroke-dasharray', '2, 2')
         .attr('opacity', 0);
 

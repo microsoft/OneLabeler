@@ -12,6 +12,7 @@
       style="height: calc(100% - 30px)"
     >
       <VCardMatrix
+        v-if="queryIndices !== null && queryIndices.length !== 0"
         style="height: 100%"
         :data-objects="sampledDataObjects"
         :labels="sampledDataObjectLabels"
@@ -20,6 +21,11 @@
         :items-per-col="itemsPerCol"
         @click-card-label="onClickCardLabel"
       />
+      <template v-else>
+        <p class="mx-auto subtitle-1">
+          No Data Objects Queried
+        </p>
+      </template>
     </v-card-actions>
   </v-card>
 </template>
@@ -27,7 +33,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { IDataObject, Label } from '@/commons/types';
+import { IDataObject, Label, MessageType } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VCardMatrix from './VCardMatrix.vue';
@@ -56,11 +62,14 @@ export default Vue.extend({
     ...mapActions([
       'setDataObjectLabel',
       'setDataObjectLabels',
+      'setMessage',
       'pushCommandHistory',
     ]),
     ...mapActions('workflow', [
       'addClassOption',
+      'updateModel',
       'sampleDataObjectsAlgorithmic',
+      'assignDefaultLabels',
     ]),
     onKey(e: KeyboardEvent): void {
       // shortcut for confirm labels: enter
@@ -81,8 +90,17 @@ export default Vue.extend({
     onClickAddClassOption(className: string): void {
       this.addClassOption(className);
     },
-    onClickConfirmBatchLabels(): void {
-      this.sampleDataObjectsAlgorithmic();
+    async onClickConfirmBatchLabels(): Promise<void> {
+      await this.sampleDataObjectsAlgorithmic();
+      if (this.queryIndices.length === 0) {
+        this.setMessage({
+          content: 'All Data Objects Labeled.',
+          type: MessageType.success,
+        });
+      } else {
+        await this.updateModel();
+        await this.assignDefaultLabels();
+      }
     },
     onClickSetBatchLabels(label: Label): void {
       const dataObjects = this.sampledDataObjects;

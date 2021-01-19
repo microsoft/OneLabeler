@@ -86,37 +86,29 @@ export default Vue.extend({
   watch: {
     async projectionMethod() {
       this.projection = await this.computeProjection();
-      this.rerender();
+      await this.rerender();
     },
     async featureValues() {
       this.projection = await this.computeProjection();
-      this.rerender();
+      await this.rerender();
     },
-    labels() {
-      this.rerender();
+    async labels() {
+      await this.rerender();
     },
-    classes() {
-      this.rerender();
+    async classes() {
+      await this.rerender();
     },
-    unlabeledMark() {
-      this.rerender();
+    async unlabeledMark() {
+      await this.rerender();
     },
     queryIndices(queryIndices: number[]) {
       // TODO: check if this function significantly slow down the frontend.
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      const { uuids, dotRadius } = this;
-      const queryUuids: Set<string> = new Set(queryIndices.map((d) => uuids[d]));
-      d3.select(svg)
-        .selectAll<SVGCircleElement, Datum>('circle')
-        .each(function _(d: Datum) {
-          const { uuid } = d;
-          const highlight = queryUuids.has(uuid);
-          this.setAttribute('r', String(highlight ? dotRadius * 2 : dotRadius));
-        });
+      this.highlightScatterplot(queryIndices);
     },
   },
-  mounted() {
-    this.rerender();
+  async mounted() {
+    this.projection = await this.computeProjection();
+    await this.rerender();
   },
   methods: {
     async computeProjection(): Promise<number[][] | null> {
@@ -157,7 +149,7 @@ export default Vue.extend({
         });
       return selectedUuids;
     },
-    rerender(): void {
+    async rerender(): Promise<void> {
       if (this.projection === null) {
         this.emptyDisplay();
         return;
@@ -168,10 +160,11 @@ export default Vue.extend({
         labels,
         classes,
         unlabeledMark,
+        queryIndices,
       } = this;
       const { svg } = this.$refs as { svg: SVGSVGElement};
       if (svg === undefined) return;
-      this.renderScatterplot(
+      await this.renderScatterplot(
         projection,
         uuids,
         labels,
@@ -187,15 +180,29 @@ export default Vue.extend({
           this.$emit('select-uuids', selectedUuids);
         });
       this.lassoInstance.render(svg);
+
+      this.highlightScatterplot(queryIndices);
     },
-    renderScatterplot(
+    highlightScatterplot(queryIndices: number[]): void {
+      const { svg } = this.$refs as { svg: SVGSVGElement};
+      const { uuids, dotRadius } = this;
+      const queryUuids: Set<string> = new Set(queryIndices.map((d) => uuids[d]));
+      d3.select(svg)
+        .selectAll<SVGCircleElement, Datum>('circle')
+        .each(function _(d: Datum) {
+          const { uuid } = d;
+          const highlight = queryUuids.has(uuid);
+          this.setAttribute('r', String(highlight ? dotRadius * 2 : dotRadius));
+        });
+    },
+    async renderScatterplot(
       projection: number[][],
       uuids: string[],
       labels: Label[],
       classes: Label[],
       unlabeledMark: Label,
       svg: SVGSVGElement,
-    ): void {
+    ): Promise<void> {
       const labelstr2fill = d3.scaleOrdinal(['#bbbbbb', ...d3.schemeCategory10])
         .domain([unlabeledMark, ...classes].map((d) => String(d)));
       const data: Datum[] = uuids.map((d, i) => ({
@@ -218,7 +225,7 @@ export default Vue.extend({
         .yAccessor((d: unknown) => ((d as Datum).y))
         .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])))
         .rAccessor(() => this.dotRadius);
-      chart.render(svg, data as Datum[]);
+      await chart.render(svg, data as Datum[]);
       this.chart = chart;
     },
   },

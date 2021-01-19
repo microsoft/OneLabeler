@@ -74,16 +74,23 @@ export default Vue.extend({
     ...mapGetters(['featureValues', 'uuids']),
   },
   methods: {
-    ...mapActions('workflow', ['sampleDataObjectsManual']),
+    ...mapActions('workflow', [
+      'updateModel',
+      'sampleDataObjectsManual',
+      'assignDefaultLabels',
+    ]),
     onClickProjectionMethod(method: ProjectionMethod) {
       this.selectedProjectionMethod = method;
     },
-    onSelectUuids(uuids: string[]) {
+    async onSelectUuids(uuids: string[]): Promise<void> {
+      if (uuids.length === 0) return;
       const { uuidToIdx, statuses } = this;
       const indices = uuids
         .map((uuid) => uuidToIdx[uuid])
         .filter((idx) => statuses[idx] !== Status.LABELED);
-      this.sampleDataObjectsManual(indices);
+      await this.sampleDataObjectsManual(indices);
+      await this.updateModel();
+      await this.assignDefaultLabels();
     },
   },
 });
