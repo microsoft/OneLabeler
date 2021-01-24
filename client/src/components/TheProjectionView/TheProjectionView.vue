@@ -64,13 +64,13 @@ export default Vue.extend({
   computed: {
     ...mapState([
       'dataObjects',
-      'uuidToIdx',
+      'classes',
       'labels',
       'statuses',
       'unlabeledMark',
       'queryIndices',
+      'uuidToIdx',
     ]),
-    ...mapState('workflow', ['classes']),
     ...mapGetters(['featureValues', 'uuids']),
   },
   methods: {

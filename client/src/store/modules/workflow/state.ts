@@ -1,29 +1,28 @@
-import { DefaultLabelingModelType, Label } from '@/commons/types';
+import { DefaultLabelingMethodType, SamplingStrategyType } from '@/commons/types';
 
 export interface IState {
-  classes: Label[],
-  showDatasetOverview: boolean,
-  queryStrategy: string,
-  defaultLabelingModelType: DefaultLabelingModelType,
+  /** The data labeling workflow configuration parameters. */
+  /** The data sampling strategy. */
+  samplingStrategy: SamplingStrategyType,
+  /** The number of data objects to sample each time. */
   nBatch: number,
+  /** The default labeling model type. */
+  defaultLabelingMethod: DefaultLabelingMethodType,
+  /** Whether to show the dataset overview. */
+  showDatasetOverview: boolean,
+  /** The number of data objects per row in the thumbnail matrix. */
   itemsPerRow: number,
+  /** The number of data objects per column in the thumbnail matrix. */
   itemsPerCol: number,
 }
 
-export default {
-  /** The data labeling workflow configuration parameters. */
-  /** The label category options. */
-  classes: [],
-  /** Whether to show the dataset overview. */
-  showDatasetOverview: false,
-  /** The data sampling strategy. */
-  queryStrategy: 'random',
-  /** The default labeling model type. */
-  defaultLabelingModelType: DefaultLabelingModelType.Null,
-  /** The number of data objects to sample each time. */
+export const createInitialState = (): IState => ({
+  samplingStrategy: SamplingStrategyType.Random,
   nBatch: 32,
-  /** The number of data objects per row in the thumbnail matrix. */
+  defaultLabelingMethod: DefaultLabelingMethodType.Null,
+  showDatasetOverview: false,
   itemsPerRow: 8,
-  /** The number of data objects per column in the thumbnail matrix. */
   itemsPerCol: 4,
-} as IState;
+});
+
+export default createInitialState();

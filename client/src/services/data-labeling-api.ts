@@ -81,6 +81,7 @@ export const sampleDataObjects = showProgressBar(async (
   dataObjects: IDataObject[],
   statuses: Status[],
   nBatch: number,
+  model: IModel,
 ): Promise<number[]> => {
   const { queryIndices } = (
     await axios.post(
@@ -89,6 +90,7 @@ export const sampleDataObjects = showProgressBar(async (
         dataObjects,
         statuses,
         nBatch,
+        model,
       }),
     )
   ).data;

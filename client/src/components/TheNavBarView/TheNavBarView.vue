@@ -162,6 +162,7 @@ import TheNavBarViewDialogButton from './TheNavBarViewDialogButton.vue';
 
 type ProjectData = {
   dataObjects: IDataObject[],
+  classes: Label[],
   labels: Label[],
   statuses: Status[],
   unlabeledMark: Label,
@@ -173,6 +174,7 @@ const schema: JSONSchemaType<ProjectData> = {
   type: 'object',
   required: [
     'dataObjects',
+    'classes',
     'labels',
     'statuses',
     'unlabeledMark',
@@ -196,6 +198,10 @@ const schema: JSONSchemaType<ProjectData> = {
         },
         additionalProperties: true,
       },
+    },
+    classes: {
+      type: 'array',
+      items: { type: 'string' },
     },
     labels: {
       type: 'array',
@@ -261,6 +267,7 @@ export default Vue.extend({
   computed: {
     ...mapState([
       'dataObjects',
+      'classes',
       'labels',
       'statuses',
       'unlabeledMark',
@@ -314,6 +321,7 @@ export default Vue.extend({
   methods: {
     ...mapActions([
       'setDataObjects',
+      'setClasses',
       'setLabels',
       'setMessage',
       'setStatuses',
@@ -356,12 +364,14 @@ export default Vue.extend({
       if (validate(data)) {
         const {
           dataObjects,
+          classes,
           labels,
           statuses,
           unlabeledMark,
           featureNames,
-        } = data;
+        } = data as ProjectData;
         this.setDataObjects(dataObjects);
+        this.setClasses(classes);
         this.setLabels(labels);
         this.setStatuses(statuses);
         this.setUnlabeledMark(unlabeledMark);
@@ -379,18 +389,21 @@ export default Vue.extend({
     onClickSave(): void {
       const {
         dataObjects,
+        classes,
         labels,
         statuses,
         unlabeledMark,
         featureNames,
       } = this;
-      saveObjectAsJSONFile({
+      const projectData: ProjectData = {
         dataObjects,
+        classes,
         labels,
         statuses,
         unlabeledMark,
         featureNames,
-      }, 'project.json');
+      };
+      saveObjectAsJSONFile(projectData, 'project.json');
     },
     onClickReset(): void {
       // reset root store

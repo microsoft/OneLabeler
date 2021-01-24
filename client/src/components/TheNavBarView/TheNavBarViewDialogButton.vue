@@ -77,10 +77,10 @@ import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import {
-  DefaultLabelingModelType,
+  DefaultLabelingMethodType,
   IMessage,
-  Label,
   MessageType,
+  SamplingStrategyType,
 } from '@/commons/types';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
@@ -88,10 +88,10 @@ import VUploadButton from './VUploadButton.vue';
 import VMenusFlat from './VMenusFlat.vue';
 
 type WorkflowConfigData = {
-  classes: Label[],
-  defaultLabelingModelType: DefaultLabelingModelType,
-  showDatasetOverview: boolean,
+  samplingStrategy: SamplingStrategyType,
   nBatch: number,
+  defaultLabelingMethod: DefaultLabelingMethodType,
+  showDatasetOverview: boolean,
   itemsPerRow: number,
   itemsPerCol: number,
 }
@@ -100,13 +100,10 @@ const ajv = new Ajv();
 const schema: JSONSchemaType<Partial<WorkflowConfigData>> = {
   type: 'object',
   properties: {
-    classes: {
-      type: 'array',
-      items: { type: 'string' },
-    },
-    defaultLabelingModelType: { type: 'string' },
-    showDatasetOverview: { type: 'boolean' },
+    samplingStrategy: { type: 'string' },
     nBatch: { type: 'integer' },
+    defaultLabelingMethod: { type: 'string' },
+    showDatasetOverview: { type: 'boolean' },
     itemsPerRow: { type: 'integer' },
     itemsPerCol: { type: 'integer' },
   },
@@ -153,36 +150,40 @@ export default Vue.extend({
   data() {
     return {
       menusConfig: {
-        itemsPerRow: {
-          title: 'Data Objects Per Row',
-          options: [1, 4, 8, 12],
-          optionsText: ['1', '4', '8', '12'],
-        },
-        itemsPerCol: {
-          title: 'Data Objects Per Column',
-          options: [1, 2, 4, 6, 8],
-          optionsText: ['1', '2', '4', '6', '8'],
+        samplingStrategy: {
+          title: 'Sampling Strategy',
+          options: [
+            SamplingStrategyType.Random,
+            SamplingStrategyType.ClusterCentroids,
+            SamplingStrategyType.DenseAreas,
+            SamplingStrategyType.Entropy,
+            SamplingStrategyType.LeastConfident,
+            SamplingStrategyType.SmallestMargin,
+          ],
+          optionsText: [
+            'Random',
+            'Cluster Centroids',
+            'Dense Areas',
+            'Entropy',
+            'Least Confident',
+            'Smallest Margin',
+          ],
         },
         nBatch: {
           title: 'Data Objects Per Sampled Batch',
           options: [1, 4, 16, 32, 48, 64, 96],
           optionsText: ['1', '4', '16', '32', '48', '64', '96'],
         },
-        showDatasetOverview: {
-          title: 'Show Dataset Overview',
-          options: [false, true],
-          optionsText: ['No', 'Yes'],
-        },
-        defaultLabelingModelType: {
+        defaultLabelingMethod: {
           title: 'Default Labeling Model',
           options: [
-            DefaultLabelingModelType.Null,
-            DefaultLabelingModelType.Random,
-            DefaultLabelingModelType.DecisionTree,
-            DefaultLabelingModelType.SVM,
-            DefaultLabelingModelType.LogisticRegression,
-            DefaultLabelingModelType.LabelSpreading,
-            DefaultLabelingModelType.RestrictedBoltzmannMachine,
+            DefaultLabelingMethodType.Null,
+            DefaultLabelingMethodType.Random,
+            DefaultLabelingMethodType.DecisionTree,
+            DefaultLabelingMethodType.SVM,
+            DefaultLabelingMethodType.LogisticRegression,
+            DefaultLabelingMethodType.LabelSpreading,
+            DefaultLabelingMethodType.RestrictedBoltzmannMachine,
           ],
           optionsText: [
             'Null',
@@ -194,29 +195,46 @@ export default Vue.extend({
             'Restricted Boltzmann Machine',
           ],
         },
+        showDatasetOverview: {
+          title: 'Show Dataset Overview',
+          options: [false, true],
+          optionsText: ['No', 'Yes'],
+        },
+        itemsPerRow: {
+          title: 'Data Objects Per Row',
+          options: [1, 4, 8, 12],
+          optionsText: ['1', '4', '8', '12'],
+        },
+        itemsPerCol: {
+          title: 'Data Objects Per Column',
+          options: [1, 2, 4, 6, 8],
+          optionsText: ['1', '2', '4', '6', '8'],
+        },
       },
     };
   },
   computed: {
     ...mapState('workflow', [
-      'classes',
+      'samplingStrategy',
       'showDatasetOverview',
-      'defaultLabelingModelType',
+      'defaultLabelingMethod',
       'nBatch',
       'itemsPerRow',
       'itemsPerCol',
     ]),
     settings() {
       const {
+        samplingStrategy,
         showDatasetOverview,
-        defaultLabelingModelType,
+        defaultLabelingMethod,
         nBatch,
         itemsPerRow,
         itemsPerCol,
       } = this;
       return {
+        samplingStrategy,
         showDatasetOverview,
-        defaultLabelingModelType,
+        defaultLabelingMethod,
         nBatch,
         itemsPerRow,
         itemsPerCol,
@@ -226,26 +244,26 @@ export default Vue.extend({
   methods: {
     ...mapActions(['setMessage']),
     ...mapActions('workflow', [
-      'setClasses',
-      'setDefaultLabelingModelType',
-      'setShowDatasetOverview',
+      'setSamplingStrategy',
       'setNBatch',
+      'setDefaultLabelingMethod',
+      'setShowDatasetOverview',
       'setItemsPerRow',
       'setItemsPerCol',
     ]),
     onClickExport(): void {
       const {
-        classes,
+        samplingStrategy,
         showDatasetOverview,
-        defaultLabelingModelType,
+        defaultLabelingMethod,
         nBatch,
         itemsPerRow,
         itemsPerCol,
       } = this;
       saveObjectAsJSONFile({
-        classes,
+        samplingStrategy,
         showDatasetOverview,
-        defaultLabelingModelType,
+        defaultLabelingMethod,
         nBatch,
         itemsPerRow,
         itemsPerCol,
@@ -255,20 +273,23 @@ export default Vue.extend({
       // reset workflow configurations
       this.setClasses([]);
       this.setShowDatasetOverview(false);
-      this.setDefaultLabelingModelType(DefaultLabelingModelType.Null);
+      this.setDefaultLabelingMethod(DefaultLabelingMethodType.Null);
       this.setNBatch(32);
       this.setItemsPerRow(8);
       this.setItemsPerCol(4);
     },
     onClickMenuOption(menuKey: string, option: unknown): void {
-      if (menuKey === 'defaultLabelingModelType') {
-        this.setDefaultLabelingModelType(option as DefaultLabelingModelType);
-      }
-      if (menuKey === 'showDatasetOverview') {
-        this.setShowDatasetOverview(option as boolean);
+      if (menuKey === 'samplingStrategy') {
+        this.setSamplingStrategy(option as SamplingStrategyType);
       }
       if (menuKey === 'nBatch') {
         this.setNBatch(option as number);
+      }
+      if (menuKey === 'defaultLabelingMethod') {
+        this.setDefaultLabelingMethod(option as DefaultLabelingMethodType);
+      }
+      if (menuKey === 'showDatasetOverview') {
+        this.setShowDatasetOverview(option as boolean);
       }
       if (menuKey === 'itemsPerRow') {
         this.setItemsPerRow(option as number);
@@ -281,11 +302,11 @@ export default Vue.extend({
       if (file === null || file === undefined) return;
       const config = await JSONFileToObject(file);
       if (validate(config)) {
-        if ('classes' in config) {
-          this.setClasses(config.classes);
+        if ('samplingStrategy' in config) {
+          this.setSamplingStrategy(config.samplingStrategy);
         }
-        if ('defaultLabelingModelType' in config) {
-          this.setDefaultLabelingModelType(config.defaultLabelingModelType);
+        if ('defaultLabelingMethod' in config) {
+          this.setDefaultLabelingMethod(config.defaultLabelingMethod);
         }
         if ('showDatasetOverview' in config) {
           this.setShowDatasetOverview(config.showDatasetOverview);

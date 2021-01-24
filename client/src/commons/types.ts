@@ -48,8 +48,20 @@ export interface IMessage {
   type: MessageType,
 }
 
+/** The enum of data object sampling strategy types. */
+export enum SamplingStrategyType {
+  Random = 'Random',
+  ClusterCentroids = 'ClusterCentroids',
+  DenseAreas = 'DenseAreas',
+  Entropy = 'Entropy',
+  EntropyDiversity = 'EntropyDiversity',
+  EntropyDiversityDensity = 'EntropyDiversityDensity',
+  LeastConfident = 'LeastConfident',
+  SmallestMargin = 'SmallestMargin',
+}
+
 /** The enum of default labeling model types. */
-export enum DefaultLabelingModelType {
+export enum DefaultLabelingMethodType {
   Null = 'Null',
   Random = 'Random',
   DecisionTree = 'DecisionTree',
@@ -61,7 +73,10 @@ export enum DefaultLabelingModelType {
 
 /** The interface of default labeling and active sampling model. */
 export interface IModel {
+  /** The default labeling model type. */
+  type: DefaultLabelingMethodType,
+  /** The data object sampling strategy. */
+  samplingStrategy: SamplingStrategyType,
   /** The key to the model object stored in the backend. */
-  type: DefaultLabelingModelType,
   content: string | null,
 }

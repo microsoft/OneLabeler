@@ -19,49 +19,15 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 from .generic import GenericPipeline
-from .types import DefaultLabelingModelType, Label, Model, Status
+from .sampling import (random_sampling,
+                       cluster_sampling,
+                       density_sampling,
+                       entropy_sampling,
+                       confidence_sampling,
+                       margin_sampling)
+from .types import DefaultLabelingMethodType, Label, Model, SamplingStrategyType, Status
 
 ListLike = Union[List[Any], np.ndarray]
-
-
-def random_sampling(data_objects: ListLike,
-                    statuses: np.ndarray,
-                    n_batch: int) -> np.ndarray:
-    """
-    Random sample unlabeled data objects.
-    Skipped data objects have lower priorities.
-
-    Args
-    ----
-    data_objects : np.ndarray or list of any values, length = n_pool
-        The whole list of data objects, no matter labeled or unlabeled.
-    statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
-        The label statuses of the data objects.
-        Each entry takes value in
-        [Status.NEW, Status.VIEWED, Status.SKIPPED, Status.LABELED].
-    n_batch : int
-        The number of data objects to sample.
-
-    Returns
-    -------
-    query_indices : np.ndarray of int values, shape = (n_batch,)
-        The indices of the sampled data objects in the whole list.
-    """
-
-    del data_objects  # unused argument
-
-    unlabeled_indices = np.where(statuses == Status.NEW)[0]
-    if len(unlabeled_indices) <= n_batch:
-        query_indices = unlabeled_indices
-        skipped_indices = np.where(statuses == Status.SKIPPED)[0]
-        n_residue = n_batch - len(query_indices)
-        query_indices_skipped = skipped_indices if len(skipped_indices) <= n_residue\
-            else np.random.choice(skipped_indices, size=n_residue, replace=False)
-        query_indices = np.concatenate((query_indices, query_indices_skipped))
-    else:
-        query_indices = np.random.choice(unlabeled_indices,
-                                         size=n_batch, replace=False)
-    return query_indices
 
 
 def feature_extraction_handcraft(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
@@ -185,6 +151,11 @@ class EstimatorWithLabelDecoder(BaseEstimator):
         y_pred_decoded = self.encoder.inverse_transform(y_pred)
         return y_pred_decoded
 
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        proba = self.estimator.predict_proba(X)
+        return proba
+
+
 class DataLabelingPipeline(GenericPipeline):
     @staticmethod
     def extract_features(data_objects: ListLike) -> Tuple[ListLike, List[str]]:
@@ -206,8 +177,29 @@ class DataLabelingPipeline(GenericPipeline):
     @staticmethod
     def sample_data_objects(data_objects: ListLike,
                             statuses: np.ndarray,
-                            n_batch: int) -> np.ndarray:
-        query_indices = random_sampling(data_objects, statuses, n_batch)
+                            n_batch: int,
+                            model: Model) -> np.ndarray:
+        assert len(data_objects) == len(statuses),\
+            'number of data objects and label statuses mismatch'
+
+        if model.sampling_strategy == SamplingStrategyType.Random:
+            query_indices = random_sampling(data_objects, statuses, n_batch)
+        elif model.sampling_strategy == SamplingStrategyType.ClusterCentroids:
+            query_indices = cluster_sampling(data_objects, statuses, n_batch)
+        elif model.sampling_strategy == SamplingStrategyType.DenseAreas:
+            query_indices = density_sampling(data_objects, statuses, n_batch)
+        elif model.sampling_strategy == SamplingStrategyType.Entropy:
+            query_indices = entropy_sampling(
+                data_objects, statuses, n_batch, model)
+        elif model.sampling_strategy == SamplingStrategyType.LeastConfident:
+            query_indices = confidence_sampling(
+                data_objects, statuses, n_batch, model)
+        elif model.sampling_strategy == SamplingStrategyType.SmallestMargin:
+            query_indices = margin_sampling(
+                data_objects, statuses, n_batch, model)
+        else:
+            raise ValueError(
+                f'Invalid sampling strategy: {model.sampling_strategy}')
         return query_indices
 
     @staticmethod
@@ -217,20 +209,24 @@ class DataLabelingPipeline(GenericPipeline):
                               unlabeled_mark: Label) -> np.ndarray:
         if len(data_objects) == 0:
             return np.array([])
-        
+
         X = np.array([data_object['features'] for data_object in data_objects])
         n_samples = len(data_objects)
-        if model.type == DefaultLabelingModelType.Null:
-            default_labels = np.array([unlabeled_mark for i in range(n_samples)], dtype=str)
-        elif model.type == DefaultLabelingModelType.Random:
-            default_labels = np.random.choice(classes, size=n_samples, replace=True)
+        if model.type == DefaultLabelingMethodType.Null:
+            default_labels = np.array(
+                [unlabeled_mark for i in range(n_samples)], dtype=str)
+        elif model.type == DefaultLabelingMethodType.Random:
+            default_labels = np.random.choice(
+                classes, size=n_samples, replace=True)
         elif model.content is None:
-            default_labels = np.random.choice(classes, size=n_samples, replace=True)
+            default_labels = np.random.choice(
+                classes, size=n_samples, replace=True)
         else:
             try:
                 default_labels = model.content.predict(X)
             except NotFittedError as e:
-                default_labels = np.random.choice(classes, size=n_samples, replace=True)
+                default_labels = np.random.choice(
+                    classes, size=n_samples, replace=True)
 
         return default_labels
 
@@ -244,26 +240,33 @@ class DataLabelingPipeline(GenericPipeline):
         ----
         labels : np.ndarray of string values
         """
-        
+
+        assert len(data_objects) == len(labels),\
+            'number of data objects and labels mismatch'
+        assert len(data_objects) == len(statuses),\
+            'number of data objects and label statuses mismatch'
+
         assert model.type in [
-            DefaultLabelingModelType.Null,
-            DefaultLabelingModelType.Random,
-            DefaultLabelingModelType.DecisionTree,
-            DefaultLabelingModelType.SVM,
-            DefaultLabelingModelType.LogisticRegression,
-            DefaultLabelingModelType.LabelSpreading,
-            DefaultLabelingModelType.RestrictedBoltzmannMachine,
+            DefaultLabelingMethodType.Null,
+            DefaultLabelingMethodType.Random,
+            DefaultLabelingMethodType.DecisionTree,
+            DefaultLabelingMethodType.SVM,
+            DefaultLabelingMethodType.LogisticRegression,
+            DefaultLabelingMethodType.LabelSpreading,
+            DefaultLabelingMethodType.RestrictedBoltzmannMachine,
         ], f'Invalid model type: {model.type}'
-        
+
         X = np.array([data_object['features'] for data_object in data_objects])
-        mask_labeled = np.array([status == Status.LABELED for status in statuses])
+        mask_labeled = np.array(
+            [status == Status.LABELED for status in statuses])
         if np.sum(mask_labeled) == 0:
             return model
 
         unlabeled_indices = np.where(~mask_labeled)[0]
         if len(unlabeled_indices) != 0:
             unlabeled_mark = labels[unlabeled_indices[0]]
-            classes = np.array([d for d in np.unique(labels) if d != unlabeled_mark])
+            classes = np.array(
+                [d for d in np.unique(labels) if d != unlabeled_mark])
             encoder = LabelEncoder().fit(classes)
             y = np.zeros(len(labels), dtype=int)
             y[mask_labeled] = encoder.transform(labels[mask_labeled])
@@ -276,17 +279,18 @@ class DataLabelingPipeline(GenericPipeline):
         X_train = X[mask_labeled]
         y_train = y[mask_labeled]
 
-        if model.type == DefaultLabelingModelType.Null:
+        if model.type == DefaultLabelingMethodType.Null:
             content = None
-        elif model.type == DefaultLabelingModelType.Random:
+        elif model.type == DefaultLabelingMethodType.Random:
             content = None
-        elif model.type == DefaultLabelingModelType.DecisionTree:
+        elif model.type == DefaultLabelingMethodType.DecisionTree:
             not_fitted = model.content is None
             estimator = DecisionTreeClassifier() if not_fitted\
                 else model.content.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(estimator=estimator, encoder=encoder)
-        elif model.type == DefaultLabelingModelType.SVM:
+            content = EstimatorWithLabelDecoder(
+                estimator=estimator, encoder=encoder)
+        elif model.type == DefaultLabelingMethodType.SVM:
             # sklearn.svm.SVC doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
@@ -296,8 +300,9 @@ class DataLabelingPipeline(GenericPipeline):
                 estimator = SVC(gamma=0.001) if not_fitted\
                     else model.content.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(estimator=estimator, encoder=encoder)
-        elif model.type == DefaultLabelingModelType.LogisticRegression:
+            content = EstimatorWithLabelDecoder(
+                estimator=estimator, encoder=encoder)
+        elif model.type == DefaultLabelingMethodType.LogisticRegression:
             # sklearn.linear_model.LogisticRegression doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
@@ -306,17 +311,20 @@ class DataLabelingPipeline(GenericPipeline):
                     or model.content.estimator.__class__.__name__ == 'DummyClassifier'
                 estimator = make_pipeline(
                     StandardScaler(),
-                    LogisticRegression(C=1, penalty='l2', tol=0.01, solver='saga'),
+                    LogisticRegression(C=1, penalty='l2',
+                                       tol=0.01, solver='saga'),
                 ) if not_fitted else model.content.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(estimator=estimator, encoder=encoder)
-        elif model.type == DefaultLabelingModelType.LabelSpreading:
+            content = EstimatorWithLabelDecoder(
+                estimator=estimator, encoder=encoder)
+        elif model.type == DefaultLabelingMethodType.LabelSpreading:
             not_fitted = model.content is None
             estimator = LabelSpreading(gamma=0.25, max_iter=20) if not_fitted\
                 else model.content.estimator
             estimator = estimator.fit(X, y)
-            content = EstimatorWithLabelDecoder(estimator=estimator, encoder=encoder)
-        elif model.type == DefaultLabelingModelType.RestrictedBoltzmannMachine:
+            content = EstimatorWithLabelDecoder(
+                estimator=estimator, encoder=encoder)
+        elif model.type == DefaultLabelingMethodType.RestrictedBoltzmannMachine:
             # sklearn.neural_network.BernoulliRBM doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
@@ -328,10 +336,12 @@ class DataLabelingPipeline(GenericPipeline):
                     LogisticRegression(solver='newton-cg', tol=1),
                 ) if not_fitted else model.content.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(estimator=estimator, encoder=encoder)
+            content = EstimatorWithLabelDecoder(
+                estimator=estimator, encoder=encoder)
 
         model_updated = Model(
             type=model.type,
+            sampling_strategy=model.sampling_strategy,
             content=content,
         )
         return model_updated

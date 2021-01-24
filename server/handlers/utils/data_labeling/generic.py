@@ -55,7 +55,8 @@ class GenericPipeline(metaclass=ABCMeta):
     @abstractmethod
     def sample_data_objects(data_objects: List,
                             statuses: List,
-                            n_batch: int) -> np.ndarray:
+                            n_batch: int,
+                            model: dict) -> np.ndarray:
         """
         Sample a batch of data objects from the pool of data objects.
 
@@ -70,6 +71,8 @@ class GenericPipeline(metaclass=ABCMeta):
             The label status of the data objects.
         n_batch : int
             The number of data objects to sample.
+        model : dict
+            The sampling model.
 
         Returns
         -------

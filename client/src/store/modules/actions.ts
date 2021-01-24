@@ -16,6 +16,21 @@ export const setDataObjects = (
   commit(types.SET_DATA_OBJECTS, dataObjects);
 };
 
+export const setClasses = (
+  { commit }: ActionContext<IState, IState>,
+  classes: Label[],
+): void => {
+  commit(types.SET_CLASSES, classes);
+};
+
+export const pushClasses = (
+  { commit, state }: ActionContext<IState, IState>,
+  className: Label,
+): void => {
+  const { classes } = state;
+  commit(types.SET_CLASSES, [...classes, className]);
+};
+
 export const setLabels = (
   { commit }: ActionContext<IState, IState>,
   labels: Label[],
@@ -106,6 +121,7 @@ export const resetState = (
 ): void => {
   const {
     dataObjects,
+    classes,
     labels,
     statuses,
     model,
@@ -116,6 +132,7 @@ export const resetState = (
     message,
   } = createInitialState();
   commit(types.SET_DATA_OBJECTS, dataObjects);
+  commit(types.SET_CLASSES, classes);
   commit(types.SET_LABELS, labels);
   commit(types.SET_STATUSES, statuses);
   commit(types.SET_MODEL, model);

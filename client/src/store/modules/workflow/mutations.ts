@@ -1,22 +1,22 @@
-import { DefaultLabelingModelType, Label } from '@/commons/types';
+import { DefaultLabelingMethodType, SamplingStrategyType } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
 export default {
-  [types.SET_CLASSES](state: IState, classes: Label[]): void {
-    state.classes = classes;
-  },
   [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
     state.showDatasetOverview = showDatasetOverview;
   },
-  [types.SET_QUERY_STRATEGY](state: IState, queryStrategy: string): void {
-    state.queryStrategy = queryStrategy;
-  },
-  [types.SET_DEFAULT_LABELING_MODEL_TYPE](
+  [types.SET_SAMPLING_STRATEGY](
     state: IState,
-    defaultLabelingModelType: DefaultLabelingModelType,
+    samplingStrategy: SamplingStrategyType,
   ): void {
-    state.defaultLabelingModelType = defaultLabelingModelType;
+    state.samplingStrategy = samplingStrategy;
+  },
+  [types.SET_DEFAULT_LABELING_METHOD](
+    state: IState,
+    defaultLabelingMethod: DefaultLabelingMethodType,
+  ): void {
+    state.defaultLabelingMethod = defaultLabelingMethod;
   },
   [types.SET_N_BATCH](state: IState, nBatch: number): void {
     state.nBatch = nBatch;

@@ -23,15 +23,23 @@ class DataLabelingAPI(GenericPipeline):
     @staticmethod
     def sample_data_objects(data_objects: List[dict],
                             statuses: List[str],
-                            n_batch: int) -> List[int]:
+                            n_batch: int,
+                            model: Dict[str, Any]) -> List[int]:
         assert len(data_objects) == len(statuses),\
             'len(data_objects) != len(statuses)'
-
         statuses = np.array(statuses, dtype=str)
+        content = load(ObjectId(model['content']))\
+            if model['content'] is not None else None
+        model = Model(
+            type=model['type'],
+            sampling_strategy=model['samplingStrategy'],
+            content=content,
+        )
         query_indices = DataLabelingPipeline.sample_data_objects(
             data_objects=data_objects,
             statuses=statuses,
-            n_batch=n_batch
+            n_batch=n_batch,
+            model=model,
         )
         query_indices = query_indices.tolist()
         return query_indices
@@ -43,7 +51,11 @@ class DataLabelingAPI(GenericPipeline):
                               unlabeled_mark: Label) -> List[Label]:
         content = load(ObjectId(model['content']))\
             if model['content'] is not None else None
-        model = Model(type=model['type'], content=content)
+        model = Model(
+            type=model['type'],
+            sampling_strategy=model['samplingStrategy'],
+            content=content,
+        )
         # Labels are required to be strings.
         classes = np.array(classes, dtype=str)
         default_labels = DataLabelingPipeline.assign_default_labels(
@@ -65,7 +77,11 @@ class DataLabelingAPI(GenericPipeline):
         statuses = np.array(statuses, dtype=str)
         content = load(ObjectId(model['content']))\
             if model['content'] is not None else None
-        model = Model(type=model['type'], content=content)
+        model = Model(
+            type=model['type'],
+            sampling_strategy=model['samplingStrategy'],
+            content=content,
+        )
         model_updated = DataLabelingPipeline.update_model(
             data_objects=data_objects,
             labels=labels,
@@ -75,6 +91,7 @@ class DataLabelingAPI(GenericPipeline):
         details = save(data=model_updated.content)
         model_updated = {
             'type': model_updated.type,
+            'samplingStrategy': model_updated.sampling_strategy,
             'content': str(details['inserted_id']),
         }
         return model_updated

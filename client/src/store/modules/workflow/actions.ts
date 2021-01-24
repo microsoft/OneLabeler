@@ -1,31 +1,16 @@
 import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
 import {
-  DefaultLabelingModelType,
+  DefaultLabelingMethodType,
   IImage,
   IModel,
-  Label,
+  SamplingStrategyType,
   Status,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
-import { IState } from './state';
+import { IState, createInitialState } from './state';
 import { IState as IRootState } from '../state';
-
-export const setClasses = (
-  { commit }: ActionContext<IState, IRootState>,
-  classes: Label[],
-): void => {
-  commit(types.SET_CLASSES, classes);
-};
-
-export const addClassOption = (
-  { commit, state }: ActionContext<IState, IRootState>,
-  className: Label,
-): void => {
-  const { classes } = state;
-  commit(types.SET_CLASSES, [...classes, className]);
-};
 
 export const setShowDatasetOverview = (
   { commit }: ActionContext<IState, IRootState>,
@@ -34,25 +19,36 @@ export const setShowDatasetOverview = (
   commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
 };
 
-export const setQueryStrategy = (
-  { commit }: ActionContext<IState, IRootState>,
-  queryStrategy: string,
+export const setSamplingStrategy = (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  samplingStrategy: SamplingStrategyType,
 ): void => {
-  commit(types.SET_QUERY_STRATEGY, queryStrategy);
+  commit(types.SET_SAMPLING_STRATEGY, samplingStrategy);
+
+  const { model } = rootState;
+  if (model.samplingStrategy !== samplingStrategy) {
+    const modelUpdated: IModel = {
+      type: model.type,
+      samplingStrategy,
+      content: model.content,
+    };
+    commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
+  }
 };
 
-export const setDefaultLabelingModelType = (
+export const setDefaultLabelingMethod = (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  defaultLabelingModelType: DefaultLabelingModelType,
+  defaultLabelingMethod: DefaultLabelingMethodType,
 ): void => {
-  commit(types.SET_DEFAULT_LABELING_MODEL_TYPE, defaultLabelingModelType);
+  commit(types.SET_DEFAULT_LABELING_METHOD, defaultLabelingMethod);
 
   // After changing the default labeling model type,
   // reset the current model.
   const { model } = rootState;
-  if (model.type !== defaultLabelingModelType) {
+  if (model.type !== defaultLabelingMethod) {
     const modelUpdated: IModel = {
-      type: defaultLabelingModelType,
+      type: defaultLabelingMethod,
+      samplingStrategy: model.samplingStrategy,
       content: null,
     };
     commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
@@ -120,6 +116,7 @@ export const sampleDataObjectsAlgorithmic = async (
     statuses,
     queryIndices,
     unlabeledMark,
+    model,
   } = rootState;
 
   // Set the labels of samples in the last batch confirmed
@@ -134,6 +131,7 @@ export const sampleDataObjectsAlgorithmic = async (
     dataObjects,
     statuses,
     nBatch,
+    model,
   ));
   commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
 
@@ -173,9 +171,9 @@ export const sampleDataObjectsManual = async (
 };
 
 export const assignDefaultLabels = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
-  const { classes } = state;
+  const { classes } = rootState;
   const {
     dataObjects,
     queryIndices,
@@ -217,4 +215,23 @@ export const updateModel = async (
     model,
   ));
   commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
+};
+
+export const resetState = (
+  { commit }: ActionContext<IState, IRootState>,
+): void => {
+  const {
+    samplingStrategy,
+    nBatch,
+    defaultLabelingMethod,
+    showDatasetOverview,
+    itemsPerRow,
+    itemsPerCol,
+  } = createInitialState();
+  commit(types.SET_SAMPLING_STRATEGY, samplingStrategy);
+  commit(types.SET_N_BATCH, nBatch);
+  commit(types.SET_DEFAULT_LABELING_METHOD, defaultLabelingMethod);
+  commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
+  commit(types.SET_ITEMS_PER_ROW, itemsPerRow);
+  commit(types.SET_ITEMS_PER_COL, itemsPerCol);
 };

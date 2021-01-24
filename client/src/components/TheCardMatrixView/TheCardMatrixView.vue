@@ -46,8 +46,8 @@ export default Vue.extend({
     TheCardMatrixViewHeader,
   },
   computed: {
-    ...mapState(['dataObjects', 'labels', 'queryIndices']),
-    ...mapState('workflow', ['classes', 'itemsPerRow', 'itemsPerCol']),
+    ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices']),
+    ...mapState('workflow', ['itemsPerRow', 'itemsPerCol']),
     ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels']),
   },
   created(): void {
@@ -60,13 +60,13 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
+      'pushClasses',
       'setDataObjectLabel',
       'setDataObjectLabels',
       'setMessage',
       'pushCommandHistory',
     ]),
     ...mapActions('workflow', [
-      'addClassOption',
       'updateModel',
       'sampleDataObjectsAlgorithmic',
       'assignDefaultLabels',
@@ -88,7 +88,7 @@ export default Vue.extend({
       return labels[idx];
     },
     onClickAddClassOption(className: string): void {
-      this.addClassOption(className);
+      this.pushClasses(className);
     },
     async onClickConfirmBatchLabels(): Promise<void> {
       await this.sampleDataObjectsAlgorithmic();

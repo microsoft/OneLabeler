@@ -14,8 +14,8 @@ class Status():
     SKIPPED = 'SKIPPED'  # the data object is viewed but skipped
     LABELED = 'LABELED'  # the data object is labeled
 
-class DefaultLabelingModelType():
-    """The type of a default labeling model."""
+class DefaultLabelingMethodType():
+    """The type of a default labeling method."""
     # pylint: disable=too-few-public-methods
     
     Null = 'Null'
@@ -26,8 +26,22 @@ class DefaultLabelingModelType():
     LabelSpreading = 'LabelSpreading'
     RestrictedBoltzmannMachine = 'RestrictedBoltzmannMachine'
 
+class SamplingStrategyType():
+    """The type of a sampling strategy."""
+    # pylint: disable=too-few-public-methods
+
+    Random = 'Random'
+    ClusterCentroids = 'ClusterCentroids'
+    DenseAreas = 'DenseAreas'
+    Entropy = 'Entropy'
+    EntropyDiversity = 'EntropyDiversity'
+    EntropyDiversityDensity = 'EntropyDiversityDensity'
+    LeastConfident = 'LeastConfident'
+    SmallestMargin = 'SmallestMargin'
+
 class Model(NamedTuple):
     """The default labeling and active sampling model."""
 
-    type: DefaultLabelingModelType
+    type: DefaultLabelingMethodType
+    sampling_strategy: SamplingStrategyType
     content: Union[BaseEstimator, None]

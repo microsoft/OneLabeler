@@ -26,8 +26,9 @@ class DataLabelingHandler(tornado.web.RequestHandler):
             data_objects = json_data['dataObjects']
             statuses = json_data['statuses']
             n_batch = json_data['nBatch']
+            model = json_data['model']
             query_indices = DataLabelingAPI.sample_data_objects(
-                data_objects, statuses, n_batch)
+                data_objects, statuses, n_batch, model)
             self.write({'queryIndices': query_indices})
         elif key == 'assignDefaultLabels':
             data_objects = json_data['dataObjects']
