@@ -20,6 +20,7 @@ const icons = {
   export: 'fas fa-file-export',
   undo: 'fas fa-undo',
   data: 'fas fa-database',
+  flowChart: 'fas fa-random',
 };
 
 const preset: Partial<VuetifyPreset> = {

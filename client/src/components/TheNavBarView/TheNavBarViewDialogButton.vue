@@ -1,6 +1,6 @@
 <template>
   <VDialogButton
-    max-width="500px"
+    max-width="850px"
     :button-icon="$vuetify.icons.values.config"
     button-text="Settings"
     dialog-header-title="Settings"
@@ -60,14 +60,7 @@
 
     <!-- The configuration menus. -->
     <template #dialog-body>
-      <v-container class="pa-0">
-        <VMenusFlat
-          :title="'Workflow Parameters'"
-          :menus-config="menusConfig"
-          :selected-options="settings"
-          @click-menu-option="onClickMenuOption"
-        />
-      </v-container>
+      <TheNavBarViewDialogConfigurationView />
     </template>
   </VDialogButton>
 </template>
@@ -85,7 +78,8 @@ import {
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
 import VUploadButton from './VUploadButton.vue';
-import VMenusFlat from './VMenusFlat.vue';
+// import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogMenu.vue';
+import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogGraph.vue';
 
 type WorkflowConfigData = {
   samplingStrategy: SamplingStrategyType,
@@ -138,80 +132,14 @@ export default Vue.extend({
   name: 'TheNavBarViewDialogButton',
   components: {
     VDialogButton,
-    VMenusFlat,
     VUploadButton,
+    TheNavBarViewDialogConfigurationView,
   },
   props: {
     height: {
       default: 40,
       type: Number,
     },
-  },
-  data() {
-    return {
-      menusConfig: {
-        samplingStrategy: {
-          title: 'Sampling Strategy',
-          options: [
-            SamplingStrategyType.Random,
-            SamplingStrategyType.ClusterCentroids,
-            SamplingStrategyType.DenseAreas,
-            SamplingStrategyType.Entropy,
-            SamplingStrategyType.LeastConfident,
-            SamplingStrategyType.SmallestMargin,
-          ],
-          optionsText: [
-            'Random',
-            'Cluster Centroids',
-            'Dense Areas',
-            'Entropy',
-            'Least Confident',
-            'Smallest Margin',
-          ],
-        },
-        nBatch: {
-          title: 'Data Objects Per Sampled Batch',
-          options: [1, 4, 16, 32, 48, 64, 96],
-          optionsText: ['1', '4', '16', '32', '48', '64', '96'],
-        },
-        defaultLabelingMethod: {
-          title: 'Default Labeling Model',
-          options: [
-            DefaultLabelingMethodType.Null,
-            DefaultLabelingMethodType.Random,
-            DefaultLabelingMethodType.DecisionTree,
-            DefaultLabelingMethodType.SVM,
-            DefaultLabelingMethodType.LogisticRegression,
-            DefaultLabelingMethodType.LabelSpreading,
-            DefaultLabelingMethodType.RestrictedBoltzmannMachine,
-          ],
-          optionsText: [
-            'Null',
-            'Random',
-            'Decision Tree',
-            'SVM',
-            'Logistic Regression',
-            'Label Spreading',
-            'Restricted Boltzmann Machine',
-          ],
-        },
-        showDatasetOverview: {
-          title: 'Show Dataset Overview',
-          options: [false, true],
-          optionsText: ['No', 'Yes'],
-        },
-        itemsPerRow: {
-          title: 'Data Objects Per Row',
-          options: [1, 4, 8, 12],
-          optionsText: ['1', '4', '8', '12'],
-        },
-        itemsPerCol: {
-          title: 'Data Objects Per Column',
-          options: [1, 2, 4, 6, 8],
-          optionsText: ['1', '2', '4', '6', '8'],
-        },
-      },
-    };
   },
   computed: {
     ...mapState('workflow', [
@@ -222,24 +150,6 @@ export default Vue.extend({
       'itemsPerRow',
       'itemsPerCol',
     ]),
-    settings() {
-      const {
-        samplingStrategy,
-        showDatasetOverview,
-        defaultLabelingMethod,
-        nBatch,
-        itemsPerRow,
-        itemsPerCol,
-      } = this;
-      return {
-        samplingStrategy,
-        showDatasetOverview,
-        defaultLabelingMethod,
-        nBatch,
-        itemsPerRow,
-        itemsPerCol,
-      };
-    },
   },
   methods: {
     ...mapActions(['setMessage']),
@@ -250,6 +160,7 @@ export default Vue.extend({
       'setShowDatasetOverview',
       'setItemsPerRow',
       'setItemsPerCol',
+      'resetState',
     ]),
     onClickExport(): void {
       const {
@@ -271,32 +182,7 @@ export default Vue.extend({
     },
     onClickReset(): void {
       // reset workflow configurations
-      this.setClasses([]);
-      this.setShowDatasetOverview(false);
-      this.setDefaultLabelingMethod(DefaultLabelingMethodType.Null);
-      this.setNBatch(32);
-      this.setItemsPerRow(8);
-      this.setItemsPerCol(4);
-    },
-    onClickMenuOption(menuKey: string, option: unknown): void {
-      if (menuKey === 'samplingStrategy') {
-        this.setSamplingStrategy(option as SamplingStrategyType);
-      }
-      if (menuKey === 'nBatch') {
-        this.setNBatch(option as number);
-      }
-      if (menuKey === 'defaultLabelingMethod') {
-        this.setDefaultLabelingMethod(option as DefaultLabelingMethodType);
-      }
-      if (menuKey === 'showDatasetOverview') {
-        this.setShowDatasetOverview(option as boolean);
-      }
-      if (menuKey === 'itemsPerRow') {
-        this.setItemsPerRow(option as number);
-      }
-      if (menuKey === 'itemsPerCol') {
-        this.setItemsPerCol(option as number);
-      }
+      this.resetState();
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
