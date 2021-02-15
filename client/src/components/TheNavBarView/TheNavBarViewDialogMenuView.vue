@@ -89,7 +89,7 @@ const menusConfig: {
 };
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogMenu',
+  name: 'TheNavBarViewDialogMenuView',
   components: {
     VMenusFlat,
   },

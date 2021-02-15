@@ -78,8 +78,8 @@ import {
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
 import VUploadButton from './VUploadButton.vue';
-// import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogMenu.vue';
-import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogGraph.vue';
+// import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogMenuView.vue';
+import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogGraphView.vue';
 
 type WorkflowConfigData = {
   samplingStrategy: SamplingStrategyType,

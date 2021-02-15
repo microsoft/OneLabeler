@@ -227,7 +227,7 @@ const menusConfig: {
 };
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogGraph',
+  name: 'TheNavBarViewDialogGraphView',
   components: {
     VMenusFlat,
   },
