@@ -25,7 +25,7 @@ class ProjectionHandler(tornado.web.RequestHandler):
             model = decomposition.TruncatedSVD(n_components=n_components)
         if key == 'MDS':
             model = manifold.MDS(n_components=n_components,
-                                 n_init=1, max_iter=100)
+                                 n_init=1, max_iter=100, random_state=0)
         if key == 'TSNE':
             model = manifold.TSNE(n_components=n_components,
                                   init='pca', random_state=0)
