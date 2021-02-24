@@ -31,3 +31,7 @@ python .\server.py
 
 1. goto \docs directory
 2. run '.\make html'
+
+## Files
+
+- ".pylintrc": parameter settings for pylint

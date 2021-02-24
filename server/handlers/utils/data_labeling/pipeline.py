@@ -1,16 +1,16 @@
+"""
+The instantiation of data labeling pipeline components.
+"""
+
 from copy import deepcopy
 from typing import Any, List, Tuple, Union
 
 import cv2 as cv
 import numpy as np
 from sklearn.base import BaseEstimator
-from sklearn.decomposition import PCA
 from sklearn.dummy import DummyClassifier
 from sklearn.exceptions import NotFittedError
-from skimage.feature import greycomatrix, greycoprops
-from skimage.filters import sobel
 from sklearn.linear_model import LogisticRegression
-from skimage.measure import shannon_entropy
 from sklearn.neural_network import BernoulliRBM
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -18,6 +18,12 @@ from sklearn.semi_supervised import LabelSpreading
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
+from .feature_extraction import (raw_flatten,
+                                 dimension_reduction,
+                                 color_descriptors,
+                                 edge_descriptors,
+                                 edge_direction_descriptors,
+                                 texture_descriptors)
 from .generic import GenericPipeline
 from .sampling import (random_sampling,
                        cluster_sampling,
@@ -25,120 +31,13 @@ from .sampling import (random_sampling,
                        entropy_sampling,
                        confidence_sampling,
                        margin_sampling)
-from .types import DefaultLabelingMethodType, Label, Model, SamplingStrategyType, Status
+from .types import (DefaultLabelingMethodType,
+                    Label,
+                    Model,
+                    SamplingStrategyType,
+                    Status)
 
 ListLike = Union[List[Any], np.ndarray]
-
-
-def feature_extraction_handcraft(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
-    """
-    Extract handcrafted features for each image.
-
-    Args
-    ----
-    imgs : np.ndarray
-        The images to extract features.
-
-    Returns
-    -------
-    X : np.ndarray
-        The extracted feature values.
-    feature_names : List[str]
-        The names of features.
-    """
-
-    feature_names = [
-        'entropy',
-        'grey_hist',
-        'edge_hist',
-        'contrast',
-        'dissimilarity',
-        'energy',
-    ]
-
-    entropies = []
-    grey_hists = []
-    edge_hists = []
-    contrasts = []
-    dissimilarities = []
-    energies = []
-    for img in imgs:
-        img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-
-        # Feature 1: entropy
-        entropy = shannon_entropy(img_gray)
-        entropies.append(entropy)
-
-        # Feature 2: grey scale histogram projection first component
-        hist, _ = np.histogram(img_gray, bins=10, range=(0, 255))
-        grey_hists.append(hist)
-
-        # Feature 3: edge histogram projection first component
-        img_sobel = sobel(img_gray)
-        hist, _ = np.histogram(img_sobel, bins=10, range=(0, 1))
-        edge_hists.append(hist)
-
-        # Feature 4: grey level co-occurrence matrix contrast
-        glcm = greycomatrix(img_gray, distances=[5], angles=[0],
-                            levels=256, symmetric=True, normed=True)
-        contrast = greycoprops(glcm, 'contrast')[0][0]
-        contrasts.append(contrast)
-
-        # Feature 5: grey level co-occurrence matrix dissimilarity
-        dissimilarity = greycoprops(glcm, 'dissimilarity')[0][0]
-        dissimilarities.append(dissimilarity)
-
-        # Feature 6: grey level co-occurrence matrix energy
-        energy = greycoprops(glcm, 'energy')[0][0]
-        energies.append(energy)
-
-    grey_hist_projections = PCA(n_components=1).fit_transform(grey_hists)[:, 0]
-    edge_hist_projections = PCA(n_components=1).fit_transform(edge_hists)[:, 0]
-
-    n_samples = len(imgs)
-    n_features = len(feature_names)
-    X = np.zeros(shape=(n_samples, n_features))
-    X[:, 0] = entropies
-    X[:, 1] = grey_hist_projections
-    X[:, 2] = edge_hist_projections
-    X[:, 3] = contrasts
-    X[:, 4] = dissimilarities
-    X[:, 5] = energies
-
-    return X, feature_names
-
-
-def feature_extraction_flatten(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
-    """
-    Extract features for each image by simply flattening the image.
-
-    Args
-    ----
-    imgs : np.ndarray
-        The images to extract features.
-
-    Returns
-    -------
-    X : np.ndarray
-        The extracted feature values.
-    feature_names : List[str]
-        The names of features.
-    """
-
-    h, w = 8, 8
-    imgs_resized = []
-    for img in imgs:
-        img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        img_resized = cv.resize(img_gray, (h, w), interpolation=cv.INTER_AREA)
-        imgs_resized.append(img_resized)
-    imgs_resized = np.array(imgs_resized)
-    n_samples = len(imgs)
-    X = imgs_resized.reshape((n_samples, h * w))
-    feature_names = []
-    for i in range(h):
-        for j in range(w):
-            feature_names.append(f'({i}, {j})')
-    return X, feature_names
 
 
 class EstimatorWithLabelDecoder(BaseEstimator):
@@ -147,18 +46,28 @@ class EstimatorWithLabelDecoder(BaseEstimator):
         self.encoder = encoder
 
     def predict(self, X: np.ndarray) -> np.ndarray:
+        # pylint: disable=invalid-name
+
         y_pred = self.estimator.predict(X)
         y_pred_decoded = self.encoder.inverse_transform(y_pred)
         return y_pred_decoded
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        # pylint: disable=invalid-name
+
         proba = self.estimator.predict_proba(X)
         return proba
 
 
 class DataLabelingPipeline(GenericPipeline):
+    """
+    The data labeling pipeline class.
+    """
+
     @staticmethod
     def extract_features(data_objects: ListLike) -> Tuple[ListLike, List[str]]:
+        # pylint: disable=invalid-name
+
         data_objects = deepcopy(data_objects)
         imgs = []
         for data_object in data_objects:
@@ -167,11 +76,26 @@ class DataLabelingPipeline(GenericPipeline):
             imgs.append(img)
             data_object['width'] = img.shape[1]
             data_object['height'] = img.shape[0]
-        imgs = np.array(imgs)
-        #X, feature_names = feature_extraction_handcraft(imgs)
-        X, feature_names = feature_extraction_flatten(imgs)
+
+        extractors = [
+            raw_flatten,
+            dimension_reduction,
+            color_descriptors,
+            edge_descriptors,
+            edge_direction_descriptors,
+            texture_descriptors,
+        ]
+
+        X = None
+        feature_names = []
+        for extractor in extractors:
+            X_tmp, feature_names_tmp = extractor(imgs)
+            X = np.hstack((X, X_tmp)) if X is not None else X_tmp
+            feature_names = feature_names + feature_names_tmp\
+                if feature_names is not None else feature_names_tmp
         for i, data_object in enumerate(data_objects):
             data_objects[i]['features'] = X[i]
+
         return data_objects, feature_names
 
     @staticmethod
@@ -207,6 +131,8 @@ class DataLabelingPipeline(GenericPipeline):
                               model: Model,
                               classes: np.ndarray,
                               unlabeled_mark: Label) -> np.ndarray:
+        # pylint: disable=invalid-name
+
         if len(data_objects) == 0:
             return np.array([])
 
@@ -224,7 +150,7 @@ class DataLabelingPipeline(GenericPipeline):
         else:
             try:
                 default_labels = model.content.predict(X)
-            except NotFittedError as e:
+            except NotFittedError:
                 default_labels = np.random.choice(
                     classes, size=n_samples, replace=True)
 
@@ -240,6 +166,7 @@ class DataLabelingPipeline(GenericPipeline):
         ----
         labels : np.ndarray of string values
         """
+        # pylint: disable=invalid-name
 
         assert len(data_objects) == len(labels),\
             'number of data objects and labels mismatch'
