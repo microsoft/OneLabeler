@@ -21,6 +21,9 @@ const icons = {
   undo: 'fas fa-undo',
   data: 'fas fa-database',
   flowChart: 'fas fa-random',
+  table: 'fas fa-border-all',
+  filter: 'fas fa-filter',
+  matrix: 'fas fa-th',
 };
 
 const preset: Partial<VuetifyPreset> = {

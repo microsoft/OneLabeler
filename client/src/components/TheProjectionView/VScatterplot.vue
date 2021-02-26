@@ -8,25 +8,20 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
-import Lasso, { ILasso, LassoEventType } from '@/plugins/d3.lasso';
-import Scatterplot, { IScatterplot } from '@/plugins/d3.scatterplot';
-import * as projectionAPI from '@/services/projection-api';
+import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
+import Scatterplot from '@/plugins/d3.scatterplot';
 import { Label, Status } from '@/commons/types';
 
 type Datum = { x: number, y: number, uuid: string };
-
-export enum ProjectionMethod {
-  PCA = 'PCA',
-  MDS = 'MDS',
-  TSNE = 't-SNE',
-}
+type Axis = { label: string, tickNum: number | null };
 
 export default Vue.extend({
-  name: 'VProjection',
+  name: 'VScatterplot',
   props: {
-    featureValues: {
-      type: Array as PropType<number[][]>,
-      required: true,
+    points: {
+      type: Array as PropType<[number, number][] | null>,
+      required: false,
+      default: null,
     },
     uuids: {
       type: Array as PropType<string[]>,
@@ -52,44 +47,40 @@ export default Vue.extend({
       type: Array as PropType<number[]>,
       required: true,
     },
-    projectionMethod: {
-      type: String as PropType<ProjectionMethod>,
-      required: true,
+    xAxis: {
+      type: Object as PropType<Axis | null>,
+      required: false,
+      default: null,
+    },
+    yAxis: {
+      type: Object as PropType<Axis | null>,
+      required: false,
+      default: null,
+    },
+    xExtent: {
+      type: Array as unknown as PropType<[number, number] | null>,
+      required: false,
+      default: null,
+    },
+    yExtent: {
+      type: Array as unknown as PropType<[number, number] | null>,
+      required: false,
+      default: null,
     },
   },
   data(): {
-    chart: IScatterplot | null,
-    lassoInstance: ILasso | null,
-    projection: number[][] | null,
+    chart: Scatterplot | null,
+    lassoInstance: Lasso | null,
     dotRadius: number,
     } {
     return {
       chart: null,
       lassoInstance: null,
-      projection: null,
       dotRadius: 3,
     };
   },
-  computed: {
-    isFeatureValuesValid(): boolean {
-      const { featureValues } = this;
-      if (
-        featureValues.length === 0
-        || featureValues[0] === undefined
-        || featureValues[0].length === 0
-      ) {
-        return false;
-      }
-      return true;
-    },
-  },
   watch: {
-    async projectionMethod() {
-      this.projection = await this.computeProjection();
-      await this.rerender();
-    },
-    async featureValues() {
-      this.projection = await this.computeProjection();
+    async points() {
       await this.rerender();
     },
     async labels() {
@@ -107,24 +98,9 @@ export default Vue.extend({
     },
   },
   async mounted() {
-    this.projection = await this.computeProjection();
     await this.rerender();
   },
   methods: {
-    async computeProjection(): Promise<number[][] | null> {
-      if (!this.isFeatureValuesValid) return null;
-      const { featureValues, projectionMethod } = this;
-      if (projectionMethod === ProjectionMethod.PCA) {
-        return projectionAPI.PCA(featureValues, 2);
-      }
-      if (projectionMethod === ProjectionMethod.MDS) {
-        return projectionAPI.MDS(featureValues, 2);
-      }
-      if (projectionMethod === ProjectionMethod.TSNE) {
-        return projectionAPI.TSNE(featureValues, 2);
-      }
-      return null;
-    },
     emptyDisplay(): void {
       (this.$refs.svg as HTMLElement).innerHTML = '';
       this.lassoInstance = null;
@@ -150,27 +126,35 @@ export default Vue.extend({
       return selectedUuids;
     },
     async rerender(): Promise<void> {
-      if (this.projection === null) {
+      if (this.points === null) {
         this.emptyDisplay();
         return;
       }
       const {
-        projection,
+        points,
         uuids,
         labels,
         classes,
         unlabeledMark,
         queryIndices,
+        xAxis,
+        yAxis,
+        xExtent,
+        yExtent,
       } = this;
       const { svg } = this.$refs as { svg: SVGSVGElement};
       if (svg === undefined) return;
       await this.renderScatterplot(
-        projection,
+        points,
         uuids,
         labels,
         classes,
         unlabeledMark,
         svg,
+        xAxis,
+        yAxis,
+        xExtent,
+        yExtent,
       );
 
       this.lassoInstance = new Lasso()
@@ -191,24 +175,28 @@ export default Vue.extend({
         .selectAll<SVGCircleElement, Datum>('circle')
         .each(function _(d: Datum) {
           const { uuid } = d;
-          const highlight = queryUuids.has(uuid);
-          this.setAttribute('r', String(highlight ? dotRadius * 2 : dotRadius));
+          const highlight = (queryUuids.size === 0) || queryUuids.has(uuid);
+          this.setAttribute('r', String(highlight ? dotRadius : dotRadius / 3));
         });
     },
     async renderScatterplot(
-      projection: number[][],
+      points: [number, number][],
       uuids: string[],
       labels: Label[],
       classes: Label[],
       unlabeledMark: Label,
       svg: SVGSVGElement,
+      xAxis: Axis | null,
+      yAxis: Axis | null,
+      xExtent: [number, number] | null,
+      yExtent: [number, number] | null,
     ): Promise<void> {
       const labelstr2fill = d3.scaleOrdinal(['#bbbbbb', ...d3.schemeCategory10])
         .domain([unlabeledMark, ...classes].map((d) => String(d)));
       const data: Datum[] = uuids.map((d, i) => ({
         uuid: d,
-        x: projection[i][0],
-        y: projection[i][1],
+        x: points[i][0],
+        y: points[i][1],
       }));
 
       // Note: clientWidth, clientHeight is the rounded value of the real size
@@ -216,11 +204,16 @@ export default Vue.extend({
       const width = svg.clientWidth - 1;
       const height = svg.clientHeight - 1;
       const chart = new Scatterplot()
+        .margin({
+          top: 20, right: 10, left: 30, bottom: 30,
+        })
         .width(width)
         .height(height)
         .duration(0)
-        .xAxis(null)
-        .yAxis(null)
+        .xExtent(xExtent)
+        .yExtent(yExtent)
+        .xAxis(xAxis)
+        .yAxis(yAxis)
         .xAccessor((d: unknown) => ((d as Datum).x))
         .yAccessor((d: unknown) => ((d as Datum).y))
         .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])))

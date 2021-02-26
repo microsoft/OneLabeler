@@ -71,6 +71,13 @@ export enum DefaultLabelingMethodType {
   RestrictedBoltzmannMachine = 'RestrictedBoltzmannMachine',
 }
 
+/** The enum of projection method types. */
+export enum ProjectionMethodType {
+  PCA = 'PCA',
+  MDS = 'MDS',
+  TSNE = 't-SNE',
+}
+
 /** The interface of default labeling and active sampling model. */
 export interface IModel {
   /** The default labeling model type. */

@@ -3,14 +3,14 @@ import * as d3 from 'd3';
 type NumberAccessor = (() => number)
   | ((d: unknown) => number)
   | ((d: unknown, i: number) => number);
-type ColorStringAccessor = (() => number)
-  | ((d: unknown) => string)
-  | ((d: unknown, i: number) => string);
 type Margin = { top: number, right: number, bottom: number, left: number };
 type Axis = { label: string, tickNum: number | null };
-type Data = Record<string | number, unknown>[];
+type Datum = Record<string | number, unknown>;
+type Data = Datum[];
+type DatumBinned = { points: Datum[], row: number, column: number };
+type DataBinned = DatumBinned[];
 
-export interface IScatterplot {
+export interface IHeatmap {
   /** Get display area width. */
   width(): number;
   /** Set display area width. */
@@ -30,6 +30,16 @@ export interface IScatterplot {
   duration(): number;
   /** Set animation transition duration. */
   duration(value: number): this;
+
+  /** Get number of rows in the heatmap. */
+  nRows(): number;
+  /** Set number of rows in the heatmap. */
+  nRows(value: number): this;
+
+  /** Get number of columns in the heatmap. */
+  nColumns(): number;
+  /** Set number of columns in the heatmap. */
+  nColumns(value: number): this;
 
   /** Get the range of numbers mapped to x positions. */
   xExtent(): [number, number] | null;
@@ -61,26 +71,56 @@ export interface IScatterplot {
   /** Set accessor to numbers mapped to y positions. */
   yAccessor(value: NumberAccessor): this;
 
-  /** Get accessor to radiuses of the scatter dots. */
-  rAccessor(): NumberAccessor;
-  /** Set accessor to radiuses of the scatter dots. */
-  rAccessor(value: NumberAccessor): this;
-
-  /** Get accessor to filling colors of the scatter dots. */
-  fillAccessor(): ColorStringAccessor;
-  /** Set accessor to filling colors of the scatter dots. */
-  fillAccessor(value: ColorStringAccessor): this;
-
-  /** Get accessor to stroke colors of the scatter dots. */
-  strokeAccessor(): ColorStringAccessor;
-  /** Set accessor to stroke colors of the scatter dots. */
-  strokeAccessor(value: ColorStringAccessor): this;
-
   /** Render/Update a scatterplot with the data on the root element. */
   render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): void | Promise<void>;
 }
 
-export default class Scatterplot implements IScatterplot {
+const binning = (
+  data: Data,
+  xAccessor: NumberAccessor,
+  yAccessor: NumberAccessor,
+  nRows: number,
+  nColumns: number,
+  xExtent: [number, number],
+  yExtent: [number, number],
+): DataBinned => {
+  const [xMin, xMax] = xExtent;
+  const [yMin, yMax] = yExtent;
+
+  // initialize 3d array of size (nRows, nColumns, 0)
+  const dataBinnedMatrix: Datum[][][] = new Array(nRows).fill(null).map(() => (
+    new Array(nColumns).fill(null).map(
+      () => new Array(0),
+    )
+  ));
+
+  data.forEach((datum: Datum, i: number) => {
+    const x = xAccessor(datum, i);
+    const y = yAccessor(datum, i);
+    let row = Math.floor((nRows * (y - yMin)) / (yMax - yMin));
+    if (row === nRows) {
+      row = nRows - 1;
+    }
+    let column = Math.floor((nColumns * (x - xMin)) / (xMax - xMin));
+    if (column === nColumns) {
+      column = nColumns - 1;
+    }
+    dataBinnedMatrix[row][column].push(datum);
+  });
+  const dataBinned: { points: Datum[], row: number, column: number }[] = [];
+  dataBinnedMatrix.forEach((dataRow: Datum[][], i: number) => {
+    dataRow.forEach((dataCell: Datum[], j: number) => {
+      dataBinned.push({
+        row: i,
+        column: j,
+        points: dataCell,
+      });
+    });
+  });
+  return dataBinned;
+};
+
+export default class Heatmap implements IHeatmap {
   #width = 400;
 
   #height = 400;
@@ -90,6 +130,10 @@ export default class Scatterplot implements IScatterplot {
   };
 
   #duration = 500;
+
+  #nRows = 10;
+
+  #nColumns = 10;
 
   #xAxis: Required<Axis> | null = { label: 'x', tickNum: null };
 
@@ -102,12 +146,6 @@ export default class Scatterplot implements IScatterplot {
   #xAccessor: NumberAccessor = (d: unknown) => (d as { x: number }).x;
 
   #yAccessor: NumberAccessor = (d: unknown) => (d as { y: number }).y;
-
-  #rAccessor: NumberAccessor = () => 3;
-
-  #fillAccessor: ColorStringAccessor = () => '#ff7f0e';
-
-  #strokeAccessor: ColorStringAccessor = () => '#bbbbbb';
 
   width(): number;
 
@@ -157,6 +195,26 @@ export default class Scatterplot implements IScatterplot {
   duration(value?: number): number | this {
     if (value === undefined) return this.#duration;
     this.#duration = value;
+    return this;
+  }
+
+  nRows(): number;
+
+  nRows(value: number): this;
+
+  nRows(value?: number): number | this {
+    if (value === undefined) return this.#nRows;
+    this.#nRows = value;
+    return this;
+  }
+
+  nColumns(): number;
+
+  nColumns(value: number): this;
+
+  nColumns(value?: number): number | this {
+    if (value === undefined) return this.#nColumns;
+    this.#nColumns = value;
     return this;
   }
 
@@ -244,36 +302,6 @@ export default class Scatterplot implements IScatterplot {
     return this;
   }
 
-  rAccessor(): NumberAccessor;
-
-  rAccessor(value: NumberAccessor): this;
-
-  rAccessor(value?: NumberAccessor): NumberAccessor | this {
-    if (value === undefined) return this.#rAccessor;
-    this.#rAccessor = value;
-    return this;
-  }
-
-  fillAccessor(): ColorStringAccessor;
-
-  fillAccessor(value: ColorStringAccessor): this;
-
-  fillAccessor(value?: ColorStringAccessor): ColorStringAccessor | this {
-    if (value === undefined) return this.#fillAccessor;
-    this.#fillAccessor = value;
-    return this;
-  }
-
-  strokeAccessor(): ColorStringAccessor;
-
-  strokeAccessor(value: ColorStringAccessor): this;
-
-  strokeAccessor(value?: ColorStringAccessor): ColorStringAccessor | this {
-    if (value === undefined) return this.#strokeAccessor;
-    this.#strokeAccessor = value;
-    return this;
-  }
-
   render<T extends SVGSVGElement | SVGGElement>(root: T, data: Data): Promise<void> {
     const width = this.#width;
     const height = this.#height;
@@ -281,23 +309,23 @@ export default class Scatterplot implements IScatterplot {
     const duration = this.#duration;
     let xExtent = this.#xExtent;
     let yExtent = this.#yExtent;
+    const nRows = this.#nRows;
+    const nColumns = this.#nColumns;
     const xAxisSettings = this.#xAxis;
     const yAxisSettings = this.#yAxis;
     const xAccessor = this.#xAccessor;
     const yAccessor = this.#yAccessor;
-    const rAccessor = this.#rAccessor;
-    const fillAccessor = this.#fillAccessor;
-    const strokeAccessor = this.#strokeAccessor;
 
     const classContainer = 'container';
     const classX = 'x';
     const classY = 'y';
     const classAxis = 'axis';
     const classLabel = 'label';
-    const classDot = 'dot';
+    const classGrid = 'grid';
 
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
+
     if (xExtent === null) {
       xExtent = d3.extent(data, xAccessor) as [number, number];
     }
@@ -311,6 +339,16 @@ export default class Scatterplot implements IScatterplot {
     const y = d3.scaleLinear()
       .range([innerHeight, 0])
       .domain(yExtent);
+
+    const dataBinned = binning(
+      data,
+      xAccessor,
+      yAccessor,
+      nRows,
+      nColumns,
+      xExtent,
+      yExtent,
+    );
 
     // Draw a container:
     // Create a g for the container if doesn't exist.
@@ -327,6 +365,23 @@ export default class Scatterplot implements IScatterplot {
     g.transition()
       .duration(duration)
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Draw heatmap rects
+    const grids = g.selectAll<SVGRectElement, DatumBinned>(`.${classGrid}`)
+      .data(dataBinned);
+    grids.enter()
+      .append('rect')
+      .attr('class', classGrid);
+    grids.exit().remove();
+
+    let maxDots = 0;
+    dataBinned.forEach((d) => {
+      maxDots = Math.max(d.points.length, maxDots);
+    });
+    const color = d3.scaleLinear()
+      .domain([0, maxDots])
+      .range(['#ffffff', '#67000d'])
+      .interpolate(d3.interpolateLab);
 
     if (xAxisSettings !== null) {
       const { label, tickNum } = xAxisSettings;
@@ -418,23 +473,16 @@ export default class Scatterplot implements IScatterplot {
         .remove();
     }
 
-    // Draw scatter dots:
-    const dots = g.selectAll<SVGCircleElement, Data>(`.${classDot}`)
-      .data(data);
-    dots.enter()
-      .append('circle')
-      .attr('class', classDot);
-    dots.exit().remove();
-
-    const transition = g.selectAll<SVGCircleElement, Data>(`.${classDot}`)
+    const transition = g.selectAll<SVGRectElement, DatumBinned>(`.${classGrid}`)
       .transition()
       .duration(duration)
-      .attr('r', rAccessor)
-      .attr('cx', (d, i) => x(xAccessor(d, i)))
-      .attr('cy', (d, i) => y(yAccessor(d, i)))
-      .attr('fill', fillAccessor)
-      .style('stroke', strokeAccessor)
-      .style('stroke-width', '1px');
+      .attr('width', innerWidth / nColumns)
+      .attr('height', innerHeight / nRows)
+      .attr('x', (d) => (innerWidth * d.column) / nColumns)
+      .attr('y', (d) => (innerHeight * (nRows - 1 - d.row)) / nRows)
+      .attr('fill', (d) => color(d.points.length))
+      .attr('stroke', 'white')
+      .attr('stroke-width', '1px');
     return transition.end();
   }
 }
