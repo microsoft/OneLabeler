@@ -27,6 +27,7 @@
         "imread",
         "ioloop",
         "keras",
+        "konva",
         "linebreak",
         "mongodb",
         "ndarray",

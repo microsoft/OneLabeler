@@ -3,6 +3,8 @@ import {
   ICommand,
   IDataObject,
   IMessage,
+  ILabelMask,
+  ILabelPolygon,
   Label,
   Status,
 } from '@/commons/types';
@@ -38,6 +40,20 @@ export const setLabels = (
   commit(types.SET_LABELS, labels);
 };
 
+export const setLabelPolygons = (
+  { commit }: ActionContext<IState, IState>,
+  labelPolygons: ILabelPolygon[],
+): void => {
+  commit(types.SET_LABEL_POLYGONS, labelPolygons);
+};
+
+export const setLabelMasks = (
+  { commit }: ActionContext<IState, IState>,
+  labelMasks: ILabelMask[],
+): void => {
+  commit(types.SET_LABEL_MASKS, labelMasks);
+};
+
 export const setDataObjectLabel = (
   { commit }: ActionContext<IState, IState>,
   {
@@ -58,6 +74,28 @@ export const setDataObjectLabels = (
   }: { uuids: string[], labels: Label[], inQueryIndices: boolean },
 ): void => {
   commit(types.SET_DATA_OBJECT_LABELS, { uuids, labels, inQueryIndices });
+};
+
+export const setDataObjectLabelMask = (
+  { commit }: ActionContext<IState, IState>,
+  {
+    uuid,
+    labelMask,
+    inQueryIndices = false,
+  }: { uuid: string, labelMask: ILabelMask, inQueryIndices: boolean },
+): void => {
+  commit(types.SET_DATA_OBJECT_LABEL_MASK, { uuid, labelMask, inQueryIndices });
+};
+
+export const setDataObjectLabelPolygons = (
+  { commit }: ActionContext<IState, IState>,
+  {
+    uuid,
+    labelPolygons,
+    inQueryIndices = false,
+  }: { uuid: string, labelPolygons: ILabelPolygon[], inQueryIndices: boolean },
+): void => {
+  commit(types.SET_DATA_OBJECT_LABEL_POLYGONS, { uuid, labelPolygons, inQueryIndices });
 };
 
 export const setStatuses = (

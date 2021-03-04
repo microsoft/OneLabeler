@@ -25,13 +25,12 @@
       :uuids="uuidsSampled"
       :labels="labelsSampled"
       :statuses="statusesSampled"
-      :classes="classes"
-      :unlabeled-mark="unlabeledMark"
       :query-indices="queryIndices"
       :x-axis="xAxis"
       :y-axis="yAxis"
       :x-extent="xExtent"
       :y-extent="yExtent"
+      :label2color="label2color"
       @select-uuids="onSelectUuids"
     />
     <VHeatmap
@@ -40,8 +39,6 @@
       :uuids="uuidsSampled"
       :labels="labelsSampled"
       :statuses="statusesSampled"
-      :classes="classes"
-      :unlabeled-mark="unlabeledMark"
       :query-indices="queryIndices"
       :x-axis="xAxis"
       :y-axis="yAxis"
@@ -146,6 +143,10 @@ export default Vue.extend({
     },
     featureNames: {
       type: Array as PropType<string[]>,
+      required: true,
+    },
+    label2color: {
+      type: Function as PropType<(label: string) => string>,
       required: true,
     },
   },

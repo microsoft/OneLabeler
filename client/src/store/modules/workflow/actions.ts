@@ -4,6 +4,7 @@ import {
   DefaultLabelingMethodType,
   IImage,
   IModel,
+  LabelTaskType,
   SamplingStrategyType,
   Status,
 } from '@/commons/types';
@@ -76,10 +77,63 @@ export const setItemsPerCol = (
   commit(types.SET_ITEMS_PER_COL, itemsPerCol);
 };
 
+export const setLabelTasks = (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  labelTasks: LabelTaskType[],
+): void => {
+  const labelTasksOld = state.labelTasks;
+  const { dataObjects, unlabeledMark } = rootState;
+  commit(types.SET_LABEL_TASKS, labelTasks);
+
+  // Initialize labels for new tasks, and reset labels for deleted tasks.
+  const enabledImageClassification = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.ImageClassification,
+  ) >= 0;
+  const enableImageClassification = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageClassification,
+  ) >= 0;
+  const enabledObjectDetection = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableObjectDetection = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enabledImageSegmentation = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.ImageSegmentation,
+  ) >= 0;
+  const enableImageSegmentation = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageSegmentation,
+  ) >= 0;
+  if (!enableImageClassification) {
+    commit(rootTypes.SET_LABELS, [], { root: true });
+  }
+  if (!enableObjectDetection) {
+    commit(rootTypes.SET_LABEL_POLYGONS, [], { root: true });
+  }
+  if (!enableImageSegmentation) {
+    commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
+  }
+  if (!enabledImageClassification && enableImageClassification) {
+    const labels = Array(dataObjects.length).fill(unlabeledMark);
+    commit(rootTypes.SET_LABELS, labels, { root: true });
+  }
+  if (!enabledObjectDetection && enableObjectDetection) {
+    const labelPolygons = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_POLYGONS, labelPolygons, { root: true });
+  }
+  if (!enabledImageSegmentation && enableImageSegmentation) {
+    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
+      path: null,
+    }));
+    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
+  }
+};
+
 export const extractDataObjects = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
   files: FileList,
 ): Promise<void> => {
+  const { labelTasks } = state;
   const { unlabeledMark } = rootState;
 
   // Extract data objects.
@@ -87,9 +141,30 @@ export const extractDataObjects = async (
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize labels and label statuses.
-  const labels = Array(dataObjects.length).fill(unlabeledMark);
+  const enableImageClassification = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageClassification,
+  ) >= 0;
+  const enableObjectDetection = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableImageSegmentation = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageSegmentation,
+  ) >= 0;
+  if (enableImageClassification) {
+    const labels = Array(dataObjects.length).fill(unlabeledMark);
+    commit(rootTypes.SET_LABELS, labels, { root: true });
+  }
+  if (enableObjectDetection) {
+    const labelPolygons = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_POLYGONS, labelPolygons, { root: true });
+  }
+  if (enableImageSegmentation) {
+    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
+      path: null,
+    }));
+    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
+  }
   const statuses = Array(dataObjects.length).fill(Status.NEW);
-  commit(rootTypes.SET_LABELS, labels, { root: true });
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
@@ -170,51 +245,81 @@ export const sampleDataObjectsManual = async (
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
 
-export const assignDefaultLabels = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+export const updateModel = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
-  const { classes } = rootState;
+  const { labelTasks } = state;
   const {
+    dataObjects,
+    labels,
+    statuses,
+    model,
+  } = rootState;
+
+  const enableImageClassification = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageClassification,
+  ) >= 0;
+  const enableObjectDetection = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableImageSegmentation = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageSegmentation,
+  ) >= 0;
+
+  // Update the model.
+  if (enableImageClassification) {
+    const modelUpdated = (await API.updateModel(
+      dataObjects,
+      labels,
+      statuses,
+      model,
+    ));
+    commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
+  } else {
+    // TBA
+  }
+};
+
+export const assignDefaultLabels = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+): Promise<void> => {
+  const { labelTasks } = state;
+  const {
+    classes,
     dataObjects,
     queryIndices,
     model,
     unlabeledMark,
   } = rootState;
 
+  const enableImageClassification = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageClassification,
+  ) >= 0;
+  const enableObjectDetection = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableImageSegmentation = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ImageSegmentation,
+  ) >= 0;
+
   // Assign default labels to the sampled data objects.
-  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
-  const uuids = sampledDataObjects.map((d) => d.uuid);
-  const defaultLabels = (await API.assignDefaultLabels(
-    sampledDataObjects,
-    model,
-    classes,
-    unlabeledMark,
-  ));
-  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
-    uuids,
-    labels: defaultLabels,
-    inQueryIndices: true,
-  }, { root: true });
-};
-
-export const updateModel = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-): Promise<void> => {
-  const {
-    dataObjects,
-    labels,
-    statuses,
-    model,
-  } = rootState;
-
-  // Update the model.
-  const modelUpdated = (await API.updateModel(
-    dataObjects,
-    labels,
-    statuses,
-    model,
-  ));
-  commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
+  if (enableImageClassification) {
+    const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
+    const uuids = sampledDataObjects.map((d) => d.uuid);
+    const defaultLabels = (await API.assignDefaultLabels(
+      sampledDataObjects,
+      model,
+      classes,
+      unlabeledMark,
+    ));
+    commit(rootTypes.SET_DATA_OBJECT_LABELS, {
+      uuids,
+      labels: defaultLabels,
+      inQueryIndices: true,
+    }, { root: true });
+  } else {
+    // TBA
+  }
 };
 
 export const resetState = (

@@ -2,8 +2,7 @@
   <v-card>
     <TheCardMatrixViewHeader
       :classes="classes"
-      @click-add-class-option="onClickAddClassOption"
-      @click-confirm-batch-labels="onClickConfirmBatchLabels"
+      :label2color="label2color"
       @click-set-batch-labels="onClickSetBatchLabels"
     />
     <v-divider />
@@ -19,13 +18,15 @@
         :classes="classes"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
+        :label2color="label2color"
         @click-card-label="onClickCardLabel"
       />
-      <template v-else>
-        <p class="mx-auto subtitle-1">
-          No Data Objects Queried
-        </p>
-      </template>
+      <p
+        v-else
+        class="mx-auto subtitle-1"
+      >
+        No Data Objects Queried
+      </p>
     </v-card-actions>
   </v-card>
 </template>
@@ -33,7 +34,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { IDataObject, Label, MessageType } from '@/commons/types';
+import { IDataObject, Label } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VCardMatrix from './VCardMatrix.vue';
@@ -48,36 +49,14 @@ export default Vue.extend({
   computed: {
     ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices']),
     ...mapState('workflow', ['itemsPerRow', 'itemsPerCol']),
-    ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels']),
-  },
-  created(): void {
-    // enable label flipping by number key
-    window.addEventListener('keydown', this.onKey);
-  },
-  beforeDestroy(): void {
-    // remove listener before distroy, otherwise the onKey method will be called multiple times
-    window.removeEventListener('keydown', this.onKey);
+    ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels', 'label2color']),
   },
   methods: {
     ...mapActions([
-      'pushClasses',
       'setDataObjectLabel',
       'setDataObjectLabels',
-      'setMessage',
       'pushCommandHistory',
     ]),
-    ...mapActions('workflow', [
-      'updateModel',
-      'sampleDataObjectsAlgorithmic',
-      'assignDefaultLabels',
-    ]),
-    onKey(e: KeyboardEvent): void {
-      // shortcut for confirm labels: enter
-      const { keyCode } = e;
-      if (keyCode === 13) {
-        this.onClickConfirmBatchLabels();
-      }
-    },
     getLabel(dataObject: IDataObject, inQueryIndices = false): Label {
       const { dataObjects, labels, queryIndices } = this;
       const { uuid } = dataObject;
@@ -86,21 +65,6 @@ export default Vue.extend({
         : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
       console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
       return labels[idx];
-    },
-    onClickAddClassOption(className: string): void {
-      this.pushClasses(className);
-    },
-    async onClickConfirmBatchLabels(): Promise<void> {
-      await this.sampleDataObjectsAlgorithmic();
-      if (this.queryIndices.length === 0) {
-        this.setMessage({
-          content: 'All Data Objects Labeled.',
-          type: MessageType.success,
-        });
-      } else {
-        await this.updateModel();
-        await this.assignDefaultLabels();
-      }
     },
     onClickSetBatchLabels(label: Label): void {
       const dataObjects = this.sampledDataObjects;

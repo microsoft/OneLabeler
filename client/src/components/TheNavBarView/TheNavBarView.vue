@@ -76,24 +76,6 @@
       vertical
     />
 
-    <!-- The start data labeling button. -->
-    <v-btn
-      title="Start"
-      color="white"
-      icon
-      tile
-      small
-      :disabled="disableStartButton"
-      @click="onClickStart"
-    >
-      <v-icon
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.start
-      </v-icon>
-    </v-btn>
-
     <!-- The undo label editing button. -->
     <v-btn
       :title="`Undo ${lastCommandName} (Ctrl + Z)`"
@@ -134,6 +116,29 @@
       class="app-header-divider"
       vertical
     />
+
+    <!-- The start data labeling button. -->
+    <v-btn
+      title="Next Batch (Enter)"
+      color="white"
+      icon
+      tile
+      small
+      :disabled="disableNextBatchButton"
+      @click="onClickNextBatch"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.start
+      </v-icon>
+    </v-btn>
+
+    <v-divider
+      class="app-header-divider"
+      vertical
+    />
     <v-spacer />
 
     <!-- The configuration button. -->
@@ -152,6 +157,8 @@ import {
   IImage,
   IMessage,
   Label,
+  ILabelMask,
+  ILabelPolygon,
   MessageType,
   Status,
 } from '@/commons/types';
@@ -164,6 +171,8 @@ type ProjectData = {
   dataObjects: IDataObject[],
   classes: Label[],
   labels: Label[],
+  labelMasks: ILabelMask[],
+  labelPolygons: ILabelPolygon[],
   statuses: Status[],
   unlabeledMark: Label,
   featureNames: string[],
@@ -174,9 +183,8 @@ const schema: JSONSchemaType<ProjectData> = {
   type: 'object',
   required: [
     'dataObjects',
-    'classes',
-    'labels',
     'statuses',
+    'classes',
     'unlabeledMark',
     'featureNames',
   ],
@@ -206,6 +214,34 @@ const schema: JSONSchemaType<ProjectData> = {
     labels: {
       type: 'array',
       items: { type: 'string' },
+    },
+    labelPolygons: {
+      type: 'array',
+      items: {
+        type: 'array',
+        items: {
+          type: 'array',
+          items: {
+            type: 'array',
+            items: {
+              type: 'number',
+            },
+          },
+        },
+      },
+    },
+    labelMasks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: [
+          'path',
+        ],
+        properties: {
+          path: { type: ['string', 'null'] },
+        },
+        additionalProperties: true,
+      },
     },
     statuses: {
       type: 'array',
@@ -269,6 +305,8 @@ export default Vue.extend({
       'dataObjects',
       'classes',
       'labels',
+      'labelPolygons',
+      'labelMasks',
       'statuses',
       'unlabeledMark',
       'featureNames',
@@ -282,8 +320,8 @@ export default Vue.extend({
     disableResetButton(): boolean {
       return this.dataObjects.length === 0;
     },
-    disableStartButton(): boolean {
-      return (this.dataObjects.length === 0) || (this.queryIndices.length !== 0);
+    disableNextBatchButton(): boolean {
+      return this.dataObjects.length === 0;
     },
     disableUndoButton(): boolean {
       return this.commandHistory.length === 0;
@@ -323,6 +361,8 @@ export default Vue.extend({
       'setDataObjects',
       'setClasses',
       'setLabels',
+      'setLabelPolygons',
+      'setLabelMasks',
       'setMessage',
       'setStatuses',
       'setUnlabeledMark',
@@ -349,6 +389,11 @@ export default Vue.extend({
         e.preventDefault();
         this.onClickSave();
       }
+      // shortcut for next batch: Enter
+      if (!this.disableNextBatchButton && key === 'Enter') {
+        e.preventDefault();
+        this.onClickNextBatch();
+      }
     },
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
@@ -366,6 +411,8 @@ export default Vue.extend({
           dataObjects,
           classes,
           labels,
+          labelPolygons,
+          labelMasks,
           statuses,
           unlabeledMark,
           featureNames,
@@ -373,6 +420,8 @@ export default Vue.extend({
         this.setDataObjects(dataObjects);
         this.setClasses(classes);
         this.setLabels(labels);
+        this.setLabelPolygons(labelPolygons);
+        this.setLabelMasks(labelMasks);
         this.setStatuses(statuses);
         this.setUnlabeledMark(unlabeledMark);
         this.setFeatureNames(featureNames);
@@ -391,6 +440,8 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
+        labelPolygons,
+        labelMasks,
         statuses,
         unlabeledMark,
         featureNames,
@@ -399,6 +450,8 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
+        labelPolygons,
+        labelMasks,
         statuses,
         unlabeledMark,
         featureNames,
@@ -409,10 +462,17 @@ export default Vue.extend({
       // reset root store
       this.resetState();
     },
-    async onClickStart(): Promise<void> {
+    async onClickNextBatch(): Promise<void> {
       await this.sampleDataObjectsAlgorithmic();
-      await this.updateModel();
-      await this.assignDefaultLabels();
+      if (this.queryIndices.length === 0) {
+        this.setMessage({
+          content: 'All Data Objects Labeled.',
+          type: MessageType.success,
+        });
+      } else {
+        await this.updateModel();
+        await this.assignDefaultLabels();
+      }
     },
     onClickUndo(): void {
       if (this.lastCommand !== null) {

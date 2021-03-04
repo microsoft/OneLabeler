@@ -3,6 +3,8 @@ import {
   IDataObject,
   IMessage,
   IModel,
+  ILabelPolygon,
+  ILabelMask,
   Label,
   Status,
 } from '@/commons/types';
@@ -24,6 +26,12 @@ export default {
   [types.SET_LABELS](state: IState, labels: Label[]): void {
     state.labels = labels;
   },
+  [types.SET_LABEL_POLYGONS](state: IState, labelPolygons: ILabelPolygon[][]): void {
+    state.labelPolygons = labelPolygons;
+  },
+  [types.SET_LABEL_MASKS](state: IState, labelMasks: ILabelMask[]): void {
+    state.labelMasks = labelMasks;
+  },
   [types.SET_DATA_OBJECT_LABEL](
     state: IState,
     {
@@ -37,8 +45,6 @@ export default {
     const idx = inQueryIndices
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    console.assert(idx !== undefined && idx >= 0,
-      `Data object not found: uuid = ${uuid}`);
     newLabels[idx as number] = label;
     state.labels = newLabels;
   },
@@ -57,10 +63,41 @@ export default {
       const idx = inQueryIndices
         ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
         : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-      console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
       newLabels[idx as number] = label;
     });
     state.labels = newLabels;
+  },
+  [types.SET_DATA_OBJECT_LABEL_MASK](
+    state: IState,
+    {
+      uuid,
+      labelMask,
+      inQueryIndices,
+    }: { uuid: string, labelMask: ILabelMask, inQueryIndices: boolean },
+  ): void {
+    const { dataObjects, queryIndices } = state;
+    const newLabelMasks = [...state.labelMasks];
+    const idx = inQueryIndices
+      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
+      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newLabelMasks[idx as number] = labelMask;
+    state.labelMasks = newLabelMasks;
+  },
+  [types.SET_DATA_OBJECT_LABEL_POLYGONS](
+    state: IState,
+    {
+      uuid,
+      labelPolygons,
+      inQueryIndices,
+    }: { uuid: string, labelPolygons: ILabelPolygon[], inQueryIndices: boolean },
+  ): void {
+    const { dataObjects, queryIndices } = state;
+    const newLabelPolygons = [...state.labelPolygons];
+    const idx = inQueryIndices
+      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
+      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newLabelPolygons[idx as number] = labelPolygons;
+    state.labelPolygons = newLabelPolygons;
   },
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;

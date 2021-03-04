@@ -19,6 +19,34 @@ export interface IImage extends IDataObject {
 /** The type of data labels. */
 export type Label = string
 
+/** The interface of the segmentation label of an image data object. */
+export interface ILabelMask {
+  /** The storage path of the mask on the server. */
+  path: string | null,
+  /** The color encoding of the stored mask image. */
+  colorEncoding?: { [key: string]: number | [number, number, number] } | null,
+  /** The width of the mask. */
+  width?: number | null,
+  /** The height of the mask. */
+  height?: number | null,
+}
+
+/** The interface of a polygon annotation in an image data object. */
+export interface ILabelPolygon {
+  label: Label,
+  points: [number, number][],
+}
+
+/** The type of data label annotations. */
+export enum LabelTaskType {
+  /** Image classification */
+  ImageClassification = 'ImageClassification',
+  /** Object detection */
+  ObjectDetection = 'ObjectDetection',
+  /** Image Segmentation */
+  ImageSegmentation = 'ImageSegmentation',
+}
+
 /** The enum of label status types. */
 export enum Status {
   /** The data object is not viewed and not labeled. */

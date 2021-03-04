@@ -1,4 +1,8 @@
-import { DefaultLabelingMethodType, SamplingStrategyType } from '@/commons/types';
+import {
+  DefaultLabelingMethodType,
+  LabelTaskType,
+  SamplingStrategyType,
+} from '@/commons/types';
 
 export interface IState {
   /** The data labeling workflow configuration parameters. */
@@ -14,6 +18,8 @@ export interface IState {
   itemsPerRow: number,
   /** The number of data objects per column in the thumbnail matrix. */
   itemsPerCol: number,
+  /** The concerned data labeling tasks. */
+  labelTasks: LabelTaskType[],
 }
 
 export const createInitialState = (): IState => ({
@@ -23,6 +29,7 @@ export const createInitialState = (): IState => ({
   showDatasetOverview: false,
   itemsPerRow: 8,
   itemsPerCol: 4,
+  labelTasks: [LabelTaskType.ImageSegmentation],
 });
 
 export default createInitialState();

@@ -13,6 +13,7 @@
       :label="label"
       :classes="classes"
       :title="title"
+      :button-color="buttonColor"
       :style="{
         'height': `${headerHeight}px`
       }"
@@ -65,6 +66,10 @@ export default Vue.extend({
     title: {
       type: String,
       default: '',
+    },
+    buttonColor: {
+      type: String as PropType<string | null>,
+      default: null,
     },
     height: {
       type: Number,

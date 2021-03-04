@@ -1,4 +1,8 @@
-import { DefaultLabelingMethodType, SamplingStrategyType } from '@/commons/types';
+import {
+  DefaultLabelingMethodType,
+  LabelTaskType,
+  SamplingStrategyType,
+} from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
@@ -26,5 +30,8 @@ export default {
   },
   [types.SET_ITEMS_PER_COL](state: IState, itemsPerCol: number): void {
     state.itemsPerCol = itemsPerCol;
+  },
+  [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
+    state.labelTasks = labelTasks;
   },
 };

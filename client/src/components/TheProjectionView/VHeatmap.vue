@@ -44,14 +44,6 @@ export default Vue.extend({
       type: Array as PropType<Status[]>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Label[]>,
-      required: true,
-    },
-    unlabeledMark: {
-      type: [String, Number, Boolean] as PropType<Label>,
-      required: true,
-    },
     queryIndices: {
       type: Array as PropType<number[]>,
       required: true,
@@ -93,12 +85,6 @@ export default Vue.extend({
       this.rerender();
     },
     labels() {
-      this.rerender();
-    },
-    classes() {
-      this.rerender();
-    },
-    unlabeledMark() {
       this.rerender();
     },
     nRows() {

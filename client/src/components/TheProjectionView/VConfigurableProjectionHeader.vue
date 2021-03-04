@@ -10,8 +10,8 @@
     >
       <template #activator="{ on }">
         <v-btn
-          title="Configure Feature Space"
           :elevation="0"
+          title="Configure Feature Space"
           x-small
           icon
           v-on="on"
@@ -40,7 +40,7 @@
             >
               <!-- The buttons for reseting feature selection. -->
               <v-list-item
-                class="list-group-item d-flex justify-content-between align-items-center py-0"
+                class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
               >
                 <!-- The select all features button. -->
                 <v-btn
@@ -65,7 +65,7 @@
 
               <!-- The input box for single feature selection. -->
               <v-list-item
-                class="list-group-item d-flex justify-content-between align-items-center py-0"
+                class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
               >
                 <v-autocomplete
                   v-model="singleFeatureNameModel"
@@ -94,14 +94,14 @@
 
               <!-- The selected feature list. -->
               <v-list-item
-                class="list-group-item d-flex justify-content-between align-items-center py-0"
+                class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
               >
                 {{ `${selectedFeatureIndices.length} / ${featureNames.length} features selected` }}
               </v-list-item>
 
               <!-- The set projection method menu. -->
               <v-list-item
-                class="list-group-item d-flex justify-content-between align-items-center py-0"
+                class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
               >
                 Projection Method
                 <v-spacer />

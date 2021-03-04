@@ -434,7 +434,7 @@ export default class Scatterplot implements IScatterplot {
       .attr('cy', (d, i) => y(yAccessor(d, i)))
       .attr('fill', fillAccessor)
       .style('stroke', strokeAccessor)
-      .style('stroke-width', '1px');
+      .style('stroke-width', '0.5px');
     return transition.end();
   }
 }

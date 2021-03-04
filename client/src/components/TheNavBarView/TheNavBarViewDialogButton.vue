@@ -1,6 +1,6 @@
 <template>
   <VDialogButton
-    max-width="850px"
+    max-width="1200px"
     :button-icon="$vuetify.icons.values.config"
     button-text="Settings"
     dialog-header-title="Settings"
@@ -73,6 +73,7 @@ import {
   DefaultLabelingMethodType,
   IMessage,
   MessageType,
+  LabelTaskType,
   SamplingStrategyType,
 } from '@/commons/types';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
@@ -88,6 +89,7 @@ type WorkflowConfigData = {
   showDatasetOverview: boolean,
   itemsPerRow: number,
   itemsPerCol: number,
+  labelTasks: LabelTaskType[],
 }
 
 const ajv = new Ajv();
@@ -100,6 +102,10 @@ const schema: JSONSchemaType<Partial<WorkflowConfigData>> = {
     showDatasetOverview: { type: 'boolean' },
     itemsPerRow: { type: 'integer' },
     itemsPerCol: { type: 'integer' },
+    labelTasks: {
+      type: 'array',
+      items: { type: 'string' },
+    },
   },
   additionalProperties: false,
 };
@@ -160,6 +166,7 @@ export default Vue.extend({
       'setShowDatasetOverview',
       'setItemsPerRow',
       'setItemsPerCol',
+      'setLabelTasks',
       'resetState',
     ]),
     onClickExport(): void {
@@ -205,6 +212,9 @@ export default Vue.extend({
         }
         if ('itemsPerCol' in config) {
           this.setItemsPerCol(config.itemsPerCol);
+        }
+        if ('labelTasks' in config) {
+          this.setLabelTasks(config.labelTasks);
         }
         this.setMessage({
           content: 'Workflow Configuration Uploaded.',

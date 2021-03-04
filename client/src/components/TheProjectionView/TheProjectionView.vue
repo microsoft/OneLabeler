@@ -11,6 +11,7 @@
       style="height: calc(100% - 30px)"
     >
       <v-container
+        v-if="nDataObjects >= 2"
         :style="{
           height: '100%',
           display: 'grid',
@@ -38,6 +39,7 @@
           :unlabeled-mark="unlabeledMark"
           :query-indices="queryIndices"
           :feature-names="featureNames"
+          :label2color="label2color"
           style="margin: 1px"
           @update-selected-feature-indices="onUpdateSelectedFeatureIndices($event, i)"
           @click-projection-method="onClickProjectionMethod($event, i)"
@@ -46,6 +48,12 @@
           @select-uuids="onSelectUuids"
         />
       </v-container>
+      <p
+        v-else
+        class="mx-auto subtitle-1"
+      >
+        Less Than 2 Data Objects Loaded
+      </p>
     </v-card-actions>
   </v-card>
 </template>
@@ -112,7 +120,10 @@ export default Vue.extend({
       'uuidToIdx',
       'queryIndices',
     ]),
-    ...mapGetters(['featureValues', 'uuids']),
+    ...mapGetters(['featureValues', 'uuids', 'label2color']),
+    nDataObjects(): number {
+      return this.labels.length;
+    },
   },
   watch: {
     featureValues() {

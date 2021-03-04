@@ -9,15 +9,16 @@
       <slot name="button">
         <v-btn
           :title="buttonTitle"
-          class="view-header-button"
-          x-small
           :icon="buttonText === undefined"
           :text="buttonText !== undefined"
+          class="mr-2"
+          color="white"
+          x-small
+          tile
           v-on="on"
         >
           <v-icon
             aria-hidden="true"
-            color="black"
             small
           >
             {{ buttonIcon }}

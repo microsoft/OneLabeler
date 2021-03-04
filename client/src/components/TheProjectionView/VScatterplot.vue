@@ -35,14 +35,6 @@ export default Vue.extend({
       type: Array as PropType<Status[]>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Label[]>,
-      required: true,
-    },
-    unlabeledMark: {
-      type: [String, Number, Boolean] as PropType<Label>,
-      required: true,
-    },
     queryIndices: {
       type: Array as PropType<number[]>,
       required: true,
@@ -67,6 +59,10 @@ export default Vue.extend({
       required: false,
       default: null,
     },
+    label2color: {
+      type: Function as PropType<(label: string) => string>,
+      required: true,
+    },
   },
   data(): {
     chart: Scatterplot | null,
@@ -80,25 +76,22 @@ export default Vue.extend({
     };
   },
   watch: {
-    async points() {
-      await this.rerender();
+    points() {
+      this.rerender();
     },
-    async labels() {
-      await this.rerender();
+    labels() {
+      this.rerender();
     },
-    async classes() {
-      await this.rerender();
-    },
-    async unlabeledMark() {
-      await this.rerender();
+    label2color() {
+      this.rerender();
     },
     queryIndices(queryIndices: number[]) {
       // TODO: check if this function significantly slow down the frontend.
       this.highlightScatterplot(queryIndices);
     },
   },
-  async mounted() {
-    await this.rerender();
+  mounted() {
+    this.rerender();
   },
   methods: {
     emptyDisplay(): void {
@@ -134,13 +127,12 @@ export default Vue.extend({
         points,
         uuids,
         labels,
-        classes,
-        unlabeledMark,
         queryIndices,
         xAxis,
         yAxis,
         xExtent,
         yExtent,
+        label2color,
       } = this;
       const { svg } = this.$refs as { svg: SVGSVGElement};
       if (svg === undefined) return;
@@ -148,13 +140,12 @@ export default Vue.extend({
         points,
         uuids,
         labels,
-        classes,
-        unlabeledMark,
         svg,
         xAxis,
         yAxis,
         xExtent,
         yExtent,
+        label2color,
       );
 
       this.lassoInstance = new Lasso()
@@ -176,23 +167,20 @@ export default Vue.extend({
         .each(function _(d: Datum) {
           const { uuid } = d;
           const highlight = (queryUuids.size === 0) || queryUuids.has(uuid);
-          this.setAttribute('r', String(highlight ? dotRadius : dotRadius / 3));
+          this.setAttribute('r', String(highlight ? dotRadius : dotRadius / 2));
         });
     },
     async renderScatterplot(
       points: [number, number][],
       uuids: string[],
       labels: Label[],
-      classes: Label[],
-      unlabeledMark: Label,
       svg: SVGSVGElement,
       xAxis: Axis | null,
       yAxis: Axis | null,
       xExtent: [number, number] | null,
       yExtent: [number, number] | null,
+      label2color: ((label: string) => string),
     ): Promise<void> {
-      const labelstr2fill = d3.scaleOrdinal(['#bbbbbb', ...d3.schemeCategory10])
-        .domain([unlabeledMark, ...classes].map((d) => String(d)));
       const data: Datum[] = uuids.map((d, i) => ({
         uuid: d,
         x: points[i][0],
@@ -216,7 +204,7 @@ export default Vue.extend({
         .yAxis(yAxis)
         .xAccessor((d: unknown) => ((d as Datum).x))
         .yAccessor((d: unknown) => ((d as Datum).y))
-        .fillAccessor((d: unknown, i: number) => labelstr2fill(String(labels[i])))
+        .fillAccessor((d: unknown, i: number) => label2color(labels[i] as string))
         .rAccessor(() => this.dotRadius);
       await chart.render(svg, data as Datum[]);
       this.chart = chart;

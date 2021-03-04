@@ -25,6 +25,7 @@
           :label="labelsInPage[i]"
           :classes="classes"
           :title="''"
+          :button-color="label2color === null ? null : label2color(labelsInPage[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
           @click-card-label="onClickCardLabel"
@@ -92,17 +93,17 @@ export default Vue.extend({
       type: Number,
       default: 3,
     },
-    padding: {
-      type: Number,
-      default: 4,
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
     },
   },
   data() {
     return {
+      padding: 4,
       page: 1,
       cardHeight: 0,
       cardWidth: 0,
-      paginationHeight: 0,
     };
   },
   computed: {

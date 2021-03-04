@@ -3,7 +3,7 @@
   <v-container class="pa-0">
     <v-row no-gutters>
       <v-col
-        cols="7"
+        cols="8"
         class="pr-1"
       >
         <v-card
@@ -24,7 +24,7 @@
           <v-divider />
           <v-card-actions>
             <svg
-              style="height: 260px; width: 100%;"
+              style="height: 200px; width: 100%;"
             >
               <g
                 v-for="(node, i) in graph.nodes"
@@ -34,15 +34,23 @@
                 @click="onClickGraphNode(node)"
               >
                 <rect
-                  :fill="node.type === 'algorithm' ? '#DBEEF4' : '#EBF1DE'"
-                  :stroke="node.type === 'algorithm' ? '#4BACC6' : '#9BBB59'"
+                  :fill="{
+                    'algorithm': '#DBEEF4',
+                    'interface': '#EBF1DE',
+                    'data': '#FCD5B5',
+                  }[node.type]"
+                  :stroke="{
+                    'algorithm': '#4BACC6',
+                    'interface': '#9BBB59',
+                    'data': '#E46C0A',
+                  }[node.type]"
                   stroke-width="1px"
                   :width="rectWidth"
                   :height="rectHeight"
                 />
                 <text
                   :y="rectHeight / 2"
-                  font-size="16px"
+                  font-size="14px"
                   dominant-baseline="middle"
                   text-anchor="middle"
                 >
@@ -88,7 +96,7 @@
         </v-card>
       </v-col>
       <v-col
-        cols="5"
+        cols="4"
         class="pl-1"
       >
         <VMenusFlat
@@ -133,6 +141,7 @@
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import {
+  LabelTaskType,
   DefaultLabelingMethodType,
   SamplingStrategyType,
 } from '@/commons/types';
@@ -141,6 +150,7 @@ import VMenusFlat from './VMenusFlat.vue';
 enum NodeTypes {
   algorithm = 'algorithm',
   interface = 'interface',
+  data = 'data',
 }
 
 type Node = {
@@ -224,6 +234,21 @@ const menusConfig: {
     options: [1, 2, 4, 6, 8],
     optionsText: ['1', '2', '4', '6', '8'],
   },
+  enableImageClassification: {
+    title: 'Annotate Image Label',
+    options: [false, true],
+    optionsText: ['No', 'Yes'],
+  },
+  enableObjectDetection: {
+    title: 'Annotate Object Polygon',
+    options: [false, true],
+    optionsText: ['No', 'Yes'],
+  },
+  enableImageSegmentation: {
+    title: 'Annotate Segmentation Mask',
+    options: [false, true],
+    optionsText: ['No', 'Yes'],
+  },
 };
 
 export default Vue.extend({
@@ -232,8 +257,8 @@ export default Vue.extend({
     VMenusFlat,
   },
   data() {
-    const rectWidth = 100;
-    const rectHeight = 80;
+    const rectWidth = 80;
+    const rectHeight = 60;
     return {
       rectWidth,
       rectHeight,
@@ -241,9 +266,15 @@ export default Vue.extend({
       graph: {
         nodes: [
           {
-            title: 'Algorithmic Sampling',
+            title: 'Feature Extraction',
             type: NodeTypes.algorithm,
             x: 25,
+            y: 25,
+          },
+          {
+            title: 'Algorithmic Sampling',
+            type: NodeTypes.algorithm,
+            x: 145,
             y: 25,
             config: {
               samplingStrategy: menusConfig.samplingStrategy,
@@ -253,8 +284,8 @@ export default Vue.extend({
           {
             title: 'User Sampling',
             type: NodeTypes.interface,
-            x: 25,
-            y: 155,
+            x: 145,
+            y: 115,
             config: {
               showDatasetOverview: menusConfig.showDatasetOverview,
             },
@@ -262,7 +293,7 @@ export default Vue.extend({
           {
             title: 'Default Labeling',
             type: NodeTypes.algorithm,
-            x: 175,
+            x: 265,
             y: 25,
             config: {
               defaultLabelingMethod: menusConfig.defaultLabelingMethod,
@@ -271,18 +302,38 @@ export default Vue.extend({
           {
             title: 'Sampled Object Details',
             type: NodeTypes.interface,
-            x: 325,
+            x: 385,
             y: 25,
             config: {
               itemsPerRow: menusConfig.itemsPerRow,
               itemsPerCol: menusConfig.itemsPerCol,
             },
           },
+          {
+            title: 'Stoppage Analysis',
+            type: NodeTypes.interface,
+            x: 505,
+            y: 25,
+          },
+          {
+            title: 'Labeled Data',
+            type: NodeTypes.data,
+            x: 625,
+            y: 25,
+            config: {
+              enableImageClassification: menusConfig.enableImageClassification,
+              enableObjectDetection: menusConfig.enableObjectDetection,
+              enableImageSegmentation: menusConfig.enableImageSegmentation,
+            },
+          },
         ],
         edges: [
-          { source: 0, target: 2 },
-          { source: 1, target: 2 },
+          { source: 0, target: 1 },
+          { source: 1, target: 3 },
           { source: 2, target: 3 },
+          { source: 3, target: 4 },
+          { source: 4, target: 5 },
+          { source: 5, target: 6 },
         ],
       },
     };
@@ -295,6 +346,7 @@ export default Vue.extend({
       'nBatch',
       'itemsPerRow',
       'itemsPerCol',
+      'labelTasks',
     ]),
     settings() {
       const {
@@ -304,7 +356,18 @@ export default Vue.extend({
         nBatch,
         itemsPerRow,
         itemsPerCol,
+        labelTasks,
       } = this;
+
+      const enableImageClassification = labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.ImageClassification,
+      ) >= 0;
+      const enableObjectDetection = labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.ObjectDetection,
+      ) >= 0;
+      const enableImageSegmentation = labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
+      ) >= 0;
       return {
         samplingStrategy,
         showDatasetOverview,
@@ -312,6 +375,9 @@ export default Vue.extend({
         nBatch,
         itemsPerRow,
         itemsPerCol,
+        enableImageClassification,
+        enableObjectDetection,
+        enableImageSegmentation,
       };
     },
   },
@@ -323,6 +389,7 @@ export default Vue.extend({
       'setShowDatasetOverview',
       'setItemsPerRow',
       'setItemsPerCol',
+      'setLabelTasks',
     ]),
     onClickGraphNode(node: Node) {
       this.selectedNode = node;
@@ -345,6 +412,36 @@ export default Vue.extend({
       }
       if (menuKey === 'itemsPerCol') {
         this.setItemsPerCol(option as number);
+      }
+      if (menuKey === 'enableImageClassification') {
+        let labelTasksUpdated = [...this.labelTasks];
+        const idx = labelTasksUpdated.findIndex((d) => d === LabelTaskType.ImageClassification);
+        if (option === true && !(idx >= 0)) {
+          labelTasksUpdated = [...labelTasksUpdated, LabelTaskType.ImageClassification];
+        } else if (option === false && idx >= 0) {
+          labelTasksUpdated.splice(idx, 1);
+        }
+        this.setLabelTasks(labelTasksUpdated);
+      }
+      if (menuKey === 'enableObjectDetection') {
+        let labelTasksUpdated = [...this.labelTasks];
+        const idx = labelTasksUpdated.findIndex((d) => d === LabelTaskType.ObjectDetection);
+        if (option === true && !(idx >= 0)) {
+          labelTasksUpdated = [...labelTasksUpdated, LabelTaskType.ObjectDetection];
+        } else if (option === false && idx >= 0) {
+          labelTasksUpdated.splice(idx, 1);
+        }
+        this.setLabelTasks(labelTasksUpdated);
+      }
+      if (menuKey === 'enableImageSegmentation') {
+        let labelTasksUpdated = [...this.labelTasks];
+        const idx = labelTasksUpdated.findIndex((d) => d === LabelTaskType.ImageSegmentation);
+        if (option === true && !(idx >= 0)) {
+          labelTasksUpdated = [...labelTasksUpdated, LabelTaskType.ImageSegmentation];
+        } else if (option === false && idx >= 0) {
+          labelTasksUpdated.splice(idx, 1);
+        }
+        this.setLabelTasks(labelTasksUpdated);
       }
     },
   },

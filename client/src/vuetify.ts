@@ -24,6 +24,10 @@ const icons = {
   table: 'fas fa-border-all',
   filter: 'fas fa-filter',
   matrix: 'fas fa-th',
+  zoom: 'far fa-hand-paper',
+  paint: 'fas fa-brush',
+  circle: 'fas fa-circle',
+  square: 'fas fa-square',
 };
 
 const preset: Partial<VuetifyPreset> = {

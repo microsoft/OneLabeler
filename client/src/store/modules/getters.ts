@@ -1,4 +1,11 @@
-import { IDataObject, Label, Status } from '@/commons/types';
+import { scaleOrdinal, schemeCategory10 } from 'd3';
+import {
+  IDataObject,
+  ILabelPolygon,
+  ILabelMask,
+  Label,
+  Status,
+} from '@/commons/types';
 import { IState } from './state';
 
 export const featureValues = (state: IState): number[][] | undefined[] => {
@@ -26,6 +33,16 @@ export const sampledDataObjectLabels = (state: IState): Label[] => {
   return queryIndices.map((index: number) => labels[index]);
 };
 
+export const sampledDataObjectLabelPolygons = (state: IState): ILabelPolygon[][] => {
+  const { labelPolygons, queryIndices } = state;
+  return queryIndices.map((index: number) => labelPolygons[index]);
+};
+
+export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] => {
+  const { labelMasks, queryIndices } = state;
+  return queryIndices.map((index: number) => labelMasks[index]);
+};
+
 export const unlabeledIndices = (state: IState): number[] => {
   const { statuses } = state;
   return statuses.reduce((arr: number[], d: Status, i: number) => {
@@ -34,4 +51,12 @@ export const unlabeledIndices = (state: IState): number[] => {
     }
     return arr;
   }, []);
+};
+
+/** The color scale for labels used in the system.  */
+export const label2color = (state: IState) => {
+  const { classes, unlabeledMark } = state;
+  const mapper = scaleOrdinal(['#bbbbbb', ...schemeCategory10])
+    .domain([unlabeledMark, ...classes]);
+  return mapper;
 };

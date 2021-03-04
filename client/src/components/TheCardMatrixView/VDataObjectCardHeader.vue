@@ -10,8 +10,9 @@
     <v-menu offset-y>
       <template #activator="{ on }">
         <v-btn
-          x-small
+          :color="buttonColor === null ? '' : buttonColor "
           class="view-header-button subtitle-2"
+          x-small
           v-on="on"
         >
           {{ label }}
@@ -55,6 +56,10 @@ export default Vue.extend({
     title: {
       type: String,
       default: '',
+    },
+    buttonColor: {
+      type: String as PropType<string | null>,
+      default: null,
     },
   },
   methods: {
