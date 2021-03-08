@@ -91,9 +91,16 @@ def dimension_reduction(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
     X_flatten = X_raw_normalized.reshape((-1, h * w))
 
     n_components = 5
-    reducer = decomposition.TruncatedSVD(n_components=n_components)
 
+    n_samples, n_features = X_flatten.shape
+    n_components_actual = min(n_samples, n_features, n_components)
+
+    reducer = decomposition.TruncatedSVD(n_components=n_components_actual)
     X = reducer.fit_transform(X_flatten)
+    if n_components > n_components_actual:
+        zeros = np.zeros((n_samples, n_components - n_components_actual), dtype=float)
+        X = np.hstack((X, zeros))
+
     feature_names = [f'projection[{i}]' for i in range(n_components)]
     return X, feature_names
 
@@ -348,8 +355,15 @@ def edge_direction_descriptors(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]
 
     # reduce the dimension of hog features to save space
     n_components = 50
-    reducer = decomposition.TruncatedSVD(n_components=n_components)
+
+    n_samples, n_features = X.shape
+    n_components_actual = min(n_samples, n_features, n_components)
+
+    reducer = decomposition.TruncatedSVD(n_components=n_components_actual)
     X_proj = reducer.fit_transform(X)
+    if n_components > n_components_actual:
+        zeros = np.zeros((n_samples, n_components - n_components_actual), dtype=float)
+        X_proj = np.hstack((X_proj, zeros))
 
     feature_names = [f'edge-hog-{i}' for i in range(n_components)]
     return X_proj, feature_names
