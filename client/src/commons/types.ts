@@ -31,10 +31,21 @@ export interface ILabelMask {
   height?: number | null,
 }
 
+/** The type of data shapes in polygon annotation. */
+export enum ObjectShapeType {
+  Polygon = 'Polygon',
+  Rect = 'Rect',
+  Point = 'Point',
+}
+
 /** The interface of a polygon annotation in an image data object. */
-export interface ILabelPolygon {
+export interface ILabelGeometricObject {
   label: Label,
-  points: [number, number][],
+  shape: ObjectShapeType,
+  position: [number, number][] | [number, number],
+  /** The uuid is for recognizing which shape in the canvas
+   * corresponds to which label geometric object. */
+  uuid?: string | null,
 }
 
 /** The type of data label annotations. */

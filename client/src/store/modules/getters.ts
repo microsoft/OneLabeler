@@ -1,7 +1,7 @@
 import { scaleOrdinal, schemeCategory10 } from 'd3';
 import {
   IDataObject,
-  ILabelPolygon,
+  ILabelGeometricObject,
   ILabelMask,
   Label,
   Status,
@@ -33,9 +33,11 @@ export const sampledDataObjectLabels = (state: IState): Label[] => {
   return queryIndices.map((index: number) => labels[index]);
 };
 
-export const sampledDataObjectLabelPolygons = (state: IState): ILabelPolygon[][] => {
-  const { labelPolygons, queryIndices } = state;
-  return queryIndices.map((index: number) => labelPolygons[index]);
+export const sampledDataObjectLabelGeometricObjects = (
+  state: IState,
+): ILabelGeometricObject[][] => {
+  const { labelGeometricObjects, queryIndices } = state;
+  return queryIndices.map((index: number) => labelGeometricObjects[index]);
 };
 
 export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] => {

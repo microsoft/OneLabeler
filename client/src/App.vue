@@ -19,7 +19,9 @@
         <template v-if="showDatasetOverview">
           <v-col
             :cols="12/nViews"
-            :class="(enableImageClassification || enableImageSegmentation) ? 'pr-1' : ''"
+            :class="(enableImageClassification
+              || enableImageSegmentation
+              || enableObjectDetection) ? 'pr-1' : ''"
           >
             <TheProjectionView style="height: 100%;" />
           </v-col>
@@ -27,12 +29,13 @@
         <template v-if="enableImageClassification">
           <v-col
             :cols="12/nViews"
-            :class="enableImageSegmentation ? 'pr-1' : ''"
+            :class="enableImageSegmentation
+              || enableObjectDetection ? 'pr-1' : ''"
           >
             <TheCardMatrixView style="height: 100%;" />
           </v-col>
         </template>
-        <template v-if="enableImageSegmentation">
+        <template v-if="enableImageSegmentation || enableObjectDetection">
           <v-col
             :cols="12/nViews"
           >
@@ -98,8 +101,7 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
       } = this;
       return Number(showDatasetOverview)
         + Number(enableImageClassification)
-        + Number(enableObjectDetection)
-        + Number(enableImageSegmentation);
+        + Number(enableObjectDetection || enableImageSegmentation);
     },
   },
 })

@@ -4,7 +4,7 @@ import {
   IDataObject,
   IMessage,
   ILabelMask,
-  ILabelPolygon,
+  ILabelGeometricObject,
   Label,
   Status,
 } from '@/commons/types';
@@ -40,11 +40,11 @@ export const setLabels = (
   commit(types.SET_LABELS, labels);
 };
 
-export const setLabelPolygons = (
+export const setLabelGeometricObjects = (
   { commit }: ActionContext<IState, IState>,
-  labelPolygons: ILabelPolygon[],
+  labelGeometricObjects: ILabelGeometricObject[],
 ): void => {
-  commit(types.SET_LABEL_POLYGONS, labelPolygons);
+  commit(types.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects);
 };
 
 export const setLabelMasks = (
@@ -87,15 +87,22 @@ export const setDataObjectLabelMask = (
   commit(types.SET_DATA_OBJECT_LABEL_MASK, { uuid, labelMask, inQueryIndices });
 };
 
-export const setDataObjectLabelPolygons = (
+export const setDataObjectLabelGeometricObjects = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
-    labelPolygons,
+    labelGeometricObjects,
     inQueryIndices = false,
-  }: { uuid: string, labelPolygons: ILabelPolygon[], inQueryIndices: boolean },
+  }: {
+    uuid: string,
+    labelGeometricObjects: ILabelGeometricObject[],
+    inQueryIndices: boolean,
+  },
 ): void => {
-  commit(types.SET_DATA_OBJECT_LABEL_POLYGONS, { uuid, labelPolygons, inQueryIndices });
+  commit(
+    types.SET_DATA_OBJECT_LABEL_GEOMETRIC_OBJECTS,
+    { uuid, labelGeometricObjects, inQueryIndices },
+  );
 };
 
 export const setStatuses = (

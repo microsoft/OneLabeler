@@ -108,7 +108,7 @@ export const setLabelTasks = (
     commit(rootTypes.SET_LABELS, [], { root: true });
   }
   if (!enableObjectDetection) {
-    commit(rootTypes.SET_LABEL_POLYGONS, [], { root: true });
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, [], { root: true });
   }
   if (!enableImageSegmentation) {
     commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
@@ -118,8 +118,8 @@ export const setLabelTasks = (
     commit(rootTypes.SET_LABELS, labels, { root: true });
   }
   if (!enabledObjectDetection && enableObjectDetection) {
-    const labelPolygons = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_POLYGONS, labelPolygons, { root: true });
+    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
   }
   if (!enabledImageSegmentation && enableImageSegmentation) {
     const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
@@ -155,8 +155,8 @@ export const extractDataObjects = async (
     commit(rootTypes.SET_LABELS, labels, { root: true });
   }
   if (enableObjectDetection) {
-    const labelPolygons = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_POLYGONS, labelPolygons, { root: true });
+    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
   }
   if (enableImageSegmentation) {
     const labelMasks = Array(dataObjects.length).fill(null).map(() => ({

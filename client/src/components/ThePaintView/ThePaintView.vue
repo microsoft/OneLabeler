@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <ThePaintViewHeader
+      :label-tasks="labelTasks"
       :stroke-label="strokeLabel"
       :stroke-shape="strokeShape"
       :stroke-width="strokeWidth"
@@ -8,6 +9,7 @@
       :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
+      @reset-image-size="onResetImageSize"
       @set-stroke-label="onSetStrokeLabel"
       @set-stroke-shape="onSetStrokeShape"
       @set-stroke-width="onSetStrokeWidth"
@@ -31,7 +33,9 @@
           no-gutters
         >
           <ThePaintViewCanvas
+            ref="canvas"
             :data-object="dataObject"
+            :label-geometric-objects="labelGeometricObjects"
             :label-mask="labelMask"
             :unlabeled-mark="unlabeledMark"
             :stroke-shape="strokeShape"
@@ -39,26 +43,31 @@
             :stroke-label="strokeLabel"
             :label2color="label2color"
             :mouse-operation="mouseOperation"
-            @update-label-mask="onUpdateLabelMask"
+            @add-label-geometric-object="onAddLabelGeometricObject"
+            @update-label-geometric-object="onUpdateLabelGeometricObject"
+            @remove-label-geometric-object="onRemoveLabelGeometricObject"
+            @set-label-mask="onSetLabelMask"
           />
         </v-row>
-        <v-row
-          v-if="enablePagination"
-          class="pa-0"
-          no-gutters
-        >
-          <div
-            ref="pagination"
-            class="text-center"
-            style="width: 100%"
+        <template v-if="enablePagination">
+          <v-divider />
+          <v-row
+            class="pa-0"
+            no-gutters
           >
-            <v-pagination
-              v-model="page"
-              :length="nPages"
-              :total-visible="Math.min(5, nPages)"
-            />
-          </div>
-        </v-row>
+            <div
+              ref="pagination"
+              class="text-center"
+              style="width: 100%"
+            >
+              <v-pagination
+                v-model="page"
+                :length="nPages"
+                :total-visible="Math.min(5, nPages)"
+              />
+            </div>
+          </v-row>
+        </template>
       </v-container>
       <p
         v-else
@@ -74,7 +83,13 @@
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import uploadFile from '@/services/upload-file';
-import { IDataObject, IImage, Label } from '@/commons/types';
+import {
+  IDataObject,
+  IImage,
+  ILabelGeometricObject,
+  ILabelMask,
+  Label,
+} from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
 import ThePaintViewHeader from './ThePaintViewHeader.vue';
 import ThePaintViewCanvas from './ThePaintViewCanvas.vue';
@@ -106,8 +121,10 @@ export default Vue.extend({
   },
   computed: {
     ...mapState(['classes', 'unlabeledMark']),
+    ...mapState('workflow', ['labelTasks']),
     ...mapGetters([
       'sampledDataObjects',
+      'sampledDataObjectLabelGeometricObjects',
       'sampledDataObjectLabelMasks',
       'label2color',
     ]),
@@ -119,7 +136,11 @@ export default Vue.extend({
       if (!this.showCanvas) return null;
       return this.sampledDataObjects[this.page - 1];
     },
-    labelMask() {
+    labelGeometricObjects(): ILabelGeometricObject[] | null {
+      if (!this.showCanvas) return null;
+      return this.sampledDataObjectLabelGeometricObjects[this.page - 1];
+    },
+    labelMask(): ILabelMask | null {
       if (!this.showCanvas) return null;
       return this.sampledDataObjectLabelMasks[this.page - 1];
     },
@@ -138,13 +159,24 @@ export default Vue.extend({
       this.page = 1;
       this.setCanvasHeight();
     },
+    classes() {
+      this.initializeStrokeLabel();
+    },
   },
   mounted() {
-    this.strokeLabel = this.unlabeledMark;
+    this.initializeStrokeLabel();
   },
   methods: {
-    ...mapActions(['setDataObjectLabelMask']),
-    onUpdateLabelMask(labelMaskCanvas: HTMLCanvasElement) {
+    ...mapActions([
+      'setDataObjectLabelGeometricObjects',
+      'setDataObjectLabelMask',
+    ]),
+    initializeStrokeLabel() {
+      if (this.strokeLabel === null && this.classes.length !== 0) {
+        [this.strokeLabel] = this.classes;
+      }
+    },
+    onSetLabelMask(labelMaskCanvas: HTMLCanvasElement) {
       if (this.dataObject === null) return;
       const { path, uuid } = this.dataObject as IImage;
       if (path === null) return;
@@ -169,6 +201,52 @@ export default Vue.extend({
           inQueryIndices: true,
         });
       });
+    },
+    onAddLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
+      const { dataObject, labelGeometricObjects } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject as IDataObject;
+      this.setDataObjectLabelGeometricObjects({
+        uuid,
+        labelGeometricObjects: [...labelGeometricObjects, labelGeometricObject],
+        inQueryIndices: true,
+      });
+    },
+    onUpdateLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
+      const { dataObject, labelGeometricObjects } = this;
+      const index = labelGeometricObjects.findIndex(
+        (d: ILabelGeometricObject) => d.uuid === labelGeometricObject.uuid,
+      );
+      const updatedLabelGeometricObjects = [
+        ...labelGeometricObjects.slice(0, index),
+        labelGeometricObject,
+        ...labelGeometricObjects.slice(index + 1),
+      ];
+      const { uuid } = dataObject as IDataObject;
+      this.setDataObjectLabelGeometricObjects({
+        uuid,
+        labelGeometricObjects: updatedLabelGeometricObjects,
+        inQueryIndices: true,
+      });
+    },
+    onRemoveLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
+      const { dataObject, labelGeometricObjects } = this;
+      const index = labelGeometricObjects.findIndex(
+        (d: ILabelGeometricObject) => d.uuid === labelGeometricObject.uuid,
+      );
+      const updatedLabelGeometricObjects = [
+        ...labelGeometricObjects.slice(0, index),
+        ...labelGeometricObjects.slice(index + 1),
+      ];
+      const { uuid } = dataObject as IDataObject;
+      this.setDataObjectLabelGeometricObjects({
+        uuid,
+        labelGeometricObjects: updatedLabelGeometricObjects,
+        inQueryIndices: true,
+      });
+    },
+    onResetImageSize() {
+      this.$refs.canvas.resetZoom();
     },
     onSetStrokeLabel(strokeLabel: Label) {
       this.strokeLabel = strokeLabel;

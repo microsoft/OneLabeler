@@ -158,7 +158,7 @@ import {
   IMessage,
   Label,
   ILabelMask,
-  ILabelPolygon,
+  ILabelGeometricObject,
   MessageType,
   Status,
 } from '@/commons/types';
@@ -172,7 +172,7 @@ type ProjectData = {
   classes: Label[],
   labels: Label[],
   labelMasks: ILabelMask[],
-  labelPolygons: ILabelPolygon[],
+  labelGeometricObjects: ILabelGeometricObject[][],
   statuses: Status[],
   unlabeledMark: Label,
   featureNames: string[],
@@ -215,18 +215,23 @@ const schema: JSONSchemaType<ProjectData> = {
       type: 'array',
       items: { type: 'string' },
     },
-    labelPolygons: {
+    labelGeometricObjects: {
       type: 'array',
       items: {
         type: 'array',
         items: {
-          type: 'array',
-          items: {
-            type: 'array',
-            items: {
-              type: 'number',
-            },
+          type: 'object',
+          required: [
+            'label',
+            'shape',
+            'position',
+          ],
+          properties: {
+            label: { type: 'string' },
+            shape: { type: 'string' },
+            position: { type: 'array' },
           },
+          additionalProperties: true,
         },
       },
     },
@@ -305,7 +310,7 @@ export default Vue.extend({
       'dataObjects',
       'classes',
       'labels',
-      'labelPolygons',
+      'labelGeometricObjects',
       'labelMasks',
       'statuses',
       'unlabeledMark',
@@ -349,11 +354,12 @@ export default Vue.extend({
     },
   },
   created(): void {
-    // enable label flipping by number key
+    // Bind keyboard events.
     window.addEventListener('keydown', this.onKey);
   },
   beforeDestroy(): void {
-    // remove listener before distroy, otherwise the onKey method will be called multiple times
+    // Remove listener before distroy,
+    // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', this.onKey);
   },
   methods: {
@@ -361,7 +367,7 @@ export default Vue.extend({
       'setDataObjects',
       'setClasses',
       'setLabels',
-      'setLabelPolygons',
+      'setLabelGeometricObjects',
       'setLabelMasks',
       'setMessage',
       'setStatuses',
@@ -378,8 +384,8 @@ export default Vue.extend({
       'assignDefaultLabels',
     ]),
     onKey(e: KeyboardEvent): void {
-      // shortcut for undo: Ctrl + Z
       const { ctrlKey, key } = e;
+      // shortcut for undo: Ctrl + Z
       if (!this.disableUndoButton && key === 'z' && ctrlKey) {
         e.preventDefault();
         this.onClickUndo();
@@ -390,7 +396,7 @@ export default Vue.extend({
         this.onClickSave();
       }
       // shortcut for next batch: Enter
-      if (!this.disableNextBatchButton && key === 'Enter') {
+      if (!this.disableNextBatchButton && key === 'MediaPlayPause') {
         e.preventDefault();
         this.onClickNextBatch();
       }
@@ -411,7 +417,7 @@ export default Vue.extend({
           dataObjects,
           classes,
           labels,
-          labelPolygons,
+          labelGeometricObjects,
           labelMasks,
           statuses,
           unlabeledMark,
@@ -420,7 +426,7 @@ export default Vue.extend({
         this.setDataObjects(dataObjects);
         this.setClasses(classes);
         this.setLabels(labels);
-        this.setLabelPolygons(labelPolygons);
+        this.setLabelGeometricObjects(labelGeometricObjects);
         this.setLabelMasks(labelMasks);
         this.setStatuses(statuses);
         this.setUnlabeledMark(unlabeledMark);
@@ -440,7 +446,7 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
-        labelPolygons,
+        labelGeometricObjects,
         labelMasks,
         statuses,
         unlabeledMark,
@@ -450,7 +456,7 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
-        labelPolygons,
+        labelGeometricObjects,
         labelMasks,
         statuses,
         unlabeledMark,
@@ -481,12 +487,21 @@ export default Vue.extend({
       }
     },
     onClickExport(): void {
-      const { dataObjects, labels } = this;
+      const {
+        dataObjects,
+        labels,
+        labelGeometricObjects,
+        labelMasks,
+      } = this;
       const labeledData = dataObjects.map((d: IImage, i: number) => {
         const pathSegments = (d.path as string).split('/');
         const filename = pathSegments[pathSegments.length - 1];
-        const label = labels[i];
-        return { filename, label };
+        return {
+          filename,
+          label: labels[i],
+          labelGeometricObjects: labelGeometricObjects[i],
+          labelMask: labelMasks[i],
+        };
       });
       saveObjectAsJSONFile(labeledData, 'labels.json');
     },

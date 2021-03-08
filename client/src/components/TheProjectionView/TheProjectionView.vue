@@ -112,6 +112,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState([
+      'dataObjects',
       'classes',
       'labels',
       'statuses',
@@ -122,7 +123,7 @@ export default Vue.extend({
     ]),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
     nDataObjects(): number {
-      return this.labels.length;
+      return this.dataObjects.length;
     },
   },
   watch: {
@@ -154,10 +155,9 @@ export default Vue.extend({
     ]),
     async onSelectUuids(uuids: string[]): Promise<void> {
       if (uuids.length === 0) return;
-      const { uuidToIdx, statuses } = this;
+      const { uuidToIdx } = this;
       const indices = uuids
-        .map((uuid) => uuidToIdx[uuid])
-        .filter((idx) => statuses[idx] !== Status.LABELED);
+        .map((uuid) => uuidToIdx[uuid]);
       await this.sampleDataObjectsManual(indices);
       await this.updateModel();
       await this.assignDefaultLabels();

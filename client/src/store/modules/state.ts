@@ -5,7 +5,7 @@ import {
   IMessage,
   IModel,
   ILabelMask,
-  ILabelPolygon,
+  ILabelGeometricObject,
   Label,
   SamplingStrategyType,
   Status,
@@ -19,10 +19,10 @@ export interface IState {
   classes: Label[],
   /** The data object labels. */
   labels: Label[],
+  /** The data object geometric object annotations (one image can contain multiple objects). */
+  labelGeometricObjects: ILabelGeometricObject[][],
   /** The data object segmentation masks. */
   labelMasks: ILabelMask[],
-  /** The data object polygon annotations (one image can contain multiple polygons). */
-  labelPolygons: ILabelPolygon[][],
   /** The label statuses of the data objects. */
   statuses: Status[],
   /** The model for default labeling and active sampling. */
@@ -47,8 +47,8 @@ export const createInitialState = (): IState => ({
   dataObjects: [],
   classes: [],
   labels: [],
+  labelGeometricObjects: [],
   labelMasks: [],
-  labelPolygons: [],
   statuses: [],
   model: {
     type: DefaultLabelingMethodType.Null,

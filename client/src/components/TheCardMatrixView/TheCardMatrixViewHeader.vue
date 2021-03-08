@@ -7,7 +7,7 @@
     >
       $vuetify.icons.values.image
     </v-icon>
-    Sampled Object
+    Sampled Objects
     <v-spacer />
 
     <!-- The set batch labels menu. -->

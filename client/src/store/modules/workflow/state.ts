@@ -29,7 +29,7 @@ export const createInitialState = (): IState => ({
   showDatasetOverview: false,
   itemsPerRow: 8,
   itemsPerCol: 4,
-  labelTasks: [LabelTaskType.ImageSegmentation],
+  labelTasks: [LabelTaskType.ObjectDetection, LabelTaskType.ImageSegmentation],
 });
 
 export default createInitialState();

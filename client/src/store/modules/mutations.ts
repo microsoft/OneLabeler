@@ -3,7 +3,7 @@ import {
   IDataObject,
   IMessage,
   IModel,
-  ILabelPolygon,
+  ILabelGeometricObject,
   ILabelMask,
   Label,
   Status,
@@ -26,8 +26,11 @@ export default {
   [types.SET_LABELS](state: IState, labels: Label[]): void {
     state.labels = labels;
   },
-  [types.SET_LABEL_POLYGONS](state: IState, labelPolygons: ILabelPolygon[][]): void {
-    state.labelPolygons = labelPolygons;
+  [types.SET_LABEL_GEOMETRIC_OBJECTS](
+    state: IState,
+    labelGeometricObjects: ILabelGeometricObject[][],
+  ): void {
+    state.labelGeometricObjects = labelGeometricObjects;
   },
   [types.SET_LABEL_MASKS](state: IState, labelMasks: ILabelMask[]): void {
     state.labelMasks = labelMasks;
@@ -83,21 +86,25 @@ export default {
     newLabelMasks[idx as number] = labelMask;
     state.labelMasks = newLabelMasks;
   },
-  [types.SET_DATA_OBJECT_LABEL_POLYGONS](
+  [types.SET_DATA_OBJECT_LABEL_GEOMETRIC_OBJECTS](
     state: IState,
     {
       uuid,
-      labelPolygons,
+      labelGeometricObjects,
       inQueryIndices,
-    }: { uuid: string, labelPolygons: ILabelPolygon[], inQueryIndices: boolean },
+    }: {
+        uuid: string,
+        labelGeometricObjects: ILabelGeometricObject[],
+        inQueryIndices: boolean,
+    },
   ): void {
     const { dataObjects, queryIndices } = state;
-    const newLabelPolygons = [...state.labelPolygons];
+    const newLabelGeometricObjects = [...state.labelGeometricObjects];
     const idx = inQueryIndices
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabelPolygons[idx as number] = labelPolygons;
-    state.labelPolygons = newLabelPolygons;
+    newLabelGeometricObjects[idx as number] = labelGeometricObjects;
+    state.labelGeometricObjects = newLabelGeometricObjects;
   },
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;
