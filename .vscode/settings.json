@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "D:\\software\\anaconda\\python.exe",
     "git.ignoreLimitWarning": true,
     "eslint.validate": [
         "javascript",
