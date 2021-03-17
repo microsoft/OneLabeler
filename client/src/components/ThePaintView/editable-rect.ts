@@ -29,7 +29,7 @@ export interface IEditableRect extends IEditableShape {
 
   /** Set the callback when the rect position is updated. */
   setOnUpdatePosition(value: (d: IEditableRect) => void): this;
-  
+
   /** Set the callback when the rect is clicked. */
   setOnClick(value: (d: IEditableRect) => void): this;
 }
@@ -48,16 +48,16 @@ enum ControlPointType {
 export default class EditableRect implements IEditableRect {
   /** The state of whether the rect is editable. */
   #editable: boolean;
-  
+
   /** The layer on which the group renders. */
   #layer: Konva.Layer;
-  
+
   /** The group containing the rect and anchors. */
   #group: Konva.Group;
-  
+
   /** The rect. */
   #rect: Konva.Rect;
-  
+
   /** The anchors of rect control points. */
   #anchors: { [key: string]: Konva.Circle };
 
@@ -204,7 +204,7 @@ export default class EditableRect implements IEditableRect {
         this.#onUpdatePoints(this);
       }
     });
-  };
+  }
 
   endEdit(): void {
     const rect = this.#rect;
@@ -281,7 +281,7 @@ export default class EditableRect implements IEditableRect {
 
   editable(value?: boolean): boolean | this {
     if (value === undefined) return this.#editable;
-    
+
     if (value !== this.#editable) {
       if (value === true) {
         this.enableEdit();
@@ -304,7 +304,7 @@ export default class EditableRect implements IEditableRect {
 
   getAnchors(): { [key: string]: Konva.Circle } {
     return this.#anchors;
-  };
+  }
 
   setOnUpdatePoints(value: (d: EditableRect) => void): this {
     this.#onUpdatePoints = value;
@@ -315,11 +315,11 @@ export default class EditableRect implements IEditableRect {
     this.#onClick = value;
     return this;
   }
-  
+
   constructor(
     points: [number, number][],
     layer: Konva.Layer,
-    editable: boolean = true,
+    editable = true,
   ) {
     const xMin = Math.min(points[0][0], points[1][0]);
     const xMax = Math.max(points[0][0], points[1][0]);
@@ -330,30 +330,30 @@ export default class EditableRect implements IEditableRect {
 
     const anchors: { [key: string]: Konva.Circle } = {
       [ControlPointType.TopLeft]: this.buildAnchor(
-        xMin, yMin, ControlPointType.TopLeft
+        xMin, yMin, ControlPointType.TopLeft,
       ),
       [ControlPointType.TopMiddle]: this.buildAnchor(
-        (xMin + xMax) / 2, yMin, ControlPointType.TopMiddle
+        (xMin + xMax) / 2, yMin, ControlPointType.TopMiddle,
       ),
       [ControlPointType.TopRight]: this.buildAnchor(
-        xMax, yMin, ControlPointType.TopRight
+        xMax, yMin, ControlPointType.TopRight,
       ),
       [ControlPointType.MiddleLeft]: this.buildAnchor(
-        xMin, (yMin + yMax) / 2, ControlPointType.MiddleLeft
+        xMin, (yMin + yMax) / 2, ControlPointType.MiddleLeft,
       ),
       [ControlPointType.MiddleRight]: this.buildAnchor(
-        xMax, (yMin + yMax) / 2, ControlPointType.MiddleRight
+        xMax, (yMin + yMax) / 2, ControlPointType.MiddleRight,
       ),
       [ControlPointType.BottomLeft]: this.buildAnchor(
-        xMin, yMax, ControlPointType.BottomLeft
+        xMin, yMax, ControlPointType.BottomLeft,
       ),
       [ControlPointType.BottomMiddle]: this.buildAnchor(
-        (xMin + xMax) / 2, yMax, ControlPointType.BottomMiddle
+        (xMin + xMax) / 2, yMax, ControlPointType.BottomMiddle,
       ),
       [ControlPointType.BottomRight]: this.buildAnchor(
-        xMax, yMax, ControlPointType.BottomRight
+        xMax, yMax, ControlPointType.BottomRight,
       ),
-    }
+    };
     const rect = new Konva.Rect({
       x: xMin,
       y: yMin,

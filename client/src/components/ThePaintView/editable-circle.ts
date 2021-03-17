@@ -23,7 +23,7 @@ export interface IEditableCircle extends IEditableShape {
 
   /** Set the callback when the circle position is updated. */
   setOnUpdatePosition(value: (d: IEditableCircle) => void): this;
-  
+
   /** Set the callback when the circle is clicked. */
   setOnClick(value: (d: IEditableCircle) => void): this;
 }
@@ -31,10 +31,10 @@ export interface IEditableCircle extends IEditableShape {
 export default class EditableCircle implements IEditableCircle {
   /** The state of whether the circle is editable. */
   #editable: boolean;
-  
+
   /** The layer on which the group renders. */
   #layer: Konva.Layer;
-  
+
   /** The circle. */
   #circle: Konva.Circle;
 
@@ -61,7 +61,7 @@ export default class EditableCircle implements IEditableCircle {
         this.#onUpdatePoint(this);
       }
     });
-  };
+  }
 
   endEdit(): void {
     const circle = this.#circle;
@@ -71,13 +71,12 @@ export default class EditableCircle implements IEditableCircle {
   }
 
   private enableEdit(): void {
-    const layer = this.#layer;
     const circle = this.#circle;
 
     circle.on('click', () => {
       this.startEdit();
+      const layer = this.#layer;
       layer.draw();
-
       if (this.#onClick !== null) {
         this.#onClick(this);
       }
@@ -111,7 +110,7 @@ export default class EditableCircle implements IEditableCircle {
   point(value?: { x: number; y: number }): { x: number; y: number } | this {
     const circle = this.#circle;
     if (value === undefined) {
-      return { x: circle.x(), y: circle.y() }
+      return { x: circle.x(), y: circle.y() };
     }
     const { x, y } = value;
     circle.x(x).y(y);
@@ -124,7 +123,7 @@ export default class EditableCircle implements IEditableCircle {
 
   editable(value?: boolean): boolean | this {
     if (value === undefined) return this.#editable;
-    
+
     if (value !== this.#editable) {
       if (value === true) {
         this.enableEdit();
@@ -150,11 +149,11 @@ export default class EditableCircle implements IEditableCircle {
     this.#onClick = value;
     return this;
   }
-  
+
   constructor(
     point: { x: number, y: number },
     layer: Konva.Layer,
-    editable: boolean = true,
+    editable = true,
   ) {
     const circle = new Konva.Circle({
       x: point.x,

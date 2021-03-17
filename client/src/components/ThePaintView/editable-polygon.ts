@@ -29,28 +29,32 @@ export interface IEditablePolygon extends IEditableShape {
 
   /** Set the callback when the polygon position is updated. */
   setOnUpdatePosition(value: (d: IEditablePolygon) => void): this;
-  
+
   /** Set the callback when the polygon is clicked. */
   setOnClick(value: (d: IEditablePolygon) => void): this;
 }
 
-const toMatrix = (arr, width: number) => 
-    arr.reduce((rows, key, index: number) => (index % width == 0 ? rows.push([key]) 
-      : rows[rows.length-1].push(key)) && rows, []);
+const toMatrix = (arr, width: number) => arr.reduce(
+  (rows, key, index: number) => (
+    index % width === 0
+      ? rows.push([key])
+      : rows[rows.length - 1].push(key)) && rows,
+  [],
+);
 
 export default class EditablePolygon implements IEditablePolygon {
   /** The state of whether the polygon is editable. */
   #editable: boolean;
-  
+
   /** The layer on which the group renders. */
   #layer: Konva.Layer;
-  
+
   /** The group containing the polygon and anchors. */
   #group: Konva.Group;
-  
+
   /** The polygon. */
   #polygon: Konva.Line;
-  
+
   /** The anchors of polygon control points. */
   #anchors: Konva.Circle[];
 
@@ -147,7 +151,7 @@ export default class EditablePolygon implements IEditablePolygon {
         this.#onUpdatePoints(this);
       }
     });
-  };
+  }
 
   endEdit(): void {
     const polygon = this.#polygon;
@@ -199,7 +203,7 @@ export default class EditablePolygon implements IEditablePolygon {
 
   editable(value?: boolean): boolean | this {
     if (value === undefined) return this.#editable;
-    
+
     if (value !== this.#editable) {
       if (value === true) {
         this.enableEdit();
@@ -222,7 +226,7 @@ export default class EditablePolygon implements IEditablePolygon {
 
   getAnchors(): Konva.Circle[] {
     return this.#anchors;
-  };
+  }
 
   setOnUpdatePosition(value: (d: EditablePolygon) => void): this {
     this.#onUpdatePoints = value;
@@ -233,11 +237,11 @@ export default class EditablePolygon implements IEditablePolygon {
     this.#onClick = value;
     return this;
   }
-  
+
   constructor(
     points: [number, number][],
     layer: Konva.Layer,
-    editable: boolean = true,
+    editable = true,
   ) {
     const anchors = points.map((pt) => this.buildAnchor(pt[0], pt[1]));
     const polygon = new Konva.Line({

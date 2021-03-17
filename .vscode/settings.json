@@ -57,6 +57,7 @@
         "sklearn",
         "sobel",
         "subsampling",
+        "tensorflow",
         "timeit",
         "tolist",
         "tsne",
