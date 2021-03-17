@@ -2,6 +2,7 @@
 
 - [Setup and development](#setup-and-development)
   - [First-time setup](#first-time-setup)
+    - [Notes](#notes)
   - [Installation](#installation)
     - [Launches the backend for development](#launches-the-backend-for-development)
     - [Run unit tests](#run-unit-tests)
@@ -11,7 +12,12 @@
 
 Make sure you have the following installed:
 
-- [Python 3.6](https://www.python.org/downloads/)
+- [Python 3.7](https://www.python.org/downloads/)
+
+### Notes
+
+- cv2 package doesn't exist on Python version >= 3.8, as of 2020/03/17, thus needs to use python version <= 3.7
+- tensorflow package doesn't exist on Python version >= 3.9, as of 2020/03/17, thus needs to use python version <= 3.7
 
 ## Installation
 
