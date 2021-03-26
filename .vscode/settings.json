@@ -27,6 +27,7 @@
         "hstack",
         "imgs",
         "imread",
+        "imwrite",
         "ioloop",
         "keras",
         "konva",

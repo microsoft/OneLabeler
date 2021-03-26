@@ -270,6 +270,7 @@ export default Vue.extend({
             type: NodeTypes.algorithm,
             x: 25,
             y: 25,
+            config: {},
           },
           {
             title: 'Algorithmic Sampling',
@@ -314,6 +315,7 @@ export default Vue.extend({
             type: NodeTypes.interface,
             x: 505,
             y: 25,
+            config: {},
           },
           {
             title: 'Labeled Data',
