@@ -1,6 +1,6 @@
 import Konva from 'konva';
 
-export const createCircle15x15 = () => new Konva.Shape({
+export const createCircle15x15 = (): Konva.Shape => new Konva.Shape({
   sceneFunc(context, shape) {
     let width = shape.getAttr('width');
     let height = shape.getAttr('height');
@@ -53,7 +53,7 @@ export const createCircle15x15 = () => new Konva.Shape({
   height: 15,
 });
 
-export const createCircle5x5 = () => new Konva.Shape({
+export const createCircle5x5 = (): Konva.Shape => new Konva.Shape({
   sceneFunc(context, shape) {
     let width = shape.getAttr('width');
     let height = shape.getAttr('height');
@@ -90,7 +90,7 @@ export const createCircle5x5 = () => new Konva.Shape({
   height: 5,
 });
 
-export const createCircle1x1 = () => new Konva.Rect({
+export const createCircle1x1 = (): Konva.Shape => new Konva.Rect({
   fill: '#00D2FF',
   strokeWidth: 0,
   width: 1,

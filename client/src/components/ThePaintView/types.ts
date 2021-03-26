@@ -33,7 +33,7 @@ export interface IEditableShape {
 
   /** Set the callback when the circle position is updated. */
   setOnUpdatePosition(value: (d: IEditableShape) => void): this;
-  
+
   /** Set the callback when the circle is clicked. */
   setOnClick(value: (d: IEditableShape) => void): this;
 }

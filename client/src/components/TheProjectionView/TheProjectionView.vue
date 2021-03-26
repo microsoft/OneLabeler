@@ -61,7 +61,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ProjectionMethodType, Status } from '@/commons/types';
+import { ProjectionMethodType } from '@/commons/types';
 import { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
 import VConfigurableProjection from './VConfigurableProjection.vue';

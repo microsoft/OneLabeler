@@ -117,17 +117,13 @@ export default class EditableRect implements IEditableRect {
 
   private showAnchors(): this {
     const anchors = this.#anchors;
-    for (const key in anchors) {
-      anchors[key].visible(true);
-    }
+    Object.values(anchors).forEach((anchor) => anchor.visible(true));
     return this;
   }
 
   private hideAnchors(): this {
     const anchors = this.#anchors;
-    for (const key in anchors) {
-      anchors[key].visible(false);
-    }
+    Object.values(anchors).forEach((anchor) => anchor.visible(false));
     return this;
   }
 
@@ -192,11 +188,10 @@ export default class EditableRect implements IEditableRect {
       const dy = Math.round(group.y());
       rect.x(rect.x() + dx)
         .y(rect.y() + dy);
-      for (const key in anchors) {
-        const anchor = anchors[key];
+      Object.values(anchors).forEach((anchor) => {
         anchor.x(anchor.x() + dx)
           .y(anchor.y() + dy);
-      }
+      });
       group.x(0).y(0);
       layer.batchDraw();
 
@@ -306,7 +301,7 @@ export default class EditableRect implements IEditableRect {
     return this.#anchors;
   }
 
-  setOnUpdatePoints(value: (d: EditableRect) => void): this {
+  setOnUpdatePosition(value: (d: EditableRect) => void): this {
     this.#onUpdatePoints = value;
     return this;
   }
@@ -369,9 +364,7 @@ export default class EditableRect implements IEditableRect {
       anchors,
     });
     group.add(rect);
-    for (const key in anchors) {
-      group.add(anchors[key]);
-    }
+    Object.values(anchors).forEach((anchor) => group.add(anchor));
 
     this.#editable = editable;
     this.#layer = layer;

@@ -1,4 +1,4 @@
-import { scaleOrdinal, schemeCategory10 } from 'd3';
+import { scaleOrdinal, schemeCategory10, ScaleOrdinal } from 'd3';
 import {
   IDataObject,
   ILabelGeometricObject,
@@ -56,7 +56,9 @@ export const unlabeledIndices = (state: IState): number[] => {
 };
 
 /** The color scale for labels used in the system.  */
-export const label2color = (state: IState) => {
+export const label2color = (
+  state: IState,
+): ScaleOrdinal<string, string, never> => {
   const { classes, unlabeledMark } = state;
   const mapper = scaleOrdinal(['#bbbbbb', ...schemeCategory10])
     .domain([unlabeledMark, ...classes]);
