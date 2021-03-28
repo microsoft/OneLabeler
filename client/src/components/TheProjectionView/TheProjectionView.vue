@@ -12,6 +12,7 @@
     >
       <v-container
         v-if="nDataObjects >= 2"
+        ref="container"
         :style="{
           height: '100%',
           display: 'grid',
@@ -105,6 +106,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      resizeObserver: null as ResizeObserver | null,
       nRows: 1,
       nColumns: 1,
       views: [] as FacetAttribute[],
@@ -128,8 +130,7 @@ export default Vue.extend({
   },
   watch: {
     featureValues() {
-      // change the id to force view update
-      this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
+      this.forceViewsUpdate();
     },
     featureNames() {
       // change the id to force view update
@@ -143,9 +144,20 @@ export default Vue.extend({
       }));
     },
   },
+  beforeDestroy(): void {
+    // Unbind resize observer.
+    (this.resizeObserver as ResizeObserver).disconnect();
+  },
   mounted() {
     const { featureNames } = this;
     this.views = [createView(featureNames.length)];
+
+    // Bind resize observer,
+    // rerender the scatter plots when the div containing the svg(s) change size.
+    // TODO: when resized, the configurable projection component
+    // is rerendered, and the projection is also recomputed, which is unnecessary.
+    this.resizeObserver = new ResizeObserver(this.forceViewsUpdate);
+    this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
     ...mapActions('workflow', [
@@ -198,6 +210,10 @@ export default Vue.extend({
       const updatedViews = [...this.views];
       updatedViews[i].subsampling = subsampling;
       this.views = updatedViews;
+    },
+    forceViewsUpdate() {
+      // change the id to force view update
+      this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
   },
 });
