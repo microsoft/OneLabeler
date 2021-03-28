@@ -169,9 +169,9 @@ class DataLabelingPipeline(GenericPipeline):
         # pylint: disable=invalid-name
 
         assert len(data_objects) == len(labels),\
-            'number of data objects and labels mismatch'
+            f'number of data objects and labels mismatch: {len(data_objects)} != {len(labels)}'
         assert len(data_objects) == len(statuses),\
-            'number of data objects and label statuses mismatch'
+            f'number of data objects and label statuses mismatch: {len(data_objects)} != {len(statuses)}'
 
         assert model.type in [
             DefaultLabelingMethodType.Null,

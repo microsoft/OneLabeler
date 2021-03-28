@@ -124,24 +124,16 @@ export default Vue.extend({
       required: true,
     },
   },
-  data(): {
-    resizeObserver: ResizeObserver | null,
-    snapToPixel: boolean,
-    image: HTMLImageElement | null,
-    isMouseDown: boolean,
-    boundPixelsPerRow: [number, number] | null,
-    boundPixelsPerColumn: [number, number] | null,
-    points: [number, number][],
-    } {
+  data() {
     return {
-      resizeObserver: null,
+      resizeObserver: null as ResizeObserver | null,
       // Whether to snap the canvas to ensure pixel edges align with the canvas edge.
       snapToPixel: true,
-      image: null,
+      image: null as HTMLImageElement | null,
       isMouseDown: false,
-      boundPixelsPerRow: [10, 2000],
-      boundPixelsPerColumn: [10, 2000],
-      points: [],
+      boundPixelsPerRow: [10, 2000] as [number, number] | null,
+      boundPixelsPerColumn: [10, 2000] as [number, number] | null,
+      points: [] as [number, number][],
     };
   },
   computed: {

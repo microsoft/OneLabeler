@@ -28,7 +28,7 @@ export const createInitialState = (): IState => ({
   defaultLabelingMethod: DefaultLabelingMethodType.Null,
   showDatasetOverview: false,
   itemsPerRow: 8,
-  itemsPerCol: 4,
+  itemsPerCol: 6,
   labelTasks: [LabelTaskType.ObjectDetection, LabelTaskType.ImageSegmentation],
 });
 

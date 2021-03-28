@@ -241,7 +241,7 @@
             || mouseOperation === MouseOperationType.EditGeometricObject
             || mouseOperation === MouseOperationType.PaintErase"
           width="85"
-          class="view-header-button subtitle-2 pl-1"
+          class="view-header-button subtitle-2 pl-1 text-none"
           title="Set Stroke Color"
           x-small
           v-on="on"
