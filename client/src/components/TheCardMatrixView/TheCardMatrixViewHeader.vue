@@ -23,7 +23,7 @@
       </template>
       <v-list dense>
         <v-list-item
-          v-for="(entry, i) in classes"
+          v-for="(entry, i) in [...classes, unlabeledMark]"
           :key="i"
           style="min-height: 30px"
           @click="onClickSetBatchLabels(entry)"
@@ -58,8 +58,12 @@ export default Vue.extend({
   name: 'TheCardMatrixViewHeader',
   props: {
     classes: {
-      type: Array,
+      type: Array as PropType<Label[]>,
       default: () => [],
+    },
+    unlabeledMark: {
+      type: String as PropType<Label>,
+      required: true,
     },
     label2color: {
       type: Function as PropType<(label: string) => string>,

@@ -119,7 +119,7 @@
 
     <!-- The start data labeling button. -->
     <v-btn
-      title="Next Batch (Enter)"
+      title="Next Batch (->)"
       color="white"
       icon
       tile
@@ -395,8 +395,8 @@ export default Vue.extend({
         e.preventDefault();
         this.onClickSave();
       }
-      // shortcut for next batch: Enter
-      if (!this.disableNextBatchButton && key === 'MediaPlayPause') {
+      // shortcut for next batch: ArrowRight
+      if (!this.disableNextBatchButton && key === 'ArrowRight') {
         e.preventDefault();
         this.onClickNextBatch();
       }

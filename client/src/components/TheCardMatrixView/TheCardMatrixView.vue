@@ -2,6 +2,7 @@
   <v-card>
     <TheCardMatrixViewHeader
       :classes="classes"
+      :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       @click-set-batch-labels="onClickSetBatchLabels"
     />
@@ -47,7 +48,7 @@ export default Vue.extend({
     TheCardMatrixViewHeader,
   },
   computed: {
-    ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices']),
+    ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices', 'unlabeledMark']),
     ...mapState('workflow', ['itemsPerRow', 'itemsPerCol']),
     ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels', 'label2color']),
   },
