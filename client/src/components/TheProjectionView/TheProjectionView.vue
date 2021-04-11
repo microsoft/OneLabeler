@@ -7,12 +7,12 @@
     />
     <v-divider />
     <v-card-actions
+      ref="container"
       class="pa-0"
       style="height: calc(100% - 30px)"
     >
       <v-container
         v-if="nDataObjects >= 2"
-        ref="container"
         :style="{
           height: '100%',
           display: 'grid',
