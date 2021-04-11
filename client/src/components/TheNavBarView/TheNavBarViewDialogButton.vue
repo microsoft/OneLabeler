@@ -1,6 +1,6 @@
 <template>
   <VDialogButton
-    max-width="1200px"
+    max-width="1400px"
     :button-icon="$vuetify.icons.values.config"
     button-text="Settings"
     dialog-header-title="Settings"
@@ -79,7 +79,6 @@ import {
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
 import VUploadButton from './VUploadButton.vue';
-// import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogMenuView.vue';
 import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogGraphView.vue';
 
 type WorkflowConfigData = {

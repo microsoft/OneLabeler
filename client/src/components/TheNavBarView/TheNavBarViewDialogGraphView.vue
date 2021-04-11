@@ -1,6 +1,6 @@
 <template>
   <!-- The configuration menus. -->
-  <v-container class="pa-0">
+  <v-container class="pa-0" style="max-width: 1400px">
     <v-row no-gutters>
       <v-col
         cols="8"
@@ -24,29 +24,31 @@
           <v-divider />
           <v-card-actions>
             <svg
-              style="height: 200px; width: 100%;"
+              style="height: 290px; width: 100%;"
             >
               <g
                 v-for="(node, i) in graph.nodes"
                 :key="`node-${i}`"
                 :transform="`translate(${node.x},${node.y})`"
                 style="cursor: pointer"
-                @click="onClickGraphNode(node)"
+                @click="node.type !== 'logic' ? onClickGraphNode(node) : undefined"
               >
                 <rect
-                  :fill="{
-                    'algorithm': '#DBEEF4',
-                    'interface': '#EBF1DE',
-                    'data': '#FCD5B5',
-                  }[node.type]"
-                  :stroke="{
-                    'algorithm': '#4BACC6',
-                    'interface': '#9BBB59',
-                    'data': '#E46C0A',
-                  }[node.type]"
+                  fill-opacity="0"
+                  stroke="black"
                   stroke-width="1px"
                   :width="rectWidth"
                   :height="rectHeight"
+                />
+                <rect
+                  v-if="node.type !== 'logic'"
+                  :fill="{
+                    'process': '#8C564B',
+                    'data': '#FF7F0E',
+                  }[node.type]"
+                  stroke-width="1px"
+                  :width="rectWidth"
+                  :height="5"
                 />
                 <text
                   :y="rectHeight / 2"
@@ -85,10 +87,10 @@
                 :key="`edge-${i}`"
                 stroke="black"
                 fill="black"
-                :x1="graph.nodes[edge.source].x + rectWidth"
-                :y1="graph.nodes[edge.source].y + rectHeight / 2"
-                :x2="graph.nodes[edge.target].x"
-                :y2="graph.nodes[edge.target].y + rectHeight / 2"
+                :x1="edge.x1"
+                :y1="edge.y1"
+                :x2="edge.x2"
+                :y2="edge.y2"
                 marker-end="url(#arrowhead)"
               />
             </svg>
@@ -148,9 +150,9 @@ import {
 import VMenusFlat from './VMenusFlat.vue';
 
 enum NodeTypes {
-  algorithm = 'algorithm',
-  interface = 'interface',
+  process = 'process',
   data = 'data',
+  logic = 'logic',
 }
 
 type Node = {
@@ -175,7 +177,7 @@ const menusConfig: {
   }
 } = {
   samplingStrategy: {
-    title: 'Sampling Strategy',
+    title: 'Algorithmic Sampling Strategy',
     options: [
       SamplingStrategyType.Random,
       SamplingStrategyType.ClusterCentroids,
@@ -194,7 +196,7 @@ const menusConfig: {
     ],
   },
   nBatch: {
-    title: 'Data Objects Per Sampled Batch',
+    title: 'Selection Batch Size',
     options: [1, 4, 16, 32, 48, 64, 96],
     optionsText: ['1', '4', '16', '32', '48', '64', '96'],
   },
@@ -220,7 +222,7 @@ const menusConfig: {
     ],
   },
   showDatasetOverview: {
-    title: 'Show Dataset Overview',
+    title: 'User Sampling Enabled',
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
@@ -235,17 +237,17 @@ const menusConfig: {
     optionsText: ['1', '2', '4', '6', '8'],
   },
   enableImageClassification: {
-    title: 'Annotate Image Label',
+    title: 'Classification',
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
   enableObjectDetection: {
-    title: 'Annotate Object Polygon',
+    title: 'Object Detection',
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
   enableImageSegmentation: {
-    title: 'Annotate Segmentation Mask',
+    title: 'Segmentation',
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
@@ -266,44 +268,54 @@ export default Vue.extend({
       graph: {
         nodes: [
           {
-            title: 'Feature Extraction',
-            type: NodeTypes.algorithm,
+            title: 'Label Task',
+            type: NodeTypes.data,
             x: 25,
+            y: 25,
+            config: {
+              enableImageClassification: menusConfig.enableImageClassification,
+              enableObjectDetection: menusConfig.enableObjectDetection,
+              enableImageSegmentation: menusConfig.enableImageSegmentation,
+            },
+          },
+          {
+            title: 'Feature Extraction',
+            type: NodeTypes.process,
+            x: 145,
             y: 25,
             config: {},
           },
           {
-            title: 'Algorithmic Sampling',
-            type: NodeTypes.algorithm,
-            x: 145,
+            title: 'Data Object Selection',
+            type: NodeTypes.process,
+            x: 265,
             y: 25,
             config: {
               samplingStrategy: menusConfig.samplingStrategy,
               nBatch: menusConfig.nBatch,
-            },
-          },
-          {
-            title: 'User Sampling',
-            type: NodeTypes.interface,
-            x: 145,
-            y: 115,
-            config: {
               showDatasetOverview: menusConfig.showDatasetOverview,
             },
           },
           {
             title: 'Default Labeling',
-            type: NodeTypes.algorithm,
-            x: 265,
+            type: NodeTypes.process,
+            x: 385,
             y: 25,
             config: {
               defaultLabelingMethod: menusConfig.defaultLabelingMethod,
             },
           },
           {
-            title: 'Sampled Object Details',
-            type: NodeTypes.interface,
-            x: 385,
+            title: 'Task Transform- ation',
+            type: NodeTypes.process,
+            x: 505,
+            y: 25,
+            config: {},
+          },
+          {
+            title: 'Interactive Labeling',
+            type: NodeTypes.process,
+            x: 625,
             y: 25,
             config: {
               itemsPerRow: menusConfig.itemsPerRow,
@@ -312,16 +324,30 @@ export default Vue.extend({
           },
           {
             title: 'Stoppage Analysis',
-            type: NodeTypes.interface,
-            x: 505,
+            type: NodeTypes.process,
+            x: 745,
             y: 25,
             config: {},
           },
           {
-            title: 'Labeled Data',
-            type: NodeTypes.data,
-            x: 625,
-            y: 25,
+            title: 'Stop?',
+            type: NodeTypes.logic,
+            x: 745,
+            y: 115,
+            config: {},
+          },
+          {
+            title: 'Exit',
+            type: NodeTypes.logic,
+            x: 745,
+            y: 205,
+            config: {},
+          },
+          {
+            title: 'Interim Model Training',
+            type: NodeTypes.process,
+            x: 265,
+            y: 115,
             config: {
               enableImageClassification: menusConfig.enableImageClassification,
               enableObjectDetection: menusConfig.enableObjectDetection,
@@ -330,12 +356,33 @@ export default Vue.extend({
           },
         ],
         edges: [
-          { source: 0, target: 1 },
-          { source: 1, target: 3 },
-          { source: 2, target: 3 },
-          { source: 3, target: 4 },
-          { source: 4, target: 5 },
-          { source: 5, target: 6 },
+          {
+            source: 1, target: 2, x1: 225, y1: 55, x2: 265, y2: 55,
+          },
+          {
+            source: 2, target: 4, x1: 345, y1: 55, x2: 385, y2: 55,
+          },
+          {
+            source: 4, target: 5, x1: 465, y1: 55, x2: 505, y2: 55,
+          },
+          {
+            source: 5, target: 6, x1: 585, y1: 55, x2: 625, y2: 55,
+          },
+          {
+            source: 7, target: 8, x1: 705, y1: 55, x2: 745, y2: 55,
+          },
+          {
+            source: 6, target: 7, x1: 785, y1: 85, x2: 785, y2: 115,
+          },
+          {
+            source: 8, target: 9, x1: 745, y1: 145, x2: 345, y2: 145,
+          },
+          {
+            source: 6, target: 7, x1: 785, y1: 175, x2: 785, y2: 205,
+          },
+          {
+            source: 9, target: 2, x1: 305, y1: 115, x2: 305, y2: 85,
+          },
         ],
       },
     };
