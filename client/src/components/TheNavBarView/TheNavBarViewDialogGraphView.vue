@@ -22,7 +22,9 @@
             Workflow
           </v-card-title>
           <v-divider />
-          <v-card-actions>
+          <v-card-actions
+            style=""
+          >
             <svg
               style="height: 290px; width: 100%;"
             >
@@ -30,26 +32,53 @@
                 v-for="(node, i) in graph.nodes"
                 :key="`node-${i}`"
                 :transform="`translate(${node.x},${node.y})`"
-                style="cursor: pointer"
-                @click="node.type !== 'logic' ? onClickGraphNode(node) : undefined"
+                :style="{
+                  cursor: (node.type === 'process') || (node.type === 'data')
+                    ? 'pointer' : undefined
+                }"
+                @click="(node.type === 'process') || (node.type === 'data')
+                  ? onClickGraphNode(node) : undefined"
               >
-                <rect
-                  fill-opacity="0"
-                  stroke="black"
-                  stroke-width="1px"
-                  :width="rectWidth"
-                  :height="rectHeight"
-                />
-                <rect
-                  v-if="node.type !== 'logic'"
-                  :fill="{
-                    'process': '#8C564B',
-                    'data': '#FF7F0E',
-                  }[node.type]"
-                  stroke-width="1px"
-                  :width="rectWidth"
-                  :height="5"
-                />
+                <template v-if="(node.type === 'process') || (node.type === 'data')">
+                  <rect
+                    fill-opacity="0"
+                    stroke="black"
+                    stroke-width="1px"
+                    :width="rectWidth"
+                    :height="rectHeight"
+                  />
+                  <rect
+                    :fill="{
+                      'process': '#8C564B',
+                      'data': '#FF7F0E',
+                    }[node.type]"
+                    stroke-width="1px"
+                    :width="rectWidth"
+                    :height="5"
+                  />
+                </template>
+                <template v-else-if="node.type === 'decision'">
+                  <polygon
+                    :points="`
+                      ${rectWidth/2},0
+                      ${rectWidth},${rectHeight/2}
+                      ${rectWidth/2},${rectHeight}
+                      0,${rectHeight/2}`"
+                    fill-opacity="0"
+                    stroke="black"
+                    stroke-width="1px"
+                  />
+                </template>
+                <template v-else>
+                  <circle
+                    :r="rectHeight / 2"
+                    :cx="rectWidth / 2"
+                    :cy="rectHeight / 2"
+                    fill-opacity="0"
+                    stroke="black"
+                    stroke-width="1px"
+                  />
+                </template>
                 <text
                   :y="rectHeight / 2"
                   font-size="14px"
@@ -104,7 +133,8 @@
         <VMenusFlat
           v-if="selectedNode !== null"
           style="height: 100%"
-          :title="`${selectedNode.title} Parameters`"
+          :title="selectedNode.title + ' '
+            + (selectedNode.type === 'process' ? 'Instantiation' : 'Choice')"
           :menus-config="selectedNode.config"
           :selected-options="settings"
           @click-menu-option="onClickMenuOption"
@@ -147,13 +177,17 @@ import {
   FeatureExtractionMethodType,
   DefaultLabelingMethodType,
   SamplingStrategyType,
+  TaskTransformationType,
+  StoppageAnalysisType,
+  InterimModelTrainingType,
 } from '@/commons/types';
 import VMenusFlat from './VMenusFlat.vue';
 
 enum NodeTypes {
-  process = 'process',
   data = 'data',
-  logic = 'logic',
+  process = 'process',
+  decision = 'decision',
+  terminal = 'terminal',
 }
 
 type Node = {
@@ -238,6 +272,11 @@ const menusConfig: {
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
+  taskTransformation: {
+    title: 'Task Transformation',
+    options: [TaskTransformationType.DirectLabeling],
+    optionsText: ['Direct Labeling'],
+  },
   itemsPerRow: {
     title: 'Data Objects Per Row',
     options: [1, 4, 8, 12],
@@ -247,6 +286,16 @@ const menusConfig: {
     title: 'Data Objects Per Column',
     options: [1, 2, 4, 6, 8],
     optionsText: ['1', '2', '4', '6', '8'],
+  },
+  stoppageAnalysis: {
+    title: 'Stoppage Analysis',
+    options: [StoppageAnalysisType.AllChecked],
+    optionsText: ['All Checked'],
+  },
+  interimModelTraining: {
+    title: 'Interim Model Training',
+    options: [InterimModelTrainingType.Retrain],
+    optionsText: ['Retrain'],
   },
   enableImageClassification: {
     title: 'Classification',
@@ -320,11 +369,13 @@ export default Vue.extend({
             },
           },
           {
-            title: 'Task Transform- ation',
+            title: 'Task Transform',
             type: NodeTypes.process,
             x: 505,
             y: 25,
-            config: {},
+            config: {
+              taskTransformation: menusConfig.taskTransformation,
+            },
           },
           {
             title: 'Interactive Labeling',
@@ -341,18 +392,20 @@ export default Vue.extend({
             type: NodeTypes.process,
             x: 745,
             y: 25,
-            config: {},
+            config: {
+              stoppageAnalysis: menusConfig.stoppageAnalysis,
+            },
           },
           {
             title: 'Stop?',
-            type: NodeTypes.logic,
+            type: NodeTypes.decision,
             x: 745,
             y: 115,
             config: {},
           },
           {
             title: 'Exit',
-            type: NodeTypes.logic,
+            type: NodeTypes.terminal,
             x: 745,
             y: 205,
             config: {},
@@ -363,9 +416,7 @@ export default Vue.extend({
             x: 265,
             y: 115,
             config: {
-              enableImageClassification: menusConfig.enableImageClassification,
-              enableObjectDetection: menusConfig.enableObjectDetection,
-              enableImageSegmentation: menusConfig.enableImageSegmentation,
+              interimModelTraining: menusConfig.interimModelTraining,
             },
           },
         ],
@@ -407,6 +458,9 @@ export default Vue.extend({
       'samplingStrategy',
       'showDatasetOverview',
       'defaultLabelingMethod',
+      'taskTransformation',
+      'stoppageAnalysis',
+      'interimModelTraining',
       'nBatch',
       'itemsPerRow',
       'itemsPerCol',
@@ -418,6 +472,9 @@ export default Vue.extend({
         samplingStrategy,
         showDatasetOverview,
         defaultLabelingMethod,
+        taskTransformation,
+        stoppageAnalysis,
+        interimModelTraining,
         nBatch,
         itemsPerRow,
         itemsPerCol,
@@ -438,6 +495,9 @@ export default Vue.extend({
         samplingStrategy,
         showDatasetOverview,
         defaultLabelingMethod,
+        taskTransformation,
+        stoppageAnalysis,
+        interimModelTraining,
         nBatch,
         itemsPerRow,
         itemsPerCol,

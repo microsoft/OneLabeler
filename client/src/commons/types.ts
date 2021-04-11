@@ -116,6 +116,21 @@ export enum DefaultLabelingMethodType {
   RestrictedBoltzmannMachine = 'RestrictedBoltzmannMachine',
 }
 
+/** The enum of task transformation types. */
+export enum TaskTransformationType {
+  DirectLabeling = 'DirectLabeling',
+}
+
+/** The enum of stoppage analysis types. */
+export enum StoppageAnalysisType {
+  AllChecked = 'AllChecked',
+}
+
+/** The enum of interim model training types. */
+export enum InterimModelTrainingType {
+  Retrain = 'Retrain',
+}
+
 /** The enum of projection method types. */
 export enum ProjectionMethodType {
   PCA = 'PCA',
