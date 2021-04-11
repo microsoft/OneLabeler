@@ -79,7 +79,7 @@ class DataLabelingPipeline(GenericPipeline):
             data_object['width'] = img.shape[1]
             data_object['height'] = img.shape[0]
 
-        if feature_extraction_method == 'Unsupervised': 
+        if feature_extraction_method == 'Unsupervised':
             extractors = [
                 dimension_reduction,
             ]
@@ -93,7 +93,8 @@ class DataLabelingPipeline(GenericPipeline):
                 texture_descriptors,
             ]
         else:
-            raise ValueError(f'Invalid feature extraction method: {feature_extraction_method}')
+            raise ValueError(
+                f'Invalid feature extraction method: {feature_extraction_method}')
 
         X = None
         feature_names = []
@@ -109,6 +110,7 @@ class DataLabelingPipeline(GenericPipeline):
 
     @staticmethod
     def sample_data_objects(data_objects: ListLike,
+                            labels: np.ndarray,
                             statuses: np.ndarray,
                             n_batch: int,
                             model: Model) -> np.ndarray:
@@ -123,13 +125,13 @@ class DataLabelingPipeline(GenericPipeline):
             query_indices = density_sampling(data_objects, statuses, n_batch)
         elif model.sampling_strategy == SamplingStrategyType.Entropy:
             query_indices = entropy_sampling(
-                data_objects, statuses, n_batch, model)
+                data_objects, statuses, n_batch, model.predictor)
         elif model.sampling_strategy == SamplingStrategyType.LeastConfident:
             query_indices = confidence_sampling(
-                data_objects, statuses, n_batch, model)
+                data_objects, statuses, n_batch, model.predictor)
         elif model.sampling_strategy == SamplingStrategyType.SmallestMargin:
             query_indices = margin_sampling(
-                data_objects, statuses, n_batch, model)
+                data_objects, statuses, n_batch, model.predictor)
         else:
             raise ValueError(
                 f'Invalid sampling strategy: {model.sampling_strategy}')
@@ -144,6 +146,8 @@ class DataLabelingPipeline(GenericPipeline):
 
         if len(data_objects) == 0:
             return np.array([])
+        if len(classes) == 0:
+            return np.array([unlabeled_mark for i in range(len(data_objects))])
 
         X = np.array([data_object['features'] for data_object in data_objects])
         n_samples = len(data_objects)
@@ -153,12 +157,12 @@ class DataLabelingPipeline(GenericPipeline):
         elif model.type == DefaultLabelingMethodType.Random:
             default_labels = np.random.choice(
                 classes, size=n_samples, replace=True)
-        elif model.content is None:
+        elif model.predictor is None:
             default_labels = np.random.choice(
                 classes, size=n_samples, replace=True)
         else:
             try:
-                default_labels = model.content.predict(X)
+                default_labels = model.predictor.predict(X)
             except NotFittedError:
                 default_labels = np.random.choice(
                     classes, size=n_samples, replace=True)
@@ -216,68 +220,97 @@ class DataLabelingPipeline(GenericPipeline):
         y_train = y[mask_labeled]
 
         if model.type == DefaultLabelingMethodType.Null:
-            content = None
+            predictor = None
         elif model.type == DefaultLabelingMethodType.Random:
-            content = None
+            predictor = None
         elif model.type == DefaultLabelingMethodType.DecisionTree:
-            not_fitted = model.content is None
+            not_fitted = model.predictor is None
             estimator = DecisionTreeClassifier() if not_fitted\
-                else model.content.estimator
+                else model.predictor.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(
+            predictor = EstimatorWithLabelDecoder(
                 estimator=estimator, encoder=encoder)
         elif model.type == DefaultLabelingMethodType.SVM:
             # sklearn.svm.SVC doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
             else:
-                not_fitted = model.content is None\
-                    or model.content.estimator.__class__.__name__ == 'DummyClassifier'
+                not_fitted = model.predictor is None\
+                    or model.predictor.estimator.__class__.__name__ == 'DummyClassifier'
                 estimator = SVC(gamma=0.001) if not_fitted\
-                    else model.content.estimator
+                    else model.predictor.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(
+            predictor = EstimatorWithLabelDecoder(
                 estimator=estimator, encoder=encoder)
         elif model.type == DefaultLabelingMethodType.LogisticRegression:
             # sklearn.linear_model.LogisticRegression doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
             else:
-                not_fitted = model.content is None\
-                    or model.content.estimator.__class__.__name__ == 'DummyClassifier'
+                not_fitted = model.predictor is None\
+                    or model.predictor.estimator.__class__.__name__ == 'DummyClassifier'
                 estimator = make_pipeline(
                     StandardScaler(),
                     LogisticRegression(C=1, penalty='l2',
                                        tol=0.01, solver='saga'),
-                ) if not_fitted else model.content.estimator
+                ) if not_fitted else model.predictor.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(
+            predictor = EstimatorWithLabelDecoder(
                 estimator=estimator, encoder=encoder)
         elif model.type == DefaultLabelingMethodType.LabelSpreading:
-            not_fitted = model.content is None
+            not_fitted = model.predictor is None
             estimator = LabelSpreading(gamma=0.25, max_iter=20) if not_fitted\
-                else model.content.estimator
+                else model.predictor.estimator
             estimator = estimator.fit(X, y)
-            content = EstimatorWithLabelDecoder(
+            predictor = EstimatorWithLabelDecoder(
                 estimator=estimator, encoder=encoder)
         elif model.type == DefaultLabelingMethodType.RestrictedBoltzmannMachine:
             # sklearn.neural_network.BernoulliRBM doesn't support the edge case with one class
             if len(np.unique(y_train)) == 1:
                 estimator = DummyClassifier(strategy='most_frequent')
             else:
-                not_fitted = model.content is None\
-                    or model.content.estimator.__class__.__name__ == 'DummyClassifier'
+                not_fitted = model.predictor is None\
+                    or model.predictor.estimator.__class__.__name__ == 'DummyClassifier'
                 estimator = make_pipeline(
                     BernoulliRBM(random_state=0),
                     LogisticRegression(solver='newton-cg', tol=1),
-                ) if not_fitted else model.content.estimator
+                ) if not_fitted else model.predictor.estimator
             estimator = estimator.fit(X_train, y_train)
-            content = EstimatorWithLabelDecoder(
+            predictor = EstimatorWithLabelDecoder(
                 estimator=estimator, encoder=encoder)
+
+        if model.type in [
+            DefaultLabelingMethodType.Null,
+            DefaultLabelingMethodType.Random,
+        ]:
+            sampler = None
+        elif model.type in [
+            DefaultLabelingMethodType.DecisionTree,
+            DefaultLabelingMethodType.SVM,
+            DefaultLabelingMethodType.RestrictedBoltzmannMachine,
+        ]:
+            if len(np.unique(y_train)) == 1:
+                sampler = None
+            else:
+                not_fitted = model.sampler is None
+                estimator = estimator = make_pipeline(
+                    StandardScaler(),
+                    LogisticRegression(C=1, penalty='l2',
+                                       tol=0.01, solver='saga'),
+                ) if not_fitted else model.sampler.estimator
+                estimator = estimator.fit(X_train, y_train)
+                sampler = EstimatorWithLabelDecoder(
+                    estimator=estimator, encoder=encoder)
+        elif model.type in [
+            DefaultLabelingMethodType.LogisticRegression,
+            DefaultLabelingMethodType.LabelSpreading,
+        ]:
+            sampler = predictor
 
         model_updated = Model(
             type=model.type,
             sampling_strategy=model.sampling_strategy,
-            content=content,
+            predictor=predictor,
+            sampler=sampler,
         )
         return model_updated

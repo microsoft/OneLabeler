@@ -40,8 +40,20 @@ class SamplingStrategyType():
     SmallestMargin = 'SmallestMargin'
 
 class Model(NamedTuple):
-    """The default labeling and active sampling model."""
+    """
+    The default labeling and active sampling model.
+    
+    Attributes
+    ----------
+    predictor : Union[BaseEstimator, None]
+        The part of the model responsible for prediction.
+    sampler : Union[BaseEstimator, None]
+        The part of the model responsible for sampling.
+        The predictor and sampler can possibly refer to the same estimator,
+        if it can serve both purposes.
+    """
 
     type: DefaultLabelingMethodType
     sampling_strategy: SamplingStrategyType
-    content: Union[BaseEstimator, None]
+    predictor: Union[BaseEstimator, None]
+    sampler: Union[BaseEstimator, None]

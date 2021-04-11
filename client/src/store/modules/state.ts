@@ -53,7 +53,8 @@ export const createInitialState = (): IState => ({
   model: {
     type: DefaultLabelingMethodType.Null,
     samplingStrategy: SamplingStrategyType.Random,
-    content: null,
+    predictor: null,
+    sampler: null,
   },
   unlabeledMark: '-1',
   featureNames: [],

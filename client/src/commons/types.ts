@@ -144,6 +144,8 @@ export interface IModel {
   type: DefaultLabelingMethodType,
   /** The data object sampling strategy. */
   samplingStrategy: SamplingStrategyType,
-  /** The key to the model object stored in the backend. */
-  content: string | null,
+  /** The key to the default labeling model stored in the backend. */
+  predictor: string | null,
+  /** The key to the sampling model stored in the backend. */
+  sampler: string | null,
 }

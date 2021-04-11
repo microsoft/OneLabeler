@@ -58,7 +58,8 @@ export const setSamplingStrategy = (
     const modelUpdated: IModel = {
       type: model.type,
       samplingStrategy,
-      content: model.content,
+      predictor: model.predictor,
+      sampler: model.sampler,
     };
     commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
   }
@@ -77,7 +78,8 @@ export const setDefaultLabelingMethod = (
     const modelUpdated: IModel = {
       type: defaultLabelingMethod,
       samplingStrategy: model.samplingStrategy,
-      content: null,
+      predictor: null,
+      sampler: model.sampler,
     };
     commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
   }
@@ -113,19 +115,19 @@ export const setLabelTasks = (
   commit(types.SET_LABEL_TASKS, labelTasks);
 
   // Initialize labels for new tasks, and reset labels for deleted tasks.
-  const enabledImageClassification = labelTasksOld.findIndex(
+  const enableImageClassificationOld = labelTasksOld.findIndex(
     (d) => d === LabelTaskType.ImageClassification,
   ) >= 0;
   const enableImageClassification = labelTasks.findIndex(
     (d) => d === LabelTaskType.ImageClassification,
   ) >= 0;
-  const enabledObjectDetection = labelTasksOld.findIndex(
+  const enableObjectDetectionOld = labelTasksOld.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
   const enableObjectDetection = labelTasks.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
-  const enabledImageSegmentation = labelTasksOld.findIndex(
+  const enableImageSegmentationOld = labelTasksOld.findIndex(
     (d) => d === LabelTaskType.ImageSegmentation,
   ) >= 0;
   const enableImageSegmentation = labelTasks.findIndex(
@@ -134,21 +136,21 @@ export const setLabelTasks = (
   if (!enableImageClassification) {
     commit(rootTypes.SET_LABELS, [], { root: true });
   }
+  if (!enableImageClassificationOld && enableImageClassification) {
+    const labels = Array(dataObjects.length).fill(unlabeledMark);
+    commit(rootTypes.SET_LABELS, labels, { root: true });
+  }
   if (!enableObjectDetection) {
     commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, [], { root: true });
+  }
+  if (!enableObjectDetectionOld && enableObjectDetection) {
+    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
   }
   if (!enableImageSegmentation) {
     commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
   }
-  if (!enabledImageClassification && enableImageClassification) {
-    const labels = Array(dataObjects.length).fill(unlabeledMark);
-    commit(rootTypes.SET_LABELS, labels, { root: true });
-  }
-  if (!enabledObjectDetection && enableObjectDetection) {
-    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
-  }
-  if (!enabledImageSegmentation && enableImageSegmentation) {
+  if (!enableImageSegmentationOld && enableImageSegmentation) {
     const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
       path: null,
     }));
@@ -218,6 +220,7 @@ export const sampleDataObjectsAlgorithmic = async (
   // Sample data objects.
   const newQueryIndices = (await API.sampleDataObjects(
     dataObjects,
+    labels,
     statuses,
     nBatch,
     model,

@@ -76,11 +76,13 @@ export const extractFeatures = showProgressBar(async (
  * Workflow Component - Data Object Sampling (Algorithmic)
  * Sample a batch of data objects from the pool of data objects.
  * @param dataObjects The data objects to be sampled from.
+ * @param labels The labels of the data objects.
  * @param nBatch The number of data objects to sample.
  * @returns queryIndices - the indices of sampled data objects.
  */
 export const sampleDataObjects = showProgressBar(async (
   dataObjects: IDataObject[],
+  labels: Label[],
   statuses: Status[],
   nBatch: number,
   model: IModel,
@@ -90,6 +92,7 @@ export const sampleDataObjects = showProgressBar(async (
       formatter(SERVER_PORT, 'sampleDataObjects'),
       JSON.stringify({
         dataObjects,
+        labels,
         statuses,
         nBatch,
         model,

@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import rbf_kernel
 from sklearn.neighbors import KernelDensity
+from sklearn.base import BaseEstimator
 from modAL.uncertainty import (classifier_uncertainty,
                                classifier_margin,
                                classifier_entropy)
@@ -338,7 +339,7 @@ def density_sampling(data_objects: ListLike,
 def entropy_sampling(data_objects: ListLike,
                      statuses: np.ndarray,
                      n_batch: int,
-                     model: Model) -> np.ndarray:
+                     estimator: BaseEstimator) -> np.ndarray:
     """
     Sample unlabeled data objects by the posterior label distribution entropy.
     The posterior label distribution is estimated by the interim model.
@@ -355,7 +356,7 @@ def entropy_sampling(data_objects: ListLike,
         [Status.NEW, Status.VIEWED, Status.SKIPPED, Status.LABELED].
     n_batch : int
         The number of data objects to sample.
-    model : Model
+    estimator: BaseEstimator
         The interim model.
 
     Returns
@@ -368,11 +369,10 @@ def entropy_sampling(data_objects: ListLike,
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
-    content = model.content
-    if content is None:
+    if estimator is None:
         return random_sampling(data_objects, statuses, n_batch)
 
-    entropies = classifier_entropy(content, X)
+    entropies = classifier_entropy(estimator, X)
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
@@ -401,7 +401,7 @@ def entropy_sampling(data_objects: ListLike,
 def confidence_sampling(data_objects: ListLike,
                         statuses: np.ndarray,
                         n_batch: int,
-                        model: Model) -> np.ndarray:
+                        estimator: BaseEstimator) -> np.ndarray:
     """
     Sample unlabeled data objects by the confidence of the label prediction.
     The label prediction is estimated by the interim model.
@@ -418,7 +418,7 @@ def confidence_sampling(data_objects: ListLike,
         [Status.NEW, Status.VIEWED, Status.SKIPPED, Status.LABELED].
     n_batch : int
         The number of data objects to sample.
-    model : Model
+    estimator: BaseEstimator
         The interim model.
 
     Returns
@@ -431,11 +431,10 @@ def confidence_sampling(data_objects: ListLike,
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
-    content = model.content
-    if content is None:
+    if estimator is None:
         return random_sampling(data_objects, statuses, n_batch)
 
-    uncertainty = classifier_uncertainty(content, X)
+    uncertainty = classifier_uncertainty(estimator, X)
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
@@ -464,7 +463,7 @@ def confidence_sampling(data_objects: ListLike,
 def margin_sampling(data_objects: ListLike,
                     statuses: np.ndarray,
                     n_batch: int,
-                    model: Model) -> np.ndarray:
+                    estimator: BaseEstimator) -> np.ndarray:
     """
     Sample unlabeled data objects by the margin of the label distribution.
     The label distribution is estimated by the interim model.
@@ -481,7 +480,7 @@ def margin_sampling(data_objects: ListLike,
         [Status.NEW, Status.VIEWED, Status.SKIPPED, Status.LABELED].
     n_batch : int
         The number of data objects to sample.
-    model : Model
+    estimator: BaseEstimator
         The interim model.
 
     Returns
@@ -494,11 +493,10 @@ def margin_sampling(data_objects: ListLike,
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
-    content = model.content
-    if content is None:
+    if estimator is None:
         return random_sampling(data_objects, statuses, n_batch)
 
-    neg_margin = -classifier_margin(content, X)
+    neg_margin = -classifier_margin(estimator, X)
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
