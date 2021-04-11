@@ -7,6 +7,7 @@ import {
   StoppageAnalysisType,
   InterimModelTrainingType,
 } from '@/commons/types';
+import { trickle } from 'nprogress';
 
 export interface IState {
   /** The data labeling workflow configuration parameters. */
@@ -21,6 +22,10 @@ export interface IState {
   showDatasetOverview: boolean,
   /** The task the labeler is instructed to carry out. */
   taskTransformation: TaskTransformationType,
+  /** Whether to show single object display. */
+  singleObjectDisplayEnabled: boolean,
+  /** Whether to show grid matrix. */
+  gridMatrixEnabled: boolean,
   /** The number of data objects per row in the thumbnail matrix. */
   itemsPerRow: number,
   /** The number of data objects per column in the thumbnail matrix. */
@@ -40,6 +45,8 @@ export const createInitialState = (): IState => ({
   defaultLabelingMethod: DefaultLabelingMethodType.Null,
   showDatasetOverview: true,
   taskTransformation: TaskTransformationType.DirectLabeling,
+  singleObjectDisplayEnabled: false,
+  gridMatrixEnabled: true,
   itemsPerRow: 8,
   itemsPerCol: 6,
   stoppageAnalysis: StoppageAnalysisType.AllChecked,

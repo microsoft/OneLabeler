@@ -1,6 +1,9 @@
 <template>
   <!-- The configuration menus. -->
-  <v-container class="pa-0" style="max-width: 1400px">
+  <v-container
+    class="pa-0"
+    style="max-width: 1400px"
+  >
     <v-row no-gutters>
       <v-col
         cols="8"
@@ -19,7 +22,7 @@
             >
               $vuetify.icons.values.flowChart
             </v-icon>
-            Workflow
+            Workflow Graph
           </v-card-title>
           <v-divider />
           <v-card-actions
@@ -131,11 +134,21 @@
         class="pl-1"
       >
         <VMenusFlat
-          v-if="selectedNode !== null"
+          v-if="(selectedNode !== null) && (selectedNode.tree === undefined)"
           style="height: 100%"
           :title="selectedNode.title + ' '
-            + (selectedNode.type === 'process' ? 'Instantiation' : 'Choice')"
+            + (selectedNode.type === 'process' ? 'Instantiation' : 'Setting')"
           :menus-config="selectedNode.config"
+          :selected-options="settings"
+          @click-menu-option="onClickMenuOption"
+        />
+        <VMenusGrouped
+          v-else-if="(selectedNode !== null) && (selectedNode.tree !== undefined)"
+          style="height: 100%"
+          :title="selectedNode.title + ' '
+            + (selectedNode.type === 'process' ? 'Instantiation' : 'Setting')"
+          :menus-config="selectedNode.config"
+          :menu-tree="selectedNode.tree"
           :selected-options="settings"
           @click-menu-option="onClickMenuOption"
         />
@@ -154,12 +167,12 @@
               >
                 $vuetify.icons.values.parameter
               </v-icon>
-              {{ 'Component Parameters' }}
+              {{ 'Element Setting' }}
             </v-card-title>
             <v-divider />
             <v-card-actions style="height: calc(100% - 30px)">
               <p class="mx-auto subtitle-1">
-                No Workflow Component Selected
+                No Workflow Element Selected
               </p>
             </v-card-actions>
           </v-card>
@@ -182,6 +195,7 @@ import {
   InterimModelTrainingType,
 } from '@/commons/types';
 import VMenusFlat from './VMenusFlat.vue';
+import VMenusGrouped from './VMenusGrouped.vue';
 
 enum NodeTypes {
   data = 'data',
@@ -223,7 +237,7 @@ const menusConfig: {
     ],
   },
   samplingStrategy: {
-    title: 'Algorithmic Sampling Strategy',
+    title: 'Strategy',
     options: [
       SamplingStrategyType.Random,
       SamplingStrategyType.Cluster,
@@ -270,7 +284,7 @@ const menusConfig: {
     ],
   },
   showDatasetOverview: {
-    title: 'User Sampling Enabled',
+    title: 'Projection Support Enabled',
     options: [false, true],
     optionsText: ['No', 'Yes'],
   },
@@ -278,6 +292,16 @@ const menusConfig: {
     title: 'Task Transformation',
     options: [TaskTransformationType.DirectLabeling],
     optionsText: ['Direct Labeling'],
+  },
+  singleObjectDisplayEnabled: {
+    title: 'Enabled',
+    options: [false, true],
+    optionsText: ['No', 'Yes'],
+  },
+  gridMatrixEnabled: {
+    title: 'Enabled',
+    options: [false, true],
+    optionsText: ['No', 'Yes'],
   },
   itemsPerRow: {
     title: 'Data Objects Per Row',
@@ -320,6 +344,7 @@ export default Vue.extend({
   name: 'TheNavBarViewDialogGraphView',
   components: {
     VMenusFlat,
+    VMenusGrouped,
   },
   data() {
     const rectWidth = 80;
@@ -360,6 +385,16 @@ export default Vue.extend({
               nBatch: menusConfig.nBatch,
               showDatasetOverview: menusConfig.showDatasetOverview,
             },
+            tree: {
+              algorithmicSampling: {
+                title: 'Algorithmic Sampling',
+                menuKeys: ['samplingStrategy', 'nBatch'],
+              },
+              userSampling: {
+                title: 'User Sampling',
+                menuKeys: ['showDatasetOverview'],
+              },
+            },
           },
           {
             title: 'Default Labeling',
@@ -385,8 +420,20 @@ export default Vue.extend({
             x: 625,
             y: 25,
             config: {
+              singleObjectDisplayEnabled: menusConfig.singleObjectDisplayEnabled,
+              gridMatrixEnabled: menusConfig.gridMatrixEnabled,
               itemsPerRow: menusConfig.itemsPerRow,
               itemsPerCol: menusConfig.itemsPerCol,
+            },
+            tree: {
+              singleObjectDisplay: {
+                title: 'Single Object Display',
+                menuKeys: ['singleObjectDisplayEnabled'],
+              },
+              gridMatrix: {
+                title: 'GridMatrix',
+                menuKeys: ['gridMatrixEnabled', 'itemsPerRow', 'itemsPerCol'],
+              },
             },
           },
           {
@@ -464,6 +511,8 @@ export default Vue.extend({
       'stoppageAnalysis',
       'interimModelTraining',
       'nBatch',
+      'singleObjectDisplayEnabled',
+      'gridMatrixEnabled',
       'itemsPerRow',
       'itemsPerCol',
       'labelTasks',
@@ -478,6 +527,8 @@ export default Vue.extend({
         stoppageAnalysis,
         interimModelTraining,
         nBatch,
+        singleObjectDisplayEnabled,
+        gridMatrixEnabled,
         itemsPerRow,
         itemsPerCol,
         labelTasks,
@@ -501,6 +552,8 @@ export default Vue.extend({
         stoppageAnalysis,
         interimModelTraining,
         nBatch,
+        singleObjectDisplayEnabled,
+        gridMatrixEnabled,
         itemsPerRow,
         itemsPerCol,
         enableImageClassification,
@@ -516,6 +569,8 @@ export default Vue.extend({
       'setNBatch',
       'setDefaultLabelingMethod',
       'setShowDatasetOverview',
+      'setSingleObjectDisplayEnabled',
+      'setGridMatrixEnabled',
       'setItemsPerRow',
       'setItemsPerCol',
       'setLabelTasks',
@@ -538,6 +593,12 @@ export default Vue.extend({
       }
       if (menuKey === 'showDatasetOverview') {
         this.setShowDatasetOverview(option as boolean);
+      }
+      if (menuKey === 'singleObjectDisplayEnabled') {
+        this.setSingleObjectDisplayEnabled(option as boolean);
+      }
+      if (menuKey === 'gridMatrixEnabled') {
+        this.setGridMatrixEnabled(option as boolean);
       }
       if (menuKey === 'itemsPerRow') {
         this.setItemsPerRow(option as number);

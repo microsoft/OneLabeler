@@ -92,6 +92,20 @@ export const setNBatch = (
   commit(types.SET_N_BATCH, nBatch);
 };
 
+export const setSingleObjectDisplayEnabled = (
+  { commit }: ActionContext<IState, IRootState>,
+  enabled: boolean,
+): void => {
+  commit(types.SET_SINGLE_OBJECT_DISPLAY_ENABLED, enabled);
+};
+
+export const setGridMatrixEnabled = (
+  { commit }: ActionContext<IState, IRootState>,
+  enabled: boolean,
+): void => {
+  commit(types.SET_GRID_MATRIX_ENABLED, enabled);
+};
+
 export const setItemsPerRow = (
   { commit }: ActionContext<IState, IRootState>,
   itemsPerRow: number,
@@ -133,6 +147,11 @@ export const setLabelTasks = (
   const enableImageSegmentation = labelTasks.findIndex(
     (d) => d === LabelTaskType.ImageSegmentation,
   ) >= 0;
+
+  commit(types.SET_GRID_MATRIX_ENABLED, enableImageClassification);
+  commit(types.SET_SINGLE_OBJECT_DISPLAY_ENABLED,
+    enableObjectDetection || enableImageSegmentation);
+
   if (!enableImageClassification) {
     commit(rootTypes.SET_LABELS, [], { root: true });
   }

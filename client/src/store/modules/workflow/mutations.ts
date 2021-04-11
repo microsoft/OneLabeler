@@ -32,6 +32,12 @@ export default {
   [types.SET_N_BATCH](state: IState, nBatch: number): void {
     state.nBatch = nBatch;
   },
+  [types.SET_SINGLE_OBJECT_DISPLAY_ENABLED](state: IState, enabled: boolean): void {
+    state.singleObjectDisplayEnabled = enabled;
+  },
+  [types.SET_GRID_MATRIX_ENABLED](state: IState, enabled: boolean): void {
+    state.gridMatrixEnabled = enabled;
+  },
   [types.SET_ITEMS_PER_ROW](state: IState, itemsPerRow: number): void {
     state.itemsPerRow = itemsPerRow;
   },

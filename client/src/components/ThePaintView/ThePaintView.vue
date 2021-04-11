@@ -19,7 +19,7 @@
     <v-card-actions
       ref="container"
       class="pa-0"
-      style="height: calc(100% - 30px)"
+      style="height: calc(100% - 31px)"
     >
       <v-container
         v-if="showCanvas"

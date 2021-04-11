@@ -19,23 +19,21 @@
         <template v-if="showDatasetOverview">
           <v-col
             :cols="12/nViews"
-            :class="(enableImageClassification
-              || enableImageSegmentation
-              || enableObjectDetection) ? 'pr-1' : ''"
+            :class="(singleObjectDisplayEnabled
+              || gridMatrixEnabled) ? 'pr-1' : ''"
           >
             <TheProjectionView style="height: 100%;" />
           </v-col>
         </template>
-        <template v-if="enableImageClassification">
+        <template v-if="gridMatrixEnabled">
           <v-col
             :cols="12/nViews"
-            :class="enableImageSegmentation
-              || enableObjectDetection ? 'pr-1' : ''"
+            :class="singleObjectDisplayEnabled ? 'pr-1' : ''"
           >
             <TheCardMatrixView style="height: 100%;" />
           </v-col>
         </template>
-        <template v-if="enableImageSegmentation || enableObjectDetection">
+        <template v-if="singleObjectDisplayEnabled">
           <v-col
             :cols="12/nViews"
           >
@@ -57,7 +55,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
-import { LabelTaskType } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
@@ -76,32 +73,20 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     TheMessageView,
   },
   computed: {
-    ...mapState('workflow', ['showDatasetOverview', 'labelTasks']),
-    enableImageClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.ImageClassification,
-      ) >= 0;
-    },
-    enableObjectDetection(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.ObjectDetection,
-      ) >= 0;
-    },
-    enableImageSegmentation(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
-      ) >= 0;
-    },
+    ...mapState('workflow', [
+      'showDatasetOverview',
+      'singleObjectDisplayEnabled',
+      'gridMatrixEnabled',
+    ]),
     nViews(): number {
       const {
         showDatasetOverview,
-        enableImageClassification,
-        enableObjectDetection,
-        enableImageSegmentation,
+        singleObjectDisplayEnabled,
+        gridMatrixEnabled,
       } = this;
       return Number(showDatasetOverview)
-        + Number(enableImageClassification)
-        + Number(enableObjectDetection || enableImageSegmentation);
+        + Number(singleObjectDisplayEnabled)
+        + Number(gridMatrixEnabled);
     },
   },
 })

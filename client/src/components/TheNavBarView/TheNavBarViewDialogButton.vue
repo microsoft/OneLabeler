@@ -2,15 +2,14 @@
   <VDialogButton
     max-width="1400px"
     :button-icon="$vuetify.icons.values.config"
-    button-text="Settings"
-    dialog-header-title="Settings"
+    button-text="Workflow"
   >
     <template #dialog-header-title>
       <span
         class="title"
         style="user-select: none"
       >
-        Settings
+        Workflow Configuration
       </span>
 
       <!-- The configuration upload button. -->
@@ -60,7 +59,7 @@
 
     <!-- The configuration menus. -->
     <template #dialog-body>
-      <TheNavBarViewDialogConfigurationView />
+      <TheWorkflowView />
     </template>
   </VDialogButton>
 </template>
@@ -79,7 +78,7 @@ import {
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VDialogButton from './VDialogButton.vue';
 import VUploadButton from './VUploadButton.vue';
-import TheNavBarViewDialogConfigurationView from './TheNavBarViewDialogGraphView.vue';
+import TheWorkflowView from '../TheWorkflowView/TheWorkflowView.vue';
 
 type WorkflowConfigData = {
   samplingStrategy: SamplingStrategyType,
@@ -138,7 +137,7 @@ export default Vue.extend({
   components: {
     VDialogButton,
     VUploadButton,
-    TheNavBarViewDialogConfigurationView,
+    TheWorkflowView,
   },
   props: {
     height: {
