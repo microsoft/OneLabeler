@@ -5,6 +5,7 @@ import {
   IImage,
   IModel,
   LabelTaskType,
+  FeatureExtractionMethodType,
   SamplingStrategyType,
   Status,
 } from '@/commons/types';
@@ -18,6 +19,32 @@ export const setShowDatasetOverview = (
   showDatasetOverview: boolean,
 ): void => {
   commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
+};
+
+export const extractFeatures = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+): Promise<void> => {
+  const { featureExtractionMethod } = state;
+  const { dataObjects } = rootState;
+
+  // Extract data objects.
+  const response = (await API.extractFeatures(dataObjects as IImage[], featureExtractionMethod));
+  const updatedDataObjects = response.dataObjects;
+  const { featureNames } = response;
+
+  commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
+  commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
+};
+
+export const setFeatureExtractionMethod = (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  featureExtractionMethod: FeatureExtractionMethodType,
+): void => {
+  if (state.featureExtractionMethod === featureExtractionMethod) {
+    return;
+  }
+  commit(types.SET_FEATURE_EXTRACTION_METHOD, featureExtractionMethod);
+  extractFeatures({ commit, state, rootState } as ActionContext<IState, IRootState>);
 };
 
 export const setSamplingStrategy = (
@@ -166,19 +193,6 @@ export const extractDataObjects = async (
   }
   const statuses = Array(dataObjects.length).fill(Status.NEW);
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
-};
-
-export const extractFeatures = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-): Promise<void> => {
-  const { dataObjects } = rootState;
-
-  // Extract data objects.
-  const response = (await API.extractFeatures(dataObjects as IImage[]));
-  const updatedDataObjects = response.dataObjects;
-  const { featureNames } = response;
-  commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
-  commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
 };
 
 export const sampleDataObjectsAlgorithmic = async (

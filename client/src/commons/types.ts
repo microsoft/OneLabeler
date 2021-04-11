@@ -87,6 +87,12 @@ export interface IMessage {
   type: MessageType,
 }
 
+/** The enum of feature extraction method types. */
+export enum FeatureExtractionMethodType {
+  Handcrafted = 'Handcrafted',
+  Unsupervised = 'Unsupervised',
+}
+
 /** The enum of data object sampling strategy types. */
 export enum SamplingStrategyType {
   Random = 'Random',

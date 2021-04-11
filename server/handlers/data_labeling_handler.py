@@ -16,8 +16,9 @@ class DataLabelingHandler(tornado.web.RequestHandler):
         json_data = json.loads(self.request.body)
         if key == 'extractFeatures':
             data_objects = json_data['dataObjects']
+            feature_extraction_method = json_data['featureExtractionMethod']
             data_objects, feature_names = DataLabelingAPI\
-                .extract_features(data_objects)
+                .extract_features(data_objects, feature_extraction_method)
             self.write({
                 'dataObjects': data_objects,
                 'featureNames': feature_names,

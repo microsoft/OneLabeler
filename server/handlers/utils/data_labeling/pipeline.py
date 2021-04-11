@@ -65,7 +65,9 @@ class DataLabelingPipeline(GenericPipeline):
     """
 
     @staticmethod
-    def extract_features(data_objects: ListLike) -> Tuple[ListLike, List[str]]:
+    def extract_features(data_objects: ListLike,
+                         feature_extraction_method: str,
+                         ) -> Tuple[ListLike, List[str]]:
         # pylint: disable=invalid-name
 
         data_objects = deepcopy(data_objects)
@@ -77,14 +79,21 @@ class DataLabelingPipeline(GenericPipeline):
             data_object['width'] = img.shape[1]
             data_object['height'] = img.shape[0]
 
-        extractors = [
-            raw_flatten,
-            dimension_reduction,
-            color_descriptors,
-            edge_descriptors,
-            edge_direction_descriptors,
-            texture_descriptors,
-        ]
+        if feature_extraction_method == 'Unsupervised': 
+            extractors = [
+                dimension_reduction,
+            ]
+        elif feature_extraction_method == 'Handcrafted':
+            extractors = [
+                raw_flatten,
+                dimension_reduction,
+                color_descriptors,
+                edge_descriptors,
+                edge_direction_descriptors,
+                texture_descriptors,
+            ]
+        else:
+            raise ValueError(f'Invalid feature extraction method: {feature_extraction_method}')
 
         X = None
         feature_names = []

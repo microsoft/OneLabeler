@@ -1,11 +1,13 @@
 import {
   DefaultLabelingMethodType,
+  FeatureExtractionMethodType,
   LabelTaskType,
   SamplingStrategyType,
 } from '@/commons/types';
 
 export interface IState {
   /** The data labeling workflow configuration parameters. */
+  featureExtractionMethod: FeatureExtractionMethodType,
   /** The data sampling strategy. */
   samplingStrategy: SamplingStrategyType,
   /** The number of data objects to sample each time. */
@@ -23,13 +25,14 @@ export interface IState {
 }
 
 export const createInitialState = (): IState => ({
+  featureExtractionMethod: FeatureExtractionMethodType.Unsupervised,
   samplingStrategy: SamplingStrategyType.Random,
-  nBatch: 32,
+  nBatch: 48,
   defaultLabelingMethod: DefaultLabelingMethodType.Null,
-  showDatasetOverview: false,
+  showDatasetOverview: true,
   itemsPerRow: 8,
   itemsPerCol: 6,
-  labelTasks: [LabelTaskType.ObjectDetection, LabelTaskType.ImageSegmentation],
+  labelTasks: [LabelTaskType.ImageClassification],
 });
 
 export default createInitialState();

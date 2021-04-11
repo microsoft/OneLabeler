@@ -144,6 +144,7 @@ import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import {
   LabelTaskType,
+  FeatureExtractionMethodType,
   DefaultLabelingMethodType,
   SamplingStrategyType,
 } from '@/commons/types';
@@ -176,6 +177,17 @@ const menusConfig: {
     optionsText: string[];
   }
 } = {
+  featureExtractionMethod: {
+    title: 'Feature Extraction Method',
+    options: [
+      FeatureExtractionMethodType.Handcrafted,
+      FeatureExtractionMethodType.Unsupervised,
+    ],
+    optionsText: [
+      'Handcrafted',
+      'Unsupervised',
+    ],
+  },
   samplingStrategy: {
     title: 'Algorithmic Sampling Strategy',
     options: [
@@ -283,7 +295,9 @@ export default Vue.extend({
             type: NodeTypes.process,
             x: 145,
             y: 25,
-            config: {},
+            config: {
+              featureExtractionMethod: menusConfig.featureExtractionMethod,
+            },
           },
           {
             title: 'Data Object Selection',
@@ -389,6 +403,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('workflow', [
+      'featureExtractionMethod',
       'samplingStrategy',
       'showDatasetOverview',
       'defaultLabelingMethod',
@@ -399,6 +414,7 @@ export default Vue.extend({
     ]),
     settings() {
       const {
+        featureExtractionMethod,
         samplingStrategy,
         showDatasetOverview,
         defaultLabelingMethod,
@@ -418,6 +434,7 @@ export default Vue.extend({
         (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
       ) >= 0;
       return {
+        featureExtractionMethod,
         samplingStrategy,
         showDatasetOverview,
         defaultLabelingMethod,
@@ -432,6 +449,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('workflow', [
+      'setFeatureExtractionMethod',
       'setSamplingStrategy',
       'setNBatch',
       'setDefaultLabelingMethod',
@@ -444,6 +462,9 @@ export default Vue.extend({
       this.selectedNode = node;
     },
     onClickMenuOption(menuKey: string, option: unknown): void {
+      if (menuKey === 'featureExtractionMethod') {
+        this.setFeatureExtractionMethod(option as FeatureExtractionMethodType);
+      }
       if (menuKey === 'samplingStrategy') {
         this.setSamplingStrategy(option as SamplingStrategyType);
       }

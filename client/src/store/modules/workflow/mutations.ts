@@ -1,5 +1,6 @@
 import {
   DefaultLabelingMethodType,
+  FeatureExtractionMethodType,
   LabelTaskType,
   SamplingStrategyType,
 } from '@/commons/types';
@@ -9,6 +10,12 @@ import * as types from './mutation-types';
 export default {
   [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
     state.showDatasetOverview = showDatasetOverview;
+  },
+  [types.SET_FEATURE_EXTRACTION_METHOD](
+    state: IState,
+    featureExtractionMethod: FeatureExtractionMethodType,
+  ): void {
+    state.featureExtractionMethod = featureExtractionMethod;
   },
   [types.SET_SAMPLING_STRATEGY](
     state: IState,

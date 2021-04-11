@@ -53,12 +53,14 @@ export const extractDataObjects = showProgressBar(async (
  */
 export const extractFeatures = showProgressBar(async (
   dataObjects: IImage[],
+  featureExtractionMethod: string,
 ): Promise<{dataObjects: IImage[], featureNames: string[]}> => {
   const response = (
     await axios.post(
       formatter(SERVER_PORT, 'extractFeatures'),
       JSON.stringify({
         dataObjects,
+        featureExtractionMethod,
       }),
     )
   ).data;
