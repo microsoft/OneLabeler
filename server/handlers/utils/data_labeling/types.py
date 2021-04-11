@@ -31,8 +31,9 @@ class SamplingStrategyType():
     # pylint: disable=too-few-public-methods
 
     Random = 'Random'
-    ClusterCentroids = 'ClusterCentroids'
+    Cluster = 'Cluster'
     DenseAreas = 'DenseAreas'
+    ClusterCentroids = 'ClusterCentroids'
     Entropy = 'Entropy'
     EntropyDiversity = 'EntropyDiversity'
     EntropyDiversityDensity = 'EntropyDiversityDensity'

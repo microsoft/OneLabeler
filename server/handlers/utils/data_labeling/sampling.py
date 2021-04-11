@@ -212,6 +212,72 @@ def cluster_sampling(data_objects: ListLike,
                      statuses: np.ndarray,
                      n_batch: int) -> np.ndarray:
     """
+    Sample unlabeled data objects by clusters.
+    The clusters are computed by projection into 2d followed by k-means.
+    Data objects within the same cluster are sampled together.
+    Skipped data objects have lower priorities.
+
+    Args
+    ----
+    data_objects : np.ndarray or list of any values, length = n_pool
+        The whole list of data objects, no matter labeled or unlabeled.
+    statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
+        The label statuses of the data objects.
+        Each entry takes value in
+        [Status.NEW, Status.VIEWED, Status.SKIPPED, Status.LABELED].
+    n_batch : int
+        The number of data objects to sample.
+
+    Returns
+    -------
+    query_indices : np.ndarray of int values, shape = (n_batch,)
+        The indices of the sampled data objects in the whole list.
+    """
+
+    mask_new = statuses == Status.NEW
+    new_indices = np.where(mask_new)[0]
+    X = np.array([data_object['features'] for data_object in data_objects])
+
+    n_features = X.shape[1]
+    n_components = min(2, n_features)
+    X = PCA(n_components=n_components, whiten=False).fit_transform(X)
+
+    n_clusters = min(20, len(X))
+    clusterer = KMeans(n_clusters=n_clusters, random_state=0).fit(X)
+    
+    cluster_labels = clusterer.labels_
+    cluster_sizes = np.array([np.sum(cluster_labels == i)
+                              for i in range(n_clusters)])
+    scores = cluster_labels
+
+    if len(new_indices) <= n_batch:
+        query_indices = new_indices
+        mask_skipped = statuses == Status.SKIPPED
+        skipped_indices = np.where(mask_skipped)[0]
+        n_residue = n_batch - len(query_indices)
+        if len(skipped_indices) <= n_residue:
+            query_indices_skipped = skipped_indices
+        else:
+            query_indices_skipped = masked_multi_argmax(
+                values=scores,
+                mask=mask_skipped,
+                n_instances=n_residue,
+            )
+        query_indices = np.concatenate((query_indices, query_indices_skipped))
+        return query_indices
+
+    query_indices = masked_multi_argmax(
+        values=scores,
+        mask=mask_new,
+        n_instances=n_batch,
+    )
+    return query_indices
+
+
+def cluster_centroid_sampling(data_objects: ListLike,
+                              statuses: np.ndarray,
+                              n_batch: int) -> np.ndarray:
+    """
     Sample unlabeled data objects by the distance to cluster centers.
     The clusters are computed by k-means.
     Data objects at places closer to cluster centers are sampled with higher priorities.

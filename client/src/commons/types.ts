@@ -96,8 +96,9 @@ export enum FeatureExtractionMethodType {
 /** The enum of data object sampling strategy types. */
 export enum SamplingStrategyType {
   Random = 'Random',
-  ClusterCentroids = 'ClusterCentroids',
+  Cluster = 'Cluster',
   DenseAreas = 'DenseAreas',
+  ClusterCentroids = 'ClusterCentroids',
   Entropy = 'Entropy',
   EntropyDiversity = 'EntropyDiversity',
   EntropyDiversityDensity = 'EntropyDiversityDensity',

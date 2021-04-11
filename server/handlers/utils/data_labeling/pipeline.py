@@ -27,6 +27,7 @@ from .feature_extraction import (raw_flatten,
 from .generic import GenericPipeline
 from .sampling import (random_sampling,
                        cluster_sampling,
+                       cluster_centroid_sampling,
                        density_sampling,
                        entropy_sampling,
                        confidence_sampling,
@@ -119,10 +120,13 @@ class DataLabelingPipeline(GenericPipeline):
 
         if model.sampling_strategy == SamplingStrategyType.Random:
             query_indices = random_sampling(data_objects, statuses, n_batch)
-        elif model.sampling_strategy == SamplingStrategyType.ClusterCentroids:
+        elif model.sampling_strategy == SamplingStrategyType.Cluster:
             query_indices = cluster_sampling(data_objects, statuses, n_batch)
         elif model.sampling_strategy == SamplingStrategyType.DenseAreas:
             query_indices = density_sampling(data_objects, statuses, n_batch)
+        elif model.sampling_strategy == SamplingStrategyType.ClusterCentroids:
+            query_indices = cluster_centroid_sampling(
+                data_objects, statuses, n_batch)
         elif model.sampling_strategy == SamplingStrategyType.Entropy:
             query_indices = entropy_sampling(
                 data_objects, statuses, n_batch, model.predictor)
