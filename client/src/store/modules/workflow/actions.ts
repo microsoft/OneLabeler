@@ -120,6 +120,13 @@ export const setItemsPerCol = (
   commit(types.SET_ITEMS_PER_COL, itemsPerCol);
 };
 
+export const setInterimModelTrainingEnabled = (
+  { commit }: ActionContext<IState, IRootState>,
+  enabled: boolean,
+): void => {
+  commit(types.SET_INTERIM_MODEL_TRAINING_ENABLED, enabled);
+};
+
 export const setLabelTasks = (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   labelTasks: LabelTaskType[],
@@ -284,13 +291,20 @@ export const sampleDataObjectsManual = async (
 export const updateModel = async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
-  const { labelTasks } = state;
+  const {
+    labelTasks,
+    interimModelTrainingEnabled,
+  } = state;
   const {
     dataObjects,
     labels,
     statuses,
     model,
   } = rootState;
+
+  if (!interimModelTrainingEnabled) {
+    return;
+  }
 
   const enableImageClassification = labelTasks.findIndex(
     (d) => d === LabelTaskType.ImageClassification,

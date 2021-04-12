@@ -44,6 +44,9 @@ export default {
   [types.SET_ITEMS_PER_COL](state: IState, itemsPerCol: number): void {
     state.itemsPerCol = itemsPerCol;
   },
+  [types.SET_INTERIM_MODEL_TRAINING_ENABLED](state: IState, enabled: boolean): void {
+    state.interimModelTrainingEnabled = enabled;
+  },
   [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
     state.labelTasks = labelTasks;
   },

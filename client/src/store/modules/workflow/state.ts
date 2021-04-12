@@ -32,6 +32,8 @@ export interface IState {
   itemsPerCol: number,
   /** The stoppage analysis method. */
   stoppageAnalysis: StoppageAnalysisType,
+  /** Whether to enable interim model training. */
+  interimModelTrainingEnabled: boolean,
   /** The interim model training method. */
   interimModelTraining: InterimModelTrainingType,
   /** The concerned data labeling tasks. */
@@ -41,15 +43,16 @@ export interface IState {
 export const createInitialState = (): IState => ({
   featureExtractionMethod: FeatureExtractionMethodType.Unsupervised,
   samplingStrategy: SamplingStrategyType.Random,
-  nBatch: 48,
+  nBatch: 1,
   defaultLabelingMethod: DefaultLabelingMethodType.Null,
-  showDatasetOverview: true,
+  showDatasetOverview: false,
   taskTransformation: TaskTransformationType.DirectLabeling,
   singleObjectDisplayEnabled: false,
-  gridMatrixEnabled: true,
+  gridMatrixEnabled: false,
   itemsPerRow: 8,
   itemsPerCol: 6,
   stoppageAnalysis: StoppageAnalysisType.AllChecked,
+  interimModelTrainingEnabled: false,
   interimModelTraining: InterimModelTrainingType.Retrain,
   labelTasks: [LabelTaskType.ImageClassification],
 });

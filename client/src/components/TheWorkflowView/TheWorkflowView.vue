@@ -36,31 +36,37 @@
                 :key="`node-${i}`"
                 :transform="`translate(${node.x},${node.y})`"
                 :style="{
-                  cursor: (node.type === 'process') || (node.type === 'data')
+                  cursor: (node.category === 'process') || (node.category === 'data')
                     ? 'pointer' : undefined
                 }"
-                @click="(node.type === 'process') || (node.type === 'data')
+                @click="(node.category === 'process') || (node.category === 'data')
                   ? onClickGraphNode(node) : undefined"
               >
-                <template v-if="(node.type === 'process') || (node.type === 'data')">
+                <template v-if="(node.category === 'process') || (node.category === 'data')">
                   <rect
                     fill-opacity="0"
                     stroke="black"
                     stroke-width="1px"
                     :width="rectWidth"
                     :height="rectHeight"
+                    :style="{
+                      'stroke-dasharray': !enabled(node) ? '5 5' : undefined
+                    }"
+                    @contextmenu="node.category === 'process'
+                      ? onRightClickNode($event, node) : undefined"
                   />
                   <rect
                     :fill="{
                       'process': '#8C564B',
                       'data': '#FF7F0E',
-                    }[node.type]"
+                    }[node.category]"
                     stroke-width="1px"
                     :width="rectWidth"
                     :height="5"
+                    style="pointer-events: none"
                   />
                 </template>
-                <template v-else-if="node.type === 'decision'">
+                <template v-else-if="node.category === 'decision'">
                   <polygon
                     :points="`
                       ${rectWidth/2},0
@@ -87,12 +93,14 @@
                   font-size="14px"
                   dominant-baseline="middle"
                   text-anchor="middle"
+                  style="pointer-events: none"
                 >
                   <tspan
                     v-for="(word, j) in node.title.split(' ')"
                     :key="j"
                     :x="rectWidth / 2"
                     :dy="j === 0 ? `${-(node.title.split(' ').length - 1) * 0.6}em` : '1.2em'"
+                    :fill="enabled(node) ? '#000' : '#AAA'"
                   >
                     {{ word }}
                   </tspan>
@@ -137,7 +145,7 @@
           v-if="(selectedNode !== null) && (selectedNode.tree === undefined)"
           style="height: 100%"
           :title="selectedNode.title + ' '
-            + (selectedNode.type === 'process' ? 'Instantiation' : 'Setting')"
+            + (selectedNode.category === 'process' ? 'Instantiation' : 'Setting')"
           :menus-config="selectedNode.config"
           :selected-options="settings"
           @click-menu-option="onClickMenuOption"
@@ -146,7 +154,7 @@
           v-else-if="(selectedNode !== null) && (selectedNode.tree !== undefined)"
           style="height: 100%"
           :title="selectedNode.title + ' '
-            + (selectedNode.type === 'process' ? 'Instantiation' : 'Setting')"
+            + (selectedNode.category === 'process' ? 'Instantiation' : 'Setting')"
           :menus-config="selectedNode.config"
           :menu-tree="selectedNode.tree"
           :selected-options="settings"
@@ -179,6 +187,35 @@
         </template>
       </v-col>
     </v-row>
+    <v-menu
+      v-model="showMenu"
+      :position-x="rightClickX"
+      :position-y="rightClickY"
+      absolute
+      offset-y
+    >
+      <v-list
+        class="py-0"
+        style="font-size:12px"
+      >
+        <v-list-item
+          class="py-0 pl-0 pr-1"
+          style="min-height:24px"
+          :disabled="rightClickedNode !== null ? !nodeDeleteSupported(rightClickedNode) : true"
+          @click="onClickContextMenuRemove"
+        >
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            style="font-size:12px"
+            small
+          >
+            $vuetify.icons.values.close
+          </v-icon>
+          Remove Node
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-container>
 </template>
 
@@ -197,16 +234,27 @@ import {
 import VMenusFlat from './VMenusFlat.vue';
 import VMenusGrouped from './VMenusGrouped.vue';
 
-enum NodeTypes {
+enum NodeCategories {
   data = 'data',
   process = 'process',
   decision = 'decision',
   terminal = 'terminal',
 }
 
+enum NodeTypes {
+  featureExtraction = 'featureExtraction',
+  dataObjectSelection = 'dataObjectSelection',
+  defaultLabeling = 'defaultLabeling',
+  taskTransformation = 'taskTransformation',
+  interactiveLabeling = 'interactiveLabeling',
+  stoppageAnalysis = 'stoppageAnalysis',
+  interimModelTraining = 'interimModelTraining',
+}
+
 type Node = {
   title: string,
-  type: NodeTypes,
+  category: NodeCategories,
+  type?: NodeTypes,
   x: number,
   y: number,
   config: {
@@ -218,126 +266,272 @@ type Node = {
   };
 }
 
-const menusConfig: {
-  [key: string]: {
-    title: string;
-    options: unknown[];
-    optionsText: string[];
-  }
-} = {
-  featureExtractionMethod: {
-    title: 'Feature Extraction Method',
-    options: [
-      FeatureExtractionMethodType.Handcrafted,
-      FeatureExtractionMethodType.Unsupervised,
-    ],
-    optionsText: [
-      'Handcrafted',
-      'Unsupervised',
-    ],
+const menus = {
+  labelTask: {
+    enableClassification: {
+      title: 'Classification',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
+    enableObjectDetection: {
+      title: 'Object Detection',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
+    enableSegmentation: {
+      title: 'Segmentation',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
   },
-  samplingStrategy: {
-    title: 'Strategy',
-    options: [
-      SamplingStrategyType.Random,
-      SamplingStrategyType.Cluster,
-      SamplingStrategyType.DenseAreas,
-      SamplingStrategyType.ClusterCentroids,
-      SamplingStrategyType.Entropy,
-      SamplingStrategyType.LeastConfident,
-      SamplingStrategyType.SmallestMargin,
-    ],
-    optionsText: [
-      'Random',
-      'Cluster',
-      'Dense Areas',
-      'Cluster Centroids',
-      'Entropy',
-      'Least Confident',
-      'Smallest Margin',
-    ],
+  featureExtraction: {
+    featureExtractionMethod: {
+      title: 'Method',
+      options: [
+        FeatureExtractionMethodType.Handcrafted,
+        FeatureExtractionMethodType.Unsupervised,
+      ],
+      optionsText: [
+        'Handcrafted',
+        'Unsupervised',
+      ],
+    },
   },
-  nBatch: {
-    title: 'Selection Batch Size',
-    options: [1, 4, 16, 32, 48, 64, 96],
-    optionsText: ['1', '4', '16', '32', '48', '64', '96'],
+  dataObjectSelection: {
+    samplingStrategy: {
+      title: 'Strategy',
+      options: [
+        SamplingStrategyType.Random,
+        SamplingStrategyType.Cluster,
+        SamplingStrategyType.DenseAreas,
+        SamplingStrategyType.ClusterCentroids,
+        SamplingStrategyType.Entropy,
+        SamplingStrategyType.LeastConfident,
+        SamplingStrategyType.SmallestMargin,
+      ],
+      optionsText: [
+        'Random',
+        'Cluster',
+        'Dense Areas',
+        'Cluster Centroids',
+        'Entropy',
+        'Least Confident',
+        'Smallest Margin',
+      ],
+    },
+    nBatch: {
+      title: 'Selection Batch Size',
+      options: [1, 4, 16, 32, 48, 64, 96],
+      optionsText: ['1', '4', '16', '32', '48', '64', '96'],
+    },
+    showDatasetOverview: {
+      title: 'Projection Support Enabled',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
   },
-  defaultLabelingMethod: {
-    title: 'Default Labeling Model',
-    options: [
-      DefaultLabelingMethodType.Null,
-      DefaultLabelingMethodType.Random,
-      DefaultLabelingMethodType.DecisionTree,
-      DefaultLabelingMethodType.SVM,
-      DefaultLabelingMethodType.LogisticRegression,
-      DefaultLabelingMethodType.LabelSpreading,
-      DefaultLabelingMethodType.RestrictedBoltzmannMachine,
-    ],
-    optionsText: [
-      'Null',
-      'Random',
-      'Decision Tree',
-      'SVM',
-      'Logistic Regression',
-      'Label Spreading',
-      'Restricted Boltzmann Machine',
-    ],
-  },
-  showDatasetOverview: {
-    title: 'Projection Support Enabled',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
+  defaultLabeling: {
+    defaultLabelingMethod: {
+      title: 'Labeling Model',
+      options: [
+        DefaultLabelingMethodType.Null,
+        DefaultLabelingMethodType.Random,
+        DefaultLabelingMethodType.DecisionTree,
+        DefaultLabelingMethodType.SVM,
+        DefaultLabelingMethodType.LogisticRegression,
+        DefaultLabelingMethodType.LabelSpreading,
+        DefaultLabelingMethodType.RestrictedBoltzmannMachine,
+      ],
+      optionsText: [
+        'Null',
+        'Random',
+        'Decision Tree',
+        'SVM',
+        'Logistic Regression',
+        'Label Spreading',
+        'Restricted Boltzmann Machine',
+      ],
+    },
   },
   taskTransformation: {
-    title: 'Task Transformation',
-    options: [TaskTransformationType.DirectLabeling],
-    optionsText: ['Direct Labeling'],
+    taskTransformation: {
+      title: 'Task Type',
+      options: [TaskTransformationType.DirectLabeling],
+      optionsText: ['Direct Labeling'],
+    },
   },
-  singleObjectDisplayEnabled: {
-    title: 'Enabled',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
-  },
-  gridMatrixEnabled: {
-    title: 'Enabled',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
-  },
-  itemsPerRow: {
-    title: 'Data Objects Per Row',
-    options: [1, 4, 8, 12],
-    optionsText: ['1', '4', '8', '12'],
-  },
-  itemsPerCol: {
-    title: 'Data Objects Per Column',
-    options: [1, 2, 4, 6, 8],
-    optionsText: ['1', '2', '4', '6', '8'],
+  interactiveLabeling: {
+    singleObjectDisplayEnabled: {
+      title: 'Enabled',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
+    gridMatrixEnabled: {
+      title: 'Enabled',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
+    itemsPerRow: {
+      title: 'Data Objects Per Row',
+      options: [1, 4, 8, 12],
+      optionsText: ['1', '4', '8', '12'],
+    },
+    itemsPerCol: {
+      title: 'Data Objects Per Column',
+      options: [1, 2, 4, 6, 8],
+      optionsText: ['1', '2', '4', '6', '8'],
+    },
   },
   stoppageAnalysis: {
-    title: 'Stoppage Analysis',
-    options: [StoppageAnalysisType.AllChecked],
-    optionsText: ['All Checked'],
+    stoppageAnalysis: {
+      title: 'Method',
+      options: [StoppageAnalysisType.AllChecked],
+      optionsText: ['All Checked'],
+    },
   },
   interimModelTraining: {
-    title: 'Interim Model Training',
-    options: [InterimModelTrainingType.Retrain],
-    optionsText: ['Retrain'],
+    interimModelTrainingEnabled: {
+      title: 'Enabled',
+      options: [false, true],
+      optionsText: ['No', 'Yes'],
+    },
+    interimModelTraining: {
+      title: 'Method',
+      options: [InterimModelTrainingType.Retrain],
+      optionsText: ['Retrain'],
+    },
   },
-  enableImageClassification: {
-    title: 'Classification',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
-  },
-  enableObjectDetection: {
-    title: 'Object Detection',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
-  },
-  enableImageSegmentation: {
-    title: 'Segmentation',
-    options: [false, true],
-    optionsText: ['No', 'Yes'],
-  },
+};
+
+const graph = {
+  nodes: [
+    {
+      title: 'Label Task',
+      category: NodeCategories.data,
+      x: 25,
+      y: 25,
+      config: menus.labelTask,
+    },
+    {
+      title: 'Feature Extraction',
+      category: NodeCategories.process,
+      type: NodeTypes.featureExtraction,
+      x: 145,
+      y: 25,
+      config: menus.featureExtraction,
+    },
+    {
+      title: 'Data Object Selection',
+      category: NodeCategories.process,
+      type: NodeTypes.dataObjectSelection,
+      x: 265,
+      y: 25,
+      config: menus.dataObjectSelection,
+      tree: {
+        algorithmicSampling: {
+          title: 'Algorithmic Sampling',
+          menuKeys: ['samplingStrategy', 'nBatch'],
+        },
+        userSampling: {
+          title: 'User Sampling',
+          menuKeys: ['showDatasetOverview'],
+        },
+      },
+    },
+    {
+      title: 'Default Labeling',
+      category: NodeCategories.process,
+      type: NodeTypes.defaultLabeling,
+      x: 385,
+      y: 25,
+      config: menus.defaultLabeling,
+    },
+    {
+      title: 'Task Transform',
+      category: NodeCategories.process,
+      type: NodeTypes.taskTransformation,
+      x: 505,
+      y: 25,
+      config: menus.taskTransformation,
+    },
+    {
+      title: 'Interactive Labeling',
+      category: NodeCategories.process,
+      type: NodeTypes.interactiveLabeling,
+      x: 625,
+      y: 25,
+      config: menus.interactiveLabeling,
+      tree: {
+        singleObjectDisplay: {
+          title: 'Single Object Display',
+          menuKeys: ['singleObjectDisplayEnabled'],
+        },
+        gridMatrix: {
+          title: 'GridMatrix',
+          menuKeys: ['gridMatrixEnabled', 'itemsPerRow', 'itemsPerCol'],
+        },
+      },
+    },
+    {
+      title: 'Stoppage Analysis',
+      category: NodeCategories.process,
+      type: NodeTypes.stoppageAnalysis,
+      x: 745,
+      y: 25,
+      config: menus.stoppageAnalysis,
+    },
+    {
+      title: 'Stop?',
+      category: NodeCategories.decision,
+      x: 745,
+      y: 115,
+      config: {},
+    },
+    {
+      title: 'Exit',
+      category: NodeCategories.terminal,
+      x: 745,
+      y: 205,
+      config: {},
+    },
+    {
+      title: 'Interim Model Training',
+      category: NodeCategories.process,
+      type: NodeTypes.interimModelTraining,
+      x: 265,
+      y: 115,
+      config: menus.interimModelTraining,
+    },
+  ],
+  edges: [
+    {
+      source: 1, target: 2, x1: 225, y1: 55, x2: 265, y2: 55,
+    },
+    {
+      source: 2, target: 4, x1: 345, y1: 55, x2: 385, y2: 55,
+    },
+    {
+      source: 4, target: 5, x1: 465, y1: 55, x2: 505, y2: 55,
+    },
+    {
+      source: 5, target: 6, x1: 585, y1: 55, x2: 625, y2: 55,
+    },
+    {
+      source: 7, target: 8, x1: 705, y1: 55, x2: 745, y2: 55,
+    },
+    {
+      source: 6, target: 7, x1: 785, y1: 85, x2: 785, y2: 115,
+    },
+    {
+      source: 8, target: 9, x1: 745, y1: 145, x2: 345, y2: 145,
+    },
+    {
+      source: 6, target: 7, x1: 785, y1: 175, x2: 785, y2: 205,
+    },
+    {
+      source: 9, target: 2, x1: 305, y1: 115, x2: 305, y2: 85,
+    },
+  ],
 };
 
 export default Vue.extend({
@@ -347,158 +541,15 @@ export default Vue.extend({
     VMenusGrouped,
   },
   data() {
-    const rectWidth = 80;
-    const rectHeight = 60;
     return {
-      rectWidth,
-      rectHeight,
+      rectWidth: 80,
+      rectHeight: 60,
+      graph,
       selectedNode: null,
-      graph: {
-        nodes: [
-          {
-            title: 'Label Task',
-            type: NodeTypes.data,
-            x: 25,
-            y: 25,
-            config: {
-              enableImageClassification: menusConfig.enableImageClassification,
-              enableObjectDetection: menusConfig.enableObjectDetection,
-              enableImageSegmentation: menusConfig.enableImageSegmentation,
-            },
-          },
-          {
-            title: 'Feature Extraction',
-            type: NodeTypes.process,
-            x: 145,
-            y: 25,
-            config: {
-              featureExtractionMethod: menusConfig.featureExtractionMethod,
-            },
-          },
-          {
-            title: 'Data Object Selection',
-            type: NodeTypes.process,
-            x: 265,
-            y: 25,
-            config: {
-              samplingStrategy: menusConfig.samplingStrategy,
-              nBatch: menusConfig.nBatch,
-              showDatasetOverview: menusConfig.showDatasetOverview,
-            },
-            tree: {
-              algorithmicSampling: {
-                title: 'Algorithmic Sampling',
-                menuKeys: ['samplingStrategy', 'nBatch'],
-              },
-              userSampling: {
-                title: 'User Sampling',
-                menuKeys: ['showDatasetOverview'],
-              },
-            },
-          },
-          {
-            title: 'Default Labeling',
-            type: NodeTypes.process,
-            x: 385,
-            y: 25,
-            config: {
-              defaultLabelingMethod: menusConfig.defaultLabelingMethod,
-            },
-          },
-          {
-            title: 'Task Transform',
-            type: NodeTypes.process,
-            x: 505,
-            y: 25,
-            config: {
-              taskTransformation: menusConfig.taskTransformation,
-            },
-          },
-          {
-            title: 'Interactive Labeling',
-            type: NodeTypes.process,
-            x: 625,
-            y: 25,
-            config: {
-              singleObjectDisplayEnabled: menusConfig.singleObjectDisplayEnabled,
-              gridMatrixEnabled: menusConfig.gridMatrixEnabled,
-              itemsPerRow: menusConfig.itemsPerRow,
-              itemsPerCol: menusConfig.itemsPerCol,
-            },
-            tree: {
-              singleObjectDisplay: {
-                title: 'Single Object Display',
-                menuKeys: ['singleObjectDisplayEnabled'],
-              },
-              gridMatrix: {
-                title: 'GridMatrix',
-                menuKeys: ['gridMatrixEnabled', 'itemsPerRow', 'itemsPerCol'],
-              },
-            },
-          },
-          {
-            title: 'Stoppage Analysis',
-            type: NodeTypes.process,
-            x: 745,
-            y: 25,
-            config: {
-              stoppageAnalysis: menusConfig.stoppageAnalysis,
-            },
-          },
-          {
-            title: 'Stop?',
-            type: NodeTypes.decision,
-            x: 745,
-            y: 115,
-            config: {},
-          },
-          {
-            title: 'Exit',
-            type: NodeTypes.terminal,
-            x: 745,
-            y: 205,
-            config: {},
-          },
-          {
-            title: 'Interim Model Training',
-            type: NodeTypes.process,
-            x: 265,
-            y: 115,
-            config: {
-              interimModelTraining: menusConfig.interimModelTraining,
-            },
-          },
-        ],
-        edges: [
-          {
-            source: 1, target: 2, x1: 225, y1: 55, x2: 265, y2: 55,
-          },
-          {
-            source: 2, target: 4, x1: 345, y1: 55, x2: 385, y2: 55,
-          },
-          {
-            source: 4, target: 5, x1: 465, y1: 55, x2: 505, y2: 55,
-          },
-          {
-            source: 5, target: 6, x1: 585, y1: 55, x2: 625, y2: 55,
-          },
-          {
-            source: 7, target: 8, x1: 705, y1: 55, x2: 745, y2: 55,
-          },
-          {
-            source: 6, target: 7, x1: 785, y1: 85, x2: 785, y2: 115,
-          },
-          {
-            source: 8, target: 9, x1: 745, y1: 145, x2: 345, y2: 145,
-          },
-          {
-            source: 6, target: 7, x1: 785, y1: 175, x2: 785, y2: 205,
-          },
-          {
-            source: 9, target: 2, x1: 305, y1: 115, x2: 305, y2: 85,
-          },
-        ],
-      },
+      showMenu: false,
+      rightClickX: null,
+      rightClickY: null,
+      rightClickedNode: null,
     };
   },
   computed: {
@@ -515,6 +566,7 @@ export default Vue.extend({
       'gridMatrixEnabled',
       'itemsPerRow',
       'itemsPerCol',
+      'interimModelTrainingEnabled',
       'labelTasks',
     ]),
     settings() {
@@ -526,6 +578,7 @@ export default Vue.extend({
         taskTransformation,
         stoppageAnalysis,
         interimModelTraining,
+        interimModelTrainingEnabled,
         nBatch,
         singleObjectDisplayEnabled,
         gridMatrixEnabled,
@@ -534,13 +587,13 @@ export default Vue.extend({
         labelTasks,
       } = this;
 
-      const enableImageClassification = labelTasks.findIndex(
+      const enableClassification = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ImageClassification,
       ) >= 0;
       const enableObjectDetection = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ObjectDetection,
       ) >= 0;
-      const enableImageSegmentation = labelTasks.findIndex(
+      const enableSegmentation = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
       ) >= 0;
       return {
@@ -551,14 +604,15 @@ export default Vue.extend({
         taskTransformation,
         stoppageAnalysis,
         interimModelTraining,
+        interimModelTrainingEnabled,
         nBatch,
         singleObjectDisplayEnabled,
         gridMatrixEnabled,
         itemsPerRow,
         itemsPerCol,
-        enableImageClassification,
+        enableClassification,
         enableObjectDetection,
-        enableImageSegmentation,
+        enableSegmentation,
       };
     },
   },
@@ -573,10 +627,60 @@ export default Vue.extend({
       'setGridMatrixEnabled',
       'setItemsPerRow',
       'setItemsPerCol',
+      'setInterimModelTrainingEnabled',
       'setLabelTasks',
     ]),
+    enabled(node: Node): boolean {
+      if (node.type === NodeTypes.dataObjectSelection) {
+        return (this.samplingStrategy !== SamplingStrategyType.Random)
+          || this.showDatasetOverview
+          || (this.nBatch !== 1);
+      }
+      if (node.type === NodeTypes.defaultLabeling) {
+        return this.defaultLabelingMethod !== DefaultLabelingMethodType.Null;
+      }
+      if (node.type === NodeTypes.interactiveLabeling) {
+        return (this.singleObjectDisplayEnabled !== false)
+         || (this.gridMatrixEnabled !== false);
+      }
+      if (node.type === NodeTypes.interimModelTraining) {
+        return this.interimModelTrainingEnabled !== false;
+      }
+      return true;
+    },
+    nodeDeleteSupported(node: Node): boolean {
+      return (node.type === NodeTypes.dataObjectSelection)
+        || (node.type === NodeTypes.defaultLabeling)
+        || (node.type === NodeTypes.interactiveLabeling)
+        || (node.type === NodeTypes.interimModelTraining);
+    },
     onClickGraphNode(node: Node) {
       this.selectedNode = node;
+    },
+    onRightClickNode(e: MouseEvent, node: Node) {
+      e.preventDefault();
+      this.showMenu = true;
+      this.rightClickX = e.clientX;
+      this.rightClickY = e.clientY;
+      this.rightClickedNode = node;
+    },
+    onClickContextMenuRemove() {
+      const node = this.rightClickedNode;
+      if (node.type === NodeTypes.dataObjectSelection) {
+        this.setSamplingStrategy(SamplingStrategyType.Random);
+        this.setShowDatasetOverview(false);
+        this.setNBatch(1);
+      }
+      if (node.type === NodeTypes.defaultLabeling) {
+        this.setDefaultLabelingMethod(DefaultLabelingMethodType.Null);
+      }
+      if (node.type === NodeTypes.interactiveLabeling) {
+        this.setSingleObjectDisplayEnabled(false);
+        this.setGridMatrixEnabled(false);
+      }
+      if (node.type === NodeTypes.interimModelTraining) {
+        this.setInterimModelTrainingEnabled(false);
+      }
     },
     onClickMenuOption(menuKey: string, option: unknown): void {
       if (menuKey === 'featureExtractionMethod') {
@@ -605,6 +709,9 @@ export default Vue.extend({
       }
       if (menuKey === 'itemsPerCol') {
         this.setItemsPerCol(option as number);
+      }
+      if (menuKey === 'interimModelTrainingEnabled') {
+        this.setInterimModelTrainingEnabled(option as boolean);
       }
       if (menuKey === 'enableImageClassification') {
         let labelTasksUpdated = [...this.labelTasks];
