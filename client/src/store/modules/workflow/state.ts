@@ -7,7 +7,6 @@ import {
   StoppageAnalysisType,
   InterimModelTrainingType,
 } from '@/commons/types';
-import { trickle } from 'nprogress';
 
 export interface IState {
   /** The data labeling workflow configuration parameters. */
@@ -54,7 +53,7 @@ export const createInitialState = (): IState => ({
   stoppageAnalysis: StoppageAnalysisType.AllChecked,
   interimModelTrainingEnabled: false,
   interimModelTraining: InterimModelTrainingType.Retrain,
-  labelTasks: [LabelTaskType.ImageClassification],
+  labelTasks: [], // [LabelTaskType.ImageClassification],
 });
 
 export default createInitialState();

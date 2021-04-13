@@ -268,7 +268,7 @@ type Node = {
 
 const menus = {
   labelTask: {
-    enableClassification: {
+    enableImageClassification: {
       title: 'Classification',
       options: [false, true],
       optionsText: ['No', 'Yes'],
@@ -278,7 +278,7 @@ const menus = {
       options: [false, true],
       optionsText: ['No', 'Yes'],
     },
-    enableSegmentation: {
+    enableImageSegmentation: {
       title: 'Segmentation',
       options: [false, true],
       optionsText: ['No', 'Yes'],
@@ -587,13 +587,13 @@ export default Vue.extend({
         labelTasks,
       } = this;
 
-      const enableClassification = labelTasks.findIndex(
+      const enableImageClassification = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ImageClassification,
       ) >= 0;
       const enableObjectDetection = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ObjectDetection,
       ) >= 0;
-      const enableSegmentation = labelTasks.findIndex(
+      const enableImageSegmentation = labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
       ) >= 0;
       return {
@@ -610,9 +610,9 @@ export default Vue.extend({
         gridMatrixEnabled,
         itemsPerRow,
         itemsPerCol,
-        enableClassification,
+        enableImageClassification,
         enableObjectDetection,
-        enableSegmentation,
+        enableImageSegmentation,
       };
     },
   },
