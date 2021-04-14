@@ -48,7 +48,7 @@
               <v-list-item
                 v-for="(text, i) in entry.optionsText"
                 :key="entry.options[i]"
-                @click="clickMenuOption(key, entry.options[i])"
+                @click="onClickMenuOption(key, entry.options[i])"
               >
                 <v-list-item-title>{{ text }}</v-list-item-title>
               </v-list-item>
@@ -117,7 +117,7 @@ export default Vue.extend({
       console.assert(index >= 0, 'invalid value for menu', menuKey, option);
       return optionsText[index];
     },
-    clickMenuOption(menuKey: string, option: unknown): void {
+    onClickMenuOption(menuKey: string, option: unknown): void {
       this.$emit('click-menu-option', menuKey, option);
     },
   },

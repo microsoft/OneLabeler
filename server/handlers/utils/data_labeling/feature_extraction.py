@@ -12,7 +12,11 @@ from skimage.filters.rank import entropy
 from skimage.measure import shannon_entropy
 from skimage.morphology import disk
 from sklearn import decomposition
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.random_projection import GaussianRandomProjection
 # from tensorflow.keras.applications.vgg16 import preprocess_input, VGG16
+
+from .types import Status
 
 
 def raw_flatten(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
@@ -51,12 +55,12 @@ def raw_flatten(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
     return X, feature_names
 
 
-def dimension_reduction(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
+def resize_SVD(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
     """
     Extract features for each image by dimension reduction for the normalized image.
 
     The images are normalized by converting to grey image and resized to (8, 8).
-    The dimension reduction is conducted with PCA.
+    The dimension reduction is conducted with SVD.
 
     Args
     ----
@@ -98,10 +102,84 @@ def dimension_reduction(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
     reducer = decomposition.TruncatedSVD(n_components=n_components_actual)
     X = reducer.fit_transform(X_flatten)
     if n_components > n_components_actual:
-        zeros = np.zeros((n_samples, n_components - n_components_actual), dtype=float)
+        zeros = np.zeros((n_samples, n_components -
+                         n_components_actual), dtype=float)
         X = np.hstack((X, zeros))
 
-    feature_names = [f'projection[{i}]' for i in range(n_components)]
+    feature_names = [f'SVD[{i}]' for i in range(n_components)]
+    return X, feature_names
+
+
+def resize_LDA(imgs: np.ndarray,
+               labels: np.ndarray,
+               statuses: np.ndarray) -> Tuple[np.ndarray, List[str]]:
+    """
+    Extract features for each image by dimension reduction for the normalized image.
+
+    The images are normalized by converting to grey image and resized to (8, 8).
+    The dimension reduction is conducted with LDA.
+
+    Args
+    ----
+    imgs : np.ndarray
+        The images to extract features.
+    labels : np.ndarray
+        The partial labels.
+
+    Returns
+    -------
+    X : np.ndarray
+        The extracted feature values.
+    feature_names : List[str]
+        The names of features.
+
+    Notes
+    -----
+    Variations:
+    1. change the dimension reduction method (e.g., MDS, t-SNE, isomap)
+    2. change the number of projected dimensions
+    """
+    # pylint: disable=invalid-name
+
+    # normalized the images to gray scale 8 x 8
+    h, w = 8, 8
+    X_raw_normalized = []
+    for img in imgs:
+        img_gray = img if len(img.shape) == 2 else cv.cvtColor(
+            img, cv.COLOR_BGR2GRAY)
+        img_resized = cv.resize(img_gray, (h, w), interpolation=cv.INTER_AREA)
+        X_raw_normalized.append(img_resized)
+    X_raw_normalized = np.array(X_raw_normalized)
+
+    X_flatten = X_raw_normalized.reshape((-1, h * w))
+
+    n_components = 5
+
+    mask_labeled = np.array([status == Status.LABELED
+                            for status in statuses])
+    X_labeled = X_flatten[mask_labeled]
+    labels_labeled = labels[mask_labeled]
+
+    if len(labels_labeled) <= 1:
+        n_components_actual = n_components
+        reducer = GaussianRandomProjection(n_components=n_components_actual)
+        X = reducer.fit_transform(X_flatten)
+    else:
+        n_samples, n_features = X_flatten.shape
+        n_classes = len(np.unique(labels_labeled))
+        n_components_actual = min(n_samples, n_features,
+                                n_classes - 1, n_components)
+        reducer = LinearDiscriminantAnalysis(n_components=n_components_actual)
+
+        reducer.fit(X_labeled, labels_labeled)
+        X = reducer.transform(X_flatten)
+
+    if n_components > n_components_actual:
+        zeros = np.zeros((n_samples, n_components -
+                         n_components_actual), dtype=float)
+        X = np.hstack((X, zeros))
+
+    feature_names = [f'LDA[{i}]' for i in range(n_components)]
     return X, feature_names
 
 
@@ -362,7 +440,8 @@ def edge_direction_descriptors(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]
     reducer = decomposition.TruncatedSVD(n_components=n_components_actual)
     X_proj = reducer.fit_transform(X)
     if n_components > n_components_actual:
-        zeros = np.zeros((n_samples, n_components - n_components_actual), dtype=float)
+        zeros = np.zeros((n_samples, n_components -
+                         n_components_actual), dtype=float)
         X_proj = np.hstack((X_proj, zeros))
 
     feature_names = [f'edge-hog-{i}' for i in range(n_components)]

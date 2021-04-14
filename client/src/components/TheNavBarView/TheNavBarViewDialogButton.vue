@@ -3,6 +3,7 @@
     v-model="dialog"
     persistent
     max-width="1400px"
+    content-class="rounded-0"
   >
     <template #activator="{ on }">
       <v-btn

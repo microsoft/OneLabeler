@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from bson.objectid import ObjectId
 import numpy as np
@@ -10,17 +10,6 @@ from .types import Label, Model
 
 
 class DataLabelingAPI(GenericPipeline):
-    @staticmethod
-    def extract_features(
-        data_objects: List[Dict[str, Any]],
-        feature_extraction_method: str,
-    ) -> Tuple[List[Dict[str, Any]], List[str]]:
-        data_objects, feature_names = DataLabelingPipeline\
-            .extract_features(data_objects, feature_extraction_method)
-        for data_object in data_objects:
-            data_object['features'] = data_object['features'].tolist()
-        return data_objects, feature_names
-
     @staticmethod
     def sample_data_objects(data_objects: List[dict],
                             labels: List[Label],

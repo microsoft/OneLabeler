@@ -1,34 +1,34 @@
 /** The interface of a data object to be labeled. */
 export interface IDataObject {
   /** The universal unique id of the data object. */
-  uuid: string,
+  uuid: string;
   /** The features of the data object. */
-  features?: number[],
+  features?: number[];
 }
 
 /** The interface of an image data object. */
 export interface IImage extends IDataObject {
   /** The storage path of the image on the server. */
-  path: string | null,
+  path: string | null;
   /** The width of the image. */
-  width?: number | null,
+  width?: number | null;
   /** The height of the image. */
-  height?: number | null,
+  height?: number | null;
 }
 
 /** The type of data labels. */
-export type Label = string
+export type Label = string;
 
 /** The interface of the segmentation label of an image data object. */
 export interface ILabelMask {
   /** The storage path of the mask on the server. */
-  path: string | null,
+  path: string | null;
   /** The color encoding of the stored mask image. */
-  colorEncoding?: { [key: string]: number | [number, number, number] } | null,
+  colorEncoding?: { [key: string]: number | [number, number, number] } | null;
   /** The width of the mask. */
-  width?: number | null,
+  width?: number | null;
   /** The height of the mask. */
-  height?: number | null,
+  height?: number | null;
 }
 
 /** The type of data shapes in polygon annotation. */
@@ -40,22 +40,22 @@ export enum ObjectShapeType {
 
 /** The interface of a polygon annotation in an image data object. */
 export interface ILabelGeometricObject {
-  label: Label,
-  shape: ObjectShapeType,
-  position: [number, number][] | [number, number],
+  label: Label;
+  shape: ObjectShapeType;
+  position: [number, number][] | [number, number];
   /** The uuid is for recognizing which shape in the canvas
    * corresponds to which label geometric object. */
-  uuid?: string | null,
+  uuid?: string | null;
 }
 
 /** The type of data label annotations. */
 export enum LabelTaskType {
-  /** Image classification */
-  ImageClassification = 'ImageClassification',
+  /** Classification */
+  Classification = 'Classification',
   /** Object detection */
   ObjectDetection = 'ObjectDetection',
-  /** Image Segmentation */
-  ImageSegmentation = 'ImageSegmentation',
+  /** Segmentation */
+  Segmentation = 'Segmentation',
 }
 
 /** The enum of label status types. */
@@ -83,14 +83,17 @@ export enum MessageType {
 
 /** The interface of an alert message. */
 export interface IMessage {
-  content: string,
-  type: MessageType,
+  content: string;
+  type: MessageType;
 }
 
-/** The enum of feature extraction method types. */
-export enum FeatureExtractionMethodType {
-  Handcrafted = 'Handcrafted',
-  Unsupervised = 'Unsupervised',
+/** The interface of an algorithmic feature extraction method. */
+export interface FeatureExtractionMethod {
+  name: string;
+  api: string;
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
 }
 
 /** The enum of data object sampling strategy types. */
@@ -142,11 +145,11 @@ export enum ProjectionMethodType {
 /** The interface of default labeling and active sampling model. */
 export interface IModel {
   /** The default labeling model type. */
-  type: DefaultLabelingMethodType,
+  type: DefaultLabelingMethodType;
   /** The data object sampling strategy. */
-  samplingStrategy: SamplingStrategyType,
+  samplingStrategy: SamplingStrategyType;
   /** The key to the default labeling model stored in the backend. */
-  predictor: string | null,
+  predictor: string | null;
   /** The key to the sampling model stored in the backend. */
-  sampler: string | null,
+  sampler: string | null;
 }

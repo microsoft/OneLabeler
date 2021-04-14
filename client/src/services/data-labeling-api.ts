@@ -12,6 +12,7 @@ import {
   IModel,
   Label,
   Status,
+  FeatureExtractionMethod,
 } from '@/commons/types';
 import {
   PROTOCOL,
@@ -52,23 +53,24 @@ export const extractDataObjects = showProgressBar(async (
  * on the data object type.
  */
 export const extractFeatures = showProgressBar(async (
+  api: string,
   dataObjects: IImage[],
-  featureExtractionMethod: string,
+  labels: Label[] | null = null,
+  statuses: Status[] | null = null,
 ): Promise<{dataObjects: IImage[], featureNames: string[]}> => {
   const response = (
     await axios.post(
-      formatter(SERVER_PORT, 'extractFeatures'),
+      api,
       JSON.stringify({
         dataObjects,
-        featureExtractionMethod,
+        labels,
+        statuses,
       }),
     )
   ).data;
-  const updatedDataObjects = response.dataObjects as IImage[];
-  const { featureNames } = response as { featureNames: string[] };
   return {
-    dataObjects: updatedDataObjects,
-    featureNames,
+    dataObjects: response.dataObjects as IImage[],
+    featureNames: response.featureNames as string[],
   };
 });
 

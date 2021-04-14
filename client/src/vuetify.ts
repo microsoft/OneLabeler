@@ -35,6 +35,8 @@ const icons = {
   eraser: 'fas fa-eraser',
   expand: 'fas fa-expand',
   pan: 'fas fa-arrows-alt',
+  sync: 'fas fa-sync-alt',
+  edit: 'fas fa-edit',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

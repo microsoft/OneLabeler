@@ -414,7 +414,7 @@ export default Vue.extend({
     },
     enableImageSegmentation(): boolean {
       return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.ImageSegmentation,
+        (d: LabelTaskType) => d === LabelTaskType.Segmentation,
       ) >= 0;
     },
     classesNotEmpty(): boolean {

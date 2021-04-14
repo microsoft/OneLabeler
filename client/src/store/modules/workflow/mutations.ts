@@ -1,6 +1,6 @@
 import {
   DefaultLabelingMethodType,
-  FeatureExtractionMethodType,
+  FeatureExtractionMethod,
   LabelTaskType,
   SamplingStrategyType,
 } from '@/commons/types';
@@ -11,9 +11,15 @@ export default {
   [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
     state.showDatasetOverview = showDatasetOverview;
   },
+  [types.SET_FEATURE_EXTRACTION_METHODS](
+    state: IState,
+    featureExtractionMethods: FeatureExtractionMethod[],
+  ): void {
+    state.featureExtractionMethods = featureExtractionMethods;
+  },
   [types.SET_FEATURE_EXTRACTION_METHOD](
     state: IState,
-    featureExtractionMethod: FeatureExtractionMethodType,
+    featureExtractionMethod: FeatureExtractionMethod,
   ): void {
     state.featureExtractionMethod = featureExtractionMethod;
   },

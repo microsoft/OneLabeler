@@ -1,6 +1,5 @@
 <template>
   <v-toolbar
-    dense
     class="app-header"
     :height="height"
   >
@@ -119,7 +118,7 @@
 
     <!-- The start data labeling button. -->
     <v-btn
-      title="Next Batch (->)"
+      title="Next Batch (Ctrl + ->)"
       color="white"
       icon
       tile
@@ -318,7 +317,7 @@ export default Vue.extend({
       'queryIndices',
       'commandHistory',
     ]),
-    ...mapState('worfklow', ['nBatch']),
+    ...mapState('workflow', ['featureExtractionMethod']),
     disableSaveButton(): boolean {
       return this.dataObjects.length === 0;
     },
@@ -395,8 +394,8 @@ export default Vue.extend({
         e.preventDefault();
         this.onClickSave();
       }
-      // shortcut for next batch: ArrowRight
-      if (!this.disableNextBatchButton && key === 'ArrowRight') {
+      // shortcut for next batch: Ctrl + ArrowRight
+      if (!this.disableNextBatchButton && key === 'ArrowRight' && ctrlKey) {
         e.preventDefault();
         this.onClickNextBatch();
       }
@@ -404,7 +403,7 @@ export default Vue.extend({
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
       await this.extractDataObjects(files);
-      await this.extractFeatures();
+      await this.extractFeatures(this.featureExtractionMethod);
       this.setMessage({
         content: 'Project Data Uploaded.',
         type: MessageType.success,

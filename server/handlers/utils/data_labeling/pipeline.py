@@ -3,7 +3,7 @@ The instantiation of data labeling pipeline components.
 """
 
 from copy import deepcopy
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import cv2 as cv
 import numpy as np
@@ -19,7 +19,8 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 from .feature_extraction import (raw_flatten,
-                                 dimension_reduction,
+                                 resize_SVD,
+                                 resize_LDA,
                                  color_descriptors,
                                  edge_descriptors,
                                  edge_direction_descriptors,
@@ -64,50 +65,6 @@ class DataLabelingPipeline(GenericPipeline):
     """
     The data labeling pipeline class.
     """
-
-    @staticmethod
-    def extract_features(data_objects: ListLike,
-                         feature_extraction_method: str,
-                         ) -> Tuple[ListLike, List[str]]:
-        # pylint: disable=invalid-name
-
-        data_objects = deepcopy(data_objects)
-        imgs = []
-        for data_object in data_objects:
-            path = data_object['path']
-            img = cv.imread(path)
-            imgs.append(img)
-            data_object['width'] = img.shape[1]
-            data_object['height'] = img.shape[0]
-
-        if feature_extraction_method == 'Unsupervised':
-            extractors = [
-                dimension_reduction,
-            ]
-        elif feature_extraction_method == 'Handcrafted':
-            extractors = [
-                raw_flatten,
-                dimension_reduction,
-                color_descriptors,
-                edge_descriptors,
-                edge_direction_descriptors,
-                texture_descriptors,
-            ]
-        else:
-            raise ValueError(
-                f'Invalid feature extraction method: {feature_extraction_method}')
-
-        X = None
-        feature_names = []
-        for extractor in extractors:
-            X_tmp, feature_names_tmp = extractor(imgs)
-            X = np.hstack((X, X_tmp)) if X is not None else X_tmp
-            feature_names = feature_names + feature_names_tmp\
-                if feature_names is not None else feature_names_tmp
-        for i, data_object in enumerate(data_objects):
-            data_objects[i]['features'] = X[i]
-
-        return data_objects, feature_names
 
     @staticmethod
     def sample_data_objects(data_objects: ListLike,
@@ -201,8 +158,8 @@ class DataLabelingPipeline(GenericPipeline):
         ], f'Invalid model type: {model.type}'
 
         X = np.array([data_object['features'] for data_object in data_objects])
-        mask_labeled = np.array(
-            [status == Status.LABELED for status in statuses])
+        mask_labeled = np.array([status == Status.LABELED
+                                 for status in statuses])
         if np.sum(mask_labeled) == 0:
             return model
 

@@ -1,4 +1,5 @@
 from handlers import (DataLabelingHandler,
+                      FeatureExtractionHandler,
                       ImageHandler,
                       ProjectionHandler,
                       UploadHandler)
@@ -10,6 +11,8 @@ url = [
     (r'/img/(.+)', ImageHandler),
     # request for projection algorithms
     (r'/projection/(\w+)', ProjectionHandler),
+    # request for feature extraction algorithms
+    (r'/extractFeatures/(.*)', FeatureExtractionHandler),
     # request for data labeling algorithms
     (r'/dataLabeling/(\w+)', DataLabelingHandler),
 ]

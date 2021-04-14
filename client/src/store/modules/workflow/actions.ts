@@ -5,7 +5,8 @@ import {
   IImage,
   IModel,
   LabelTaskType,
-  FeatureExtractionMethodType,
+  Label,
+  FeatureExtractionMethod,
   SamplingStrategyType,
   Status,
 } from '@/commons/types';
@@ -22,13 +23,29 @@ export const setShowDatasetOverview = (
 };
 
 export const extractFeatures = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  method: FeatureExtractionMethod,
 ): Promise<void> => {
-  const { featureExtractionMethod } = state;
-  const { dataObjects } = rootState;
+  const { dataObjects, labels, statuses } = rootState;
+  if (dataObjects === null) return;
 
-  // Extract data objects.
-  const response = (await API.extractFeatures(dataObjects as IImage[], featureExtractionMethod));
+  const requireLabels = method.parameters
+    .findIndex((d) => d === 'labels') >= 0;
+  let response = null;
+  if (requireLabels) {
+    response = (await API.extractFeatures(
+      method.api,
+      dataObjects as IImage[],
+      labels,
+      statuses,
+    ));
+  } else {
+    response = (await API.extractFeatures(
+      method.api,
+      dataObjects as IImage[],
+    ));
+  }
+
   const updatedDataObjects = response.dataObjects;
   const { featureNames } = response;
 
@@ -36,15 +53,21 @@ export const extractFeatures = async (
   commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
 };
 
-export const setFeatureExtractionMethod = (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-  featureExtractionMethod: FeatureExtractionMethodType,
+export const setFeatureExtractionMethods = (
+  { commit }: ActionContext<IState, IRootState>,
+  methods: FeatureExtractionMethod[],
 ): void => {
-  if (state.featureExtractionMethod === featureExtractionMethod) {
+  commit(types.SET_FEATURE_EXTRACTION_METHODS, methods);
+};
+
+export const setFeatureExtractionMethod = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  method: FeatureExtractionMethod,
+): void => {
+  if (state.featureExtractionMethod === method) {
     return;
   }
-  commit(types.SET_FEATURE_EXTRACTION_METHOD, featureExtractionMethod);
-  extractFeatures({ commit, state, rootState } as ActionContext<IState, IRootState>);
+  commit(types.SET_FEATURE_EXTRACTION_METHOD, method);
 };
 
 export const setSamplingStrategy = (
@@ -137,10 +160,10 @@ export const setLabelTasks = (
 
   // Initialize labels for new tasks, and reset labels for deleted tasks.
   const enableImageClassificationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.ImageClassification,
+    (d) => d === LabelTaskType.Classification,
   ) >= 0;
   const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageClassification,
+    (d) => d === LabelTaskType.Classification,
   ) >= 0;
   const enableObjectDetectionOld = labelTasksOld.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
@@ -149,10 +172,10 @@ export const setLabelTasks = (
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
   const enableImageSegmentationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.ImageSegmentation,
+    (d) => d === LabelTaskType.Segmentation,
   ) >= 0;
   const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageSegmentation,
+    (d) => d === LabelTaskType.Segmentation,
   ) >= 0;
 
   commit(types.SET_GRID_MATRIX_ENABLED, enableImageClassification);
@@ -197,13 +220,13 @@ export const extractDataObjects = async (
 
   // Initialize labels and label statuses.
   const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageClassification,
+    (d) => d === LabelTaskType.Classification,
   ) >= 0;
   const enableObjectDetection = labelTasks.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
   const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageSegmentation,
+    (d) => d === LabelTaskType.Segmentation,
   ) >= 0;
   if (enableImageClassification) {
     const labels = Array(dataObjects.length).fill(unlabeledMark);
@@ -307,13 +330,13 @@ export const updateModel = async (
   }
 
   const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageClassification,
+    (d) => d === LabelTaskType.Classification,
   ) >= 0;
   const enableObjectDetection = labelTasks.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
   const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageSegmentation,
+    (d) => d === LabelTaskType.Segmentation,
   ) >= 0;
 
   // Update the model.
@@ -343,13 +366,13 @@ export const assignDefaultLabels = async (
   } = rootState;
 
   const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageClassification,
+    (d) => d === LabelTaskType.Classification,
   ) >= 0;
   const enableObjectDetection = labelTasks.findIndex(
     (d) => d === LabelTaskType.ObjectDetection,
   ) >= 0;
   const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ImageSegmentation,
+    (d) => d === LabelTaskType.Segmentation,
   ) >= 0;
 
   // Assign default labels to the sampled data objects.

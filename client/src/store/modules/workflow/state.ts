@@ -1,16 +1,22 @@
 import {
   DefaultLabelingMethodType,
-  FeatureExtractionMethodType,
   LabelTaskType,
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   InterimModelTrainingType,
+  FeatureExtractionMethod,
 } from '@/commons/types';
+import {
+  PROTOCOL,
+  IP,
+  SERVER_PORT,
+} from '@/services/http-params';
 
 export interface IState {
-  /** The data labeling workflow configuration parameters. */
-  featureExtractionMethod: FeatureExtractionMethodType,
+  /** The collection of feature extraction methods. */
+  featureExtractionMethods: FeatureExtractionMethod[],
+  featureExtractionMethod: FeatureExtractionMethod,
   /** The data sampling strategy. */
   samplingStrategy: SamplingStrategyType,
   /** The number of data objects to sample each time. */
@@ -40,7 +46,32 @@ export interface IState {
 }
 
 export const createInitialState = (): IState => ({
-  featureExtractionMethod: FeatureExtractionMethodType.Unsupervised,
+  featureExtractionMethods: [{
+    name: 'SVD (Unsupervised)',
+    api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/SVD`,
+    parameters: ['dataObjects'],
+    isBuiltIn: true,
+    id: 'image-SVD-25940167',
+  }, {
+    name: 'BoW (Handcrafted)',
+    api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/BoW`,
+    parameters: ['dataObjects'],
+    isBuiltIn: true,
+    id: 'image-BoW-6989392',
+  }, {
+    name: 'LDA (Supervised)',
+    api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/LDA`,
+    parameters: ['dataObjects', 'labels'],
+    isBuiltIn: true,
+    id: 'image-LDA-45100847',
+  }],
+  featureExtractionMethod: {
+    name: 'SVD (Unsupervised)',
+    api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/SVD`,
+    parameters: ['dataObjects'],
+    isBuiltIn: true,
+    id: 'image-SVD-25940167',
+  },
   samplingStrategy: SamplingStrategyType.Random,
   nBatch: 1,
   defaultLabelingMethod: DefaultLabelingMethodType.Null,
@@ -53,7 +84,7 @@ export const createInitialState = (): IState => ({
   stoppageAnalysis: StoppageAnalysisType.AllChecked,
   interimModelTrainingEnabled: false,
   interimModelTraining: InterimModelTrainingType.Retrain,
-  labelTasks: [], // [LabelTaskType.ImageClassification],
+  labelTasks: [], // [LabelTaskType.Classification],
 });
 
 export default createInitialState();

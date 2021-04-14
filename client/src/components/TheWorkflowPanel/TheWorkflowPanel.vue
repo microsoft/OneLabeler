@@ -1,11 +1,23 @@
 <template>
-  <v-card style="border-radius: 2px">
-    <v-card-title>
+  <v-card class="rounded-0">
+    <v-toolbar
+      class="app-header"
+      height="35"
+    >
+      <v-toolbar-title class="app-header-logo pl-2 pr-2">
+        Workflow Configuration
+      </v-toolbar-title>
+
+      <v-divider
+        class="app-header-divider"
+        vertical
+      />
+
       <!-- The configuration upload button. -->
       <VUploadButton
         title="Open Configuration File"
         type="file"
-        color="grey"
+        color="white"
         small
         :icon="$vuetify.icons.values.open"
         @upload-file="onUploadFile"
@@ -14,7 +26,7 @@
       <!-- The configuration export button. -->
       <v-btn
         title="Export Configuration"
-        color="grey"
+        color="white"
         icon
         tile
         small
@@ -31,7 +43,7 @@
       <!-- The configuration reset button. -->
       <v-btn
         title="Reset Settings"
-        color="grey"
+        color="white"
         icon
         tile
         small
@@ -44,10 +56,13 @@
           $vuetify.icons.values.reset
         </v-icon>
       </v-btn>
+
       <v-spacer />
+
       <v-btn
-        color="black"
+        class="mr-1"
         title="Close"
+        color="white"
         icon
         tile
         small
@@ -60,8 +75,9 @@
           $vuetify.icons.values.close
         </v-icon>
       </v-btn>
-    </v-card-title>
-    <v-card-text>
+
+    </v-toolbar>
+    <v-card-text class="px-2 py-2">
       <TheWorkflowGraphView />
     </v-card-text>
   </v-card>
