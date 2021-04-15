@@ -85,15 +85,10 @@ def extract_features_img_LDA(data_objects: ListLike,
         data_object['width'] = img.shape[1]
         data_object['height'] = img.shape[0]
 
-    classes = np.array([d for d in np.unique(labels)])
-    labels_encoded = LabelEncoder().fit(classes).transform(labels)
-
-    X, feature_names = resize_LDA(imgs, labels_encoded, statuses)
+    X, feature_names = resize_LDA(imgs, labels, statuses)
+    
     for i, data_object in enumerate(data_objects):
-        data_objects[i]['features'] = X[i]
-
-    for data_object in data_objects:
-        data_object['features'] = data_object['features'].tolist()
+        data_objects[i]['features'] = X[i].tolist()
 
     return data_objects, feature_names
 

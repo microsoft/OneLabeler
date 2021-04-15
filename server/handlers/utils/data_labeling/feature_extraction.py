@@ -13,6 +13,7 @@ from skimage.measure import shannon_entropy
 from skimage.morphology import disk
 from sklearn import decomposition
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.preprocessing import LabelEncoder
 from sklearn.random_projection import GaussianRandomProjection
 # from tensorflow.keras.applications.vgg16 import preprocess_input, VGG16
 
@@ -159,6 +160,9 @@ def resize_LDA(imgs: np.ndarray,
                             for status in statuses])
     X_labeled = X_flatten[mask_labeled]
     labels_labeled = labels[mask_labeled]
+
+    classes = np.array([d for d in np.unique(labels_labeled)])
+    labels_labeled = LabelEncoder().fit(classes).transform(labels_labeled)
 
     if len(labels_labeled) <= 1:
         n_components_actual = n_components

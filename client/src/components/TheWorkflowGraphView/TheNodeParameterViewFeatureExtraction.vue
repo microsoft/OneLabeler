@@ -39,6 +39,7 @@
         dense
         subheader
       >
+        <!-- The name of the process node. -->
         <v-list-item>
           Node Name
           <template v-if="!isTitleEditable">
@@ -76,6 +77,8 @@
             </v-icon>
           </v-btn>
         </v-list-item>
+
+        <!-- The method used to instantiated the process. -->
         <v-list-item
           class="py-0"
         >
@@ -135,6 +138,7 @@
             </v-list>
           </v-menu>
         </v-list-item>
+
         <v-divider />
 
         <!-- The name of the feature extraction method. -->
@@ -179,8 +183,6 @@
             label="Process Input"
             outlined
             dense
-            chips
-            small-chips
             multiple
             hide-details
             @input="onClickParameterCheckbox($event)"
@@ -209,6 +211,26 @@
                   hide-details
                 />
               </v-list-item-content>
+            </template>
+          </v-autocomplete>
+        </v-list-item>
+
+        <!-- The display of process output parameters. -->
+        <v-list-item>
+          <v-autocomplete
+            value="features"
+            :items="['features']"
+            :class="`mt-3 ${classNameOfProcessOutputWidget}`"
+            label="Process Output"
+            disabled
+            outlined
+            dense
+            hide-details
+          >
+            <template #selection>
+              <v-chip small>
+                features
+              </v-chip>
             </template>
           </v-autocomplete>
         </v-list-item>
@@ -247,6 +269,7 @@ export default Vue.extend({
       ],
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
+      classNameOfProcessOutputWidget: 'parameter-panel-process-output',
       isTitleEditable: false,
     };
   },
@@ -347,5 +370,10 @@ export default Vue.extend({
 /** Change the font of checkbox text. */
 .parameter-panel-checkbox .v-label {
   font-size: 0.875rem !important;
+}
+
+/** Hide the menu trigger button for process-output. */
+.parameter-panel-process-output .v-input__append-inner {
+  display: none;
 }
 </style>

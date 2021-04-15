@@ -110,6 +110,16 @@ export enum SamplingStrategyType {
   SmallestMargin = 'SmallestMargin',
 }
 
+/** The interface of an algorithmic default labeling method. */
+export interface DefaultLabelingMethod {
+  name: string;
+  serverless: boolean;
+  api: string; // for serverless methods, the api is the method's unique name
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
+}
+
 /** The enum of default labeling model types. */
 export enum DefaultLabelingMethodType {
   Null = 'Null',
