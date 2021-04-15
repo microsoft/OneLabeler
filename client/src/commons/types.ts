@@ -90,7 +90,8 @@ export interface IMessage {
 /** The interface of an algorithmic feature extraction method. */
 export interface FeatureExtractionMethod {
   name: string;
-  api: string;
+  serverless: boolean;
+  api: string; // for serverless methods, the api is the method's unique name
   parameters: Array<string>;
   isBuiltIn: boolean;
   id: string;

@@ -22,26 +22,43 @@ export const setShowDatasetOverview = (
   commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
 };
 
+type extractFeaturesSignature = [FeatureExtractionMethod, IImage[]]
+  | [FeatureExtractionMethod, IImage[], Label[], Status[]];
+
 export const extractFeatures = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: FeatureExtractionMethod,
 ): Promise<void> => {
+  const { dataObjects, labels, statuses } = rootState;
+
+  if (dataObjects === null) return;
+  const requireLabels = method.parameters
+    .findIndex((d) => d === 'labels') >= 0;
+  const response = requireLabels
+    ? (await API.extractFeatures(method, dataObjects as IImage[]))
+    : (await API.extractFeatures(method, dataObjects as IImage[], labels, statuses));
+
+  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
+  commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+
+  /*
   const { dataObjects, labels, statuses } = rootState;
   if (dataObjects === null) return;
 
   const requireLabels = method.parameters
     .findIndex((d) => d === 'labels') >= 0;
   let response = null;
+
   if (requireLabels) {
     response = (await API.extractFeatures(
-      method.api,
+      method.api as string,
       dataObjects as IImage[],
       labels,
       statuses,
     ));
   } else {
     response = (await API.extractFeatures(
-      method.api,
+      method.api as string,
       dataObjects as IImage[],
     ));
   }
@@ -51,6 +68,7 @@ export const extractFeatures = async (
 
   commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
+  */
 };
 
 export const setFeatureExtractionMethods = (

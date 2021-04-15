@@ -109,7 +109,7 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
 
         assert key in ['image/SVD', 'image/BoW', 'image/LDA']
 
-        feature_extraction_method = key
+        # process input: (dataObjects, labels?, statuses?)
         data_objects = json_data['dataObjects']
         labels = None if key != 'image/LDA' else json_data['labels']
         statuses = None if key != 'image/LDA' else json_data['statuses']

@@ -92,7 +92,7 @@
                 </v-autocomplete>
               </v-list-item>
 
-              <!-- The selected feature list. -->
+              <!-- The selected feature number. -->
               <v-list-item
                 class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
               >

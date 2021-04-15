@@ -83,6 +83,7 @@ const graph = {
       type: NodeTypes.featureExtraction,
       value: {
         name: 'SVD (Unsupervised)',
+        serverless: false,
         api: 'http://localhost:8005/extractFeatures/image/SVD',
         parameters: ['dataObjects'],
         isBuiltIn: true,
@@ -322,6 +323,7 @@ export default Vue.extend({
         const { featureExtractionMethods } = this;
         const method = {
           name: 'custom',
+          serverless: false,
           api: '',
           parameters: ['dataObjects'],
           isBuiltIn: false,

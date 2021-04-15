@@ -5,6 +5,7 @@
 
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { xor4096 } from 'seedrandom';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import {
   IDataObject,
@@ -53,21 +54,46 @@ export const extractDataObjects = showProgressBar(async (
  * on the data object type.
  */
 export const extractFeatures = showProgressBar(async (
-  api: string,
+  method: FeatureExtractionMethod,
   dataObjects: IImage[],
   labels: Label[] | null = null,
   statuses: Status[] | null = null,
 ): Promise<{dataObjects: IImage[], featureNames: string[]}> => {
-  const response = (
-    await axios.post(
-      api,
-      JSON.stringify({
-        dataObjects,
-        labels,
-        statuses,
-      }),
-    )
-  ).data;
+  let response = null;
+  if (method.serverless) {
+    if (method.api === 'Random3D') {
+      const SEED = '20';
+      const random = xor4096(SEED);
+
+      // create a new copy
+      const updatedDataObjects = (JSON.parse(JSON.stringify(dataObjects)) as IImage[])
+        .map((dataObject) => ({
+          ...dataObject,
+          // create three random feature values
+          features: [random(), random(), random()],
+        }));
+      const featureNames = [
+        'Random[0]',
+        'Random[1]',
+        'Random[2]',
+      ];
+      response = {
+        dataObjects: updatedDataObjects,
+        featureNames,
+      };
+    }
+  } else {
+    response = (
+      await axios.post(
+        method.api,
+        JSON.stringify({
+          dataObjects,
+          labels,
+          statuses,
+        }),
+      )
+    ).data;
+  }
   return {
     dataObjects: response.dataObjects as IImage[],
     featureNames: response.featureNames as string[],

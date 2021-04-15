@@ -1,6 +1,6 @@
 <template>
   <v-card
-    :class="`fill-height ${className}`"
+    :class="`fill-height ${classNameOfPanel}`"
     style="width: 100%"
     tile
   >
@@ -49,6 +49,7 @@
           </template>
           <v-text-field
             v-else
+            v-click-outside="onClickOutsideInputTitle"
             :value="node.title"
             :disabled="false"
             class="ma-0 pl-4 pt-1 subtitle-2"
@@ -58,7 +59,6 @@
             hide-details
             single-line
             @input="onInputTitle($event)"
-            v-click-outside="onClickOutsideInputTitle"
           />
           <v-btn
             title="edit"
@@ -106,9 +106,16 @@
                   {{ text }}
                 </v-list-item-title>
                 <p
-                  v-if="menu.options[i].isBuiltIn"
+                  v-if="menu.options[i].serverless"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 5em"
+                >
+                  serverless
+                </p>
+                <p
+                  v-if="menu.options[i].isBuiltIn"
+                  class="subtitle-2 text-right ma-1 grey--text"
+                  style="width: 6em"
                 >
                   built-in
                 </p>
@@ -129,6 +136,8 @@
           </v-menu>
         </v-list-item>
         <v-divider />
+
+        <!-- The name of the feature extraction method. -->
         <v-list-item>
           Method Name
           <v-text-field
@@ -143,10 +152,12 @@
             @input="onInputMethodName($event)"
           />
         </v-list-item>
+
+        <!-- The url of feature extraction service. -->
         <v-list-item>
           API
           <v-text-field
-            :value="node.value.api"
+            :value="node.value.serverless ? 'serverless' : node.value.api"
             :disabled="node.value.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
@@ -156,6 +167,50 @@
             single-line
             @input="onInputMethodAPI($event)"
           />
+        </v-list-item>
+
+        <!-- The input box for process input parameters. -->
+        <v-list-item>
+          <v-autocomplete
+            :value="node.value.parameters"
+            :items="parameterNames"
+            :disabled="node.value.isBuiltIn"
+            class="mt-3"
+            label="Process Input"
+            outlined
+            dense
+            chips
+            small-chips
+            multiple
+            hide-details
+            @input="onClickParameterCheckbox($event)"
+          >
+            <template #selection="data">
+              <v-chip
+                v-bind="data.attrs"
+                :input-value="data.selected"
+                small
+              >
+                {{ data.item }}
+              </v-chip>
+            </template>
+            <template #item="data">
+              <v-list-item-content
+                dense
+                :class="classNameOfCheckbox"
+              >
+                <v-checkbox
+                  :label="data.item"
+                  :value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
+                  :input-value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
+                  :disabled="compulsoryParameters.findIndex((d) => d === data.item) >= 0"
+                  class="ma-0"
+                  dense
+                  hide-details
+                />
+              </v-list-item-content>
+            </template>
+          </v-autocomplete>
         </v-list-item>
       </v-list>
     </v-card-actions>
@@ -183,7 +238,15 @@ export default Vue.extend({
   },
   data() {
     return {
-      className: 'parameter-panel',
+      parameterNames: [
+        'dataObjects',
+        'labels',
+      ],
+      compulsoryParameters: [
+        'dataObjects',
+      ],
+      classNameOfPanel: 'parameter-panel',
+      classNameOfCheckbox: 'parameter-panel-checkbox',
       isTitleEditable: false,
     };
   },
@@ -239,6 +302,27 @@ export default Vue.extend({
         api,
       });
     },
+    onClickParameterCheckbox(parameterNames: string[]): void {
+      const { node, compulsoryParameters } = this;
+      const orders = this.parameterNames;
+      const sorted = [
+        ...compulsoryParameters,
+        ...parameterNames.filter((d) => compulsoryParameters.indexOf(d) < 0),
+      ].sort((a, b) => (
+        orders.indexOf(a) - orders.indexOf(b)
+      ));
+      this.onEditNode({
+        ...node,
+        value: {
+          ...node.value,
+          parameters: sorted,
+        },
+      });
+      this.onEditMethod({
+        ...node.value,
+        parameters: sorted,
+      });
+    },
     onCreateOption(): void {
       this.$emit('create-option');
     },
@@ -258,5 +342,10 @@ export default Vue.extend({
 /** Make the letter spacing of v-text-field the same as text outside. */
 .parameter-panel input {
   letter-spacing: .0071428571em;
+}
+
+/** Change the font of checkbox text. */
+.parameter-panel-checkbox .v-label {
+  font-size: 0.875rem !important;
 }
 </style>

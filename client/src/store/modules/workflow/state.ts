@@ -48,25 +48,36 @@ export interface IState {
 export const createInitialState = (): IState => ({
   featureExtractionMethods: [{
     name: 'SVD (Unsupervised)',
+    serverless: false,
     api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/SVD`,
     parameters: ['dataObjects'],
     isBuiltIn: true,
     id: 'image-SVD-25940167',
   }, {
     name: 'BoW (Handcrafted)',
+    serverless: false,
     api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/BoW`,
     parameters: ['dataObjects'],
     isBuiltIn: true,
     id: 'image-BoW-6989392',
   }, {
     name: 'LDA (Supervised)',
+    serverless: false,
     api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/LDA`,
     parameters: ['dataObjects', 'labels'],
     isBuiltIn: true,
     id: 'image-LDA-45100847',
+  }, {
+    name: 'Random3D (Dummy)',
+    serverless: true,
+    api: 'Random3D',
+    parameters: ['dataObjects'],
+    isBuiltIn: true,
+    id: 'random-87333124',
   }],
   featureExtractionMethod: {
     name: 'SVD (Unsupervised)',
+    serverless: false,
     api: `${PROTOCOL}://${IP}:${SERVER_PORT}/extractFeatures/image/SVD`,
     parameters: ['dataObjects'],
     isBuiltIn: true,
