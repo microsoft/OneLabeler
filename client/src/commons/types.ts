@@ -1,3 +1,20 @@
+import ObjectId from 'bson-objectid';
+
+/** The types of data objects. */
+export enum DataType {
+  Image = 'Image',
+  Video = 'Video',
+  Audio = 'Audio',
+  Document = 'Document',
+}
+
+/** The types of label tasks. */
+export enum LabelTaskType {
+  Classification = 'Classification',
+  ObjectDetection = 'ObjectDetection',
+  Segmentation = 'Segmentation',
+}
+
 /** The interface of a data object to be labeled. */
 export interface IDataObject {
   /** The universal unique id of the data object. */
@@ -48,26 +65,16 @@ export interface ILabelGeometricObject {
   uuid?: string | null;
 }
 
-/** The type of data label annotations. */
-export enum LabelTaskType {
-  /** Classification */
-  Classification = 'Classification',
-  /** Object detection */
-  ObjectDetection = 'ObjectDetection',
-  /** Segmentation */
-  Segmentation = 'Segmentation',
-}
-
 /** The enum of label status types. */
 export enum Status {
   /** The data object is not viewed and not labeled. */
-  NEW = 'NEW',
+  New = 'New',
   /** The data object is viewed but not yet labeled. */
-  VIEWED = 'VIEWED',
+  Viewed = 'Viewed',
   /** The data object is viewed but skipped. */
-  SKIPPED = 'SKIPPED',
+  Skipped = 'Skipped',
   /** The data object is labeled. */
-  LABELED = 'LABELED',
+  Labeled = 'Labeled',
 }
 
 export interface ICommand {
@@ -77,8 +84,8 @@ export interface ICommand {
 
 /** The enum of alert message types. */
 export enum MessageType {
-  error = 'error',
-  success = 'success',
+  Error = 'Error',
+  Success = 'Success',
 }
 
 /** The interface of an alert message. */
@@ -87,8 +94,30 @@ export interface IMessage {
   type: MessageType;
 }
 
+/** The interface of a model service. */
+export interface ModelService {
+  name: string;
+  serverless: boolean;
+  type: string,
+  isBuiltIn: boolean;
+  objectId: string;
+  // id: string;
+  // api: string;
+  // isLocal: boolean;
+}
+
 /** The interface of an algorithmic feature extraction method. */
 export interface FeatureExtractionMethod {
+  name: string;
+  serverless: boolean;
+  api: string; // for serverless methods, the api is the method's unique name
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
+}
+
+/** The interface of a data object selection method. */
+export interface DataObjectSelectionMethod {
   name: string;
   serverless: boolean;
   api: string; // for serverless methods, the api is the method's unique name
@@ -120,17 +149,6 @@ export interface DefaultLabelingMethod {
   id: string;
 }
 
-/** The enum of default labeling model types. */
-export enum DefaultLabelingMethodType {
-  Null = 'Null',
-  Random = 'Random',
-  DecisionTree = 'DecisionTree',
-  SVM = 'SVM',
-  LogisticRegression = 'LogisticRegression',
-  LabelSpreading = 'LabelSpreading',
-  RestrictedBoltzmannMachine = 'RestrictedBoltzmannMachine',
-}
-
 /** The enum of task transformation types. */
 export enum TaskTransformationType {
   DirectLabeling = 'DirectLabeling',
@@ -156,7 +174,7 @@ export enum ProjectionMethodType {
 /** The interface of default labeling and active sampling model. */
 export interface IModel {
   /** The default labeling model type. */
-  type: DefaultLabelingMethodType;
+  type: DefaultLabelingMethod;
   /** The data object sampling strategy. */
   samplingStrategy: SamplingStrategyType;
   /** The key to the default labeling model stored in the backend. */

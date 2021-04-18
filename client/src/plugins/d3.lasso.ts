@@ -18,12 +18,12 @@ const distance = (
 /** Dispatched lasso event types. */
 export enum LassoEventType {
   /** When the dragging for lasso selection starts. */
-  start = 'start',
+  Start = 'Start',
   /**
    * When the dragging for lasso selection ends
    * and the path form a valid selection.
    */
-  end = 'end',
+  End = 'End',
 }
 
 export interface ILasso {
@@ -70,7 +70,7 @@ export default class Lasso implements ILasso {
   #closeLine: SelectionLine | null = null;
 
   /** The dispatcher of lasso events. */
-  #dispatch = d3.dispatch(LassoEventType.start, LassoEventType.end);
+  #dispatch = d3.dispatch(LassoEventType.Start, LassoEventType.End);
 
   /**
    * The distance threshold.
@@ -126,7 +126,7 @@ export default class Lasso implements ILasso {
         .attr('stroke-dasharray', '2, 2')
         .attr('opacity', 0);
 
-      dispatch.call(LassoEventType.start, this, lassoPolygon);
+      dispatch.call(LassoEventType.Start, this, lassoPolygon);
     };
 
     const dragged = (event: MouseEvent): void => {
@@ -165,7 +165,7 @@ export default class Lasso implements ILasso {
         // If successfully closed:
         (this.#lassoPath as SelectionPath)
           .attr('d', `${polygonToPath(lassoPolygon)}Z`);
-        dispatch.call(LassoEventType.end, this, lassoPolygon);
+        dispatch.call(LassoEventType.End, this, lassoPolygon);
       } else {
         // Otherwise cancel:
         (this.#lassoPath as SelectionPath)

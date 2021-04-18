@@ -1,5 +1,4 @@
 import {
-  DefaultLabelingMethodType,
   ICommand,
   IDataObject,
   IMessage,
@@ -51,7 +50,14 @@ export const createInitialState = (): IState => ({
   labelMasks: [],
   statuses: [],
   model: {
-    type: DefaultLabelingMethodType.Null,
+    type: {
+      name: 'Null (Dummy)',
+      serverless: true,
+      api: 'Null',
+      parameters: ['features'],
+      isBuiltIn: true,
+      id: 'Null-35514905',
+    },
     samplingStrategy: SamplingStrategyType.Random,
     predictor: null,
     sampler: null,

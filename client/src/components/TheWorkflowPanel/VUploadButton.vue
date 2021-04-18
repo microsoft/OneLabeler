@@ -20,8 +20,8 @@
 import Vue, { PropType } from 'vue';
 
 enum UploadTarget {
-  FILE = 'file',
-  FOLDER = 'folder',
+  File = 'file',
+  Folder = 'folder',
 }
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
@@ -76,10 +76,10 @@ export default Vue.extend({
     onClick(): void {
       const input = document.createElement('input') as ExtendedHTMLInputElement;
       input.type = 'file';
-      if (this.type === UploadTarget.FILE) {
+      if (this.type === UploadTarget.File) {
         input.multiple = this.multiple;
       }
-      if (this.type === UploadTarget.FOLDER) {
+      if (this.type === UploadTarget.Folder) {
         input.webkitdirectory = true;
       }
       input.onchange = (e: Event) => {
@@ -100,14 +100,14 @@ export default Vue.extend({
     fileChanged(e: ExtendedEvent): void {
       if (e) {
         const target = e.target as HTMLInputElement;
-        if (this.type === UploadTarget.FILE) {
+        if (this.type === UploadTarget.File) {
           if (target.files && target.files[0]) {
             this.$emit('upload-file', target.files[0]);
           } else {
             this.$emit('upload-file', null);
           }
         }
-        if (this.type === UploadTarget.FOLDER) {
+        if (this.type === UploadTarget.Folder) {
           if (target.files) {
             this.$emit('upload-files', target.files);
           } else {

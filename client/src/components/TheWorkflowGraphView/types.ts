@@ -1,33 +1,34 @@
 import {
   LabelTaskType,
   FeatureExtractionMethod,
-  DefaultLabelingMethodType,
+  DefaultLabelingMethod,
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   InterimModelTrainingType,
+  ModelService,
 } from '@/commons/types';
 
 export enum NodeTypes {
   /** types of data object and label property */
-  labelTask = 'labelTask',
-  dataType = 'dataType',
+  LabelTask = 'LabelTask',
+  DataType = 'DataType',
   /** types of process */
-  labelIdeation = 'labelIdeation',
-  featureExtraction = 'featureExtraction',
-  dataObjectSelection = 'dataObjectSelection',
-  defaultLabeling = 'defaultLabeling',
-  taskTransformation = 'taskTransformation',
-  interactiveLabeling = 'interactiveLabeling',
-  stoppageAnalysis = 'stoppageAnalysis',
-  interimModelTraining = 'interimModelTraining',
-  qualityAssurance = 'qualityAssurance',
+  LabelIdeation = 'LabelIdeation',
+  FeatureExtraction = 'FeatureExtraction',
+  DataObjectSelection = 'DataObjectSelection',
+  DefaultLabeling = 'DefaultLabeling',
+  TaskTransformation = 'TaskTransformation',
+  InteractiveLabeling = 'InteractiveLabeling',
+  StoppageAnalysis = 'StoppageAnalysis',
+  InterimModelTraining = 'InterimModelTraining',
+  QualityAssurance = 'QualityAssurance',
   /** type of decision */
-  decision = 'decision',
+  Decision = 'Decision',
   /** type of initialization */
-  initialization = 'initialization',
+  Initialization = 'Initialization',
   /** type of terminal */
-  terminal = 'terminal',
+  Terminal = 'Terminal',
 }
 
 interface BaseNode {
@@ -51,6 +52,16 @@ export interface FeatureExtractionNode extends BaseNode {
   value: FeatureExtractionMethod;
 }
 
+export interface DefaultLabelingNode extends BaseNode {
+  id: string;
+  title: string;
+  type: NodeTypes;
+  value: {
+    method: DefaultLabelingMethod,
+    model?: ModelService,
+  };
+}
+
 export interface DataObjectSelectionNode extends BaseNode {
   id: string;
   title: string;
@@ -60,16 +71,6 @@ export interface DataObjectSelectionNode extends BaseNode {
     nBatch: number,
     api: string,
     projectionAidEnabled: boolean,
-  };
-}
-
-export interface DefaultLabelingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: DefaultLabelingMethodType,
-    api: string,
   };
 }
 

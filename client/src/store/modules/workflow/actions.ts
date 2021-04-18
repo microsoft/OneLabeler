@@ -1,11 +1,12 @@
 import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
 import {
-  DefaultLabelingMethodType,
+  ModelService,
+  DefaultLabelingMethod,
+  FeatureExtractionMethod,
   IImage,
   IModel,
   LabelTaskType,
-  FeatureExtractionMethod,
   SamplingStrategyType,
   Status,
 } from '@/commons/types';
@@ -14,14 +15,7 @@ import * as rootTypes from '../mutation-types';
 import { IState, createInitialState } from './state';
 import { IState as IRootState } from '../state';
 
-export const setShowDatasetOverview = (
-  { commit }: ActionContext<IState, IRootState>,
-  showDatasetOverview: boolean,
-): void => {
-  commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
-};
-
-export const extractFeatures = async (
+export const executeFeatureExtraction = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: FeatureExtractionMethod,
 ): Promise<void> => {
@@ -35,11 +29,44 @@ export const extractFeatures = async (
   if (requireLabels && (labels.length === 0)) return;
 
   const response = requireLabels
-    ? (await API.extractFeatures(method, dataObjects as IImage[], labels, statuses))
-    : (await API.extractFeatures(method, dataObjects as IImage[]));
+    ? (await API.featureExtraction(method, dataObjects as IImage[], labels, statuses))
+    : (await API.featureExtraction(method, dataObjects as IImage[]));
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+};
+
+export const executeDefaultLabeling = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  { method, model }: { method: DefaultLabelingMethod, model: ModelService },
+): Promise<void> => {
+  const {
+    dataObjects,
+    queryIndices,
+    classes,
+    unlabeledMark,
+  } = rootState;
+  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
+  const uuids = sampledDataObjects.map((d) => d.uuid);
+  const labels = (await API.defaultLabeling(
+    method,
+    sampledDataObjects,
+    model,
+    classes,
+    unlabeledMark,
+  ));
+  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
+    uuids,
+    labels,
+    inQueryIndices: true,
+  }, { root: true });
+};
+
+export const setModelServices = (
+  { commit }: ActionContext<IState, IRootState>,
+  services: ModelService[],
+): void => {
+  commit(types.SET_MODEL_SERVICES, services);
 };
 
 export const setFeatureExtractionMethods = (
@@ -57,6 +84,27 @@ export const setFeatureExtractionMethod = (
     return;
   }
   commit(types.SET_FEATURE_EXTRACTION_METHOD, method);
+};
+
+export const setDefaultLabelingMethods = (
+  { commit }: ActionContext<IState, IRootState>,
+  methods: DefaultLabelingMethod[],
+): void => {
+  commit(types.SET_DEFAULT_LABELING_METHODS, methods);
+};
+
+export const setDefaultLabelingMethod = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  method: DefaultLabelingMethod,
+): void => {
+  commit(types.SET_DEFAULT_LABELING_METHOD, method);
+};
+
+export const setDefaultLabelingModel = (
+  { commit }: ActionContext<IState, IRootState>,
+  model: ModelService,
+): void => {
+  commit(types.SET_DEFAULT_LABELING_MODEL, model);
 };
 
 export const setSamplingStrategy = (
@@ -77,31 +125,18 @@ export const setSamplingStrategy = (
   }
 };
 
-export const setDefaultLabelingMethod = (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  defaultLabelingMethod: DefaultLabelingMethodType,
-): void => {
-  commit(types.SET_DEFAULT_LABELING_METHOD, defaultLabelingMethod);
-
-  // After changing the default labeling model type,
-  // reset the current model.
-  const { model } = rootState;
-  if (model.type !== defaultLabelingMethod) {
-    const modelUpdated: IModel = {
-      type: defaultLabelingMethod,
-      samplingStrategy: model.samplingStrategy,
-      predictor: null,
-      sampler: model.sampler,
-    };
-    commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
-  }
-};
-
 export const setNBatch = (
   { commit }: ActionContext<IState, IRootState>,
   nBatch: number,
 ): void => {
   commit(types.SET_N_BATCH, nBatch);
+};
+
+export const setShowDatasetOverview = (
+  { commit }: ActionContext<IState, IRootState>,
+  showDatasetOverview: boolean,
+): void => {
+  commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
 };
 
 export const setSingleObjectDisplayEnabled = (
@@ -231,7 +266,7 @@ export const extractDataObjects = async (
     }));
     commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
   }
-  const statuses = Array(dataObjects.length).fill(Status.NEW);
+  const statuses = Array(dataObjects.length).fill(Status.New);
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
@@ -252,11 +287,11 @@ export const sampleDataObjectsAlgorithmic = async (
   const newStatuses = [...statuses];
   queryIndices.forEach((index: number) => {
     const isUnlabeled = labels[index] === unlabeledMark;
-    newStatuses[index] = isUnlabeled ? Status.SKIPPED : Status.LABELED;
+    newStatuses[index] = isUnlabeled ? Status.Skipped : Status.Labeled;
   });
 
   // Sample data objects.
-  const newQueryIndices = (await API.sampleDataObjects(
+  const newQueryIndices = (await API.dataObjectSelection(
     dataObjects,
     labels,
     statuses,
@@ -267,7 +302,7 @@ export const sampleDataObjectsAlgorithmic = async (
 
   // Set the labels of samples in the current batch viewed.
   newQueryIndices.forEach((index: number) => {
-    newStatuses[index] = Status.VIEWED;
+    newStatuses[index] = Status.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
@@ -287,7 +322,7 @@ export const sampleDataObjectsManual = async (
   const newStatuses = [...statuses];
   queryIndices.forEach((index: number) => {
     const isUnlabeled = labels[index] === unlabeledMark;
-    newStatuses[index] = isUnlabeled ? Status.SKIPPED : Status.LABELED;
+    newStatuses[index] = isUnlabeled ? Status.Skipped : Status.Labeled;
   });
 
   // Sample data objects.
@@ -295,7 +330,7 @@ export const sampleDataObjectsManual = async (
 
   // Set the labels of samples in the current batch viewed.
   newQueryIndices.forEach((index: number) => {
-    newStatuses[index] = Status.VIEWED;
+    newStatuses[index] = Status.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
@@ -337,48 +372,6 @@ export const updateModel = async (
       model,
     ));
     commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
-  } else {
-    // TBA
-  }
-};
-
-export const assignDefaultLabels = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-): Promise<void> => {
-  const { labelTasks } = state;
-  const {
-    classes,
-    dataObjects,
-    queryIndices,
-    model,
-    unlabeledMark,
-  } = rootState;
-
-  const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableObjectDetection = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-
-  // Assign default labels to the sampled data objects.
-  if (enableImageClassification) {
-    const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
-    const uuids = sampledDataObjects.map((d) => d.uuid);
-    const defaultLabels = (await API.assignDefaultLabels(
-      sampledDataObjects,
-      model,
-      classes,
-      unlabeledMark,
-    ));
-    commit(rootTypes.SET_DATA_OBJECT_LABELS, {
-      uuids,
-      labels: defaultLabels,
-      inQueryIndices: true,
-    }, { root: true });
   } else {
     // TBA
   }

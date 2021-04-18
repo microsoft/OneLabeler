@@ -23,14 +23,6 @@ class DataLabelingHandler(tornado.web.RequestHandler):
             query_indices = DataLabelingAPI.sample_data_objects(
                 data_objects, labels, statuses, n_batch, model)
             self.write({'queryIndices': query_indices})
-        elif key == 'assignDefaultLabels':
-            data_objects = json_data['dataObjects']
-            model = json_data['model']
-            classes = json_data['classes']
-            unlabeled_mark = json_data['unlabeledMark']
-            default_labels = DataLabelingAPI.assign_default_labels(
-                data_objects, model, classes, unlabeled_mark)
-            self.write({'defaultLabels': default_labels})
         elif key == 'updateModel':
             data_objects = json_data['dataObjects']
             labels = json_data['labels']
@@ -39,8 +31,6 @@ class DataLabelingHandler(tornado.web.RequestHandler):
             model_updated = DataLabelingAPI.update_model(
                 data_objects, labels, statuses, model)
             self.write({'model': model_updated})
-        else:
-            raise ValueError(f'Invalid key: {key}')
         '''
         elif key == 'stoppageAnalysis':
             labels = json_data['labels']

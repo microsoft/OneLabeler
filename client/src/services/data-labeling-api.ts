@@ -7,13 +7,17 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { xor4096 } from 'seedrandom';
 import showProgressBar from '@/plugins/nprogress-interceptor';
+import { randomChoice } from '@/plugins/random';
 import {
   IDataObject,
   IImage,
   IModel,
   Label,
   Status,
+  ModelService,
   FeatureExtractionMethod,
+  DataObjectSelectionMethod,
+  DefaultLabelingMethod,
 } from '@/commons/types';
 import {
   PROTOCOL,
@@ -53,35 +57,33 @@ export const extractDataObjects = showProgressBar(async (
  * @Note The extraction implementation is dependent
  * on the data object type.
  */
-export const extractFeatures = showProgressBar(async (
+export const featureExtraction = showProgressBar(async (
   method: FeatureExtractionMethod,
   dataObjects: IImage[],
   labels: Label[] | null = null,
   statuses: Status[] | null = null,
-): Promise<{dataObjects: IImage[], featureNames: string[]}> => {
+): Promise<{ dataObjects: IImage[], featureNames: string[] }> => {
   let response = null;
-  if (method.serverless) {
-    if (method.api === 'Random3D') {
-      const SEED = '20';
-      const random = xor4096(SEED);
+  if (method.serverless && (method.api === 'Random3D')) {
+    const SEED = '20';
+    const random = xor4096(SEED);
 
-      // create a new copy
-      const updatedDataObjects = (JSON.parse(JSON.stringify(dataObjects)) as IImage[])
-        .map((dataObject) => ({
-          ...dataObject,
-          // create three random feature values
-          features: [random(), random(), random()],
-        }));
-      const featureNames = [
-        'Random[0]',
-        'Random[1]',
-        'Random[2]',
-      ];
-      response = {
-        dataObjects: updatedDataObjects,
-        featureNames,
-      };
-    }
+    // create a new copy
+    const updatedDataObjects = (JSON.parse(JSON.stringify(dataObjects)) as IImage[])
+      .map((dataObject) => ({
+        ...dataObject,
+        // create three random feature values
+        features: [random(), random(), random()],
+      }));
+    const featureNames = [
+      'Random[0]',
+      'Random[1]',
+      'Random[2]',
+    ];
+    response = {
+      dataObjects: updatedDataObjects,
+      featureNames,
+    };
   } else {
     response = (
       await axios.post(
@@ -101,60 +103,96 @@ export const extractFeatures = showProgressBar(async (
 });
 
 /**
- * Workflow Component - Data Object Sampling (Algorithmic)
- * Sample a batch of data objects from the pool of data objects.
- * @param dataObjects The data objects to be sampled from.
- * @param labels The labels of the data objects.
- * @param nBatch The number of data objects to sample.
- * @returns queryIndices - the indices of sampled data objects.
- */
-export const sampleDataObjects = showProgressBar(async (
-  dataObjects: IDataObject[],
-  labels: Label[],
-  statuses: Status[],
-  nBatch: number,
-  model: IModel,
-): Promise<number[]> => {
-  const { queryIndices } = (
-    await axios.post(
-      formatter(SERVER_PORT, 'sampleDataObjects'),
-      JSON.stringify({
-        dataObjects,
-        labels,
-        statuses,
-        nBatch,
-        model,
-      }),
-    )
-  ).data;
-  return queryIndices;
-});
-
-/**
  * Workflow Component - Default Labeling
  * Assign default labels to a batch of data objects (for the user to verify).
  * @param dataObjects The data objects to be assigned default labels.
  * @param model The default labeling model.
  * @returns defaultLabels - the default labels of the selected data objects.
  */
-export const assignDefaultLabels = showProgressBar(async (
+export const defaultLabeling = showProgressBar(async (
+  method: DefaultLabelingMethod,
   dataObjects: IDataObject[],
-  model: IModel,
-  classes: Label[],
-  unlabeledMark: Label,
+  model: ModelService,
+  classes: Label[] | null = null,
+  unlabeledMark: Label | null = null,
 ): Promise<Label[]> => {
-  const { defaultLabels } = (
-    await axios.post(
-      formatter(SERVER_PORT, 'assignDefaultLabels'),
-      JSON.stringify({
-        dataObjects,
-        model,
-        classes,
-        unlabeledMark,
-      }),
-    )
-  ).data;
-  return defaultLabels;
+  let labels = null;
+  if (method.serverless && (method.api === 'Null')) {
+    labels = dataObjects.map(() => unlabeledMark);
+  } else if (method.serverless && (method.api === 'Random')) {
+    const SEED = '20';
+    const random = xor4096(SEED);
+    const nClasses = (classes as Label[]).length;
+    labels = dataObjects.map(() => (
+      (classes as Label[])[Math.floor(random() * nClasses)]
+    ));
+  } else {
+    labels = (
+      await axios.post(
+        method.api,
+        JSON.stringify({
+          dataObjects,
+          model,
+          classes,
+          unlabeledMark,
+        }),
+      )
+    ).data.labels;
+  }
+  return labels as Label[];
+});
+
+/**
+ * Workflow Component - Data Object Selection (Algorithmic)
+ * Sample a batch of data objects from the pool of data objects.
+ * @param dataObjects The data objects to be sampled from.
+ * @param labels The labels of the data objects.
+ * @param nBatch The number of data objects to sample.
+ * @returns queryIndices - the indices of sampled data objects.
+ */
+export const dataObjectSelection = showProgressBar(async (
+  method: DataObjectSelectionMethod,
+  labels: Label[],
+  statuses: Status[],
+  nBatch: number,
+  model?: IModel,
+  dataObjects?: IDataObject[],
+): Promise<number[]> => {
+  let queryIndices = null;
+  if (method.serverless && (method.api === 'Random')) {
+    const SEED = '20';
+    const random = xor4096(SEED);
+    const indicesNew = statuses
+      .map((d, i) => (d === Status.New ? i : -1))
+      .filter((d) => d !== -1);
+    if (indicesNew.length >= nBatch) {
+      queryIndices = randomChoice(indicesNew, nBatch, random);
+    } else {
+      queryIndices = indicesNew;
+      const nResidue = nBatch - queryIndices.length;
+      const indicesSkipped = statuses
+        .map((d, i) => (d === Status.Skipped ? i : -1))
+        .filter((d) => d !== -1);
+      const queryIndicesSkipped = indicesSkipped.length <= nResidue
+        ? indicesSkipped
+        : randomChoice(indicesSkipped, nResidue, random);
+      queryIndices = [...queryIndices, ...queryIndicesSkipped];
+    }
+  } else {
+    queryIndices = (
+      await axios.post(
+        formatter(SERVER_PORT, 'selection'),
+        JSON.stringify({
+          labels,
+          statuses,
+          nBatch,
+          dataObjects,
+          model,
+        }),
+      )
+    ).data.queryIndices;
+  }
+  return queryIndices;
 });
 
 /**

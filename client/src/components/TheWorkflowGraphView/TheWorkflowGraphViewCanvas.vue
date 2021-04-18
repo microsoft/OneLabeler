@@ -142,7 +142,6 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import {
-  DefaultLabelingMethodType,
   SamplingStrategyType,
 } from '@/commons/types';
 import { WorkflowNode, NodeTypes } from './types';
@@ -181,46 +180,46 @@ export default Vue.extend({
   },
   methods: {
     isDataNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.labelTask)
-        || (node.type === NodeTypes.dataType);
+      return (node.type === NodeTypes.LabelTask)
+        || (node.type === NodeTypes.DataType);
     },
     isProcessNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.labelIdeation)
-        || (node.type === NodeTypes.featureExtraction)
-        || (node.type === NodeTypes.dataObjectSelection)
-        || (node.type === NodeTypes.defaultLabeling)
-        || (node.type === NodeTypes.taskTransformation)
-        || (node.type === NodeTypes.interactiveLabeling)
-        || (node.type === NodeTypes.stoppageAnalysis)
-        || (node.type === NodeTypes.interimModelTraining)
-        || (node.type === NodeTypes.qualityAssurance);
+      return (node.type === NodeTypes.LabelIdeation)
+        || (node.type === NodeTypes.FeatureExtraction)
+        || (node.type === NodeTypes.DataObjectSelection)
+        || (node.type === NodeTypes.DefaultLabeling)
+        || (node.type === NodeTypes.TaskTransformation)
+        || (node.type === NodeTypes.InteractiveLabeling)
+        || (node.type === NodeTypes.StoppageAnalysis)
+        || (node.type === NodeTypes.InterimModelTraining)
+        || (node.type === NodeTypes.QualityAssurance);
     },
     isDecisionNode(node: WorkflowNode): boolean {
-      return node.type === NodeTypes.decision;
+      return node.type === NodeTypes.Decision;
     },
     isTerminalNode(node: WorkflowNode): boolean {
-      return node.type === NodeTypes.terminal;
+      return node.type === NodeTypes.Terminal;
     },
     isDeletableNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.dataObjectSelection)
-        || (node.type === NodeTypes.defaultLabeling)
-        || (node.type === NodeTypes.interactiveLabeling)
-        || (node.type === NodeTypes.interimModelTraining);
+      return (node.type === NodeTypes.DataObjectSelection)
+        || (node.type === NodeTypes.DefaultLabeling)
+        || (node.type === NodeTypes.InteractiveLabeling)
+        || (node.type === NodeTypes.InterimModelTraining);
     },
     isEnabledNode(node: WorkflowNode): boolean {
-      if (node.type === NodeTypes.dataObjectSelection) {
+      if (node.type === NodeTypes.DataObjectSelection) {
         return (this.samplingStrategy !== SamplingStrategyType.Random)
           || this.showDatasetOverview
           || (this.nBatch !== 1);
       }
-      if (node.type === NodeTypes.defaultLabeling) {
-        return this.defaultLabelingMethod !== DefaultLabelingMethodType.Null;
+      if (node.type === NodeTypes.DefaultLabeling) {
+        return this.defaultLabelingMethod.api !== 'Null';
       }
-      if (node.type === NodeTypes.interactiveLabeling) {
+      if (node.type === NodeTypes.InteractiveLabeling) {
         return (this.singleObjectDisplayEnabled !== false)
          || (this.gridMatrixEnabled !== false);
       }
-      if (node.type === NodeTypes.interimModelTraining) {
+      if (node.type === NodeTypes.InterimModelTraining) {
         return this.interimModelTrainingEnabled !== false;
       }
       return true;

@@ -9,10 +9,10 @@ class Status():
     """The label status of a data object."""
     # pylint: disable=too-few-public-methods
 
-    NEW = 'NEW'  # the data object is not viewed and not labeled
-    VIEWED = 'VIEWED'  # the data object is viewed but not yet labeled
-    SKIPPED = 'SKIPPED'  # the data object is viewed but skipped
-    LABELED = 'LABELED'  # the data object is labeled
+    New = 'New'  # the data object is not viewed and not labeled
+    Viewed = 'Viewed'  # the data object is viewed but not yet labeled
+    Skipped = 'Skipped'  # the data object is viewed but skipped
+    Labeled = 'Labeled'  # the data object is labeled
 
 class DefaultLabelingMethodType():
     """The type of a default labeling method."""
@@ -54,7 +54,7 @@ class Model(NamedTuple):
         if it can serve both purposes.
     """
 
-    type: DefaultLabelingMethodType
-    sampling_strategy: SamplingStrategyType
-    predictor: Union[BaseEstimator, None]
-    sampler: Union[BaseEstimator, None]
+    # type: DefaultLabelingMethodType
+    sampling_strategy: Union[SamplingStrategyType, None] = None
+    predictor: Union[BaseEstimator, None] = None
+    sampler: Union[BaseEstimator, None] = None

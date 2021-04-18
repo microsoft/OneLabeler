@@ -48,7 +48,7 @@ export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] => {
 export const unlabeledIndices = (state: IState): number[] => {
   const { statuses } = state;
   return statuses.reduce((arr: number[], d: Status, i: number) => {
-    if (d !== Status.LABELED) {
+    if (d !== Status.Labeled) {
       arr.push(i);
     }
     return arr;

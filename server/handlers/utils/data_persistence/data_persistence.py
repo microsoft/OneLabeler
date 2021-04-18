@@ -91,6 +91,36 @@ def load(inserted_id: ObjectId,
     return load_from_dict(inserted_id)
 
 
+def is_saved(inserted_id: ObjectId,
+             url: Optional[str] = None,
+             db_name: Optional[str] = None,
+             collection_name: Optional[str] = None) -> Any:
+    """
+    Check if data is saved in mongodb.
+
+    Args
+    ----
+    inserted_id : ObjectId
+        The key to the data object possibly in the database.
+    url : str
+        The url for connecting the mongo client.
+    db_name : str
+        The name of the database.
+    collection_name : str
+        The name of the data collection in the database.
+
+    Returns
+    -------
+    is_saved : bool
+        Whether the data is saved.
+    """
+    # pylint: disable=invalid-name
+
+    if not MOCK:
+        return is_saved_in_db(inserted_id, url, db_name, collection_name)
+    return is_saved_in_dict(inserted_id)
+
+
 def save_to_db(data: Any,
                name: str,
                url: str,
@@ -202,6 +232,45 @@ def load_from_db(inserted_id: ObjectId,
     return data
 
 
+def is_saved_in_db(inserted_id: ObjectId,
+                   url: str,
+                   db_name: str,
+                   collection_name: str) -> Any:
+    """
+    Check if data is saved in mongodb.
+
+    Args
+    ----
+    inserted_id : ObjectId
+        The key to the data object possibly in the database.
+    url : str
+        The url for connecting the mongo client.
+    db_name : str
+        The name of the database.
+    collection_name : str
+        The name of the data collection in the database.
+
+    Returns
+    -------
+    is_saved : bool
+        Whether the data is saved.
+    """
+    # pylint: disable=invalid-name
+
+    # create connection
+    client = pymongo.MongoClient(url)
+
+    # get database
+    db = client[db_name]
+
+    # get collection
+    collection = db[collection_name]
+
+    # get data
+    data = collection.find_one({'_id': inserted_id})
+    return data is None
+
+
 # pylint: disable=pointless-string-statement
 """
 A dict simulating the database.
@@ -265,3 +334,22 @@ def load_from_dict(inserted_id: ObjectId) -> Any:
 
     data = DB[inserted_id]
     return data
+
+
+def is_saved_in_dict(inserted_id: ObjectId) -> Any:
+    """
+    Check if data is saved in database mocked with dict.
+
+    Args
+    ----
+    inserted_id : ObjectId
+        The key to the data object possibly in the database.
+
+    Returns
+    -------
+    is_saved : bool
+        Whether the data is saved.
+    """
+    # pylint: disable=invalid-name
+
+    return inserted_id in DB

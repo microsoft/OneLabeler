@@ -149,7 +149,7 @@ export default Vue.extend({
       );
 
       this.lassoInstance = new Lasso()
-        .on(LassoEventType.end, (lassoPolygon: [number, number][]) => {
+        .on(LassoEventType.End, (lassoPolygon: [number, number][]) => {
           (this.lassoInstance as Lasso).removePath();
           const selectedUuids = this.getSelectedUuids(lassoPolygon);
           this.$emit('select-uuids', selectedUuids);

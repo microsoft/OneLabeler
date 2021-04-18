@@ -266,19 +266,19 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   if (err.keyword === 'required') {
     return {
       content: `UPLOAD FAILED: ${err.message}.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   if (err.keyword === 'type') {
     return {
       content: `UPLOAD FAILED: ${err.dataPath} ${err.message}.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   if (err.keyword === 'additionalProperties') {
     return {
       content: `UPLOAD FAILED: ${err.message} '${err.params.additionalProperty}'.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   return null;
@@ -317,7 +317,11 @@ export default Vue.extend({
       'queryIndices',
       'commandHistory',
     ]),
-    ...mapState('workflow', ['featureExtractionMethod']),
+    ...mapState('workflow', [
+      'featureExtractionMethod',
+      'defaultLabelingMethod',
+      'defaultLabelingModel',
+    ]),
     disableSaveButton(): boolean {
       return this.dataObjects.length === 0;
     },
@@ -377,10 +381,10 @@ export default Vue.extend({
     ]),
     ...mapActions('workflow', [
       'extractDataObjects',
-      'extractFeatures',
+      'executeFeatureExtraction',
       'updateModel',
       'sampleDataObjectsAlgorithmic',
-      'assignDefaultLabels',
+      'executeDefaultLabeling',
     ]),
     onKey(e: KeyboardEvent): void {
       const { ctrlKey, key } = e;
@@ -403,10 +407,10 @@ export default Vue.extend({
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
       await this.extractDataObjects(files);
-      await this.extractFeatures(this.featureExtractionMethod);
+      await this.executeFeatureExtraction(this.featureExtractionMethod);
       this.setMessage({
         content: 'Project Data Uploaded.',
-        type: MessageType.success,
+        type: MessageType.Success,
       });
     },
     async onLoadProject(file: File): Promise<void> {
@@ -432,7 +436,7 @@ export default Vue.extend({
         this.setFeatureNames(featureNames);
         this.setMessage({
           content: 'Project Progress Uploaded.',
-          type: MessageType.success,
+          type: MessageType.Success,
         });
       } else {
         const errors = validate.errors as DefinedError[];
@@ -472,11 +476,14 @@ export default Vue.extend({
       if (this.queryIndices.length === 0) {
         this.setMessage({
           content: 'All Data Objects Labeled.',
-          type: MessageType.success,
+          type: MessageType.Success,
         });
       } else {
         await this.updateModel();
-        await this.assignDefaultLabels();
+        await this.executeDefaultLabeling(
+          this.defaultLabelingMethod,
+          this.defaultLabelingModel,
+        );
       }
     },
     onClickUndo(): void {

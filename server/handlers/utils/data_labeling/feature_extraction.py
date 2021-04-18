@@ -156,7 +156,7 @@ def resize_LDA(imgs: np.ndarray,
 
     n_components = 5
 
-    mask_labeled = np.array([status == Status.LABELED
+    mask_labeled = np.array([status == Status.Labeled
                             for status in statuses])
     X_labeled = X_flatten[mask_labeled]
     labels_labeled = labels[mask_labeled]

@@ -40,32 +40,6 @@ class DataLabelingAPI(GenericPipeline):
         return query_indices
 
     @staticmethod
-    def assign_default_labels(data_objects: List[dict],
-                              model: Dict[str, Any],
-                              classes: List[Label],
-                              unlabeled_mark: Label) -> List[Label]:
-        predictor = load(ObjectId(model['predictor']))\
-            if model['predictor'] is not None else None
-        sampler = load(ObjectId(model['sampler']))\
-            if model['sampler'] is not None else None
-        model = Model(
-            type=model['type'],
-            sampling_strategy=model['samplingStrategy'],
-            predictor=predictor,
-            sampler=sampler,
-        )
-        # Labels are required to be strings.
-        classes = np.array(classes, dtype=str)
-        default_labels = DataLabelingPipeline.assign_default_labels(
-            data_objects=data_objects,
-            model=model,
-            classes=classes,
-            unlabeled_mark=unlabeled_mark,
-        )
-        default_labels = default_labels.tolist()
-        return default_labels
-
-    @staticmethod
     def update_model(data_objects: List[dict],
                      labels: List[Label],
                      statuses: List[str],

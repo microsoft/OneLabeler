@@ -42,8 +42,10 @@
           :node="selectedNode"
           @set-node-value="onSetNodeValue"
           @edit-node="onEditNode"
+          @create-method="onCreateMethod"
           @edit-method="onEditMethod"
-          @create-option="onCreateOption"
+          @create-model="onCreateModel"
+          @edit-model="onEditModel"
           @click-recompute="onClickRecompute"
         />
       </v-col>
@@ -56,23 +58,23 @@ import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  DefaultLabelingMethodType,
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   InterimModelTrainingType,
   FeatureExtractionMethod,
+  ModelService,
 } from '@/commons/types';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheNodeParameterView from './TheNodeParameterView.vue';
-import { WorkflowNode, NodeTypes } from './types';
+import { WorkflowNode, NodeTypes, DefaultLabelingNode } from './types';
 
 const graph = {
   nodes: [
     {
       id: 'labelTask-47353599',
       title: 'label task',
-      type: NodeTypes.labelTask,
+      type: NodeTypes.LabelTask,
       value: [],
       x: 25,
       y: 25,
@@ -80,11 +82,11 @@ const graph = {
     {
       id: 'featureExtraction-37008559',
       title: 'feature extraction',
-      type: NodeTypes.featureExtraction,
+      type: NodeTypes.FeatureExtraction,
       value: {
         name: 'SVD (Unsupervised)',
         serverless: false,
-        api: 'http://localhost:8005/extractFeatures/image/SVD',
+        api: 'http://localhost:8005/features/image/SVD',
         parameters: ['dataObjects'],
         isBuiltIn: true,
         id: 'image-SVD-25940167',
@@ -95,7 +97,7 @@ const graph = {
     {
       id: 'dataObjectSelection-6411710',
       title: 'data object selection',
-      type: NodeTypes.dataObjectSelection,
+      type: NodeTypes.DataObjectSelection,
       value: {
         strategy: SamplingStrategyType.Random,
         nBatch: 1,
@@ -108,10 +110,17 @@ const graph = {
     {
       id: 'defaultLabeling-86803967',
       title: 'default labeling',
-      type: NodeTypes.defaultLabeling,
+      type: NodeTypes.DefaultLabeling,
       value: {
-        method: DefaultLabelingMethodType.Null,
-        api: '',
+        method: {
+          name: 'Null (Dummy)',
+          serverless: true,
+          api: 'Null',
+          parameters: ['features'],
+          isBuiltIn: true,
+          id: 'Null-35514905',
+        },
+        model: {},
       },
       x: 385,
       y: 25,
@@ -119,7 +128,7 @@ const graph = {
     {
       id: 'taskTransformation-63746075',
       title: 'task transform',
-      type: NodeTypes.taskTransformation,
+      type: NodeTypes.TaskTransformation,
       value: {
         method: TaskTransformationType.DirectLabeling,
       },
@@ -129,7 +138,7 @@ const graph = {
     {
       id: 'interactiveLabeling-44216216',
       title: 'interctive labeling',
-      type: NodeTypes.interactiveLabeling,
+      type: NodeTypes.InteractiveLabeling,
       value: {
         singleObjectDisplayEnabled: false,
         gridMatrixEnabled: false,
@@ -142,7 +151,7 @@ const graph = {
     {
       id: 'stoppageAnalysis-70767097',
       title: 'stoppage analysis',
-      type: NodeTypes.stoppageAnalysis,
+      type: NodeTypes.StoppageAnalysis,
       value: {
         method: StoppageAnalysisType.AllChecked,
         api: '',
@@ -153,21 +162,21 @@ const graph = {
     {
       id: 'decision-69466632',
       title: 'stop?',
-      type: NodeTypes.decision,
+      type: NodeTypes.Decision,
       x: 745,
       y: 115,
     },
     {
       id: 'terminal',
       title: 'exit',
-      type: NodeTypes.terminal,
+      type: NodeTypes.Terminal,
       x: 745,
       y: 205,
     },
     {
       id: 'interimModelTraining-14283634',
       title: 'interim model training',
-      type: NodeTypes.interimModelTraining,
+      type: NodeTypes.InterimModelTraining,
       value: {
         enabled: false,
         method: InterimModelTrainingType.Retrain,
@@ -220,15 +229,22 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('workflow', ['featureExtractionMethods']),
+    ...mapState('workflow', [
+      'modelServices',
+      'featureExtractionMethods',
+      'defaultLabelingMethods',
+    ]),
   },
   methods: {
     ...mapActions('workflow', [
       'setFeatureExtractionMethods',
       'setFeatureExtractionMethod',
+      'setDefaultLabelingMethods',
+      'setDefaultLabelingMethod',
+      'setDefaultLabelingModel',
+      'setModelServices',
       'setSamplingStrategy',
       'setNBatch',
-      'setDefaultLabelingMethod',
       'setShowDatasetOverview',
       'setSingleObjectDisplayEnabled',
       'setGridMatrixEnabled',
@@ -236,25 +252,32 @@ export default Vue.extend({
       'setItemsPerCol',
       'setInterimModelTrainingEnabled',
       'setLabelTasks',
-      'extractFeatures',
+      'executeFeatureExtraction',
     ]),
     onSelectNode(node: WorkflowNode) {
       this.selectedNode = node;
     },
     onRemoveNode(node: WorkflowNode) {
-      if (node.type === NodeTypes.dataObjectSelection) {
+      if (node.type === NodeTypes.DataObjectSelection) {
         this.setSamplingStrategy(SamplingStrategyType.Random);
         this.setShowDatasetOverview(false);
         this.setNBatch(1);
       }
-      if (node.type === NodeTypes.defaultLabeling) {
-        this.setDefaultLabelingMethod(DefaultLabelingMethodType.Null);
+      if (node.type === NodeTypes.DefaultLabeling) {
+        this.setDefaultLabelingMethod({
+          name: 'Null (Dummy)',
+          serverless: true,
+          api: 'Null',
+          parameters: ['features'],
+          isBuiltIn: true,
+          id: 'Null-35514905',
+        });
       }
-      if (node.type === NodeTypes.interactiveLabeling) {
+      if (node.type === NodeTypes.InteractiveLabeling) {
         this.setSingleObjectDisplayEnabled(false);
         this.setGridMatrixEnabled(false);
       }
-      if (node.type === NodeTypes.interimModelTraining) {
+      if (node.type === NodeTypes.InterimModelTraining) {
         this.setInterimModelTrainingEnabled(false);
       }
     },
@@ -263,17 +286,15 @@ export default Vue.extend({
       const idx = newGraph.nodes.findIndex((d) => d.id === newValue.id);
       newGraph.nodes[idx] = newValue;
       this.graph = newGraph;
-      if (newValue.type === NodeTypes.featureExtraction) {
+      if (newValue.type === NodeTypes.FeatureExtraction) {
         this.setFeatureExtractionMethod(newValue.value);
       }
+      if (newValue.type === NodeTypes.DefaultLabeling) {
+        const { method, model } = (newValue as DefaultLabelingNode).value;
+        this.setDefaultLabelingMethod(method);
+        this.setDefaultLabelingModel(model);
+      }
       this.selectedNode = newValue;
-    },
-    onEditMethod(newValue: FeatureExtractionMethod) {
-      const { featureExtractionMethods } = this;
-      const idx = featureExtractionMethods.findIndex((d) => d.id === newValue.id);
-      const newFeatureExtractionMethods = [...featureExtractionMethods];
-      newFeatureExtractionMethods[idx] = newValue;
-      this.setFeatureExtractionMethods(newFeatureExtractionMethods);
     },
     onSetNodeValue(node: WorkflowNode, value: unknown) {
       const newGraph = { ...this.graph };
@@ -281,13 +302,17 @@ export default Vue.extend({
       newGraph.nodes[idx].value = value;
       this.graph = newGraph;
 
-      if (node.type === NodeTypes.labelTask) {
+      if (node.type === NodeTypes.LabelTask) {
         this.setLabelTasks(value);
       }
-      if (node.type === NodeTypes.featureExtraction) {
+      if (node.type === NodeTypes.FeatureExtraction) {
         this.setFeatureExtractionMethod(value);
       }
-      if (node.type === NodeTypes.dataObjectSelection) {
+      if (node.type === NodeTypes.DefaultLabeling) {
+        const { method } = (node as DefaultLabelingNode).value;
+        this.setDefaultLabelingMethod(method);
+      }
+      if (node.type === NodeTypes.DataObjectSelection) {
         const {
           strategy,
           nBatch,
@@ -297,11 +322,7 @@ export default Vue.extend({
         this.setNBatch(nBatch);
         this.setShowDatasetOverview(projectionAidEnabled);
       }
-      if (node.type === NodeTypes.defaultLabeling) {
-        const { method } = value;
-        this.setDefaultLabelingMethod(method);
-      }
-      if (node.type === NodeTypes.interactiveLabeling) {
+      if (node.type === NodeTypes.InteractiveLabeling) {
         const {
           singleObjectDisplayEnabled,
           gridMatrixEnabled,
@@ -313,13 +334,29 @@ export default Vue.extend({
         this.setItemsPerRow(itemsPerRow);
         this.setItemsPerCol(itemsPerCol);
       }
-      if (node.type === NodeTypes.interimModelTraining) {
+      if (node.type === NodeTypes.InterimModelTraining) {
         const { enabled } = value;
         this.setInterimModelTrainingEnabled(enabled);
       }
     },
-    onCreateOption(nodeType: NodeTypes) {
-      if (nodeType === NodeTypes.featureExtraction) {
+    onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod) {
+      if (nodeType === NodeTypes.FeatureExtraction) {
+        const { featureExtractionMethods } = this;
+        const idx = featureExtractionMethods.findIndex((d) => d.id === newValue.id);
+        const newFeatureExtractionMethods = [...featureExtractionMethods];
+        newFeatureExtractionMethods[idx] = newValue;
+        this.setFeatureExtractionMethods(newFeatureExtractionMethods);
+      }
+      if (nodeType === NodeTypes.DefaultLabeling) {
+        const { defaultLabelingMethods } = this;
+        const idx = defaultLabelingMethods.findIndex((d) => d.id === newValue.id);
+        const newDefaultLabelingMethods = [...defaultLabelingMethods];
+        newDefaultLabelingMethods[idx] = newValue;
+        this.setDefaultLabelingMethods(newDefaultLabelingMethods);
+      }
+    },
+    onCreateMethod(nodeType: NodeTypes) {
+      if (nodeType === NodeTypes.FeatureExtraction) {
         const { featureExtractionMethods } = this;
         const method = {
           name: 'custom',
@@ -333,11 +370,46 @@ export default Vue.extend({
           ...featureExtractionMethods,
           method,
         ]);
+      } else if (nodeType === NodeTypes.DefaultLabeling) {
+        const { defaultLabelingMethods } = this;
+        const method = {
+          name: 'custom',
+          serverless: false,
+          api: '',
+          parameters: ['features', 'model'],
+          isBuiltIn: false,
+          id: `custom-${uuidv4()}`,
+        };
+        this.setDefaultLabelingMethods([
+          ...defaultLabelingMethods,
+          method,
+        ]);
       }
     },
+    onEditModel(newValue: ModelService) {
+      const { modelServices } = this;
+      const idx = modelServices.findIndex((d: ModelService) => d.id === newValue.id);
+      const newModelServices = [...modelServices];
+      newModelServices[idx] = newValue;
+      this.setModelServices(newModelServices);
+    },
+    onCreateModel() {
+      const { modelServices } = this;
+      const model: ModelService = {
+        name: 'custom',
+        serverless: false,
+        api: '',
+        isBuiltIn: false,
+        id: `custom-${uuidv4()}`,
+      };
+      this.setModelServices([
+        ...modelServices,
+        model,
+      ]);
+    },
     onClickRecompute(node: WorkflowNode) {
-      if (node.type === NodeTypes.featureExtraction) {
-        this.extractFeatures(node.value);
+      if (node.type === NodeTypes.FeatureExtraction) {
+        this.executeFeatureExtraction(node.value);
       }
     },
   },

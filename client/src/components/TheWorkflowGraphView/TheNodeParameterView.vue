@@ -6,12 +6,25 @@
   >
     <TheNodeParameterViewFeatureExtraction
       v-if="(node !== null)
-       && (node.type === NodeTypes.featureExtraction)"
+       && (node.type === NodeTypes.FeatureExtraction)"
       :methods="featureExtractionMethods"
       :node="node"
-      @create-option="onCreateOption"
       @edit-node="onEditNode"
+      @create-method="onCreateMethod"
       @edit-method="onEditMethod"
+      @click-recompute="onClickRecompute"
+    />
+    <TheNodeParameterViewDefaultLabeling
+      v-else-if="(node !== null)
+       && (node.type === NodeTypes.DefaultLabeling)"
+      :methods="defaultLabelingMethods"
+      :models="modelServices"
+      :node="node"
+      @edit-node="onEditNode"
+      @create-method="onCreateMethod"
+      @edit-method="onEditMethod"
+      @create-model="onCreateModel"
+      @edit-model="onEditModel"
       @click-recompute="onClickRecompute"
     />
     <template v-else>
@@ -69,20 +82,21 @@ import Vue, { PropType } from 'vue';
 import { mapState } from 'vuex';
 import {
   LabelTaskType,
-  DefaultLabelingMethodType,
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   InterimModelTrainingType,
   FeatureExtractionMethod,
+  ModelService,
 } from '@/commons/types';
 import VMenusFlat from './VMenusFlat.vue';
 import VMenusGrouped from './VMenusGrouped.vue';
 import TheNodeParameterViewFeatureExtraction from './TheNodeParameterViewFeatureExtraction.vue';
+import TheNodeParameterViewDefaultLabeling from './TheNodeParameterViewDefaultLabeling.vue';
 import { WorkflowNode, NodeTypes } from './types';
 
 const menuMapper = {
-  [NodeTypes.labelTask]: {
+  [NodeTypes.LabelTask]: {
     entries: {
       enableClassification: {
         title: 'Classification',
@@ -101,9 +115,9 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.dataType]: undefined,
-  [NodeTypes.labelIdeation]: undefined,
-  [NodeTypes.dataObjectSelection]: {
+  [NodeTypes.DataType]: undefined,
+  [NodeTypes.LabelIdeation]: undefined,
+  [NodeTypes.DataObjectSelection]: {
     entries: {
       strategy: {
         title: 'Strategy',
@@ -148,32 +162,7 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.defaultLabeling]: {
-    entries: {
-      method: {
-        title: 'Labeling Model',
-        options: [
-          DefaultLabelingMethodType.Null,
-          DefaultLabelingMethodType.Random,
-          DefaultLabelingMethodType.DecisionTree,
-          DefaultLabelingMethodType.SVM,
-          DefaultLabelingMethodType.LogisticRegression,
-          DefaultLabelingMethodType.LabelSpreading,
-          DefaultLabelingMethodType.RestrictedBoltzmannMachine,
-        ],
-        optionsText: [
-          'Null',
-          'Random',
-          'Decision Tree',
-          'SVM',
-          'Logistic Regression',
-          'Label Spreading',
-          'Restricted Boltzmann Machine',
-        ],
-      },
-    },
-  },
-  [NodeTypes.taskTransformation]: {
+  [NodeTypes.TaskTransformation]: {
     entries: {
       method: {
         title: 'Method',
@@ -182,7 +171,7 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.interactiveLabeling]: {
+  [NodeTypes.InteractiveLabeling]: {
     entries: {
       singleObjectDisplayEnabled: {
         title: 'Enabled',
@@ -216,7 +205,7 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.stoppageAnalysis]: {
+  [NodeTypes.StoppageAnalysis]: {
     entries: {
       method: {
         title: 'Method',
@@ -225,7 +214,7 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.interimModelTraining]: {
+  [NodeTypes.InterimModelTraining]: {
     entries: {
       enabled: {
         title: 'Enabled',
@@ -239,27 +228,27 @@ const menuMapper = {
       },
     },
   },
-  [NodeTypes.qualityAssurance]: undefined,
-  [NodeTypes.decision]: undefined,
-  [NodeTypes.initialization]: undefined,
-  [NodeTypes.terminal]: undefined,
+  [NodeTypes.QualityAssurance]: undefined,
+  [NodeTypes.Decision]: undefined,
+  [NodeTypes.Initialization]: undefined,
+  [NodeTypes.Terminal]: undefined,
 };
 
 const menuTitleMapper: Record<NodeTypes, string> = {
-  [NodeTypes.labelTask]: 'Label Task Setting',
-  [NodeTypes.dataType]: 'Data Type Setting',
-  [NodeTypes.labelIdeation]: 'Label Ideation Instantiation',
-  [NodeTypes.featureExtraction]: 'Feature Extraction Instantiation',
-  [NodeTypes.dataObjectSelection]: 'Data Object Selection Instantiation',
-  [NodeTypes.defaultLabeling]: 'Default Labeling Instantiation',
-  [NodeTypes.taskTransformation]: 'Task Transformation Instantiation',
-  [NodeTypes.interactiveLabeling]: 'Interactive Labeling Instantiation',
-  [NodeTypes.stoppageAnalysis]: 'Stoppage Analysis Instantiation',
-  [NodeTypes.interimModelTraining]: 'Interim Model Training Instantiation',
-  [NodeTypes.qualityAssurance]: 'Quality Assurance Instantiation',
-  [NodeTypes.decision]: 'Decision Criteria',
-  [NodeTypes.initialization]: 'Initialization Setting',
-  [NodeTypes.terminal]: 'Terminal',
+  [NodeTypes.LabelTask]: 'Label Task Setting',
+  [NodeTypes.DataType]: 'Data Type Setting',
+  [NodeTypes.LabelIdeation]: 'Label Ideation Instantiation',
+  [NodeTypes.FeatureExtraction]: 'Feature Extraction Instantiation',
+  [NodeTypes.DataObjectSelection]: 'Data Object Selection Instantiation',
+  [NodeTypes.DefaultLabeling]: 'Default Labeling Instantiation',
+  [NodeTypes.TaskTransformation]: 'Task Transformation Instantiation',
+  [NodeTypes.InteractiveLabeling]: 'Interactive Labeling Instantiation',
+  [NodeTypes.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
+  [NodeTypes.InterimModelTraining]: 'Interim Model Training Instantiation',
+  [NodeTypes.QualityAssurance]: 'Quality Assurance Instantiation',
+  [NodeTypes.Decision]: 'Decision Criteria',
+  [NodeTypes.Initialization]: 'Initialization Setting',
+  [NodeTypes.Terminal]: 'Terminal',
 };
 
 export default Vue.extend({
@@ -268,10 +257,11 @@ export default Vue.extend({
     VMenusFlat,
     VMenusGrouped,
     TheNodeParameterViewFeatureExtraction,
+    TheNodeParameterViewDefaultLabeling,
   },
   props: {
     node: {
-      type: Object as PropType<Node>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -281,7 +271,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('workflow', ['featureExtractionMethods']),
+    ...mapState('workflow', [
+      'modelServices',
+      'featureExtractionMethods',
+      'defaultLabelingMethods',
+    ]),
     menuTitle(): string {
       const { type } = this.node;
       return menuTitleMapper[type];
@@ -292,7 +286,7 @@ export default Vue.extend({
     },
     selectedOptions() {
       const { node } = this;
-      if (node.type === NodeTypes.labelTask) {
+      if (node.type === NodeTypes.LabelTask) {
         const enableClassification = node.value
           .findIndex((d) => d === LabelTaskType.Classification) >= 0;
         const enableObjectDetection = node.value
@@ -312,7 +306,7 @@ export default Vue.extend({
     onClickMenuOption(menuKey: string, option: unknown): void {
       const { node } = this;
 
-      if (node.type === NodeTypes.labelTask) {
+      if (node.type === NodeTypes.LabelTask) {
         let labelTasks = [...(node.value as LabelTaskType[])];
         const clickedLabelTask = {
           enableClassification: LabelTaskType.Classification,
@@ -328,11 +322,11 @@ export default Vue.extend({
         this.onSetNodeValue(node, labelTasks);
       }
 
-      if (node.type === NodeTypes.featureExtraction
-        || node.type === NodeTypes.dataObjectSelection
-        || node.type === NodeTypes.defaultLabeling
-        || node.type === NodeTypes.interactiveLabeling
-        || node.type === NodeTypes.interimModelTraining
+      if (node.type === NodeTypes.FeatureExtraction
+        || node.type === NodeTypes.DataObjectSelection
+        || node.type === NodeTypes.DefaultLabeling
+        || node.type === NodeTypes.InteractiveLabeling
+        || node.type === NodeTypes.InterimModelTraining
       ) {
         this.onSetNodeValue(node, {
           ...node.value,
@@ -346,12 +340,17 @@ export default Vue.extend({
     onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit-node', newValue);
     },
-    onEditMethod(newValue: FeatureExtractionMethod): void {
-      this.$emit('edit-method', newValue);
+    onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod): void {
+      this.$emit('edit-method', nodeType, newValue);
     },
-    onCreateOption(): void {
-      // pass
-      this.$emit('create-option', this.node.type);
+    onCreateMethod(): void {
+      this.$emit('create-method', this.node.type);
+    },
+    onEditModel(newValue: ModelService): void {
+      this.$emit('edit-model', newValue);
+    },
+    onCreateModel(): void {
+      this.$emit('create-model');
     },
     onClickRecompute(node: WorkflowNode): void {
       this.$emit('click-recompute', node);

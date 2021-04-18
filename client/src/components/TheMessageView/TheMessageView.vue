@@ -4,7 +4,10 @@
     v-model="snackbar"
     content-class="py-0"
     :timeout="timeout"
-    :color="message.type"
+    :color="{
+      'Success': 'success',
+      'Error': 'error'
+    }[message.type]"
     text
     outlined
     @input="onUpdate"

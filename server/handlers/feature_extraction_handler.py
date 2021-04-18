@@ -95,7 +95,7 @@ def extract_features_img_LDA(data_objects: ListLike,
 
 class FeatureExtractionHandler(tornado.web.RequestHandler):
     """
-    The handler for image labeling.
+    The handler for feature extraction.
     """
 
     def post(self, key: str):
@@ -106,8 +106,8 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
 
         # process input: (dataObjects, labels?, statuses?)
         data_objects = json_data['dataObjects']
-        labels = None if key != 'image/LDA' else json_data['labels']
-        statuses = None if key != 'image/LDA' else json_data['statuses']
+        labels = json_data['labels'] if 'labels' in json_data else None
+        statuses = json_data['statuses'] if 'statuses' in json_data else None
 
         if key == 'image/SVD':
             data_objects, feature_names = extract_features_img_SVD(

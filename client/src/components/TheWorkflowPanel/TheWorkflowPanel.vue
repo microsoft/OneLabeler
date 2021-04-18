@@ -88,7 +88,7 @@ import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import {
-  DefaultLabelingMethodType,
+  DefaultLabelingMethod,
   IMessage,
   MessageType,
   LabelTaskType,
@@ -101,7 +101,7 @@ import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.v
 type WorkflowConfigData = {
   samplingStrategy: SamplingStrategyType,
   nBatch: number,
-  defaultLabelingMethod: DefaultLabelingMethodType,
+  defaultLabelingMethod: DefaultLabelingMethod,
   showDatasetOverview: boolean,
   itemsPerRow: number,
   itemsPerCol: number,
@@ -132,19 +132,19 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   if (err.keyword === 'required') {
     return {
       content: `UPLOAD FAILED: ${err.message}.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   if (err.keyword === 'type') {
     return {
       content: `UPLOAD FAILED: ${err.dataPath} ${err.message}.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   if (err.keyword === 'additionalProperties') {
     return {
       content: `UPLOAD FAILED: ${err.message} '${err.params.additionalProperty}'.`,
-      type: MessageType.error,
+      type: MessageType.Error,
     };
   }
   return null;
@@ -236,7 +236,7 @@ export default Vue.extend({
         }
         this.setMessage({
           content: 'Workflow Configuration Uploaded.',
-          type: MessageType.success,
+          type: MessageType.Success,
         });
       } else {
         const errors = validate.errors as DefinedError[];

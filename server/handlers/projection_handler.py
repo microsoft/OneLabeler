@@ -20,16 +20,20 @@ class ProjectionHandler(tornado.web.RequestHandler):
         X = json_data['X']
         X = np.array(X)
         n_components = json_data['nComponents']
-        model = None
-        if key == 'PCA':
-            model = decomposition.TruncatedSVD(n_components=n_components)
-        if key == 'MDS':
-            model = manifold.MDS(n_components=n_components,
-                                 n_init=1, max_iter=100, random_state=0)
-        if key == 'TSNE':
-            model = manifold.TSNE(n_components=n_components,
-                                  init='pca', random_state=0)
-        projection = model.fit_transform(X)
-        projection = projection.tolist()
+
+        if X.shape[1] == n_components:
+            projection = X.tolist()
+        else:
+            model = None
+            if key == 'PCA':
+                model = decomposition.TruncatedSVD(n_components=n_components)
+            if key == 'MDS':
+                model = manifold.MDS(n_components=n_components,
+                                    n_init=1, max_iter=100, random_state=0)
+            if key == 'TSNE':
+                model = manifold.TSNE(n_components=n_components,
+                                    init='pca', random_state=0)
+            projection = model.fit_transform(X)
+            projection = projection.tolist()
 
         self.write({'projection': projection})

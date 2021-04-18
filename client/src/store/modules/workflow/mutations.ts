@@ -1,5 +1,6 @@
 import {
-  DefaultLabelingMethodType,
+  ModelService,
+  DefaultLabelingMethod,
   FeatureExtractionMethod,
   LabelTaskType,
   SamplingStrategyType,
@@ -11,17 +12,23 @@ export default {
   [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
     state.showDatasetOverview = showDatasetOverview;
   },
+  [types.SET_MODEL_SERVICES](
+    state: IState,
+    services: ModelService[],
+  ): void {
+    state.modelServices = services;
+  },
   [types.SET_FEATURE_EXTRACTION_METHODS](
     state: IState,
-    featureExtractionMethods: FeatureExtractionMethod[],
+    methods: FeatureExtractionMethod[],
   ): void {
-    state.featureExtractionMethods = featureExtractionMethods;
+    state.featureExtractionMethods = methods;
   },
   [types.SET_FEATURE_EXTRACTION_METHOD](
     state: IState,
-    featureExtractionMethod: FeatureExtractionMethod,
+    method: FeatureExtractionMethod,
   ): void {
-    state.featureExtractionMethod = featureExtractionMethod;
+    state.featureExtractionMethod = method;
   },
   [types.SET_SAMPLING_STRATEGY](
     state: IState,
@@ -29,11 +36,23 @@ export default {
   ): void {
     state.samplingStrategy = samplingStrategy;
   },
+  [types.SET_DEFAULT_LABELING_METHODS](
+    state: IState,
+    methods: DefaultLabelingMethod[],
+  ): void {
+    state.defaultLabelingMethods = methods;
+  },
   [types.SET_DEFAULT_LABELING_METHOD](
     state: IState,
-    defaultLabelingMethod: DefaultLabelingMethodType,
+    method: DefaultLabelingMethod,
   ): void {
-    state.defaultLabelingMethod = defaultLabelingMethod;
+    state.defaultLabelingMethod = method;
+  },
+  [types.SET_DEFAULT_LABELING_MODEL](
+    state: IState,
+    model: ModelService,
+  ): void {
+    state.defaultLabelingModel = model;
   },
   [types.SET_N_BATCH](state: IState, nBatch: number): void {
     state.nBatch = nBatch;

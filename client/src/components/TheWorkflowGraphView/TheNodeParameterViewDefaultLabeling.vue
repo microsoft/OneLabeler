@@ -14,7 +14,7 @@
       >
         $vuetify.icons.values.parameter
       </v-icon>
-      Feature Extraction Instantiation
+      Default Labeling Instantiation
       <v-spacer />
       <v-btn
         title="recompute"
@@ -59,14 +59,14 @@
             dense
             hide-details
             single-line
-            @input="onInputTitle($event)"
+            @input="onInputNodeTitle($event)"
           />
           <v-btn
             title="edit"
             x-small
             icon
             tile
-            @click="onClickEditTitle"
+            @click="onClickEditNodeTitle"
           >
             <v-icon
               aria-hidden="true"
@@ -98,27 +98,27 @@
                 small
                 v-on="on"
               >
-                {{ node.value.name }}
+                {{ method.name }}
               </v-btn>
             </template>
             <v-list dense>
               <v-list-item
-                v-for="(text, i) in menu.optionsText"
+                v-for="(text, i) in menuOfMethods.optionsText"
                 :key="i"
-                @click="onClickMenuOption(menu.options[i])"
+                @click="onClickMenuOfMethodsOption(menuOfMethods.options[i])"
               >
                 <v-list-item-title class="subtitle-2">
                   {{ text }}
                 </v-list-item-title>
                 <p
-                  v-if="menu.options[i].serverless"
+                  v-if="menuOfMethods.options[i].serverless"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 5em"
                 >
                   serverless
                 </p>
                 <p
-                  v-if="menu.options[i].isBuiltIn"
+                  v-if="menuOfMethods.options[i].isBuiltIn"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 6em"
                 >
@@ -145,8 +145,8 @@
         <v-list-item>
           Method Name
           <v-text-field
-            :value="node.value.name"
-            :disabled="node.value.isBuiltIn"
+            :value="method.name"
+            :disabled="method.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
             type="text"
@@ -161,8 +161,8 @@
         <v-list-item>
           Method API
           <v-text-field
-            :value="node.value.serverless ? 'serverless' : node.value.api"
-            :disabled="node.value.isBuiltIn"
+            :value="method.serverless ? 'serverless' : method.api"
+            :disabled="method.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
             type="text"
@@ -176,9 +176,9 @@
         <!-- The input box for process input parameters. -->
         <v-list-item>
           <v-autocomplete
-            :value="node.value.parameters"
+            :value="method.parameters"
             :items="parameterNames"
-            :disabled="node.value.isBuiltIn"
+            :disabled="method.isBuiltIn"
             class="mt-3"
             label="Process Input"
             outlined
@@ -203,8 +203,8 @@
               >
                 <v-checkbox
                   :label="data.item"
-                  :value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
-                  :input-value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
+                  :value="method.parameters.findIndex((d) => d === data.item) >= 0"
+                  :input-value="method.parameters.findIndex((d) => d === data.item) >= 0"
                   :disabled="compulsoryParameters.findIndex((d) => d === data.item) >= 0"
                   class="ma-0"
                   dense
@@ -218,9 +218,9 @@
         <!-- The display of process output parameters. -->
         <v-list-item>
           <v-autocomplete
-            value="features"
-            :items="['features']"
-            :class="`mt-3 ${classNameOfProcessOutputWidget}`"
+            value="labels"
+            :items="['labels']"
+            :class="`mt-3 pb-2 ${classNameOfProcessOutputWidget}`"
             label="Process Output"
             disabled
             outlined
@@ -229,11 +229,110 @@
           >
             <template #selection>
               <v-chip small>
-                features
+                labels
               </v-chip>
             </template>
           </v-autocomplete>
         </v-list-item>
+
+        <template v-if="isModelRequired">
+          <v-divider />
+
+          <!-- The model used as input to the process. -->
+          <v-list-item
+            class="py-0"
+          >
+            <v-list-item-title
+              class="subtitle-2"
+              style="user-select: none"
+            >
+              Model
+            </v-list-item-title>
+            <v-menu offset-y>
+              <template #activator="{ on }">
+                <v-btn
+                  class="subtitle-2 text-none"
+                  style="border-radius: 2px"
+                  small
+                  v-on="on"
+                >
+                  {{ model.name }}
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item
+                  v-for="(text, i) in menuOfModels.optionsText"
+                  :key="i"
+                  @click="onClickMenuOfModelsOption(menuOfModels.options[i])"
+                >
+                  <v-list-item-title class="subtitle-2">
+                    {{ text }}
+                  </v-list-item-title>
+                  <p
+                    v-if="menuOfModels.options[i].serverless"
+                    class="subtitle-2 text-right ma-1 grey--text"
+                    style="width: 5em"
+                  >
+                    serverless
+                  </p>
+                  <p
+                    v-if="menuOfModels.options[i].isBuiltIn"
+                    class="subtitle-2 text-right ma-1 grey--text"
+                    style="width: 6em"
+                  >
+                    built-in
+                  </p>
+                </v-list-item>
+                <!--
+                <v-list-item @click="onCreateModel">
+                  <v-list-item-title class="subtitle-2">
+                    <v-icon
+                      aria-hidden="true"
+                      class="pr-2"
+                      x-small
+                    >
+                      $vuetify.icons.values.add
+                    </v-icon>
+                    Customize
+                  </v-list-item-title>
+                </v-list-item>
+                -->
+              </v-list>
+            </v-menu>
+          </v-list-item>
+
+          <!-- The name of the feature extraction method. -->
+          <v-list-item>
+            Model Name
+            <v-text-field
+              :value="model.name"
+              :disabled="model.isBuiltIn"
+              class="ma-0 pl-4 pt-1 subtitle-2"
+              style="padding-bottom: 6px !important"
+              type="text"
+              dense
+              hide-details
+              single-line
+              @input="onInputModelName($event)"
+            />
+          </v-list-item>
+
+          <!-- The url of the model. -->
+          <v-list-item>
+            Model URL
+            <v-text-field
+              :value="model.serverless ? 'serverless' : model.api"
+              :disabled="model.isBuiltIn"
+              class="ma-0 pl-4 pt-1 subtitle-2"
+              style="padding-bottom: 6px !important"
+              type="text"
+              dense
+              hide-details
+              single-line
+              @input="onInputModelAPI($event)"
+            />
+          </v-list-item>
+        </template>
       </v-list>
     </v-card-actions>
   </v-card>
@@ -242,30 +341,35 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
-  FeatureExtractionMethod,
+  ModelService,
+  DefaultLabelingMethod,
 } from '@/commons/types';
-import { FeatureExtractionNode } from './types';
+import { DefaultLabelingNode } from './types';
 
 export default Vue.extend({
   name: 'TheNodeParameterViewFeatureExtraction',
   props: {
+    models: {
+      type: Array as PropType<ModelService[]>,
+      default: () => [],
+    },
     methods: {
-      type: Array as PropType<FeatureExtractionMethod[]>,
-      default: [],
+      type: Array as PropType<DefaultLabelingMethod[]>,
+      default: () => [],
     },
     node: {
-      type: Object as PropType<FeatureExtractionNode>,
+      type: Object as PropType<DefaultLabelingNode>,
       default: null,
     },
   },
   data() {
     return {
       parameterNames: [
-        'dataObjects',
-        'labels',
+        'features',
+        'model',
       ],
       compulsoryParameters: [
-        'dataObjects',
+        'features',
       ],
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
@@ -274,59 +378,137 @@ export default Vue.extend({
     };
   },
   computed: {
-    menu() {
+    method(): DefaultLabelingMethod {
+      return this.node.value.method;
+    },
+    model(): ModelService | undefined {
+      return this.node.value.model;
+    },
+    isModelRequired(): boolean {
+      return this.method.parameters
+        .findIndex((d) => d === 'model') >= 0;
+    },
+    menuOfMethods() {
       return {
         title: 'Method',
         options: this.methods,
         optionsText: this.methods.map((d) => d.name),
       };
     },
+    menuOfModels() {
+      return {
+        title: 'Models',
+        options: this.models,
+        optionsText: this.models.map((d) => d.name),
+      };
+    },
   },
   methods: {
-    onClickMenuOption(option: FeatureExtractionMethod): void {
-      const { node } = this;
-      this.onEditNode({
-        ...node,
-        value: option,
-      });
-    },
-    onClickEditTitle(): void {
+    onClickEditNodeTitle(): void {
       this.isTitleEditable = true;
     },
     onClickOutsideInputTitle(): void {
       this.isTitleEditable = false;
     },
-    onInputTitle(title: string): void {
+    onInputNodeTitle(title: string): void {
       const { node } = this;
       this.onEditNode({
         ...node,
         title,
       });
     },
-    onInputMethodName(name: string): void {
-      const { node } = this;
+    onEditNode(newValue: DefaultLabelingNode): void {
+      this.$emit('edit-node', newValue);
+    },
+    onClickMenuOfMethodsOption(option: DefaultLabelingMethod): void {
+      const { node, model } = this;
       this.onEditNode({
         ...node,
-        value: { ...node.value, name },
+        value: {
+          method: option,
+          model,
+        },
       });
-      this.onEditMethod({
-        ...node.value,
+    },
+    onInputMethodName(name: string): void {
+      const { node, method, model } = this;
+      this.onEditNode({
+        ...node,
+        value: {
+          method: { ...method, name },
+          model,
+        },
+      });
+      this.onEditMethod({ ...method, name });
+    },
+    onInputMethodAPI(api: string): void {
+      const { node, method, model } = this;
+      this.onEditNode({
+        ...node,
+        value: {
+          method: { ...method, api },
+          model,
+        },
+      });
+      this.onEditMethod({ ...method, api });
+    },
+    onCreateMethod(): void {
+      this.$emit('create-method');
+    },
+    onEditMethod(newValue: DefaultLabelingMethod): void {
+      this.$emit('edit-method', this.node.type, newValue);
+    },
+    onClickMenuOfModelsOption(option: ModelService): void {
+      const { node, method } = this;
+      this.onEditNode({
+        ...node,
+        value: {
+          method,
+          model: option,
+        },
+      });
+    },
+    onInputModelName(name: string): void {
+      const { node, method, model } = this;
+      this.onEditNode({
+        ...node,
+        value: {
+          method,
+          model: { ...(model as ModelService), name },
+        },
+      });
+      this.onEditModel({
+        ...(model as ModelService),
         name,
       });
     },
-    onInputMethodAPI(api: string): void {
-      const { node } = this;
+    onInputModelAPI(api: string): void {
+      const { node, method, model } = this;
       this.onEditNode({
         ...node,
-        value: { ...node.value, api },
+        value: {
+          method,
+          model: { ...(model as ModelService), api },
+        },
       });
-      this.onEditMethod({
-        ...node.value,
+      this.onEditModel({
+        ...(model as ModelService),
         api,
       });
     },
+    onCreateModel(): void {
+      this.$emit('create-model');
+    },
+    onEditModel(newValue: ModelService): void {
+      this.$emit('edit-model', newValue);
+    },
     onClickParameterCheckbox(parameterNames: string[]): void {
-      const { node, compulsoryParameters } = this;
+      const {
+        node,
+        compulsoryParameters,
+        method,
+        model,
+      } = this;
       const orders = this.parameterNames;
       const sorted = [
         ...compulsoryParameters,
@@ -337,23 +519,11 @@ export default Vue.extend({
       this.onEditNode({
         ...node,
         value: {
-          ...node.value,
-          parameters: sorted,
+          method: { ...method, parameters: sorted },
+          model,
         },
       });
-      this.onEditMethod({
-        ...node.value,
-        parameters: sorted,
-      });
-    },
-    onCreateMethod(): void {
-      this.$emit('create-method');
-    },
-    onEditNode(newValue: FeatureExtractionNode): void {
-      this.$emit('edit-node', newValue);
-    },
-    onEditMethod(newValue: FeatureExtractionMethod): void {
-      this.$emit('edit-method', this.node.type, newValue);
+      this.onEditMethod({ ...method, parameters: sorted });
     },
     onClickRecompute(): void {
       this.$emit('click-recompute', this.node);

@@ -99,38 +99,6 @@ class DataLabelingPipeline(GenericPipeline):
         return query_indices
 
     @staticmethod
-    def assign_default_labels(data_objects: ListLike,
-                              model: Model,
-                              classes: np.ndarray,
-                              unlabeled_mark: Label) -> np.ndarray:
-        # pylint: disable=invalid-name
-
-        if len(data_objects) == 0:
-            return np.array([])
-        if len(classes) == 0:
-            return np.array([unlabeled_mark for i in range(len(data_objects))])
-
-        X = np.array([data_object['features'] for data_object in data_objects])
-        n_samples = len(data_objects)
-        if model.type == DefaultLabelingMethodType.Null:
-            default_labels = np.array(
-                [unlabeled_mark for i in range(n_samples)], dtype=str)
-        elif model.type == DefaultLabelingMethodType.Random:
-            default_labels = np.random.choice(
-                classes, size=n_samples, replace=True)
-        elif model.predictor is None:
-            default_labels = np.random.choice(
-                classes, size=n_samples, replace=True)
-        else:
-            try:
-                default_labels = model.predictor.predict(X)
-            except NotFittedError:
-                default_labels = np.random.choice(
-                    classes, size=n_samples, replace=True)
-
-        return default_labels
-
-    @staticmethod
     def update_model(data_objects: ListLike,
                      labels: np.ndarray,
                      statuses: np.ndarray,
@@ -158,7 +126,7 @@ class DataLabelingPipeline(GenericPipeline):
         ], f'Invalid model type: {model.type}'
 
         X = np.array([data_object['features'] for data_object in data_objects])
-        mask_labeled = np.array([status == Status.LABELED
+        mask_labeled = np.array([status == Status.Labeled
                                  for status in statuses])
         if np.sum(mask_labeled) == 0:
             return model
