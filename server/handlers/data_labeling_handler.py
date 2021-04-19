@@ -23,14 +23,6 @@ class DataLabelingHandler(tornado.web.RequestHandler):
             query_indices = DataLabelingAPI.sample_data_objects(
                 data_objects, labels, statuses, n_batch, model)
             self.write({'queryIndices': query_indices})
-        elif key == 'updateModel':
-            data_objects = json_data['dataObjects']
-            labels = json_data['labels']
-            statuses = json_data['statuses']
-            model = json_data['model']
-            model_updated = DataLabelingAPI.update_model(
-                data_objects, labels, statuses, model)
-            self.write({'model': model_updated})
         '''
         elif key == 'stoppageAnalysis':
             labels = json_data['labels']

@@ -2,16 +2,15 @@ import {
   ModelService,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
+  InterimModelTrainingMethod,
   LabelTaskType,
   SamplingStrategyType,
+  InteractiveLabelingMethod,
 } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
 export default {
-  [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
-    state.showDatasetOverview = showDatasetOverview;
-  },
   [types.SET_MODEL_SERVICES](
     state: IState,
     services: ModelService[],
@@ -30,11 +29,17 @@ export default {
   ): void {
     state.featureExtractionMethod = method;
   },
-  [types.SET_SAMPLING_STRATEGY](
+  [types.SET_INTERIM_MODEL_TRAINING_METHODS](
     state: IState,
-    samplingStrategy: SamplingStrategyType,
+    methods: InterimModelTrainingMethod[],
   ): void {
-    state.samplingStrategy = samplingStrategy;
+    state.interimModelTrainingMethods = methods;
+  },
+  [types.SET_INTERIM_MODEL_TRAINING_METHOD](
+    state: IState,
+    method: InterimModelTrainingMethod,
+  ): void {
+    state.interimModelTrainingMethod = method;
   },
   [types.SET_DEFAULT_LABELING_METHODS](
     state: IState,
@@ -47,6 +52,27 @@ export default {
     method: DefaultLabelingMethod,
   ): void {
     state.defaultLabelingMethod = method;
+  },
+  [types.SET_INTERACTIVE_LABELING_METHODS](
+    state: IState,
+    methods: InteractiveLabelingMethod[],
+  ): void {
+    state.interactiveLabelingMethods = methods;
+  },
+  [types.SET_INTERACTIVE_LABELING_METHOD](
+    state: IState,
+    method: InteractiveLabelingMethod[],
+  ): void {
+    state.interactiveLabelingMethod = method;
+  },
+  [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
+    state.showDatasetOverview = showDatasetOverview;
+  },
+  [types.SET_SAMPLING_STRATEGY](
+    state: IState,
+    samplingStrategy: SamplingStrategyType,
+  ): void {
+    state.samplingStrategy = samplingStrategy;
   },
   [types.SET_DEFAULT_LABELING_MODEL](
     state: IState,
@@ -68,9 +94,6 @@ export default {
   },
   [types.SET_ITEMS_PER_COL](state: IState, itemsPerCol: number): void {
     state.itemsPerCol = itemsPerCol;
-  },
-  [types.SET_INTERIM_MODEL_TRAINING_ENABLED](state: IState, enabled: boolean): void {
-    state.interimModelTrainingEnabled = enabled;
   },
   [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
     state.labelTasks = labelTasks;

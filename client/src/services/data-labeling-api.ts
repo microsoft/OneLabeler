@@ -18,6 +18,7 @@ import {
   FeatureExtractionMethod,
   DataObjectSelectionMethod,
   DefaultLabelingMethod,
+  InterimModelTrainingMethod,
 } from '@/commons/types';
 import {
   PROTOCOL,
@@ -205,22 +206,28 @@ export const dataObjectSelection = showProgressBar(async (
  * @param model The model to be updated.
  * @returns modelUpdated - the updated model.
  */
-export const updateModel = showProgressBar(async (
-  dataObjects: IDataObject[],
-  labels: Label[],
-  statuses: Status[],
-  model: IModel,
+export const interimModelTraining = showProgressBar(async (
+  method: InterimModelTrainingMethod,
+  model: ModelService,
+  dataObjects: IDataObject[] | null = null,
+  labels: Label[] | null = null,
+  statuses: Status[] | null = null,
 ): Promise<IModel> => {
-  const modelUpdated = (
-    await axios.post(
-      formatter(SERVER_PORT, 'updateModel'),
-      JSON.stringify({
-        dataObjects,
-        labels,
-        statuses,
-        model,
-      }),
-    )
-  ).data.model;
+  let modelUpdated = null;
+  if (method.isBuiltIn && (method.api === 'Static')) {
+    modelUpdated = model;
+  } else {
+    modelUpdated = (
+      await axios.post(
+        method.api,
+        JSON.stringify({
+          model,
+          dataObjects,
+          labels,
+          statuses,
+        }),
+      )
+    ).data.model;
+  }
   return modelUpdated;
 });

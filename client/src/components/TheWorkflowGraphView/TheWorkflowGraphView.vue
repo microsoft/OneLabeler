@@ -38,7 +38,7 @@
         cols="4"
         class="pl-1"
       >
-        <TheNodeParameterView
+        <TheNodeDetails
           :node="selectedNode"
           @set-node-value="onSetNodeValue"
           @edit-node="onEditNode"
@@ -56,18 +56,28 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
+import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
 import {
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
-  InterimModelTrainingType,
   FeatureExtractionMethod,
+  DefaultLabelingMethod,
+  InterimModelTrainingMethod,
   ModelService,
+  InteractiveLabelingMethod,
 } from '@/commons/types';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
-import TheNodeParameterView from './TheNodeParameterView.vue';
-import { WorkflowNode, NodeTypes, DefaultLabelingNode } from './types';
+import TheNodeDetails from './TheNodeDetails.vue';
+import {
+  WorkflowNode,
+  NodeTypes,
+  DefaultLabelingNode,
+  InterimModelTrainingNode,
+  FeatureExtractionNode,
+  InteractiveLabelingNode,
+} from './types';
 
 const graph = {
   nodes: [
@@ -84,12 +94,14 @@ const graph = {
       title: 'feature extraction',
       type: NodeTypes.FeatureExtraction,
       value: {
-        name: 'SVD (Unsupervised)',
-        serverless: false,
-        api: 'http://localhost:8005/features/image/SVD',
-        parameters: ['dataObjects'],
-        isBuiltIn: true,
-        id: 'image-SVD-25940167',
+        method: {
+          name: 'SVD (Unsupervised)',
+          serverless: false,
+          api: 'http://localhost:8005/features/image/SVD',
+          parameters: ['dataObjects'],
+          isBuiltIn: true,
+          id: 'image-SVD-25940167',
+        },
       },
       x: 145,
       y: 25,
@@ -139,12 +151,7 @@ const graph = {
       id: 'interactiveLabeling-44216216',
       title: 'interctive labeling',
       type: NodeTypes.InteractiveLabeling,
-      value: {
-        singleObjectDisplayEnabled: false,
-        gridMatrixEnabled: false,
-        itemsPerRow: 8,
-        itemsPerCol: 6,
-      },
+      value: [],
       x: 625,
       y: 25,
     },
@@ -178,8 +185,14 @@ const graph = {
       title: 'interim model training',
       type: NodeTypes.InterimModelTraining,
       value: {
-        enabled: false,
-        method: InterimModelTrainingType.Retrain,
+        method: {
+          name: 'Static',
+          serverless: true,
+          api: 'Static',
+          parameters: ['model'],
+          isBuiltIn: true,
+          id: 'Static-72885436',
+        },
       },
       x: 265,
       y: 115,
@@ -217,10 +230,10 @@ const graph = {
 };
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogGraphView',
+  name: 'TheWorkflowGraphView',
   components: {
     TheWorkflowGraphViewCanvas,
-    TheNodeParameterView,
+    TheNodeDetails,
   },
   data() {
     return {
@@ -233,26 +246,33 @@ export default Vue.extend({
       'modelServices',
       'featureExtractionMethods',
       'defaultLabelingMethods',
+      'interimModelTrainingMethods',
+      'interactiveLabelingMethods',
     ]),
   },
   methods: {
     ...mapActions('workflow', [
+      'setModelServices',
       'setFeatureExtractionMethods',
       'setFeatureExtractionMethod',
       'setDefaultLabelingMethods',
       'setDefaultLabelingMethod',
       'setDefaultLabelingModel',
-      'setModelServices',
-      'setSamplingStrategy',
-      'setNBatch',
-      'setShowDatasetOverview',
+      'setInterimModelTrainingMethods',
+      'setInterimModelTrainingMethod',
+      'setInteractiveLabelingMethods',
+      'setInteractiveLabelingMethod',
       'setSingleObjectDisplayEnabled',
       'setGridMatrixEnabled',
       'setItemsPerRow',
       'setItemsPerCol',
-      'setInterimModelTrainingEnabled',
+      'setSamplingStrategy',
+      'setNBatch',
+      'setShowDatasetOverview',
       'setLabelTasks',
       'executeFeatureExtraction',
+      'executeDefaultLabeling',
+      'executeInterimModelTraining',
     ]),
     onSelectNode(node: WorkflowNode) {
       this.selectedNode = node;
@@ -273,12 +293,18 @@ export default Vue.extend({
           id: 'Null-35514905',
         });
       }
-      if (node.type === NodeTypes.InteractiveLabeling) {
-        this.setSingleObjectDisplayEnabled(false);
-        this.setGridMatrixEnabled(false);
-      }
       if (node.type === NodeTypes.InterimModelTraining) {
-        this.setInterimModelTrainingEnabled(false);
+        this.setInterimModelTrainingMethod({
+          name: 'Static',
+          serverless: true,
+          api: 'Static',
+          parameters: ['model'],
+          isBuiltIn: true,
+          id: 'Static-72885436',
+        });
+      }
+      if (node.type === NodeTypes.InteractiveLabeling) {
+        this.setInteractiveLabelingMethod([]);
       }
     },
     onEditNode(newValue: WorkflowNode) {
@@ -287,12 +313,22 @@ export default Vue.extend({
       newGraph.nodes[idx] = newValue;
       this.graph = newGraph;
       if (newValue.type === NodeTypes.FeatureExtraction) {
-        this.setFeatureExtractionMethod(newValue.value);
+        const { method } = (newValue as FeatureExtractionNode).value;
+        this.setFeatureExtractionMethod(method);
       }
       if (newValue.type === NodeTypes.DefaultLabeling) {
         const { method, model } = (newValue as DefaultLabelingNode).value;
         this.setDefaultLabelingMethod(method);
         this.setDefaultLabelingModel(model);
+      }
+      if (newValue.type === NodeTypes.InterimModelTraining) {
+        const { method } = (newValue as InterimModelTrainingNode).value;
+        this.setInterimModelTrainingMethod(method);
+      }
+      if (newValue.type === NodeTypes.InteractiveLabeling) {
+        const method = (newValue as InteractiveLabelingNode).value.map((d) => d.method);
+        console.log('edit node interactive labeling', method);
+        this.setInteractiveLabelingMethod(method);
       }
       this.selectedNode = newValue;
     },
@@ -306,11 +342,20 @@ export default Vue.extend({
         this.setLabelTasks(value);
       }
       if (node.type === NodeTypes.FeatureExtraction) {
-        this.setFeatureExtractionMethod(value);
+        const { method } = (node as FeatureExtractionNode).value;
+        this.setFeatureExtractionMethod(method);
       }
       if (node.type === NodeTypes.DefaultLabeling) {
         const { method } = (node as DefaultLabelingNode).value;
         this.setDefaultLabelingMethod(method);
+      }
+      if (node.type === NodeTypes.InterimModelTraining) {
+        const { method } = (node as InterimModelTrainingNode).value;
+        this.setInterimModelTrainingMethod(method);
+      }
+      if (node.type === NodeTypes.InteractiveLabeling) {
+        const method = (node as InteractiveLabelingNode).value;
+        this.setInteractiveLabelingMethod(method);
       }
       if (node.type === NodeTypes.DataObjectSelection) {
         const {
@@ -322,37 +367,35 @@ export default Vue.extend({
         this.setNBatch(nBatch);
         this.setShowDatasetOverview(projectionAidEnabled);
       }
-      if (node.type === NodeTypes.InteractiveLabeling) {
-        const {
-          singleObjectDisplayEnabled,
-          gridMatrixEnabled,
-          itemsPerRow,
-          itemsPerCol,
-        } = value;
-        this.setSingleObjectDisplayEnabled(singleObjectDisplayEnabled);
-        this.setGridMatrixEnabled(gridMatrixEnabled);
-        this.setItemsPerRow(itemsPerRow);
-        this.setItemsPerCol(itemsPerCol);
-      }
-      if (node.type === NodeTypes.InterimModelTraining) {
-        const { enabled } = value;
-        this.setInterimModelTrainingEnabled(enabled);
-      }
     },
     onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod) {
       if (nodeType === NodeTypes.FeatureExtraction) {
-        const { featureExtractionMethods } = this;
-        const idx = featureExtractionMethods.findIndex((d) => d.id === newValue.id);
-        const newFeatureExtractionMethods = [...featureExtractionMethods];
-        newFeatureExtractionMethods[idx] = newValue;
-        this.setFeatureExtractionMethods(newFeatureExtractionMethods);
+        const methods = this.featureExtractionMethods as FeatureExtractionMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setFeatureExtractionMethods(newMethods);
       }
       if (nodeType === NodeTypes.DefaultLabeling) {
-        const { defaultLabelingMethods } = this;
-        const idx = defaultLabelingMethods.findIndex((d) => d.id === newValue.id);
-        const newDefaultLabelingMethods = [...defaultLabelingMethods];
-        newDefaultLabelingMethods[idx] = newValue;
-        this.setDefaultLabelingMethods(newDefaultLabelingMethods);
+        const methods = this.defaultLabelingMethods as DefaultLabelingMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setDefaultLabelingMethods(newMethods);
+      }
+      if (nodeType === NodeTypes.InterimModelTraining) {
+        const methods = this.interimModelTrainingMethods as InterimModelTrainingMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setDefaultLabelingMethods(newMethods);
+      }
+      if (nodeType === NodeTypes.InteractiveLabeling) {
+        const methods = this.interactiveLabelingMethods as InteractiveLabelingMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setInteractiveLabelingMethods(newMethods);
       }
     },
     onCreateMethod(nodeType: NodeTypes) {
@@ -384,11 +427,27 @@ export default Vue.extend({
           ...defaultLabelingMethods,
           method,
         ]);
+      } else if (nodeType === NodeTypes.InterimModelTraining) {
+        const { interimModelTrainingMethods } = this;
+        const method = {
+          name: 'custom',
+          serverless: false,
+          api: '',
+          parameters: ['model'],
+          isBuiltIn: false,
+          id: `custom-${uuidv4()}`,
+        };
+        this.setInterimModelTrainingMethods([
+          ...interimModelTrainingMethods,
+          method,
+        ]);
       }
     },
     onEditModel(newValue: ModelService) {
       const { modelServices } = this;
-      const idx = modelServices.findIndex((d: ModelService) => d.id === newValue.id);
+      const idx = modelServices.findIndex(
+        (d: ModelService) => d.objectId === newValue.objectId,
+      );
       const newModelServices = [...modelServices];
       newModelServices[idx] = newValue;
       this.setModelServices(newModelServices);
@@ -398,9 +457,9 @@ export default Vue.extend({
       const model: ModelService = {
         name: 'custom',
         serverless: false,
-        api: '',
+        type: '',
         isBuiltIn: false,
-        id: `custom-${uuidv4()}`,
+        objectId: (new ObjectId()).toHexString(),
       };
       this.setModelServices([
         ...modelServices,
@@ -410,6 +469,12 @@ export default Vue.extend({
     onClickRecompute(node: WorkflowNode) {
       if (node.type === NodeTypes.FeatureExtraction) {
         this.executeFeatureExtraction(node.value);
+      }
+      if (node.type === NodeTypes.DefaultLabeling) {
+        this.executeDefaultLabeling(node.value);
+      }
+      if (node.type === NodeTypes.InterimModelTraining) {
+        this.executeInterimModelTraining(node.value);
       }
     },
   },

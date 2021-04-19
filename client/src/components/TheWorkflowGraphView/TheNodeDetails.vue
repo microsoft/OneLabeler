@@ -4,9 +4,9 @@
     class="pa-0"
     fill-height
   >
-    <TheNodeParameterViewFeatureExtraction
+    <TheNodeDetailsFeatureExtraction
       v-if="(node !== null)
-       && (node.type === NodeTypes.FeatureExtraction)"
+        && (node.type === NodeTypes.FeatureExtraction)"
       :methods="featureExtractionMethods"
       :node="node"
       @edit-node="onEditNode"
@@ -14,11 +14,36 @@
       @edit-method="onEditMethod"
       @click-recompute="onClickRecompute"
     />
-    <TheNodeParameterViewDefaultLabeling
+    <TheNodeDetailsDefaultLabeling
       v-else-if="(node !== null)
-       && (node.type === NodeTypes.DefaultLabeling)"
+        && (node.type === NodeTypes.DefaultLabeling)"
       :methods="defaultLabelingMethods"
       :models="modelServices"
+      :node="node"
+      @edit-node="onEditNode"
+      @create-method="onCreateMethod"
+      @edit-method="onEditMethod"
+      @create-model="onCreateModel"
+      @edit-model="onEditModel"
+      @click-recompute="onClickRecompute"
+    />
+    <TheNodeDetailsInterimModelTraining
+      v-else-if="(node !== null)
+        && (node.type === NodeTypes.InterimModelTraining)"
+      :methods="interimModelTrainingMethods"
+      :models="modelServices"
+      :node="node"
+      @edit-node="onEditNode"
+      @create-method="onCreateMethod"
+      @edit-method="onEditMethod"
+      @create-model="onCreateModel"
+      @edit-model="onEditModel"
+      @click-recompute="onClickRecompute"
+    />
+    <TheNodeDetailsInteractiveLabeling
+      v-else-if="(node !== null)
+        && (node.type === NodeTypes.InteractiveLabeling)"
+      :methods="interactiveLabelingMethods"
       :node="node"
       @edit-node="onEditNode"
       @create-method="onCreateMethod"
@@ -85,14 +110,15 @@ import {
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
-  InterimModelTrainingType,
   FeatureExtractionMethod,
   ModelService,
 } from '@/commons/types';
 import VMenusFlat from './VMenusFlat.vue';
 import VMenusGrouped from './VMenusGrouped.vue';
-import TheNodeParameterViewFeatureExtraction from './TheNodeParameterViewFeatureExtraction.vue';
-import TheNodeParameterViewDefaultLabeling from './TheNodeParameterViewDefaultLabeling.vue';
+import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
+import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
+import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
 import { WorkflowNode, NodeTypes } from './types';
 
 const menuMapper = {
@@ -171,6 +197,7 @@ const menuMapper = {
       },
     },
   },
+  /*
   [NodeTypes.InteractiveLabeling]: {
     entries: {
       singleObjectDisplayEnabled: {
@@ -205,26 +232,13 @@ const menuMapper = {
       },
     },
   },
+  */
   [NodeTypes.StoppageAnalysis]: {
     entries: {
       method: {
         title: 'Method',
         options: [StoppageAnalysisType.AllChecked],
         optionsText: ['All Checked'],
-      },
-    },
-  },
-  [NodeTypes.InterimModelTraining]: {
-    entries: {
-      enabled: {
-        title: 'Enabled',
-        options: [false, true],
-        optionsText: ['No', 'Yes'],
-      },
-      method: {
-        title: 'Method',
-        options: [InterimModelTrainingType.Retrain],
-        optionsText: ['Retrain'],
       },
     },
   },
@@ -252,12 +266,14 @@ const menuTitleMapper: Record<NodeTypes, string> = {
 };
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogGraphView',
+  name: 'TheNodeDetails',
   components: {
     VMenusFlat,
     VMenusGrouped,
-    TheNodeParameterViewFeatureExtraction,
-    TheNodeParameterViewDefaultLabeling,
+    TheNodeDetailsFeatureExtraction,
+    TheNodeDetailsDefaultLabeling,
+    TheNodeDetailsInterimModelTraining,
+    TheNodeDetailsInteractiveLabeling,
   },
   props: {
     node: {
@@ -275,6 +291,8 @@ export default Vue.extend({
       'modelServices',
       'featureExtractionMethods',
       'defaultLabelingMethods',
+      'interimModelTrainingMethods',
+      'interactiveLabelingMethods',
     ]),
     menuTitle(): string {
       const { type } = this.node;

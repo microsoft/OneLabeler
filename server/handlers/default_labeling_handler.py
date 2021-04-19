@@ -17,11 +17,11 @@ import tornado.web
 from .utils.data_persistence import is_saved, load, save
 
 
-def load_model(model) -> BaseEstimator:
-    model_type = model['type']
-    model_id = model['objectId']
+def load_estimator(model) -> BaseEstimator:
+    estimator_type = model['type']
+    estimator_id = model['objectId']
 
-    assert model_type in [
+    assert estimator_type in [
         'DecisionTree',
         'SVM',
         'LogisticRegression',
@@ -29,28 +29,29 @@ def load_model(model) -> BaseEstimator:
         'LabelSpreading',
     ]
 
-    if is_saved(model_id):
-        model = load(inserted_id=ObjectId(model_id))
+    if is_saved(inserted_id=ObjectId(estimator_id)):
+        estimator = load(inserted_id=ObjectId(estimator_id))
     else:
-        if model_type == 'DecisionTree':
-            model = DecisionTreeClassifier()
-        if model_type == 'SVM':
-            model = SVC(gamma=0.001)
-        if model_type == 'LogisticRegression':
-            model = make_pipeline(
+        if estimator_type == 'DecisionTree':
+            estimator = DecisionTreeClassifier()
+        if estimator_type == 'SVM':
+            estimator = SVC(gamma=0.001)
+        if estimator_type == 'LogisticRegression':
+            estimator = make_pipeline(
                 StandardScaler(),
                 LogisticRegression(C=1, penalty='l2',
                                    tol=0.01, solver='saga'),
             )
-        if model_type == 'LabelSpreading':
-            model = LabelSpreading(gamma=0.25, max_iter=20)
-        if model_type == 'RestrictedBoltzmannMachine':
-            model = make_pipeline(
+        if estimator_type == 'LabelSpreading':
+            estimator = LabelSpreading(gamma=0.25, max_iter=20)
+        if estimator_type == 'RestrictedBoltzmannMachine':
+            estimator = make_pipeline(
                 BernoulliRBM(random_state=0),
                 LogisticRegression(solver='newton-cg', tol=1),
             )
-        details = save(data=model, inserted_id=ObjectId(model_id))
-    return model
+        details = save(data=estimator,
+                       inserted_id=ObjectId(estimator_id))
+    return estimator
 
 
 def default_label_null(unlabeled_mark: str,
@@ -95,7 +96,7 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
         if key == 'Random':
             labels = default_label_random(classes, n_samples)
         if key == 'ModelPrediction':
-            predictor = load_model(model)
+            predictor = load_estimator(model)
             try:
                 labels = predictor.predict(features)
             except NotFittedError:

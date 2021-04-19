@@ -4,6 +4,8 @@ import {
   ModelService,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
+  InterimModelTrainingMethod,
+  InteractiveLabelingMethod,
   IImage,
   IModel,
   LabelTaskType,
@@ -17,7 +19,7 @@ import { IState as IRootState } from '../state';
 
 export const executeFeatureExtraction = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: FeatureExtractionMethod,
+  { method }: { method: FeatureExtractionMethod },
 ): Promise<void> => {
   const { dataObjects, labels, statuses } = rootState;
 
@@ -62,6 +64,26 @@ export const executeDefaultLabeling = async (
   }, { root: true });
 };
 
+export const executeInterimModelTraining = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  { method, model }: { method: DefaultLabelingMethod, model: ModelService },
+): Promise<void> => {
+  const {
+    dataObjects,
+    labels,
+    statuses,
+  } = rootState;
+  const { defaultLabelingModel } = state;
+  const modelUpdated = (await API.interimModelTraining(
+    method,
+    defaultLabelingModel as ModelService,
+    dataObjects,
+    labels,
+    statuses,
+  ));
+  commit(types.SET_DEFAULT_LABELING_MODEL, modelUpdated);
+};
+
 export const setModelServices = (
   { commit }: ActionContext<IState, IRootState>,
   services: ModelService[],
@@ -94,7 +116,7 @@ export const setDefaultLabelingMethods = (
 };
 
 export const setDefaultLabelingMethod = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit }: ActionContext<IState, IRootState>,
   method: DefaultLabelingMethod,
 ): void => {
   commit(types.SET_DEFAULT_LABELING_METHOD, method);
@@ -105,6 +127,34 @@ export const setDefaultLabelingModel = (
   model: ModelService,
 ): void => {
   commit(types.SET_DEFAULT_LABELING_MODEL, model);
+};
+
+export const setInterimModelTrainingMethods = (
+  { commit }: ActionContext<IState, IRootState>,
+  methods: InterimModelTrainingMethod[],
+): void => {
+  commit(types.SET_INTERIM_MODEL_TRAINING_METHODS, methods);
+};
+
+export const setInterimModelTrainingMethod = (
+  { commit }: ActionContext<IState, IRootState>,
+  method: InterimModelTrainingMethod,
+): void => {
+  commit(types.SET_INTERIM_MODEL_TRAINING_METHOD, method);
+};
+
+export const setInteractiveLabelingMethods = (
+  { commit }: ActionContext<IState, IRootState>,
+  methods: InteractiveLabelingMethod[],
+): void => {
+  commit(types.SET_INTERACTIVE_LABELING_METHODS, methods);
+};
+
+export const setInteractiveLabelingMethod = (
+  { commit }: ActionContext<IState, IRootState>,
+  method: InteractiveLabelingMethod[],
+): void => {
+  commit(types.SET_INTERACTIVE_LABELING_METHOD, method);
 };
 
 export const setSamplingStrategy = (
@@ -165,13 +215,6 @@ export const setItemsPerCol = (
   itemsPerCol: number,
 ): void => {
   commit(types.SET_ITEMS_PER_COL, itemsPerCol);
-};
-
-export const setInterimModelTrainingEnabled = (
-  { commit }: ActionContext<IState, IRootState>,
-  enabled: boolean,
-): void => {
-  commit(types.SET_INTERIM_MODEL_TRAINING_ENABLED, enabled);
 };
 
 export const setLabelTasks = (
@@ -333,48 +376,6 @@ export const sampleDataObjectsManual = async (
     newStatuses[index] = Status.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
-};
-
-export const updateModel = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-): Promise<void> => {
-  const {
-    labelTasks,
-    interimModelTrainingEnabled,
-  } = state;
-  const {
-    dataObjects,
-    labels,
-    statuses,
-    model,
-  } = rootState;
-
-  if (!interimModelTrainingEnabled) {
-    return;
-  }
-
-  const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableObjectDetection = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-
-  // Update the model.
-  if (enableImageClassification) {
-    const modelUpdated = (await API.updateModel(
-      dataObjects,
-      labels,
-      statuses,
-      model,
-    ));
-    commit(rootTypes.SET_MODEL, modelUpdated, { root: true });
-  } else {
-    // TBA
-  }
 };
 
 export const resetState = (

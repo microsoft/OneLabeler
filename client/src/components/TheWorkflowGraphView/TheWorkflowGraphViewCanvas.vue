@@ -147,7 +147,7 @@ import {
 import { WorkflowNode, NodeTypes } from './types';
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogGraphView',
+  name: 'TheWorkflowGraphViewCanvas',
   data() {
     return {
       rectWidth: 80,
@@ -171,11 +171,10 @@ export default Vue.extend({
       'defaultLabelingMethod',
       'taskTransformation',
       'stoppageAnalysis',
-      'interimModelTraining',
+      'interimModelTrainingMethod',
       'nBatch',
       'singleObjectDisplayEnabled',
       'gridMatrixEnabled',
-      'interimModelTrainingEnabled',
     ]),
   },
   methods: {
@@ -220,7 +219,7 @@ export default Vue.extend({
          || (this.gridMatrixEnabled !== false);
       }
       if (node.type === NodeTypes.InterimModelTraining) {
-        return this.interimModelTrainingEnabled !== false;
+        return this.interimModelTrainingMethod.api !== 'Static';
       }
       return true;
     },

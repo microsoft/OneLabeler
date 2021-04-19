@@ -14,7 +14,7 @@
       >
         $vuetify.icons.values.parameter
       </v-icon>
-      Feature Extraction Instantiation
+      {{ viewTitle }}
       <v-spacer />
       <v-btn
         title="recompute"
@@ -59,14 +59,14 @@
             dense
             hide-details
             single-line
-            @input="onInputTitle($event)"
+            @input="onInputNodeTitle($event)"
           />
           <v-btn
             title="edit"
             x-small
             icon
             tile
-            @click="onClickEditTitle"
+            @click="onClickEditNodeTitle"
           >
             <v-icon
               aria-hidden="true"
@@ -98,27 +98,27 @@
                 small
                 v-on="on"
               >
-                {{ node.value.name }}
+                {{ method.name }}
               </v-btn>
             </template>
             <v-list dense>
               <v-list-item
-                v-for="(text, i) in menu.optionsText"
+                v-for="(text, i) in menuOfMethods.optionsText"
                 :key="i"
-                @click="onClickMenuOption(menu.options[i])"
+                @click="onClickMenuOfMethodsOption(menuOfMethods.options[i])"
               >
                 <v-list-item-title class="subtitle-2">
                   {{ text }}
                 </v-list-item-title>
                 <p
-                  v-if="menu.options[i].serverless"
+                  v-if="menuOfMethods.options[i].serverless"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 5em"
                 >
                   serverless
                 </p>
                 <p
-                  v-if="menu.options[i].isBuiltIn"
+                  v-if="menuOfMethods.options[i].isBuiltIn"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 6em"
                 >
@@ -145,8 +145,8 @@
         <v-list-item>
           Method Name
           <v-text-field
-            :value="node.value.name"
-            :disabled="node.value.isBuiltIn"
+            :value="method.name"
+            :disabled="method.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
             type="text"
@@ -161,8 +161,8 @@
         <v-list-item>
           Method API
           <v-text-field
-            :value="node.value.serverless ? 'serverless' : node.value.api"
-            :disabled="node.value.isBuiltIn"
+            :value="method.serverless ? 'serverless' : method.api"
+            :disabled="method.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
             type="text"
@@ -176,9 +176,9 @@
         <!-- The input box for process input parameters. -->
         <v-list-item>
           <v-autocomplete
-            :value="node.value.parameters"
-            :items="parameterNames"
-            :disabled="node.value.isBuiltIn"
+            :value="method.parameters"
+            :items="processInputNames"
+            :disabled="method.isBuiltIn"
             class="mt-3"
             label="Process Input"
             outlined
@@ -191,7 +191,10 @@
               <v-chip
                 v-bind="data.attrs"
                 :input-value="data.selected"
+                color="#FF7F0E"
+                text-color="black"
                 small
+                outlined
               >
                 {{ data.item }}
               </v-chip>
@@ -203,9 +206,9 @@
               >
                 <v-checkbox
                   :label="data.item"
-                  :value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
-                  :input-value="node.value.parameters.findIndex((d) => d === data.item) >= 0"
-                  :disabled="compulsoryParameters.findIndex((d) => d === data.item) >= 0"
+                  :value="method.parameters.findIndex((d) => d === data.item) >= 0"
+                  :input-value="method.parameters.findIndex((d) => d === data.item) >= 0"
+                  :disabled="processInputNamesOfRequired.findIndex((d) => d === data.item) >= 0"
                   class="ma-0"
                   dense
                   hide-details
@@ -218,8 +221,8 @@
         <!-- The display of process output parameters. -->
         <v-list-item>
           <v-autocomplete
-            value="features"
-            :items="['features']"
+            :value="processOutputName"
+            :items="[processOutputName]"
             :class="`mt-3 ${classNameOfProcessOutputWidget}`"
             label="Process Output"
             disabled
@@ -228,8 +231,13 @@
             hide-details
           >
             <template #selection>
-              <v-chip small>
-                features
+              <v-chip
+                color="#FF7F0E"
+                text-color="black"
+                small
+                outlined
+              >
+                {{ processOutputName }}
               </v-chip>
             </template>
           </v-autocomplete>
@@ -247,7 +255,7 @@ import {
 import { FeatureExtractionNode } from './types';
 
 export default Vue.extend({
-  name: 'TheNodeParameterViewFeatureExtraction',
+  name: 'TheNodeDetailsFeatureExtraction',
   props: {
     methods: {
       type: Array as PropType<FeatureExtractionMethod[]>,
@@ -260,13 +268,15 @@ export default Vue.extend({
   },
   data() {
     return {
-      parameterNames: [
+      viewTitle: 'Feature Extraction Instantiation',
+      processInputNames: [
         'dataObjects',
         'labels',
       ],
-      compulsoryParameters: [
+      processInputNamesOfRequired: [
         'dataObjects',
       ],
+      processOutputName: 'features',
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
       classNameOfProcessOutputWidget: 'parameter-panel-process-output',
@@ -274,7 +284,10 @@ export default Vue.extend({
     };
   },
   computed: {
-    menu() {
+    method(): FeatureExtractionMethod {
+      return this.node.value.method;
+    },
+    menuOfMethods() {
       return {
         title: 'Method',
         options: this.methods,
@@ -283,77 +296,77 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickMenuOption(option: FeatureExtractionMethod): void {
-      const { node } = this;
-      this.onEditNode({
-        ...node,
-        value: option,
-      });
-    },
-    onClickEditTitle(): void {
+    onClickEditNodeTitle(): void {
       this.isTitleEditable = true;
     },
     onClickOutsideInputTitle(): void {
       this.isTitleEditable = false;
     },
-    onInputTitle(title: string): void {
+    onInputNodeTitle(title: string): void {
       const { node } = this;
       this.onEditNode({
         ...node,
         title,
       });
     },
-    onInputMethodName(name: string): void {
+    onEditNode(newValue: FeatureExtractionNode): void {
+      this.$emit('edit-node', newValue);
+    },
+    onClickMenuOfMethodsOption(option: FeatureExtractionMethod): void {
       const { node } = this;
       this.onEditNode({
         ...node,
-        value: { ...node.value, name },
+        value: {
+          method: option,
+        },
       });
-      this.onEditMethod({
-        ...node.value,
-        name,
+    },
+    onInputMethodName(name: string): void {
+      const { node, method } = this;
+      this.onEditNode({
+        ...node,
+        value: {
+          method: { ...method, name },
+        },
       });
+      this.onEditMethod({ ...method, name });
     },
     onInputMethodAPI(api: string): void {
-      const { node } = this;
+      const { node, method } = this;
       this.onEditNode({
         ...node,
-        value: { ...node.value, api },
+        value: {
+          method: { ...method, api },
+        },
       });
-      this.onEditMethod({
-        ...node.value,
-        api,
-      });
+      this.onEditMethod({ ...method, api });
     },
-    onClickParameterCheckbox(parameterNames: string[]): void {
-      const { node, compulsoryParameters } = this;
-      const orders = this.parameterNames;
+    onCreateMethod(): void {
+      this.$emit('create-method');
+    },
+    onEditMethod(newValue: FeatureExtractionMethod): void {
+      this.$emit('edit-method', this.node.type, newValue);
+    },
+    onClickParameterCheckbox(processInputNames: string[]): void {
+      const {
+        node,
+        processInputNamesOfRequired,
+        method,
+      } = this;
+      const orders = this.processInputNames;
       const sorted = [
-        ...compulsoryParameters,
-        ...parameterNames.filter((d) => compulsoryParameters.indexOf(d) < 0),
+        ...processInputNamesOfRequired,
+        ...processInputNames.filter((d) => processInputNamesOfRequired.indexOf(d) < 0),
       ].sort((a, b) => (
         orders.indexOf(a) - orders.indexOf(b)
       ));
       this.onEditNode({
         ...node,
         value: {
-          ...node.value,
-          parameters: sorted,
+          method: { ...method, parameters: sorted },
         },
       });
-      this.onEditMethod({
-        ...node.value,
-        parameters: sorted,
-      });
-    },
-    onCreateMethod(): void {
-      this.$emit('create-method');
-    },
-    onEditNode(newValue: FeatureExtractionNode): void {
-      this.$emit('edit-node', newValue);
-    },
-    onEditMethod(newValue: FeatureExtractionMethod): void {
-      this.$emit('edit-method', this.node.type, newValue);
+      this.onEditMethod({ ...method, parameters: sorted });
     },
     onClickRecompute(): void {
       this.$emit('click-recompute', this.node);

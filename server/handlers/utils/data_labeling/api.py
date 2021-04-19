@@ -38,37 +38,3 @@ class DataLabelingAPI(GenericPipeline):
         )
         query_indices = query_indices.tolist()
         return query_indices
-
-    @staticmethod
-    def update_model(data_objects: List[dict],
-                     labels: List[Label],
-                     statuses: List[str],
-                     model: Dict[str, Any]) -> Dict[str, str]:
-        # Labels are required to be strings.
-        labels = np.array(labels, dtype=str)
-        statuses = np.array(statuses, dtype=str)
-        predictor = load(ObjectId(model['predictor']))\
-            if model['predictor'] is not None else None
-        sampler = load(ObjectId(model['sampler']))\
-            if model['sampler'] is not None else None
-        model = Model(
-            type=model['type'],
-            sampling_strategy=model['samplingStrategy'],
-            predictor=predictor,
-            sampler=sampler,
-        )
-        model_updated = DataLabelingPipeline.update_model(
-            data_objects=data_objects,
-            labels=labels,
-            statuses=statuses,
-            model=model,
-        )
-        predictor_details = save(data=model_updated.predictor)
-        sampler_details = save(data=model_updated.sampler)
-        model_updated = {
-            'type': model_updated.type,
-            'samplingStrategy': model_updated.sampling_strategy,
-            'predictor': str(predictor_details['inserted_id']),
-            'sampler': str(sampler_details['inserted_id']),
-        }
-        return model_updated

@@ -19,21 +19,21 @@
         <template v-if="showDatasetOverview">
           <v-col
             :cols="12/nViews"
-            :class="(singleObjectDisplayEnabled
-              || gridMatrixEnabled) ? 'pr-1' : ''"
+            :class="(enableSingleObjectDisplay
+              || enableGridMatrix) ? 'pr-1' : ''"
           >
             <TheProjectionView style="height: 100%;" />
           </v-col>
         </template>
-        <template v-if="gridMatrixEnabled">
+        <template v-if="enableGridMatrix">
           <v-col
             :cols="12/nViews"
-            :class="singleObjectDisplayEnabled ? 'pr-1' : ''"
+            :class="enableSingleObjectDisplay ? 'pr-1' : ''"
           >
             <TheCardMatrixView style="height: 100%;" />
           </v-col>
         </template>
-        <template v-if="singleObjectDisplayEnabled">
+        <template v-if="enableSingleObjectDisplay">
           <v-col
             :cols="12/nViews"
           >
@@ -55,6 +55,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
+import { InteractiveLabelingMethod } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
@@ -75,18 +76,25 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
   computed: {
     ...mapState('workflow', [
       'showDatasetOverview',
-      'singleObjectDisplayEnabled',
-      'gridMatrixEnabled',
+      'interactiveLabelingMethod',
     ]),
+    enableSingleObjectDisplay(): boolean {
+      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      return methods.findIndex((d) => d.id === 'Single-Object-Display') >= 0;
+    },
+    enableGridMatrix(): boolean {
+      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      return methods.findIndex((d) => d.id === 'Grid-Matrix') >= 0;
+    },
     nViews(): number {
       const {
         showDatasetOverview,
-        singleObjectDisplayEnabled,
-        gridMatrixEnabled,
+        enableSingleObjectDisplay,
+        enableGridMatrix,
       } = this;
       return Number(showDatasetOverview)
-        + Number(singleObjectDisplayEnabled)
-        + Number(gridMatrixEnabled);
+        + Number(enableSingleObjectDisplay)
+        + Number(enableGridMatrix);
     },
   },
 })

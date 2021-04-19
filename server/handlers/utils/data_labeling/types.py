@@ -14,7 +14,7 @@ class Status():
     Skipped = 'Skipped'  # the data object is viewed but skipped
     Labeled = 'Labeled'  # the data object is labeled
 
-class DefaultLabelingMethodType():
+class BuiltInModelType():
     """The type of a default labeling method."""
     # pylint: disable=too-few-public-methods
     
@@ -54,7 +54,7 @@ class Model(NamedTuple):
         if it can serve both purposes.
     """
 
-    # type: DefaultLabelingMethodType
+    # type: BuiltInModelType
     sampling_strategy: Union[SamplingStrategyType, None] = None
     predictor: Union[BaseEstimator, None] = None
     sampler: Union[BaseEstimator, None] = None

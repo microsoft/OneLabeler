@@ -126,6 +126,7 @@ export default Vue.extend({
     ...mapState('workflow', [
       'defaultLabelingMethod',
       'defaultLabelingModel',
+      'interimModelTrainingMethod',
     ]),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
     nDataObjects(): number {
@@ -165,7 +166,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('workflow', [
-      'updateModel',
+      'executeInterimModelTraining',
       'sampleDataObjectsManual',
       'executeDefaultLabeling',
     ]),
@@ -175,7 +176,9 @@ export default Vue.extend({
       const indices = uuids
         .map((uuid) => uuidToIdx[uuid]);
       await this.sampleDataObjectsManual(indices);
-      // await this.updateModel();
+      await this.executeInterimModelTraining({
+        method: this.interimModelTrainingMethod,
+      });
       await this.executeDefaultLabeling({
         method: this.defaultLabelingMethod,
         model: this.defaultLabelingModel,

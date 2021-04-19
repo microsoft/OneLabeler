@@ -321,6 +321,7 @@ export default Vue.extend({
       'featureExtractionMethod',
       'defaultLabelingMethod',
       'defaultLabelingModel',
+      'interimModelTrainingMethod',
     ]),
     disableSaveButton(): boolean {
       return this.dataObjects.length === 0;
@@ -382,7 +383,7 @@ export default Vue.extend({
     ...mapActions('workflow', [
       'extractDataObjects',
       'executeFeatureExtraction',
-      'updateModel',
+      'executeInterimModelTraining',
       'sampleDataObjectsAlgorithmic',
       'executeDefaultLabeling',
     ]),
@@ -407,7 +408,9 @@ export default Vue.extend({
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
       await this.extractDataObjects(files);
-      await this.executeFeatureExtraction(this.featureExtractionMethod);
+      await this.executeFeatureExtraction({
+        method: this.featureExtractionMethod,
+      });
       this.setMessage({
         content: 'Project Data Uploaded.',
         type: MessageType.Success,
@@ -479,11 +482,13 @@ export default Vue.extend({
           type: MessageType.Success,
         });
       } else {
-        await this.updateModel();
-        await this.executeDefaultLabeling(
-          this.defaultLabelingMethod,
-          this.defaultLabelingModel,
-        );
+        await this.executeInterimModelTraining({
+          method: this.interimModelTrainingMethod,
+        });
+        await this.executeDefaultLabeling({
+          method: this.defaultLabelingMethod,
+          model: this.defaultLabelingModel,
+        });
       }
     },
     onClickUndo(): void {

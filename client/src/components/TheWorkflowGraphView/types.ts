@@ -2,10 +2,11 @@ import {
   LabelTaskType,
   FeatureExtractionMethod,
   DefaultLabelingMethod,
+  InterimModelTrainingMethod,
+  InteractiveLabelingMethod,
   SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
-  InterimModelTrainingType,
   ModelService,
 } from '@/commons/types';
 
@@ -49,7 +50,9 @@ export interface FeatureExtractionNode extends BaseNode {
   id: string;
   title: string;
   type: NodeTypes;
-  value: FeatureExtractionMethod;
+  value: {
+    method: FeatureExtractionMethod,
+  };
 }
 
 export interface DefaultLabelingNode extends BaseNode {
@@ -60,6 +63,24 @@ export interface DefaultLabelingNode extends BaseNode {
     method: DefaultLabelingMethod,
     model?: ModelService,
   };
+}
+
+export interface InterimModelTrainingNode extends BaseNode {
+  id: string;
+  title: string;
+  type: NodeTypes;
+  value: {
+    method: InterimModelTrainingMethod,
+  };
+}
+
+export interface InteractiveLabelingNode extends BaseNode {
+  id: string;
+  title: string;
+  type: NodeTypes;
+  value: {
+    method: InteractiveLabelingMethod,
+  }[];
 }
 
 export interface DataObjectSelectionNode extends BaseNode {
@@ -83,18 +104,6 @@ export interface TaskTransformationNode extends BaseNode {
   };
 }
 
-export interface InteractiveLabelingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    singleObjectDisplayEnabled: boolean,
-    gridMatrixEnabled: boolean,
-    itemsPerRow: number,
-    itemsPerCol: number,
-  };
-}
-
 export interface StoppageAnalysisNode extends BaseNode {
   id: string;
   title: string;
@@ -102,16 +111,6 @@ export interface StoppageAnalysisNode extends BaseNode {
   value: {
     method: StoppageAnalysisType,
     api: string,
-  };
-}
-
-export interface InterimModelTrainingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    enabled: boolean,
-    method: InterimModelTrainingType,
   };
 }
 

@@ -1,5 +1,3 @@
-import ObjectId from 'bson-objectid';
-
 /** The types of data objects. */
 export enum DataType {
   Image = 'Image',
@@ -126,6 +124,16 @@ export interface DataObjectSelectionMethod {
   id: string;
 }
 
+/** The interface of an interim model training method. */
+export interface InterimModelTrainingMethod {
+  name: string;
+  serverless: boolean;
+  api: string; // for serverless methods, the api is the method's unique name
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
+}
+
 /** The enum of data object sampling strategy types. */
 export enum SamplingStrategyType {
   Random = 'Random',
@@ -149,6 +157,15 @@ export interface DefaultLabelingMethod {
   id: string;
 }
 
+/** The interface of an interactive labeling method. */
+export interface InteractiveLabelingMethod {
+  name: string;
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
+  configuration?: Record<string, any>;
+}
+
 /** The enum of task transformation types. */
 export enum TaskTransformationType {
   DirectLabeling = 'DirectLabeling',
@@ -159,16 +176,17 @@ export enum StoppageAnalysisType {
   AllChecked = 'AllChecked',
 }
 
-/** The enum of interim model training types. */
-export enum InterimModelTrainingType {
-  Retrain = 'Retrain',
-}
-
 /** The enum of projection method types. */
 export enum ProjectionMethodType {
   PCA = 'PCA',
   MDS = 'MDS',
   TSNE = 't-SNE',
+}
+
+/** The configuration of grid matrix. */
+export interface ConfigurationOfGridMatrix {
+  nRows: number;
+  nColumns: number;
 }
 
 /** The interface of default labeling and active sampling model. */
