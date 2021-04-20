@@ -26,7 +26,7 @@ class BuiltInModelType():
     LabelSpreading = 'LabelSpreading'
     RestrictedBoltzmannMachine = 'RestrictedBoltzmannMachine'
 
-class SamplingStrategyType():
+class BuiltInSamplingStrategyType():
     """The type of a sampling strategy."""
     # pylint: disable=too-few-public-methods
 
@@ -39,22 +39,3 @@ class SamplingStrategyType():
     EntropyDiversityDensity = 'EntropyDiversityDensity'
     LeastConfident = 'LeastConfident'
     SmallestMargin = 'SmallestMargin'
-
-class Model(NamedTuple):
-    """
-    The default labeling and active sampling model.
-    
-    Attributes
-    ----------
-    predictor : Union[BaseEstimator, None]
-        The part of the model responsible for prediction.
-    sampler : Union[BaseEstimator, None]
-        The part of the model responsible for sampling.
-        The predictor and sampler can possibly refer to the same estimator,
-        if it can serve both purposes.
-    """
-
-    # type: BuiltInModelType
-    sampling_strategy: Union[SamplingStrategyType, None] = None
-    predictor: Union[BaseEstimator, None] = None
-    sampler: Union[BaseEstimator, None] = None

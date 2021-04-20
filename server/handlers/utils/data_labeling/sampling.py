@@ -11,7 +11,7 @@ from modAL.uncertainty import (classifier_uncertainty,
                                classifier_margin,
                                classifier_entropy)
 
-from .types import Model, Status
+from .types import Status
 
 ListLike = Union[List[Any], np.ndarray]
 

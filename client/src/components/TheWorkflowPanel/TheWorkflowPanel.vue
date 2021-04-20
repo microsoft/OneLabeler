@@ -92,14 +92,12 @@ import {
   IMessage,
   MessageType,
   LabelTaskType,
-  SamplingStrategyType,
 } from '@/commons/types';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import VUploadButton from './VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 
 type WorkflowConfigData = {
-  samplingStrategy: SamplingStrategyType,
   nBatch: number,
   defaultLabelingMethod: DefaultLabelingMethod,
   showDatasetOverview: boolean,
@@ -164,34 +162,22 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('workflow', [
-      'samplingStrategy',
-      'showDatasetOverview',
       'defaultLabelingMethod',
-      'nBatch',
     ]),
   },
   methods: {
     ...mapActions(['setMessage']),
     ...mapActions('workflow', [
-      'setSamplingStrategy',
-      'setNBatch',
       'setDefaultLabelingMethod',
-      'setShowDatasetOverview',
       'setLabelTasks',
       'resetState',
     ]),
     onClickExport(): void {
       const {
-        samplingStrategy,
-        showDatasetOverview,
         defaultLabelingMethod,
-        nBatch,
       } = this;
       saveObjectAsJSONFile({
-        samplingStrategy,
-        showDatasetOverview,
         defaultLabelingMethod,
-        nBatch,
       }, 'workflow.config.json');
     },
     onClickReset(): void {
@@ -205,17 +191,8 @@ export default Vue.extend({
       if (file === null || file === undefined) return;
       const config = await JSONFileToObject(file);
       if (validate(config)) {
-        if ('samplingStrategy' in config) {
-          this.setSamplingStrategy(config.samplingStrategy);
-        }
         if ('defaultLabelingMethod' in config) {
           this.setDefaultLabelingMethod(config.defaultLabelingMethod);
-        }
-        if ('showDatasetOverview' in config) {
-          this.setShowDatasetOverview(config.showDatasetOverview);
-        }
-        if ('nBatch' in config) {
-          this.setNBatch(config.nBatch);
         }
         if ('labelTasks' in config) {
           this.setLabelTasks(config.labelTasks);

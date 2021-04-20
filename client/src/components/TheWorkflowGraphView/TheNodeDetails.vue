@@ -4,14 +4,17 @@
     class="pa-0"
     fill-height
   >
-    <TheNodeDetailsFeatureExtraction
+    <TheNodeDetailsDataObjectSelection
       v-if="(node !== null)
-        && (node.type === NodeTypes.FeatureExtraction)"
-      :methods="featureExtractionMethods"
+        && (node.type === NodeTypes.DataObjectSelection)"
+      :methods="dataObjectSelectionMethods"
+      :models="modelServices.filter((d) => d.usableAsSampler)"
       :node="node"
       @edit-node="onEditNode"
       @create-method="onCreateMethod"
       @edit-method="onEditMethod"
+      @create-model="onCreateModel"
+      @edit-model="onEditModel"
       @click-recompute="onClickRecompute"
     />
     <TheNodeDetailsDefaultLabeling
@@ -27,11 +30,20 @@
       @edit-model="onEditModel"
       @click-recompute="onClickRecompute"
     />
-    <TheNodeDetailsInterimModelTraining
+    <TheNodeDetailsFeatureExtraction
       v-else-if="(node !== null)
-        && (node.type === NodeTypes.InterimModelTraining)"
-      :methods="interimModelTrainingMethods"
-      :models="modelServices"
+        && (node.type === NodeTypes.FeatureExtraction)"
+      :methods="featureExtractionMethods"
+      :node="node"
+      @edit-node="onEditNode"
+      @create-method="onCreateMethod"
+      @edit-method="onEditMethod"
+      @click-recompute="onClickRecompute"
+    />
+    <TheNodeDetailsInteractiveLabeling
+      v-else-if="(node !== null)
+        && (node.type === NodeTypes.InteractiveLabeling)"
+      :methods="interactiveLabelingMethods"
       :node="node"
       @edit-node="onEditNode"
       @create-method="onCreateMethod"
@@ -40,10 +52,11 @@
       @edit-model="onEditModel"
       @click-recompute="onClickRecompute"
     />
-    <TheNodeDetailsInteractiveLabeling
+    <TheNodeDetailsInterimModelTraining
       v-else-if="(node !== null)
-        && (node.type === NodeTypes.InteractiveLabeling)"
-      :methods="interactiveLabelingMethods"
+        && (node.type === NodeTypes.InterimModelTraining)"
+      :methods="interimModelTrainingMethods"
+      :models="modelServices"
       :node="node"
       @edit-node="onEditNode"
       @create-method="onCreateMethod"
@@ -107,7 +120,6 @@ import Vue, { PropType } from 'vue';
 import { mapState } from 'vuex';
 import {
   LabelTaskType,
-  SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   FeatureExtractionMethod,
@@ -115,10 +127,11 @@ import {
 } from '@/commons/types';
 import VMenusFlat from './VMenusFlat.vue';
 import VMenusGrouped from './VMenusGrouped.vue';
-import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
+import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
 import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
-import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
+import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
 import { WorkflowNode, NodeTypes } from './types';
 
 const menuMapper = {
@@ -143,51 +156,6 @@ const menuMapper = {
   },
   [NodeTypes.DataType]: undefined,
   [NodeTypes.LabelIdeation]: undefined,
-  [NodeTypes.DataObjectSelection]: {
-    entries: {
-      strategy: {
-        title: 'Strategy',
-        options: [
-          SamplingStrategyType.Random,
-          SamplingStrategyType.Cluster,
-          SamplingStrategyType.DenseAreas,
-          SamplingStrategyType.ClusterCentroids,
-          SamplingStrategyType.Entropy,
-          SamplingStrategyType.LeastConfident,
-          SamplingStrategyType.SmallestMargin,
-        ],
-        optionsText: [
-          'Random',
-          'Cluster',
-          'Dense Areas',
-          'Cluster Centroids',
-          'Entropy',
-          'Least Confident',
-          'Smallest Margin',
-        ],
-      },
-      nBatch: {
-        title: 'Selection Batch Size',
-        options: [1, 4, 16, 32, 48, 64, 96],
-        optionsText: ['1', '4', '16', '32', '48', '64', '96'],
-      },
-      projectionAidEnabled: {
-        title: 'Projection Support Enabled',
-        options: [false, true],
-        optionsText: ['No', 'Yes'],
-      },
-    },
-    hierarchy: {
-      algorithmicSampling: {
-        title: 'Algorithmic Sampling',
-        menuKeys: ['strategy', 'nBatch'],
-      },
-      userSampling: {
-        title: 'User Sampling',
-        menuKeys: ['projectionAidEnabled'],
-      },
-    },
-  },
   [NodeTypes.TaskTransformation]: {
     entries: {
       method: {
@@ -234,10 +202,11 @@ export default Vue.extend({
   components: {
     VMenusFlat,
     VMenusGrouped,
-    TheNodeDetailsFeatureExtraction,
+    TheNodeDetailsDataObjectSelection,
     TheNodeDetailsDefaultLabeling,
-    TheNodeDetailsInterimModelTraining,
+    TheNodeDetailsFeatureExtraction,
     TheNodeDetailsInteractiveLabeling,
+    TheNodeDetailsInterimModelTraining,
   },
   props: {
     node: {
@@ -253,10 +222,11 @@ export default Vue.extend({
   computed: {
     ...mapState('workflow', [
       'modelServices',
-      'featureExtractionMethods',
+      'dataObjectSelectionMethods',
       'defaultLabelingMethods',
-      'interimModelTrainingMethods',
+      'featureExtractionMethods',
       'interactiveLabelingMethods',
+      'interimModelTrainingMethods',
     ]),
     menuTitle(): string {
       const { type } = this.node;

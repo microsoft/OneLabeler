@@ -169,7 +169,6 @@ export const resetState = (
     classes,
     labels,
     statuses,
-    model,
     unlabeledMark,
     featureNames,
     queryIndices,
@@ -180,7 +179,6 @@ export const resetState = (
   commit(types.SET_CLASSES, classes);
   commit(types.SET_LABELS, labels);
   commit(types.SET_STATUSES, statuses);
-  commit(types.SET_MODEL, model);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES, featureNames);
   commit(types.SET_QUERY_INDICES, queryIndices);

@@ -16,7 +16,7 @@
         class="pa-1"
         no-gutters
       >
-        <template v-if="showDatasetOverview">
+        <template v-if="enableProjectionOverview">
           <v-col
             :cols="12/nViews"
             :class="(enableSingleObjectDisplay
@@ -59,7 +59,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
-import { InteractiveLabelingMethod } from '@/commons/types';
+import { DataObjectSelectionMethod, InteractiveLabelingMethod } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
@@ -79,9 +79,13 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
   },
   computed: {
     ...mapState('workflow', [
-      'showDatasetOverview',
+      'dataObjectSelectionMethod',
       'interactiveLabelingMethod',
     ]),
+    enableProjectionOverview(): boolean {
+      const methods = this.dataObjectSelectionMethod as DataObjectSelectionMethod[];
+      return methods.findIndex((d) => d.id === 'Projection') >= 0;
+    },
     enableSingleObjectDisplay(): boolean {
       const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
       return methods.findIndex((d) => d.id === 'Single-Object-Display') >= 0;
@@ -102,11 +106,11 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     },
     nViews(): number {
       const {
-        showDatasetOverview,
+        enableProjectionOverview,
         enableSingleObjectDisplay,
         enableGridMatrix,
       } = this;
-      return Number(showDatasetOverview)
+      return Number(enableProjectionOverview)
         + Number(enableSingleObjectDisplay)
         + Number(enableGridMatrix);
     },

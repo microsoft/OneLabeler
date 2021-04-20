@@ -167,7 +167,7 @@ export default Vue.extend({
   methods: {
     ...mapActions('workflow', [
       'executeInterimModelTraining',
-      'sampleDataObjectsManual',
+      'executeDataObjectSelectionManual',
       'executeDefaultLabeling',
     ]),
     async onSelectUuids(uuids: string[]): Promise<void> {
@@ -175,7 +175,7 @@ export default Vue.extend({
       const { uuidToIdx } = this;
       const indices = uuids
         .map((uuid) => uuidToIdx[uuid]);
-      await this.sampleDataObjectsManual(indices);
+      await this.executeDataObjectSelectionManual(indices);
       await this.executeInterimModelTraining({
         method: this.interimModelTrainingMethod,
       });

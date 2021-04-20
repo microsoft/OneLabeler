@@ -99,6 +99,7 @@ export interface ModelService {
   type: string,
   isBuiltIn: boolean;
   objectId: string;
+  usableAsSampler: boolean;
   // id: string;
   // api: string;
   // isLocal: boolean;
@@ -118,10 +119,12 @@ export interface FeatureExtractionMethod {
 export interface DataObjectSelectionMethod {
   name: string;
   serverless: boolean;
+  algorithmic: boolean;
   api: string; // for serverless methods, the api is the method's unique name
   parameters: Array<string>;
   isBuiltIn: boolean;
   id: string;
+  configuration?: Record<string, any>;
 }
 
 /** The interface of an interim model training method. */
@@ -132,19 +135,6 @@ export interface InterimModelTrainingMethod {
   parameters: Array<string>;
   isBuiltIn: boolean;
   id: string;
-}
-
-/** The enum of data object sampling strategy types. */
-export enum SamplingStrategyType {
-  Random = 'Random',
-  Cluster = 'Cluster',
-  DenseAreas = 'DenseAreas',
-  ClusterCentroids = 'ClusterCentroids',
-  Entropy = 'Entropy',
-  EntropyDiversity = 'EntropyDiversity',
-  EntropyDiversityDensity = 'EntropyDiversityDensity',
-  LeastConfident = 'LeastConfident',
-  SmallestMargin = 'SmallestMargin',
 }
 
 /** The interface of an algorithmic default labeling method. */
@@ -181,22 +171,4 @@ export enum ProjectionMethodType {
   PCA = 'PCA',
   MDS = 'MDS',
   TSNE = 't-SNE',
-}
-
-/** The configuration of grid matrix. */
-export interface ConfigurationOfGridMatrix {
-  nRows: number;
-  nColumns: number;
-}
-
-/** The interface of default labeling and active sampling model. */
-export interface IModel {
-  /** The default labeling model type. */
-  type: DefaultLabelingMethod;
-  /** The data object sampling strategy. */
-  samplingStrategy: SamplingStrategyType;
-  /** The key to the default labeling model stored in the backend. */
-  predictor: string | null;
-  /** The key to the sampling model stored in the backend. */
-  sampler: string | null;
 }

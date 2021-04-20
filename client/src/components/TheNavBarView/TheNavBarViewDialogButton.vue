@@ -2,7 +2,7 @@
   <v-dialog
     v-model="dialog"
     persistent
-    max-width="1400px"
+    max-width="1700px"
     content-class="rounded-0"
   >
     <template #activator="{ on }">

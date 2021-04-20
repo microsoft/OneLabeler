@@ -11,7 +11,6 @@ import { randomChoice } from '@/plugins/random';
 import {
   IDataObject,
   IImage,
-  IModel,
   Label,
   Status,
   ModelService,
@@ -156,7 +155,7 @@ export const dataObjectSelection = showProgressBar(async (
   labels: Label[],
   statuses: Status[],
   nBatch: number,
-  model?: IModel,
+  model?: ModelService,
   dataObjects?: IDataObject[],
 ): Promise<number[]> => {
   let queryIndices = null;
@@ -182,7 +181,7 @@ export const dataObjectSelection = showProgressBar(async (
   } else {
     queryIndices = (
       await axios.post(
-        formatter(SERVER_PORT, 'selection'),
+        method.api,
         JSON.stringify({
           labels,
           statuses,
@@ -212,7 +211,7 @@ export const interimModelTraining = showProgressBar(async (
   dataObjects: IDataObject[] | null = null,
   labels: Label[] | null = null,
   statuses: Status[] | null = null,
-): Promise<IModel> => {
+): Promise<ModelService> => {
   let modelUpdated = null;
   if (method.isBuiltIn && (method.api === 'Static')) {
     modelUpdated = model;

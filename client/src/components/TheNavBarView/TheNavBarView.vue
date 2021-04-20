@@ -116,28 +116,30 @@
       vertical
     />
 
-    <!-- The start data labeling button. -->
-    <v-btn
-      title="Next Batch (Ctrl + ->)"
-      color="white"
-      icon
-      tile
-      small
-      :disabled="disableNextBatchButton"
-      @click="onClickNextBatch"
-    >
-      <v-icon
-        aria-hidden="true"
+    <template v-if="dataObjectSelectionAlgorithmicEnabled">
+      <!-- The start data labeling button. -->
+      <v-btn
+        title="Next Batch (Ctrl + ->)"
+        color="white"
+        icon
+        tile
         small
+        :disabled="disableNextBatchButton"
+        @click="onClickNextBatch"
       >
-        $vuetify.icons.values.start
-      </v-icon>
-    </v-btn>
+        <v-icon
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.start
+        </v-icon>
+      </v-btn>
 
-    <v-divider
-      class="app-header-divider"
-      vertical
-    />
+      <v-divider
+        class="app-header-divider"
+        vertical
+      />
+    </template>
     <v-spacer />
 
     <!-- The configuration button. -->
@@ -160,6 +162,7 @@ import {
   ILabelGeometricObject,
   MessageType,
   Status,
+  DataObjectSelectionMethod,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -322,6 +325,8 @@ export default Vue.extend({
       'defaultLabelingMethod',
       'defaultLabelingModel',
       'interimModelTrainingMethod',
+      'dataObjectSelectionMethod',
+      'dataObjectSelectionModel',
     ]),
     disableSaveButton(): boolean {
       return this.dataObjects.length === 0;
@@ -356,6 +361,10 @@ export default Vue.extend({
       }
       return '';
     },
+    dataObjectSelectionAlgorithmicEnabled(): boolean {
+      return (this.dataObjectSelectionMethod as DataObjectSelectionMethod[])
+        .findIndex((d) => d.algorithmic) >= 0;
+    },
   },
   created(): void {
     // Bind keyboard events.
@@ -384,7 +393,7 @@ export default Vue.extend({
       'extractDataObjects',
       'executeFeatureExtraction',
       'executeInterimModelTraining',
-      'sampleDataObjectsAlgorithmic',
+      'executeDataObjectSelectionAlgorithmic',
       'executeDefaultLabeling',
     ]),
     onKey(e: KeyboardEvent): void {
@@ -401,8 +410,10 @@ export default Vue.extend({
       }
       // shortcut for next batch: Ctrl + ArrowRight
       if (!this.disableNextBatchButton && key === 'ArrowRight' && ctrlKey) {
-        e.preventDefault();
-        this.onClickNextBatch();
+        if (this.dataObjectSelectionAlgorithmicEnabled) {
+          e.preventDefault();
+          this.onClickNextBatch();
+        }
       }
     },
     async onNewProject(files: FileList): Promise<void> {
@@ -475,7 +486,10 @@ export default Vue.extend({
       this.resetState();
     },
     async onClickNextBatch(): Promise<void> {
-      await this.sampleDataObjectsAlgorithmic();
+      await this.executeDataObjectSelectionAlgorithmic({
+        method: this.dataObjectSelectionMethod.find((d) => d.algorithmic),
+        model: this.dataObjectSelectionModel,
+      });
       if (this.queryIndices.length === 0) {
         this.setMessage({
           content: 'All Data Objects Labeled.',

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <svg
-      style="height: 500px; width: 100%;"
+      style="height: 600px; width: 100%;"
     >
       <g
         v-for="(node, i) in graph.nodes"
@@ -141,13 +141,16 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import {
-  SamplingStrategyType,
-} from '@/commons/types';
 import { WorkflowNode, NodeTypes } from './types';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',
+  props: {
+    graph: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       rectWidth: 80,
@@ -158,23 +161,14 @@ export default Vue.extend({
       rightClickedNode: null as null | WorkflowNode,
     };
   },
-  props: {
-    graph: {
-      type: Object,
-      default: null,
-    },
-  },
   computed: {
     ...mapState('workflow', [
-      'samplingStrategy',
-      'showDatasetOverview',
-      'defaultLabelingMethod',
       'taskTransformation',
       'stoppageAnalysis',
+      'dataObjectSelectionMethod',
+      'defaultLabelingMethod',
+      'interactiveLabelingMethod',
       'interimModelTrainingMethod',
-      'nBatch',
-      'singleObjectDisplayEnabled',
-      'gridMatrixEnabled',
     ]),
   },
   methods: {
@@ -207,16 +201,13 @@ export default Vue.extend({
     },
     isEnabledNode(node: WorkflowNode): boolean {
       if (node.type === NodeTypes.DataObjectSelection) {
-        return (this.samplingStrategy !== SamplingStrategyType.Random)
-          || this.showDatasetOverview
-          || (this.nBatch !== 1);
+        return this.dataObjectSelectionMethod.length !== 0;
       }
       if (node.type === NodeTypes.DefaultLabeling) {
         return this.defaultLabelingMethod.api !== 'Null';
       }
       if (node.type === NodeTypes.InteractiveLabeling) {
-        return (this.singleObjectDisplayEnabled !== false)
-         || (this.gridMatrixEnabled !== false);
+        return this.interactiveLabelingMethod.length !== 0;
       }
       if (node.type === NodeTypes.InterimModelTraining) {
         return this.interimModelTrainingMethod.api !== 'Static';

@@ -99,26 +99,35 @@
                     </v-chip>
                   </template>
                   <template #item="data">
-                    <v-checkbox
-                      :label="data.item.name"
-                      :value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
-                      :input-value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
-                      class="my-0 parameter-panel-checkbox"
-                      dense
-                      hide-details
-                    />
-                    <v-list-item-content
-                      dense
-                      :class="classNameOfCheckbox"
+                    <v-list-item-title>
+                      <v-checkbox
+                        :label="data.item.name"
+                        :value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
+                        :input-value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
+                        class="my-0 parameter-panel-checkbox"
+                        dense
+                        hide-details
+                      />
+                    </v-list-item-title>
+                    <p
+                      v-if="!data.item.algorithmic"
+                      class="subtitle-2 text-right ma-1 grey--text"
                     >
-                      <p
-                        v-if="data.item.isBuiltIn"
-                        class="subtitle-2 text-right grey--text my-0"
-                        style="width: 10em"
-                      >
-                        built-in
-                      </p>
-                    </v-list-item-content>
+                      interface
+                    </p>
+                    <p
+                      v-if="data.item.serverless"
+                      class="subtitle-2 text-right ma-1 grey--text"
+                    >
+                      serverless
+                    </p>
+                    <p
+                      v-if="data.item.isBuiltIn"
+                      class="subtitle-2 text-right grey--text ma-1"
+                      style="white-space: nowrap"
+                    >
+                      built-in
+                    </p>
                   </template>
                 </v-autocomplete>
               </v-col>
@@ -218,11 +227,102 @@
             </v-autocomplete>
           </v-list-item>
 
+          <template v-if="method.parameters.findIndex((d) => d === 'model') >= 0">
+            <v-card
+              class="mx-4 mb-2"
+              outlined
+            >
+              <!-- The model used as input to the process. -->
+              <v-list-item
+                class="py-0"
+              >
+                <v-list-item-title
+                  class="subtitle-2"
+                  style="user-select: none"
+                >
+                  Model
+                </v-list-item-title>
+                <v-menu offset-y>
+                  <template #activator="{ on }">
+                    <v-btn
+                      class="subtitle-2 text-none"
+                      style="border-radius: 2px"
+                      small
+                      v-on="on"
+                    >
+                      {{ model === undefined ? '' : model.name }}
+                    </v-btn>
+                  </template>
+                  <v-list dense>
+                    <v-list-item
+                      v-for="(text, modelIdx) in menuOfModels.optionsText"
+                      :key="modelIdx"
+                      @click="onClickMenuOfModelsOption(method, menuOfModels.options[modelIdx])"
+                    >
+                      <v-list-item-title class="subtitle-2">
+                        {{ text }}
+                      </v-list-item-title>
+                      <p
+                        v-if="menuOfModels.options[modelIdx].serverless"
+                        class="subtitle-2 text-right ma-1 grey--text"
+                        style="width: 5em"
+                      >
+                        serverless
+                      </p>
+                      <p
+                        v-if="menuOfModels.options[modelIdx].isBuiltIn"
+                        class="subtitle-2 text-right ma-1 grey--text"
+                        style="width: 6em"
+                      >
+                        built-in
+                      </p>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-list-item>
+
+              <template v-if="model !== undefined">
+                <!-- The name of the feature extraction method. -->
+                <v-list-item>
+                  Model Name
+                  <v-text-field
+                    :value="model.name"
+                    :disabled="model.isBuiltIn"
+                    class="ma-0 pl-4 pt-1 subtitle-2"
+                    style="padding-bottom: 6px !important"
+                    type="text"
+                    dense
+                    hide-details
+                    single-line
+                    @input="onInputModelName(method, $event)"
+                  />
+                </v-list-item>
+
+                <!-- The url of the model. -->
+                <v-list-item>
+                  Model Key
+                  <v-text-field
+                    :value="model.serverless ? 'serverless' : model.objectId"
+                    :disabled="model.isBuiltIn"
+                    class="ma-0 pl-4 pt-1 subtitle-2"
+                    style="padding-bottom: 6px !important"
+                    type="text"
+                    dense
+                    hide-details
+                    single-line
+                    @input="onInputModelAPI(method, $event)"
+                  />
+                </v-list-item>
+              </template>
+            </v-card>
+          </template>
+
           <template v-if="method.configuration !== undefined">
             <v-card
               class="mx-4 mb-2"
               outlined
             >
+              <!-- The configuration of the method. -->
               <v-list-item
                 v-for="(entry, key) in method.configuration"
                 :key="key"
@@ -272,34 +372,40 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
-  InteractiveLabelingMethod,
+  ModelService,
+  DataObjectSelectionMethod,
 } from '@/commons/types';
-import { InteractiveLabelingNode } from './types';
+import { DataObjectSelectionNode } from './types';
 
 export default Vue.extend({
-  name: 'TheNodeDetailsInteractiveLabeling',
+  name: 'TheNodeDetailsDataObjectSelection',
   props: {
+    models: {
+      type: Array as PropType<ModelService[]>,
+      default: () => [],
+    },
     methods: {
-      type: Array as PropType<InteractiveLabelingMethod[]>,
+      type: Array as PropType<DataObjectSelectionMethod[]>,
       default: () => [],
     },
     node: {
-      type: Object as PropType<InteractiveLabelingNode>,
+      type: Object as PropType<DataObjectSelectionNode>,
       default: null,
     },
   },
   data() {
     return {
-      viewTitle: 'Interactive Labeling Instantiation',
+      viewTitle: 'Data Object Selection Instantiation',
       processInputNames: [
-        'dataObjects',
+        'labels',
+        'features',
+        'model',
         'samples',
       ],
       processInputNamesOfRequired: [
-        'dataObjects',
-        'samples',
+        'labels',
       ],
-      processOutputName: 'labels',
+      processOutputName: 'samples',
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
       classNameOfProcessOutputWidget: 'parameter-panel-process-output',
@@ -307,14 +413,37 @@ export default Vue.extend({
     };
   },
   computed: {
-    selectedMethods(): InteractiveLabelingMethod[] {
+    selectedMethods(): DataObjectSelectionMethod[] {
       return this.node.value.map((d) => d.method);
+    },
+    model(): ModelService | undefined {
+      const algorithmicInstantiation = this.node.value
+        .find((d) => d.model !== undefined);
+      if (algorithmicInstantiation === undefined) {
+        return undefined;
+      }
+      return algorithmicInstantiation.model;
+      /*
+      const algorithmicInstantiation = this.node.value
+        .find((d) => d.method.parameters.findIndex((param) => param === 'model') >= -1);
+      if (algorithmicInstantiation === undefined) {
+        return undefined;
+      }
+      return algorithmicInstantiation.model;
+      */
     },
     menuOfMethods() {
       return {
         title: 'Method',
         options: this.methods,
         optionsText: this.methods.map((d) => d.name),
+      };
+    },
+    menuOfModels() {
+      return {
+        title: 'Models',
+        options: this.models,
+        optionsText: this.models.map((d) => d.name),
       };
     },
   },
@@ -332,10 +461,10 @@ export default Vue.extend({
         title,
       });
     },
-    onEditNode(newValue: InteractiveLabelingNode): void {
+    onEditNode(newValue: DataObjectSelectionNode): void {
       this.$emit('edit-node', newValue);
     },
-    onClickMenuOfMethodsOption(options: InteractiveLabelingMethod[]): void {
+    onClickMenuOfMethodsOption(options: DataObjectSelectionMethod[]): void {
       const { node } = this;
       this.onEditNode({
         ...node,
@@ -343,7 +472,7 @@ export default Vue.extend({
       });
     },
     onClickMethodConfiguration(
-      method: InteractiveLabelingMethod,
+      method: DataObjectSelectionMethod,
       configurationName: string,
       option: { value: unknown, text: string },
     ): void {
@@ -371,8 +500,69 @@ export default Vue.extend({
       });
       this.onEditMethod(newMethod);
     },
-    onEditMethod(newValue: InteractiveLabelingMethod): void {
+    onEditMethod(newValue: DataObjectSelectionMethod): void {
       this.$emit('edit-method', this.node.type, newValue);
+    },
+    onClickMenuOfModelsOption(method: DataObjectSelectionMethod, option: ModelService): void {
+      const { node } = this;
+      console.log('click menu of models', option);
+
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return { method, model: option };
+          }
+          return d;
+        }),
+      });
+    },
+    onInputModelName(method: DataObjectSelectionMethod, name: string): void {
+      const { node, model } = this;
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return {
+              method,
+              model: { ...(model as ModelService), name },
+            };
+          }
+          return d;
+        }),
+      });
+      this.onEditModel({
+        ...(model as ModelService),
+        name,
+      });
+    },
+    onInputModelAPI(method: DataObjectSelectionMethod, api: string): void {
+      const { node, model } = this;
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return {
+              method,
+              model: { ...(model as ModelService), api },
+            };
+          }
+          return d;
+        }),
+      });
+      this.onEditModel({
+        ...(model as ModelService),
+        api,
+      });
+    },
+    onCreateModel(): void {
+      this.$emit('create-model');
+    },
+    onEditModel(newValue: ModelService): void {
+      this.$emit('edit-model', newValue);
+    },
+    onClickRecompute(): void {
+      this.$emit('click-recompute', this.node);
     },
   },
 });

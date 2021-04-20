@@ -4,10 +4,10 @@ import {
   DefaultLabelingMethod,
   InterimModelTrainingMethod,
   InteractiveLabelingMethod,
-  SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   ModelService,
+  DataObjectSelectionMethod,
 } from '@/commons/types';
 
 export enum NodeTypes {
@@ -36,7 +36,7 @@ interface BaseNode {
   id: string;
   title: string;
   type: NodeTypes;
-  value: any;
+  value: unknown;
 }
 
 export interface LabelTaskNode extends BaseNode {
@@ -88,11 +88,9 @@ export interface DataObjectSelectionNode extends BaseNode {
   title: string;
   type: NodeTypes;
   value: {
-    strategy: SamplingStrategyType,
-    nBatch: number,
-    api: string,
-    projectionAidEnabled: boolean,
-  };
+    method: DataObjectSelectionMethod,
+    model?: ModelService,
+  }[];
 }
 
 export interface TaskTransformationNode extends BaseNode {

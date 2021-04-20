@@ -2,11 +2,9 @@ import {
   ICommand,
   IDataObject,
   IMessage,
-  IModel,
   ILabelMask,
   ILabelGeometricObject,
   Label,
-  SamplingStrategyType,
   Status,
 } from '@/commons/types';
 
@@ -24,8 +22,6 @@ export interface IState {
   labelMasks: ILabelMask[],
   /** The label statuses of the data objects. */
   statuses: Status[],
-  /** The model for default labeling and active sampling. */
-  model: IModel,
   /** The label mark of unlabeled data objects. */
   unlabeledMark: Label,
   /** The names of data object features. */
@@ -49,19 +45,6 @@ export const createInitialState = (): IState => ({
   labelGeometricObjects: [],
   labelMasks: [],
   statuses: [],
-  model: {
-    type: {
-      name: 'Null (Dummy)',
-      serverless: true,
-      api: 'Null',
-      parameters: ['features'],
-      isBuiltIn: true,
-      id: 'Null-35514905',
-    },
-    samplingStrategy: SamplingStrategyType.Random,
-    predictor: null,
-    sampler: null,
-  },
   unlabeledMark: '-1',
   featureNames: [],
   uuidToIdx: {},

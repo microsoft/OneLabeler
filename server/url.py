@@ -1,5 +1,4 @@
-from handlers import (DataLabelingHandler,
-                      FeatureExtractionHandler,
+from handlers import (FeatureExtractionHandler,
                       DataObjectSelectionHandler,
                       DefaultLabelingHandler,
                       InterimModelTrainingHandler,
@@ -22,6 +21,4 @@ url = [
     (r'/defaultLabels/(.*)', DefaultLabelingHandler),
     # request for updated model computed with interim model training algorithms
     (r'/modelUpdated/(.*)', InterimModelTrainingHandler),
-    # request for data labeling algorithms
-    (r'/dataLabeling/(\w+)', DataLabelingHandler),
 ]

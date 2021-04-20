@@ -1,7 +1,6 @@
 import {
   DataType,
   LabelTaskType,
-  SamplingStrategyType,
   TaskTransformationType,
   StoppageAnalysisType,
   ModelService,
@@ -9,6 +8,7 @@ import {
   DefaultLabelingMethod,
   InterimModelTrainingMethod,
   InteractiveLabelingMethod,
+  DataObjectSelectionMethod,
 } from '@/commons/types';
 import {
   modelServices,
@@ -16,6 +16,7 @@ import {
   defaultLabelingMethods,
   interimModelTrainingMethods,
   interactiveLabelingMethods,
+  dataObjectSelectionMethods,
 } from '@/commons/builtins';
 
 export interface IState {
@@ -25,31 +26,31 @@ export interface IState {
   labelTasks: LabelTaskType[],
   /** The collection of model services. */
   modelServices: ModelService[],
+
   /** The collection of feature extraction methods. */
   featureExtractionMethods: FeatureExtractionMethod[],
   featureExtractionMethod: FeatureExtractionMethod,
+
   /** The collection of default labeling methods. */
   defaultLabelingMethods: DefaultLabelingMethod[],
   /** The default labeling model. */
   defaultLabelingMethod: DefaultLabelingMethod,
   defaultLabelingModel: ModelService | null,
+
   /** The collection of interim model training methods. */
   interimModelTrainingMethods: InterimModelTrainingMethod[],
   /** The interim model training method. */
   interimModelTrainingMethod: InterimModelTrainingMethod,
+
   /** The collection of interactive labeling methods. */
   interactiveLabelingMethods: InteractiveLabelingMethod[],
   interactiveLabelingMethod: InteractiveLabelingMethod[],
-  /** Whether to show single object display. */
-  singleObjectDisplayEnabled: boolean,
-  /** Whether to show grid matrix. */
-  gridMatrixEnabled: boolean,
-  /** The data sampling strategy. */
-  samplingStrategy: SamplingStrategyType,
-  /** The number of data objects to sample each time. */
-  nBatch: number,
-  /** Whether to show the dataset overview. */
-  showDatasetOverview: boolean,
+
+  /** The collection of data object selection methods. */
+  dataObjectSelectionMethods: DataObjectSelectionMethod[],
+  dataObjectSelectionMethod: DataObjectSelectionMethod[],
+  dataObjectSelectionModel: ModelService | null,
+
   /** The task the labeler is instructed to carry out. */
   taskTransformation: TaskTransformationType,
   /** The stoppage analysis method. */
@@ -72,12 +73,10 @@ export const createInitialState = (): IState => ({
     .find((d) => d.name === 'Static') as InterimModelTrainingMethod,
   interactiveLabelingMethods,
   interactiveLabelingMethod: [] as InteractiveLabelingMethod[],
-  samplingStrategy: SamplingStrategyType.Random,
-  nBatch: 1,
-  showDatasetOverview: false,
+  dataObjectSelectionMethods,
+  dataObjectSelectionMethod: [] as DataObjectSelectionMethod[],
+  dataObjectSelectionModel: null,
   taskTransformation: TaskTransformationType.DirectLabeling,
-  singleObjectDisplayEnabled: false,
-  gridMatrixEnabled: false,
   stoppageAnalysis: StoppageAnalysisType.AllChecked,
 });
 

@@ -4,42 +4,39 @@ import {
   FeatureExtractionMethod,
   InterimModelTrainingMethod,
   LabelTaskType,
-  SamplingStrategyType,
   InteractiveLabelingMethod,
+  DataObjectSelectionMethod,
 } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
 export default {
+  [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
+    state.labelTasks = labelTasks;
+  },
   [types.SET_MODEL_SERVICES](
     state: IState,
     services: ModelService[],
   ): void {
     state.modelServices = services;
   },
-  [types.SET_FEATURE_EXTRACTION_METHODS](
+  [types.SET_DATA_OBJECT_SELECTION_METHODS](
     state: IState,
-    methods: FeatureExtractionMethod[],
+    methods: DataObjectSelectionMethod[],
   ): void {
-    state.featureExtractionMethods = methods;
+    state.dataObjectSelectionMethods = methods;
   },
-  [types.SET_FEATURE_EXTRACTION_METHOD](
+  [types.SET_DATA_OBJECT_SELECTION_METHOD](
     state: IState,
-    method: FeatureExtractionMethod,
+    method: DataObjectSelectionMethod[],
   ): void {
-    state.featureExtractionMethod = method;
+    state.dataObjectSelectionMethod = method;
   },
-  [types.SET_INTERIM_MODEL_TRAINING_METHODS](
+  [types.SET_DATA_OBJECT_SELECTION_MODEL](
     state: IState,
-    methods: InterimModelTrainingMethod[],
+    model: ModelService,
   ): void {
-    state.interimModelTrainingMethods = methods;
-  },
-  [types.SET_INTERIM_MODEL_TRAINING_METHOD](
-    state: IState,
-    method: InterimModelTrainingMethod,
-  ): void {
-    state.interimModelTrainingMethod = method;
+    state.dataObjectSelectionModel = model;
   },
   [types.SET_DEFAULT_LABELING_METHODS](
     state: IState,
@@ -53,6 +50,24 @@ export default {
   ): void {
     state.defaultLabelingMethod = method;
   },
+  [types.SET_DEFAULT_LABELING_MODEL](
+    state: IState,
+    model: ModelService,
+  ): void {
+    state.defaultLabelingModel = model;
+  },
+  [types.SET_FEATURE_EXTRACTION_METHODS](
+    state: IState,
+    methods: FeatureExtractionMethod[],
+  ): void {
+    state.featureExtractionMethods = methods;
+  },
+  [types.SET_FEATURE_EXTRACTION_METHOD](
+    state: IState,
+    method: FeatureExtractionMethod,
+  ): void {
+    state.featureExtractionMethod = method;
+  },
   [types.SET_INTERACTIVE_LABELING_METHODS](
     state: IState,
     methods: InteractiveLabelingMethod[],
@@ -65,31 +80,16 @@ export default {
   ): void {
     state.interactiveLabelingMethod = method;
   },
-  [types.SET_SHOW_DATASET_OVERVIEW](state: IState, showDatasetOverview: boolean): void {
-    state.showDatasetOverview = showDatasetOverview;
-  },
-  [types.SET_SAMPLING_STRATEGY](
+  [types.SET_INTERIM_MODEL_TRAINING_METHODS](
     state: IState,
-    samplingStrategy: SamplingStrategyType,
+    methods: InterimModelTrainingMethod[],
   ): void {
-    state.samplingStrategy = samplingStrategy;
+    state.interimModelTrainingMethods = methods;
   },
-  [types.SET_DEFAULT_LABELING_MODEL](
+  [types.SET_INTERIM_MODEL_TRAINING_METHOD](
     state: IState,
-    model: ModelService,
+    method: InterimModelTrainingMethod,
   ): void {
-    state.defaultLabelingModel = model;
-  },
-  [types.SET_N_BATCH](state: IState, nBatch: number): void {
-    state.nBatch = nBatch;
-  },
-  [types.SET_SINGLE_OBJECT_DISPLAY_ENABLED](state: IState, enabled: boolean): void {
-    state.singleObjectDisplayEnabled = enabled;
-  },
-  [types.SET_GRID_MATRIX_ENABLED](state: IState, enabled: boolean): void {
-    state.gridMatrixEnabled = enabled;
-  },
-  [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
-    state.labelTasks = labelTasks;
+    state.interimModelTrainingMethod = method;
   },
 };
