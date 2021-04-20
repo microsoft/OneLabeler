@@ -168,8 +168,6 @@ export default Vue.extend({
       'showDatasetOverview',
       'defaultLabelingMethod',
       'nBatch',
-      'itemsPerRow',
-      'itemsPerCol',
     ]),
   },
   methods: {
@@ -179,8 +177,6 @@ export default Vue.extend({
       'setNBatch',
       'setDefaultLabelingMethod',
       'setShowDatasetOverview',
-      'setItemsPerRow',
-      'setItemsPerCol',
       'setLabelTasks',
       'resetState',
     ]),
@@ -190,16 +186,12 @@ export default Vue.extend({
         showDatasetOverview,
         defaultLabelingMethod,
         nBatch,
-        itemsPerRow,
-        itemsPerCol,
       } = this;
       saveObjectAsJSONFile({
         samplingStrategy,
         showDatasetOverview,
         defaultLabelingMethod,
         nBatch,
-        itemsPerRow,
-        itemsPerCol,
       }, 'workflow.config.json');
     },
     onClickReset(): void {
@@ -224,12 +216,6 @@ export default Vue.extend({
         }
         if ('nBatch' in config) {
           this.setNBatch(config.nBatch);
-        }
-        if ('itemsPerRow' in config) {
-          this.setItemsPerRow(config.itemsPerRow);
-        }
-        if ('itemsPerCol' in config) {
-          this.setItemsPerCol(config.itemsPerCol);
         }
         if ('labelTasks' in config) {
           this.setLabelTasks(config.labelTasks);

@@ -139,7 +139,6 @@
               dense
               hide-details
               single-line
-              @input="onInputMethodName($event)"
             />
           </v-list-item>
 
@@ -155,7 +154,6 @@
               dense
               multiple
               hide-details
-              @input="onClickParameterCheckbox($event)"
             >
               <template #selection="data">
                 <v-chip
@@ -215,9 +213,47 @@
 
           <template v-if="method.configuration !== undefined">
             <v-card
-              class="mx-4"
+              class="mx-4 mb-2"
               outlined
             >
+              <v-list-item
+                v-for="(entry, key) in method.configuration"
+                :key="key"
+                class="py-0"
+              >
+                <v-list-item-title
+                  class="subtitle-2"
+                  style="user-select: none"
+                >
+                  {{ entry.title }}
+                </v-list-item-title>
+                <v-menu offset-y>
+                  <template #activator="{ on }">
+                    <v-btn
+                      class="subtitle-2 text-none"
+                      style="border-radius: 2px"
+                      small
+                      v-on="on"
+                    >
+                      {{ entry.options
+                        .find((d) => d.value === entry.value)
+                        .text }}
+                    </v-btn>
+                  </template>
+                  <v-list dense>
+                    <v-list-item
+                      v-for="(option, optionIdx) in entry.options"
+                      :key="optionIdx"
+                      @click="onClickMethodConfiguration(
+                        method, key, option)"
+                    >
+                      <v-list-item-title class="subtitle-2">
+                        {{ option.text }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-list-item>
             </v-card>
           </template>
         </v-container>
@@ -264,9 +300,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    method() {
-      return null;
-    },
     selectedMethods(): InteractiveLabelingMethod[] {
       return this.node.value.map((d) => d.method);
     },
@@ -302,45 +335,37 @@ export default Vue.extend({
         value: options.map((d) => ({ method: d })),
       });
     },
-    onInputMethodName(name: string): void {
-      const { node, method, model } = this;
+    onClickMethodConfiguration(
+      method: InteractiveLabelingMethod,
+      configurationName: string,
+      option: { value: unknown, text: string },
+    ): void {
+      const { node } = this;
+      const { configuration } = method;
+      const newMethod = {
+        ...method,
+        configuration: {
+          ...configuration,
+          [configurationName]: {
+            ...configuration[configurationName],
+            value: option.value,
+          },
+        },
+      };
+
       this.onEditNode({
         ...node,
-        value: {
-          method: { ...method, name },
-          model,
-        },
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return { method: newMethod };
+          }
+          return d;
+        }),
       });
-      this.onEditMethod({ ...method, name });
-    },
-    onCreateMethod(): void {
-      this.$emit('create-method');
+      this.onEditMethod(newMethod);
     },
     onEditMethod(newValue: InteractiveLabelingMethod): void {
       this.$emit('edit-method', this.node.type, newValue);
-    },
-    onClickParameterCheckbox(processInputNames: string[]): void {
-      const {
-        node,
-        processInputNamesOfRequired,
-        method,
-        model,
-      } = this;
-      const orders = this.processInputNames;
-      const sorted = [
-        ...processInputNamesOfRequired,
-        ...processInputNames.filter((d) => processInputNamesOfRequired.indexOf(d) < 0),
-      ].sort((a, b) => (
-        orders.indexOf(a) - orders.indexOf(b)
-      ));
-      this.onEditNode({
-        ...node,
-        value: {
-          method: { ...method, parameters: sorted },
-          model,
-        },
-      });
-      this.onEditMethod({ ...method, parameters: sorted });
     },
   },
 });

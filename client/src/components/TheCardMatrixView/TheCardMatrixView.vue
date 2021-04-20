@@ -47,9 +47,18 @@ export default Vue.extend({
     VCardMatrix,
     TheCardMatrixViewHeader,
   },
+  props: {
+    itemsPerRow: {
+      type: Number,
+      required: true,
+    },
+    itemsPerCol: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
     ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices', 'unlabeledMark']),
-    ...mapState('workflow', ['itemsPerRow', 'itemsPerCol']),
     ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels', 'label2color']),
   },
   methods: {

@@ -264,8 +264,6 @@ export default Vue.extend({
       'setInteractiveLabelingMethod',
       'setSingleObjectDisplayEnabled',
       'setGridMatrixEnabled',
-      'setItemsPerRow',
-      'setItemsPerCol',
       'setSamplingStrategy',
       'setNBatch',
       'setShowDatasetOverview',
@@ -327,7 +325,6 @@ export default Vue.extend({
       }
       if (newValue.type === NodeTypes.InteractiveLabeling) {
         const method = (newValue as InteractiveLabelingNode).value.map((d) => d.method);
-        console.log('edit node interactive labeling', method);
         this.setInteractiveLabelingMethod(method);
       }
       this.selectedNode = newValue;

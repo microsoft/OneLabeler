@@ -89,12 +89,6 @@ export default {
   [types.SET_GRID_MATRIX_ENABLED](state: IState, enabled: boolean): void {
     state.gridMatrixEnabled = enabled;
   },
-  [types.SET_ITEMS_PER_ROW](state: IState, itemsPerRow: number): void {
-    state.itemsPerRow = itemsPerRow;
-  },
-  [types.SET_ITEMS_PER_COL](state: IState, itemsPerCol: number): void {
-    state.itemsPerCol = itemsPerCol;
-  },
   [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
     state.labelTasks = labelTasks;
   },

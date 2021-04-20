@@ -197,42 +197,6 @@ const menuMapper = {
       },
     },
   },
-  /*
-  [NodeTypes.InteractiveLabeling]: {
-    entries: {
-      singleObjectDisplayEnabled: {
-        title: 'Enabled',
-        options: [false, true],
-        optionsText: ['No', 'Yes'],
-      },
-      gridMatrixEnabled: {
-        title: 'Enabled',
-        options: [false, true],
-        optionsText: ['No', 'Yes'],
-      },
-      itemsPerRow: {
-        title: 'Data Objects Per Row',
-        options: [1, 4, 8, 12],
-        optionsText: ['1', '4', '8', '12'],
-      },
-      itemsPerCol: {
-        title: 'Data Objects Per Column',
-        options: [1, 2, 4, 6, 8],
-        optionsText: ['1', '2', '4', '6', '8'],
-      },
-    },
-    hierarchy: {
-      singleObjectDisplay: {
-        title: 'Single Object Display',
-        menuKeys: ['singleObjectDisplayEnabled'],
-      },
-      gridMatrix: {
-        title: 'GridMatrix',
-        menuKeys: ['gridMatrixEnabled', 'itemsPerRow', 'itemsPerCol'],
-      },
-    },
-  },
-  */
   [NodeTypes.StoppageAnalysis]: {
     entries: {
       method: {

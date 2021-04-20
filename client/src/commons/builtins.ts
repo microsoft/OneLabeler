@@ -139,7 +139,26 @@ export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
   isBuiltIn: true,
   id: 'Grid-Matrix',
   configuration: {
-    nRows: 6,
-    nColumns: 8,
+    nRows: {
+      value: 6,
+      title: 'Number of Objects per Column',
+      options: [
+        { value: 1, text: '1' },
+        { value: 2, text: '2' },
+        { value: 4, text: '4' },
+        { value: 6, text: '6' },
+        { value: 8, text: '8' },
+      ],
+    },
+    nColumns: {
+      value: 8,
+      title: 'Number of Objects per Row',
+      options: [
+        { value: 1, text: '1' },
+        { value: 4, text: '4' },
+        { value: 8, text: '8' },
+        { value: 12, text: '12' },
+      ],
+    },
   },
 }];

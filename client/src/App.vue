@@ -30,7 +30,11 @@
             :cols="12/nViews"
             :class="enableSingleObjectDisplay ? 'pr-1' : ''"
           >
-            <TheCardMatrixView style="height: 100%;" />
+            <TheCardMatrixView
+              style="height: 100%;"
+              :items-per-row="itemsPerRow"
+              :items-per-col="itemsPerCol"
+            />
           </v-col>
         </template>
         <template v-if="enableSingleObjectDisplay">
@@ -85,6 +89,16 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     enableGridMatrix(): boolean {
       const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
       return methods.findIndex((d) => d.id === 'Grid-Matrix') >= 0;
+    },
+    itemsPerRow(): number | null {
+      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
+      return gridMatrix === undefined ? null : gridMatrix.configuration.nColumns.value;
+    },
+    itemsPerCol(): number | null {
+      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
+      return gridMatrix === undefined ? null : gridMatrix.configuration.nRows.value;
     },
     nViews(): number {
       const {

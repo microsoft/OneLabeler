@@ -44,10 +44,6 @@ export interface IState {
   singleObjectDisplayEnabled: boolean,
   /** Whether to show grid matrix. */
   gridMatrixEnabled: boolean,
-  /** The number of data objects per row in the thumbnail matrix. */
-  itemsPerRow: number,
-  /** The number of data objects per column in the thumbnail matrix. */
-  itemsPerCol: number,
   /** The data sampling strategy. */
   samplingStrategy: SamplingStrategyType,
   /** The number of data objects to sample each time. */
@@ -82,8 +78,6 @@ export const createInitialState = (): IState => ({
   taskTransformation: TaskTransformationType.DirectLabeling,
   singleObjectDisplayEnabled: false,
   gridMatrixEnabled: false,
-  itemsPerRow: 8,
-  itemsPerCol: 6,
   stoppageAnalysis: StoppageAnalysisType.AllChecked,
 });
 

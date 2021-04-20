@@ -203,20 +203,6 @@ export const setGridMatrixEnabled = (
   commit(types.SET_GRID_MATRIX_ENABLED, enabled);
 };
 
-export const setItemsPerRow = (
-  { commit }: ActionContext<IState, IRootState>,
-  itemsPerRow: number,
-): void => {
-  commit(types.SET_ITEMS_PER_ROW, itemsPerRow);
-};
-
-export const setItemsPerCol = (
-  { commit }: ActionContext<IState, IRootState>,
-  itemsPerCol: number,
-): void => {
-  commit(types.SET_ITEMS_PER_COL, itemsPerCol);
-};
-
 export const setLabelTasks = (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   labelTasks: LabelTaskType[],
@@ -386,13 +372,9 @@ export const resetState = (
     nBatch,
     defaultLabelingMethod,
     showDatasetOverview,
-    itemsPerRow,
-    itemsPerCol,
   } = createInitialState();
   commit(types.SET_SAMPLING_STRATEGY, samplingStrategy);
   commit(types.SET_N_BATCH, nBatch);
   commit(types.SET_DEFAULT_LABELING_METHOD, defaultLabelingMethod);
   commit(types.SET_SHOW_DATASET_OVERVIEW, showDatasetOverview);
-  commit(types.SET_ITEMS_PER_ROW, itemsPerRow);
-  commit(types.SET_ITEMS_PER_COL, itemsPerCol);
 };

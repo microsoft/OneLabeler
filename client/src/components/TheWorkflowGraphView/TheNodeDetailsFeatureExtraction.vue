@@ -78,8 +78,6 @@
           </v-btn>
         </v-list-item>
 
-        <v-divider />
-
         <!-- The method used to instantiated the process. -->
         <v-list-item
           class="py-0"
@@ -88,7 +86,7 @@
             class="subtitle-2"
             style="user-select: none"
           >
-            Method
+            Selected Method
           </v-list-item-title>
           <v-menu offset-y>
             <template #activator="{ on }">
@@ -140,6 +138,8 @@
             </v-list>
           </v-menu>
         </v-list-item>
+
+        <v-divider />
 
         <!-- The name of the feature extraction method. -->
         <v-list-item>
