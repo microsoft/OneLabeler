@@ -1,11 +1,13 @@
 import ObjectId from 'bson-objectid';
 import {
   ModelService,
-  FeatureExtractionMethod,
-  DefaultLabelingMethod,
   DataObjectSelectionMethod,
-  InterimModelTrainingMethod,
+  DefaultLabelingMethod,
+  FeatureExtractionMethod,
   InteractiveLabelingMethod,
+  InterimModelTrainingMethod,
+  StoppageAnalysisMethod,
+  TaskTransformationMethod,
 } from '@/commons/types';
 import {
   PROTOCOL,
@@ -63,110 +65,6 @@ export const modelServices: ModelService[] = [{
   // id: 'LabelSpreading-81419641',
   // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/LabelSpreading`,
   // isLocal: true,
-}];
-
-export const featureExtractionMethods: FeatureExtractionMethod[] = [{
-  name: 'SVD (Unsupervised)',
-  serverless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/SVD`,
-  parameters: ['dataObjects'],
-  isBuiltIn: true,
-  id: 'image-SVD-25940167',
-}, {
-  name: 'BoW (Handcrafted)',
-  serverless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/BoW`,
-  parameters: ['dataObjects'],
-  isBuiltIn: true,
-  id: 'image-BoW-6989392',
-}, {
-  name: 'LDA (Supervised)',
-  serverless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/LDA`,
-  parameters: ['dataObjects', 'labels'],
-  isBuiltIn: true,
-  id: 'image-LDA-45100847',
-}, {
-  name: 'Random3D (Dummy)',
-  serverless: true,
-  api: 'Random3D',
-  parameters: ['dataObjects'],
-  isBuiltIn: true,
-  id: 'Random-87333124',
-}];
-
-export const defaultLabelingMethods: DefaultLabelingMethod[] = [{
-  name: 'ModelPrediction',
-  serverless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/defaultLabels/ModelPrediction`,
-  parameters: ['features', 'model'],
-  isBuiltIn: true,
-  id: 'ModelPrediction-29967546',
-}, {
-  name: 'Null (Dummy)',
-  serverless: true,
-  api: 'Null',
-  parameters: ['features'],
-  isBuiltIn: true,
-  id: 'Null-35514905',
-}, {
-  name: 'Random (Dummy)',
-  serverless: true,
-  api: 'Random',
-  parameters: ['features'],
-  isBuiltIn: true,
-  id: 'Random-38398168',
-}];
-
-export const interimModelTrainingMethods: InterimModelTrainingMethod[] = [{
-  name: 'Retrain',
-  serverless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/modelUpdated/Retrain`,
-  parameters: ['features', 'labels', 'model'],
-  isBuiltIn: true,
-  id: 'Retrain-16440841',
-}, {
-  name: 'Static',
-  serverless: true,
-  api: 'Static',
-  parameters: ['model'],
-  isBuiltIn: true,
-  id: 'Static-72885436',
-}];
-
-export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
-  name: 'Single Object Display',
-  parameters: ['dataObjects', 'samples'],
-  isBuiltIn: true,
-  id: 'Single-Object-Display',
-}, {
-  name: 'Grid Matrix',
-  parameters: ['dataObjects', 'samples'],
-  isBuiltIn: true,
-  id: 'Grid-Matrix',
-  configuration: {
-    nRows: {
-      value: 6,
-      title: 'Number of Objects per Column',
-      options: [
-        { value: 1, text: '1' },
-        { value: 2, text: '2' },
-        { value: 4, text: '4' },
-        { value: 6, text: '6' },
-        { value: 8, text: '8' },
-      ],
-    },
-    nColumns: {
-      value: 8,
-      title: 'Number of Objects per Row',
-      options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 8, text: '8' },
-        { value: 12, text: '12' },
-      ],
-    },
-  },
 }];
 
 export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
@@ -384,4 +282,124 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
       ],
     },
   },
+}];
+
+export const defaultLabelingMethods: DefaultLabelingMethod[] = [{
+  name: 'ModelPrediction',
+  serverless: false,
+  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/defaultLabels/ModelPrediction`,
+  parameters: ['features', 'model'],
+  isBuiltIn: true,
+  id: 'ModelPrediction-29967546',
+}, {
+  name: 'Null (Dummy)',
+  serverless: true,
+  api: 'Null',
+  parameters: ['features'],
+  isBuiltIn: true,
+  id: 'Null-35514905',
+}, {
+  name: 'Random (Dummy)',
+  serverless: true,
+  api: 'Random',
+  parameters: ['features'],
+  isBuiltIn: true,
+  id: 'Random-38398168',
+}];
+
+export const featureExtractionMethods: FeatureExtractionMethod[] = [{
+  name: 'SVD (Unsupervised)',
+  serverless: false,
+  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/SVD`,
+  parameters: ['dataObjects'],
+  isBuiltIn: true,
+  id: 'image-SVD-25940167',
+}, {
+  name: 'BoW (Handcrafted)',
+  serverless: false,
+  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/BoW`,
+  parameters: ['dataObjects'],
+  isBuiltIn: true,
+  id: 'image-BoW-6989392',
+}, {
+  name: 'LDA (Supervised)',
+  serverless: false,
+  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/LDA`,
+  parameters: ['dataObjects', 'labels'],
+  isBuiltIn: true,
+  id: 'image-LDA-45100847',
+}, {
+  name: 'Random3D (Dummy)',
+  serverless: true,
+  api: 'Random3D',
+  parameters: ['dataObjects'],
+  isBuiltIn: true,
+  id: 'Random-87333124',
+}];
+
+export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
+  name: 'Single Object Display',
+  parameters: ['dataObjects', 'samples'],
+  isBuiltIn: true,
+  id: 'Single-Object-Display',
+}, {
+  name: 'Grid Matrix',
+  parameters: ['dataObjects', 'samples'],
+  isBuiltIn: true,
+  id: 'Grid-Matrix',
+  configuration: {
+    nRows: {
+      value: 6,
+      title: 'Number of Objects per Column',
+      options: [
+        { value: 1, text: '1' },
+        { value: 2, text: '2' },
+        { value: 4, text: '4' },
+        { value: 6, text: '6' },
+        { value: 8, text: '8' },
+      ],
+    },
+    nColumns: {
+      value: 8,
+      title: 'Number of Objects per Row',
+      options: [
+        { value: 1, text: '1' },
+        { value: 4, text: '4' },
+        { value: 8, text: '8' },
+        { value: 12, text: '12' },
+      ],
+    },
+  },
+}];
+
+export const interimModelTrainingMethods: InterimModelTrainingMethod[] = [{
+  name: 'Retrain',
+  serverless: false,
+  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/modelUpdated/Retrain`,
+  parameters: ['features', 'labels', 'model'],
+  isBuiltIn: true,
+  id: 'Retrain-16440841',
+}, {
+  name: 'Static',
+  serverless: true,
+  api: 'Static',
+  parameters: ['model'],
+  isBuiltIn: true,
+  id: 'Static-72885436',
+}];
+
+export const stoppageAnalysisMethods: StoppageAnalysisMethod[] = [{
+  name: 'AllChecked',
+  serverless: true,
+  api: 'AllChecked',
+  parameters: ['labels'],
+  isBuiltIn: true,
+  id: 'AllChecked-46322013',
+}];
+
+export const taskTransformationMethods: TaskTransformationMethod[] = [{
+  name: 'DirectLabeling',
+  parameters: ['dataObjects', 'labelTask', 'labelSpace'],
+  isBuiltIn: true,
+  id: 'DirectLabeling-97377357',
 }];

@@ -59,14 +59,14 @@ import { mapActions, mapState } from 'vuex';
 import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  TaskTransformationType,
-  StoppageAnalysisType,
   ModelService,
   DataObjectSelectionMethod,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
   InteractiveLabelingMethod,
   InterimModelTrainingMethod,
+  TaskTransformationMethod,
+  StoppageAnalysisMethod,
 } from '@/commons/types';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheNodeDetails from './TheNodeDetails.vue';
@@ -78,6 +78,8 @@ import {
   FeatureExtractionNode,
   InteractiveLabelingNode,
   InterimModelTrainingNode,
+  TaskTransformationNode,
+  StoppageAnalysisNode,
 } from './types';
 
 const graph = {
@@ -138,7 +140,12 @@ const graph = {
       title: 'task transform',
       type: NodeTypes.TaskTransformation,
       value: {
-        method: TaskTransformationType.DirectLabeling,
+        method: {
+          name: 'DirectLabeling',
+          parameters: ['dataObjects', 'labelTask', 'labelSpace'],
+          isBuiltIn: true,
+          id: 'DirectLabeling-97377357',
+        },
       },
       x: 505,
       y: 25,
@@ -156,8 +163,14 @@ const graph = {
       title: 'stoppage analysis',
       type: NodeTypes.StoppageAnalysis,
       value: {
-        method: StoppageAnalysisType.AllChecked,
-        api: '',
+        method: {
+          name: 'AllChecked',
+          serverless: true,
+          api: 'AllChecked',
+          parameters: ['labels'],
+          isBuiltIn: true,
+          id: 'AllChecked-46322013',
+        },
       },
       x: 745,
       y: 25,
@@ -245,10 +258,16 @@ export default Vue.extend({
       'featureExtractionMethods',
       'interactiveLabelingMethods',
       'interimModelTrainingMethods',
+      'stoppageAnalysisMethods',
+      'taskTransformationMethods',
     ]),
   },
   methods: {
     ...mapActions('workflow', [
+      'executeDataObjectSelectionAlgorithmic',
+      'executeDefaultLabeling',
+      'executeFeatureExtraction',
+      'executeInterimModelTraining',
       'setLabelTasks',
       'setModelServices',
       'setDataObjectSelectionMethods',
@@ -263,10 +282,10 @@ export default Vue.extend({
       'setInteractiveLabelingMethod',
       'setInterimModelTrainingMethods',
       'setInterimModelTrainingMethod',
-      'executeDataObjectSelectionAlgorithmic',
-      'executeDefaultLabeling',
-      'executeFeatureExtraction',
-      'executeInterimModelTraining',
+      'setStoppageAnalysisMethods',
+      'setStoppageAnalysisMethod',
+      'setTaskTransformationMethods',
+      'setTaskTransformationMethod',
     ]),
     onSelectNode(node: WorkflowNode) {
       this.selectedNode = node;
@@ -307,7 +326,6 @@ export default Vue.extend({
       if (newValue.type === NodeTypes.DataObjectSelection) {
         const method = (newValue as DataObjectSelectionNode).value
           .map((d) => d.method);
-        console.log('graph view on edit node', newValue);
         const algorithmicInstantiation = (newValue as DataObjectSelectionNode).value
           .find((d) => d.model !== undefined);
         const model = algorithmicInstantiation === undefined
@@ -332,6 +350,14 @@ export default Vue.extend({
       if (newValue.type === NodeTypes.InterimModelTraining) {
         const { method } = (newValue as InterimModelTrainingNode).value;
         this.setInterimModelTrainingMethod(method);
+      }
+      if (newValue.type === NodeTypes.StoppageAnalysis) {
+        const { method } = (newValue as StoppageAnalysisNode).value;
+        this.setStoppageAnalysisMethod(method);
+      }
+      if (newValue.type === NodeTypes.TaskTransformation) {
+        const { method } = (newValue as TaskTransformationNode).value;
+        this.setTaskTransformationMethod(method);
       }
       this.selectedNode = newValue;
     },
@@ -363,6 +389,14 @@ export default Vue.extend({
       if (node.type === NodeTypes.InterimModelTraining) {
         const { method } = (node as InterimModelTrainingNode).value;
         this.setInterimModelTrainingMethod(method);
+      }
+      if (node.type === NodeTypes.StoppageAnalysis) {
+        const { method } = (node as StoppageAnalysisNode).value;
+        this.setStoppageAnalysisMethod(method);
+      }
+      if (node.type === NodeTypes.TaskTransformation) {
+        const { method } = (node as TaskTransformationNode).value;
+        this.setTaskTransformationMethod(method);
       }
     },
     onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod) {
@@ -400,6 +434,20 @@ export default Vue.extend({
         const newMethods = [...methods];
         newMethods[idx] = newValue;
         this.setDefaultLabelingMethods(newMethods);
+      }
+      if (nodeType === NodeTypes.StoppageAnalysis) {
+        const methods = this.stoppageAnalysisMethods as StoppageAnalysisMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setStoppageAnalysisMethods(newMethods);
+      }
+      if (nodeType === NodeTypes.TaskTransformation) {
+        const methods = this.taskTransformationMethods as TaskTransformationMethod[];
+        const idx = methods.findIndex((d) => d.id === newValue.id);
+        const newMethods = [...methods];
+        newMethods[idx] = newValue;
+        this.setTaskTransformationMethods(newMethods);
       }
     },
     onCreateMethod(nodeType: NodeTypes) {
@@ -460,6 +508,21 @@ export default Vue.extend({
         };
         this.setInterimModelTrainingMethods([
           ...interimModelTrainingMethods,
+          method,
+        ]);
+      }
+      if (nodeType === NodeTypes.StoppageAnalysis) {
+        const { stoppageAnalysisMethods } = this;
+        const method = {
+          name: 'custom',
+          serverless: false,
+          api: '',
+          parameters: ['labels'],
+          isBuiltIn: false,
+          id: `custom-${uuidv4()}`,
+        };
+        this.setStoppageAnalysisMethods([
+          ...stoppageAnalysisMethods,
           method,
         ]);
       }

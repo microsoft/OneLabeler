@@ -65,6 +65,20 @@
       @edit-model="onEditModel"
       @click-recompute="onClickRecompute"
     />
+    <TheNodeDetailsStoppageAnalysis
+      v-else-if="(node !== null)
+        && (node.type === NodeTypes.StoppageAnalysis)"
+      :methods="stoppageAnalysisMethods"
+      :node="node"
+      @edit-node="onEditNode"
+    />
+    <TheNodeDetailsTaskTransformation
+      v-else-if="(node !== null)
+        && (node.type === NodeTypes.TaskTransformation)"
+      :methods="taskTransformationMethods"
+      :node="node"
+      @edit-node="onEditNode"
+    />
     <template v-else>
       <VMenusFlat
         v-if="(node !== null)
@@ -120,8 +134,6 @@ import Vue, { PropType } from 'vue';
 import { mapState } from 'vuex';
 import {
   LabelTaskType,
-  TaskTransformationType,
-  StoppageAnalysisType,
   FeatureExtractionMethod,
   ModelService,
 } from '@/commons/types';
@@ -132,6 +144,8 @@ import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
 import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
 import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
+import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
 import { WorkflowNode, NodeTypes } from './types';
 
 const menuMapper = {
@@ -156,24 +170,6 @@ const menuMapper = {
   },
   [NodeTypes.DataType]: undefined,
   [NodeTypes.LabelIdeation]: undefined,
-  [NodeTypes.TaskTransformation]: {
-    entries: {
-      method: {
-        title: 'Method',
-        options: [TaskTransformationType.DirectLabeling],
-        optionsText: ['Direct Labeling'],
-      },
-    },
-  },
-  [NodeTypes.StoppageAnalysis]: {
-    entries: {
-      method: {
-        title: 'Method',
-        options: [StoppageAnalysisType.AllChecked],
-        optionsText: ['All Checked'],
-      },
-    },
-  },
   [NodeTypes.QualityAssurance]: undefined,
   [NodeTypes.Decision]: undefined,
   [NodeTypes.Initialization]: undefined,
@@ -207,6 +203,8 @@ export default Vue.extend({
     TheNodeDetailsFeatureExtraction,
     TheNodeDetailsInteractiveLabeling,
     TheNodeDetailsInterimModelTraining,
+    TheNodeDetailsStoppageAnalysis,
+    TheNodeDetailsTaskTransformation,
   },
   props: {
     node: {
@@ -227,6 +225,8 @@ export default Vue.extend({
       'featureExtractionMethods',
       'interactiveLabelingMethods',
       'interimModelTrainingMethods',
+      'stoppageAnalysisMethods',
+      'taskTransformationMethods',
     ]),
     menuTitle(): string {
       const { type } = this.node;
@@ -279,6 +279,8 @@ export default Vue.extend({
         || node.type === NodeTypes.DefaultLabeling
         || node.type === NodeTypes.InteractiveLabeling
         || node.type === NodeTypes.InterimModelTraining
+        || node.type === NodeTypes.TaskTransformation
+        || node.type === NodeTypes.StoppageAnalysis
       ) {
         this.onSetNodeValue(node, {
           ...node.value,

@@ -1,120 +1,22 @@
 import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
 import {
+  IImage,
+  Status,
+  LabelTaskType,
   ModelService,
+  DataObjectSelectionMethod,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
   InterimModelTrainingMethod,
   InteractiveLabelingMethod,
-  IImage,
-  LabelTaskType,
-  Status,
-  DataObjectSelectionMethod,
+  StoppageAnalysisMethod,
+  TaskTransformationMethod,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import { IState, createInitialState } from './state';
 import { IState as IRootState } from '../state';
-
-export const setLabelTasks = (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-  labelTasks: LabelTaskType[],
-): void => {
-  const labelTasksOld = state.labelTasks;
-  const { dataObjects, unlabeledMark } = rootState;
-  commit(types.SET_LABEL_TASKS, labelTasks);
-
-  // Initialize labels for new tasks, and reset labels for deleted tasks.
-  const enableImageClassificationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableObjectDetectionOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableObjectDetection = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableImageSegmentationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-  const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-
-  if (!enableImageClassification) {
-    commit(rootTypes.SET_LABELS, [], { root: true });
-  }
-  if (!enableImageClassificationOld && enableImageClassification) {
-    const labels = Array(dataObjects.length).fill(unlabeledMark);
-    commit(rootTypes.SET_LABELS, labels, { root: true });
-  }
-  if (!enableObjectDetection) {
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, [], { root: true });
-  }
-  if (!enableObjectDetectionOld && enableObjectDetection) {
-    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
-  }
-  if (!enableImageSegmentation) {
-    commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
-  }
-  if (!enableImageSegmentationOld && enableImageSegmentation) {
-    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
-      path: null,
-    }));
-    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
-  }
-};
-
-export const executeFeatureExtraction = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  { method }: { method: FeatureExtractionMethod },
-): Promise<void> => {
-  const { dataObjects, labels, statuses } = rootState;
-
-  if (dataObjects === null) return;
-
-  const requireLabels = method.parameters
-    .findIndex((d) => d === 'labels') >= 0;
-
-  if (requireLabels && (labels.length === 0)) return;
-
-  const response = requireLabels
-    ? (await API.featureExtraction(method, dataObjects as IImage[], labels, statuses))
-    : (await API.featureExtraction(method, dataObjects as IImage[]));
-
-  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
-  commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
-};
-
-export const executeDefaultLabeling = async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  { method, model }: { method: DefaultLabelingMethod, model: ModelService },
-): Promise<void> => {
-  const {
-    dataObjects,
-    queryIndices,
-    classes,
-    unlabeledMark,
-  } = rootState;
-  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
-  const uuids = sampledDataObjects.map((d) => d.uuid);
-  const labels = (await API.defaultLabeling(
-    method,
-    sampledDataObjects,
-    model,
-    classes,
-    unlabeledMark,
-  ));
-  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
-    uuids,
-    labels,
-    inQueryIndices: true,
-  }, { root: true });
-};
 
 export const executeInterimModelTraining = async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
@@ -202,6 +104,106 @@ export const executeDataObjectSelectionManual = async (
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
 
+export const executeDefaultLabeling = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  { method, model }: { method: DefaultLabelingMethod, model: ModelService },
+): Promise<void> => {
+  const {
+    dataObjects,
+    queryIndices,
+    classes,
+    unlabeledMark,
+  } = rootState;
+  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
+  const uuids = sampledDataObjects.map((d) => d.uuid);
+  const labels = (await API.defaultLabeling(
+    method,
+    sampledDataObjects,
+    model,
+    classes,
+    unlabeledMark,
+  ));
+  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
+    uuids,
+    labels,
+    inQueryIndices: true,
+  }, { root: true });
+};
+
+export const executeFeatureExtraction = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  { method }: { method: FeatureExtractionMethod },
+): Promise<void> => {
+  const { dataObjects, labels, statuses } = rootState;
+
+  if (dataObjects === null) return;
+
+  const requireLabels = method.parameters
+    .findIndex((d) => d === 'labels') >= 0;
+
+  if (requireLabels && (labels.length === 0)) return;
+
+  const response = requireLabels
+    ? (await API.featureExtraction(method, dataObjects as IImage[], labels, statuses))
+    : (await API.featureExtraction(method, dataObjects as IImage[]));
+
+  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
+  commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+};
+
+export const setLabelTasks = (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  labelTasks: LabelTaskType[],
+): void => {
+  const labelTasksOld = state.labelTasks;
+  const { dataObjects, unlabeledMark } = rootState;
+  commit(types.SET_LABEL_TASKS, labelTasks);
+
+  // Initialize labels for new tasks, and reset labels for deleted tasks.
+  const enableImageClassificationOld = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.Classification,
+  ) >= 0;
+  const enableImageClassification = labelTasks.findIndex(
+    (d) => d === LabelTaskType.Classification,
+  ) >= 0;
+  const enableObjectDetectionOld = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableObjectDetection = labelTasks.findIndex(
+    (d) => d === LabelTaskType.ObjectDetection,
+  ) >= 0;
+  const enableImageSegmentationOld = labelTasksOld.findIndex(
+    (d) => d === LabelTaskType.Segmentation,
+  ) >= 0;
+  const enableImageSegmentation = labelTasks.findIndex(
+    (d) => d === LabelTaskType.Segmentation,
+  ) >= 0;
+
+  if (!enableImageClassification) {
+    commit(rootTypes.SET_LABELS, [], { root: true });
+  }
+  if (!enableImageClassificationOld && enableImageClassification) {
+    const labels = Array(dataObjects.length).fill(unlabeledMark);
+    commit(rootTypes.SET_LABELS, labels, { root: true });
+  }
+  if (!enableObjectDetection) {
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, [], { root: true });
+  }
+  if (!enableObjectDetectionOld && enableObjectDetection) {
+    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
+    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
+  }
+  if (!enableImageSegmentation) {
+    commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
+  }
+  if (!enableImageSegmentationOld && enableImageSegmentation) {
+    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
+      path: null,
+    }));
+    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
+  }
+};
+
 export const setModelServices = (
   { commit }: ActionContext<IState, IRootState>,
   services: ModelService[],
@@ -209,21 +211,25 @@ export const setModelServices = (
   commit(types.SET_MODEL_SERVICES, services);
 };
 
-export const setFeatureExtractionMethods = (
+export const setDataObjectSelectionMethods = (
   { commit }: ActionContext<IState, IRootState>,
-  methods: FeatureExtractionMethod[],
+  methods: DataObjectSelectionMethod[],
 ): void => {
-  commit(types.SET_FEATURE_EXTRACTION_METHODS, methods);
+  commit(types.SET_DATA_OBJECT_SELECTION_METHODS, methods);
 };
 
-export const setFeatureExtractionMethod = (
-  { commit, state }: ActionContext<IState, IRootState>,
-  method: FeatureExtractionMethod,
+export const setDataObjectSelectionMethod = (
+  { commit }: ActionContext<IState, IRootState>,
+  method: DataObjectSelectionMethod[],
 ): void => {
-  if (state.featureExtractionMethod === method) {
-    return;
-  }
-  commit(types.SET_FEATURE_EXTRACTION_METHOD, method);
+  commit(types.SET_DATA_OBJECT_SELECTION_METHOD, method);
+};
+
+export const setDataObjectSelectionModel = (
+  { commit }: ActionContext<IState, IRootState>,
+  model: ModelService,
+): void => {
+  commit(types.SET_DATA_OBJECT_SELECTION_MODEL, model);
 };
 
 export const setDefaultLabelingMethods = (
@@ -247,18 +253,21 @@ export const setDefaultLabelingModel = (
   commit(types.SET_DEFAULT_LABELING_MODEL, model);
 };
 
-export const setInterimModelTrainingMethods = (
+export const setFeatureExtractionMethods = (
   { commit }: ActionContext<IState, IRootState>,
-  methods: InterimModelTrainingMethod[],
+  methods: FeatureExtractionMethod[],
 ): void => {
-  commit(types.SET_INTERIM_MODEL_TRAINING_METHODS, methods);
+  commit(types.SET_FEATURE_EXTRACTION_METHODS, methods);
 };
 
-export const setInterimModelTrainingMethod = (
-  { commit }: ActionContext<IState, IRootState>,
-  method: InterimModelTrainingMethod,
+export const setFeatureExtractionMethod = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  method: FeatureExtractionMethod,
 ): void => {
-  commit(types.SET_INTERIM_MODEL_TRAINING_METHOD, method);
+  if (state.featureExtractionMethod === method) {
+    return;
+  }
+  commit(types.SET_FEATURE_EXTRACTION_METHOD, method);
 };
 
 export const setInteractiveLabelingMethods = (
@@ -275,25 +284,46 @@ export const setInteractiveLabelingMethod = (
   commit(types.SET_INTERACTIVE_LABELING_METHOD, method);
 };
 
-export const setDataObjectSelectionMethods = (
+export const setInterimModelTrainingMethods = (
   { commit }: ActionContext<IState, IRootState>,
-  methods: DataObjectSelectionMethod[],
+  methods: InterimModelTrainingMethod[],
 ): void => {
-  commit(types.SET_DATA_OBJECT_SELECTION_METHODS, methods);
+  commit(types.SET_INTERIM_MODEL_TRAINING_METHODS, methods);
 };
 
-export const setDataObjectSelectionMethod = (
+export const setInterimModelTrainingMethod = (
   { commit }: ActionContext<IState, IRootState>,
-  method: DataObjectSelectionMethod[],
+  method: InterimModelTrainingMethod,
 ): void => {
-  commit(types.SET_DATA_OBJECT_SELECTION_METHOD, method);
+  commit(types.SET_INTERIM_MODEL_TRAINING_METHOD, method);
 };
 
-export const setDataObjectSelectionModel = (
+export const setStoppageAnalysisMethods = (
   { commit }: ActionContext<IState, IRootState>,
-  model: ModelService,
+  methods: StoppageAnalysisMethod[],
 ): void => {
-  commit(types.SET_DATA_OBJECT_SELECTION_MODEL, model);
+  commit(types.SET_STOPPAGE_ANALYSIS_METHODS, methods);
+};
+
+export const setStoppageAnalysisMethod = (
+  { commit }: ActionContext<IState, IRootState>,
+  method: StoppageAnalysisMethod,
+): void => {
+  commit(types.SET_STOPPAGE_ANALYSIS_METHOD, method);
+};
+
+export const setTaskTransformationMethods = (
+  { commit }: ActionContext<IState, IRootState>,
+  methods: TaskTransformationMethod[],
+): void => {
+  commit(types.SET_TASK_TRANSFORMATION_METHODS, methods);
+};
+
+export const setTaskTransformationMethod = (
+  { commit }: ActionContext<IState, IRootState>,
+  method: TaskTransformationMethod,
+): void => {
+  commit(types.SET_TASK_TRANSFORMATION_METHOD, method);
 };
 
 export const extractDataObjects = async (

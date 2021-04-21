@@ -156,14 +156,22 @@ export interface InteractiveLabelingMethod {
   configuration?: Record<string, any>;
 }
 
-/** The enum of task transformation types. */
-export enum TaskTransformationType {
-  DirectLabeling = 'DirectLabeling',
+/** The interface of an interim model training method. */
+export interface StoppageAnalysisMethod {
+  name: string;
+  serverless: boolean;
+  api: string; // for serverless methods, the api is the method's unique name
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
 }
 
-/** The enum of stoppage analysis types. */
-export enum StoppageAnalysisType {
-  AllChecked = 'AllChecked',
+/** The interface of a task transformation method. */
+export interface TaskTransformationMethod {
+  name: string;
+  parameters: Array<string>;
+  isBuiltIn: boolean;
+  id: string;
 }
 
 /** The enum of projection method types. */

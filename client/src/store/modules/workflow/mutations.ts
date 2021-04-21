@@ -1,17 +1,22 @@
 import {
+  LabelTaskType,
   ModelService,
+  DataObjectSelectionMethod,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
-  InterimModelTrainingMethod,
-  LabelTaskType,
   InteractiveLabelingMethod,
-  DataObjectSelectionMethod,
+  InterimModelTrainingMethod,
+  StoppageAnalysisMethod,
+  TaskTransformationMethod,
 } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
 
 export default {
-  [types.SET_LABEL_TASKS](state: IState, labelTasks: LabelTaskType[]): void {
+  [types.SET_LABEL_TASKS](
+    state: IState,
+    labelTasks: LabelTaskType[],
+  ): void {
     state.labelTasks = labelTasks;
   },
   [types.SET_MODEL_SERVICES](
@@ -91,5 +96,29 @@ export default {
     method: InterimModelTrainingMethod,
   ): void {
     state.interimModelTrainingMethod = method;
+  },
+  [types.SET_STOPPAGE_ANALYSIS_METHODS](
+    state: IState,
+    methods: StoppageAnalysisMethod[],
+  ): void {
+    state.stoppageAnalysisMethods = methods;
+  },
+  [types.SET_STOPPAGE_ANALYSIS_METHOD](
+    state: IState,
+    method: StoppageAnalysisMethod,
+  ): void {
+    state.stoppageAnalysisMethod = method;
+  },
+  [types.SET_TASK_TRANSFORMATION_METHODS](
+    state: IState,
+    methods: TaskTransformationMethod[],
+  ): void {
+    state.taskTransformationMethods = methods;
+  },
+  [types.SET_TASK_TRANSFORMATION_METHOD](
+    state: IState,
+    method: TaskTransformationMethod,
+  ): void {
+    state.taskTransformationMethod = method;
   },
 };

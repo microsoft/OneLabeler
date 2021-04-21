@@ -19,17 +19,7 @@ import {
   DefaultLabelingMethod,
   InterimModelTrainingMethod,
 } from '@/commons/types';
-import {
-  PROTOCOL,
-  IP,
-  SERVER_PORT,
-} from './http-params';
 import uploadFile from './upload-file';
-
-const formatter = (
-  port: number,
-  funcName: string,
-) => `${PROTOCOL}://${IP}:${port}/dataLabeling/${funcName}`;
 
 /**
  * Workflow Component - Data Object Extraction

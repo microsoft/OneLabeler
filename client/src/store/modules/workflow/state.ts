@@ -1,22 +1,24 @@
 import {
   DataType,
   LabelTaskType,
-  TaskTransformationType,
-  StoppageAnalysisType,
   ModelService,
-  FeatureExtractionMethod,
-  DefaultLabelingMethod,
-  InterimModelTrainingMethod,
-  InteractiveLabelingMethod,
   DataObjectSelectionMethod,
+  DefaultLabelingMethod,
+  FeatureExtractionMethod,
+  InteractiveLabelingMethod,
+  InterimModelTrainingMethod,
+  StoppageAnalysisMethod,
+  TaskTransformationMethod,
 } from '@/commons/types';
 import {
   modelServices,
-  featureExtractionMethods,
-  defaultLabelingMethods,
-  interimModelTrainingMethods,
-  interactiveLabelingMethods,
   dataObjectSelectionMethods,
+  defaultLabelingMethods,
+  featureExtractionMethods,
+  interactiveLabelingMethods,
+  interimModelTrainingMethods,
+  stoppageAnalysisMethods,
+  taskTransformationMethods,
 } from '@/commons/builtins';
 
 export interface IState {
@@ -51,10 +53,13 @@ export interface IState {
   dataObjectSelectionMethod: DataObjectSelectionMethod[],
   dataObjectSelectionModel: ModelService | null,
 
-  /** The task the labeler is instructed to carry out. */
-  taskTransformation: TaskTransformationType,
-  /** The stoppage analysis method. */
-  stoppageAnalysis: StoppageAnalysisType,
+  /** The collection of task transformation methods. */
+  taskTransformationMethods: TaskTransformationMethod[],
+  taskTransformationMethod: TaskTransformationMethod,
+
+  /** The collection of stoppage analysis methods. */
+  stoppageAnalysisMethods: StoppageAnalysisMethod[],
+  stoppageAnalysisMethod: StoppageAnalysisMethod,
 }
 
 export const createInitialState = (): IState => ({
@@ -76,8 +81,12 @@ export const createInitialState = (): IState => ({
   dataObjectSelectionMethods,
   dataObjectSelectionMethod: [] as DataObjectSelectionMethod[],
   dataObjectSelectionModel: null,
-  taskTransformation: TaskTransformationType.DirectLabeling,
-  stoppageAnalysis: StoppageAnalysisType.AllChecked,
+  taskTransformationMethods,
+  taskTransformationMethod: taskTransformationMethods
+    .find((d) => d.name === 'DirectLabeling') as TaskTransformationMethod,
+  stoppageAnalysisMethods,
+  stoppageAnalysisMethod: stoppageAnalysisMethods
+    .find((d) => d.name === 'AllChecked') as StoppageAnalysisMethod,
 });
 
 export default createInitialState();
