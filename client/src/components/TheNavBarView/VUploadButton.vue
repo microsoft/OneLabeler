@@ -102,16 +102,16 @@ export default Vue.extend({
         const target = e.target as HTMLInputElement;
         if (this.type === UploadTarget.File) {
           if (target.files && target.files[0]) {
-            this.$emit('upload-file', target.files[0]);
+            this.$emit('upload:file', target.files[0]);
           } else {
-            this.$emit('upload-file', null);
+            this.$emit('upload:file', null);
           }
         }
         if (this.type === UploadTarget.Folder) {
           if (target.files) {
-            this.$emit('upload-files', target.files);
+            this.$emit('upload:files', target.files);
           } else {
-            this.$emit('upload-files', null);
+            this.$emit('upload:files', null);
           }
         }
       }

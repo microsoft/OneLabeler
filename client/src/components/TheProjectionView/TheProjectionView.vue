@@ -3,7 +3,7 @@
     <TheProjectionViewHeader
       :n-rows="nRows"
       :n-columns="nColumns"
-      @set-matrix-shape="onSetMatrixShape"
+      @set:matrix-shape="onSetMatrixShape"
     />
     <v-divider />
     <v-card-actions
@@ -42,11 +42,11 @@
           :feature-names="featureNames"
           :label2color="label2color"
           style="margin: 1px"
-          @update-selected-feature-indices="onUpdateSelectedFeatureIndices($event, i)"
-          @click-projection-method="onClickProjectionMethod($event, i)"
-          @update-binning="onUpdateBinning($event, i)"
-          @update-subsampling="onUpdateSubsampling($event, i)"
-          @select-uuids="onSelectUuids"
+          @update:feature-indices="onUpdateSelectedFeatureIndices($event, i)"
+          @click:projection-method="onClickProjectionMethod($event, i)"
+          @update:binning="onUpdateBinning($event, i)"
+          @update:subsampling="onUpdateSubsampling($event, i)"
+          @select:uuids="onSelectUuids"
         />
       </v-container>
       <p

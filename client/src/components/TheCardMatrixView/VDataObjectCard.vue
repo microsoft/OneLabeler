@@ -17,7 +17,7 @@
       :style="{
         'height': `${headerHeight}px`
       }"
-      @click-label="onClickCardLabel"
+      @click:label="onClickCardLabel"
     />
     <v-card-actions
       class="pa-0"
@@ -95,13 +95,13 @@ export default Vue.extend({
   methods: {
     onClickCardLabel(label: Label): void {
       const { dataObject } = this;
-      this.$emit('click-card-label', dataObject, label);
+      this.$emit('click:card-label', dataObject, label);
     },
     onHoverCard(dataObject: IImage): void {
-      this.$emit('hover-card', dataObject);
+      this.$emit('hover:card', dataObject);
     },
     onLeaveCard(dataObject: IImage): void {
-      this.$emit('leave-card', dataObject);
+      this.$emit('leave:card', dataObject);
     },
   },
 });

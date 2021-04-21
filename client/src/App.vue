@@ -97,12 +97,12 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     itemsPerRow(): number | null {
       const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
-      return gridMatrix === undefined ? null : gridMatrix.configuration.nColumns.value;
+      return gridMatrix === undefined ? null : gridMatrix.params.nColumns.value;
     },
     itemsPerCol(): number | null {
       const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
-      return gridMatrix === undefined ? null : gridMatrix.configuration.nRows.value;
+      return gridMatrix === undefined ? null : gridMatrix.params.nRows.value;
     },
     nViews(): number {
       const {

@@ -27,7 +27,7 @@
       max-width="400px"
       :button-icon="$vuetify.icons.values.add"
       button-title="Add Class"
-      @click-close-dialog="onClickCloseDialog"
+      @click:close="onClickClose"
     >
       <template #dialog-body>
         <v-form
@@ -114,7 +114,7 @@ export default Vue.extend({
         (this.$refs.form as HTMLFormElement).resetValidation();
       }
     },
-    onClickCloseDialog(): void {
+    onClickClose(): void {
       // reset the input class name and input validation state after closing the dialog
       this.className = null;
       (this.$refs.form as HTMLFormElement).resetValidation();

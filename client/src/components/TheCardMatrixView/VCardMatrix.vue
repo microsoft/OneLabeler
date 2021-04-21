@@ -28,7 +28,7 @@
           :button-color="label2color === null ? null : label2color(labelsInPage[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
-          @click-card-label="onClickCardLabel"
+          @click:card-label="onClickCardLabel"
         />
       </v-col>
     </v-row>
@@ -136,7 +136,7 @@ export default Vue.extend({
   },
   watch: {
     page(val) {
-      this.$emit('click-page', val, this.dataObjectsInPage);
+      this.$emit('click:page', val, this.dataObjectsInPage);
     },
     dataObjects() {
       // Reset the page number to the first page when
@@ -152,7 +152,7 @@ export default Vue.extend({
   },
   methods: {
     onClickCardLabel(dataObject: IImage, label: Label) {
-      this.$emit('click-card-label', dataObject, label);
+      this.$emit('click:card-label', dataObject, label);
     },
     updateCardSize() {
       const {

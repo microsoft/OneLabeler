@@ -344,7 +344,7 @@ export default Vue.extend({
         position: points,
         uuid: uuidv4(),
       };
-      this.$emit('add-label-geometric-object', labelPolygon);
+      this.$emit('create:shape', labelPolygon);
 
       const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
         .getNode() as Konva.Layer;
@@ -501,7 +501,7 @@ export default Vue.extend({
         .setAttr('uuid', uuid);
       editableCircle.setOnUpdatePosition((d: EditableCircle) => {
         const point = d.point();
-        this.$emit('update-label-geometric-object', {
+        this.$emit('update:label-shape', {
           label,
           shape: ObjectShapeType.Point,
           position: [point.x, point.y],
@@ -528,7 +528,7 @@ export default Vue.extend({
       editableRect.getRect()
         .stroke(label2color(label));
       editableRect.setOnUpdatePosition((d: EditableRect) => {
-        this.$emit('update-label-geometric-object', {
+        this.$emit('update:label-shape', {
           label,
           shape: ObjectShapeType.Rect,
           position: d.points(),
@@ -555,7 +555,7 @@ export default Vue.extend({
       editablePolygon.getPolygon()
         .stroke(label2color(label));
       editablePolygon.setOnUpdatePosition((d: EditablePolygon) => {
-        this.$emit('update-label-geometric-object', {
+        this.$emit('update:label-shape', {
           label,
           shape: ObjectShapeType.Polygon,
           position: d.points(),
@@ -600,7 +600,7 @@ export default Vue.extend({
         const shapes = layerGeometricObjects.find('.clicked-shape');
         shapes.each((shape) => {
           const uuid = shape.getAttr('uuid');
-          this.$emit('remove-label-geometric-object', {
+          this.$emit('delete:shape', {
             uuid,
           });
           shape.destroy();
@@ -837,7 +837,7 @@ export default Vue.extend({
       this.isMouseDown = false;
       if (this.paintable || this.erasable) {
         const canvas = this.calLabelMaskCanvas();
-        this.$emit('set-label-mask', canvas);
+        this.$emit('update:label-mask', canvas);
       }
       if (this.polygonLassoCreateable) {
         this.stopPolygonCreation(true);
@@ -868,7 +868,7 @@ export default Vue.extend({
         };
         this.drawEditableCircle(labelCircle);
         layerGeometricObjects.draw();
-        this.$emit('add-label-geometric-object', labelCircle);
+        this.$emit('create:shape', labelCircle);
       } else if (this.polygonClickStageCreateable) {
         const color = label2color(strokeLabel);
         if (this.points.length >= 1) {
@@ -907,7 +907,7 @@ export default Vue.extend({
           };
           this.drawEditableRect(labelRect);
           layerGeometricObjects.draw();
-          this.$emit('add-label-geometric-object', labelRect);
+          this.$emit('create:shape', labelRect);
         }
       }
 

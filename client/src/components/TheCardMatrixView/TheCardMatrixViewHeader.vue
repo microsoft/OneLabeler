@@ -26,7 +26,7 @@
           v-for="(entry, i) in [...classes, unlabeledMark]"
           :key="i"
           style="min-height: 30px"
-          @click="onClickSetBatchLabels(entry)"
+          @click="onClickBatchLabel(entry)"
         >
           <v-list-item-title
             height="20"
@@ -71,8 +71,8 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickSetBatchLabels(label: Label): void {
-      this.$emit('click-set-batch-labels', label);
+    onClickBatchLabel(label: Label): void {
+      this.$emit('click:batch-label', label);
     },
   },
 });

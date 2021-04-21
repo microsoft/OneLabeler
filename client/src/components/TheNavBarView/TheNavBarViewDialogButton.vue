@@ -22,7 +22,7 @@
       </v-btn>
     </template>
     <TheWorkflowPanel
-      @click-close="onClickClose"
+      @click:close="onClickClose"
     />
   </v-dialog>
 </template>

@@ -152,8 +152,8 @@
           <!-- The input box for process input parameters. -->
           <v-list-item>
             <v-autocomplete
-              :value="method.parameters"
-              :items="processInputNames"
+              :value="method.inputs"
+              :items="processInputList"
               :disabled="method.isBuiltIn"
               class="mt-3"
               label="Process Input"
@@ -181,9 +181,9 @@
                 >
                   <v-checkbox
                     :label="data.item"
-                    :value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                    :input-value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                    :disabled="processInputNamesOfRequired.findIndex((d) => d === data.item) >= 0"
+                    :value="method.inputs.findIndex((d) => d === data.item) >= 0"
+                    :input-value="method.inputs.findIndex((d) => d === data.item) >= 0"
+                    :disabled="processInputListOfRequired.findIndex((d) => d === data.item) >= 0"
                     class="ma-0"
                     dense
                     hide-details
@@ -196,8 +196,8 @@
           <!-- The display of process output parameters. -->
           <v-list-item>
             <v-autocomplete
-              :value="processOutputName"
-              :items="[processOutputName]"
+              :value="processOutput"
+              :items="[processOutput]"
               :class="`mt-3 pb-2 ${classNameOfProcessOutputWidget}`"
               label="Process Output"
               disabled
@@ -212,19 +212,19 @@
                   small
                   outlined
                 >
-                  {{ processOutputName }}
+                  {{ processOutput }}
                 </v-chip>
               </template>
             </v-autocomplete>
           </v-list-item>
 
-          <template v-if="method.configuration !== undefined">
+          <template v-if="method.params !== undefined">
             <v-card
               class="mx-4 mb-2"
               outlined
             >
               <v-list-item
-                v-for="(entry, key) in method.configuration"
+                v-for="(entry, key) in method.params"
                 :key="key"
                 class="py-0"
               >
@@ -251,7 +251,7 @@
                     <v-list-item
                       v-for="(option, optionIdx) in entry.options"
                       :key="optionIdx"
-                      @click="onClickMethodConfiguration(
+                      @click="onClickMethodParam(
                         method, key, option)"
                     >
                       <v-list-item-title class="subtitle-2">
@@ -291,15 +291,15 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Interactive Labeling Instantiation',
-      processInputNames: [
+      processInputList: [
         'dataObjects',
         'samples',
       ],
-      processInputNamesOfRequired: [
+      processInputListOfRequired: [
         'dataObjects',
         'samples',
       ],
-      processOutputName: 'labels',
+      processOutput: 'labels',
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
       classNameOfProcessOutputWidget: 'parameter-panel-process-output',
@@ -333,7 +333,7 @@ export default Vue.extend({
       });
     },
     onEditNode(newValue: InteractiveLabelingNode): void {
-      this.$emit('edit-node', newValue);
+      this.$emit('edit:node', newValue);
     },
     onClickMenuOfMethodsOption(options: InteractiveLabelingMethod[]): void {
       const { node } = this;
@@ -342,19 +342,19 @@ export default Vue.extend({
         value: options.map((d) => ({ method: d })),
       });
     },
-    onClickMethodConfiguration(
+    onClickMethodParam(
       method: InteractiveLabelingMethod,
-      configurationName: string,
+      paramName: string,
       option: { value: unknown, text: string },
     ): void {
       const { node } = this;
-      const { configuration } = method;
+      const { params } = method;
       const newMethod = {
         ...method,
-        configuration: {
-          ...configuration,
-          [configurationName]: {
-            ...configuration[configurationName],
+        params: {
+          ...params,
+          [paramName]: {
+            ...params[paramName],
             value: option.value,
           },
         },
@@ -372,7 +372,7 @@ export default Vue.extend({
       this.onEditMethod(newMethod);
     },
     onEditMethod(newValue: InteractiveLabelingMethod): void {
-      this.$emit('edit-method', this.node.type, newValue);
+      this.$emit('edit:method', this.node.type, newValue);
     },
   },
 });

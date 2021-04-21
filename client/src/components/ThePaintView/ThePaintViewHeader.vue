@@ -454,19 +454,19 @@ export default Vue.extend({
   },
   methods: {
     onResetImageSize() {
-      this.$emit('reset-image-size');
+      this.$emit('reset:image-size');
     },
     onSetMouseOperation(mouseOperation: MouseOperationType) {
-      this.$emit('set-mouse-operation', mouseOperation);
+      this.$emit('set:mouse-operation', mouseOperation);
     },
     onSetStrokeShape(strokeShape: StrokeShapeType) {
-      this.$emit('set-stroke-shape', strokeShape);
+      this.$emit('set:stroke-shape', strokeShape);
     },
     onSetStrokeWidth(strokeWidth: number) {
-      this.$emit('set-stroke-width', strokeWidth);
+      this.$emit('set:stroke-width', strokeWidth);
     },
     onSetStrokeLabel(strokeLabel: Label) {
-      this.$emit('set-stroke-label', strokeLabel);
+      this.$emit('set:stroke-label', strokeLabel);
     },
   },
 });

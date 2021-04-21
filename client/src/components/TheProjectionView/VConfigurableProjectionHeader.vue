@@ -414,21 +414,21 @@ export default Vue.extend({
   },
   methods: {
     onClickProjectionMethod(projectionMethod: ProjectionMethodType) {
-      this.$emit('click-projection-method', projectionMethod);
+      this.$emit('click:projection-method', projectionMethod);
     },
     onClickSelectAllFeatures() {
       const { featureNames } = this;
       const nFeatures = featureNames.length;
       const selectedFeatureIndices = new Array(nFeatures).fill(null).map((d, i) => i);
-      this.$emit('update-selected-feature-indices', selectedFeatureIndices);
+      this.$emit('update:feature-indices', selectedFeatureIndices);
     },
     onClickUnselectAllFeatures() {
-      this.$emit('update-selected-feature-indices', []);
+      this.$emit('update:feature-indices', []);
     },
     onAddSingleFeature(featureName: string) {
       const featureIndex = this.featureNames.findIndex((d) => d === featureName);
       const selectedFeatureIndices = [...this.selectedFeatureIndices, featureIndex];
-      this.$emit('update-selected-feature-indices', selectedFeatureIndices);
+      this.$emit('update:feature-indices', selectedFeatureIndices);
       this.singleFeatureNameModel = null;
     },
     onClickCheckbox(featureName: string) {
@@ -440,10 +440,10 @@ export default Vue.extend({
           ...this.selectedFeatureIndices.slice(0, featureIndexIndex),
           ...this.selectedFeatureIndices.slice(featureIndexIndex + 1),
         ];
-        this.$emit('update-selected-feature-indices', selectedFeatureIndices);
+        this.$emit('update:feature-indices', selectedFeatureIndices);
       } else {
         const selectedFeatureIndices = [...this.selectedFeatureIndices, featureIndex];
-        this.$emit('update-selected-feature-indices', selectedFeatureIndices);
+        this.$emit('update:feature-indices', selectedFeatureIndices);
       }
     },
     onClickEnableBinning(enabled: (true | null)) {
@@ -453,7 +453,7 @@ export default Vue.extend({
         nRows: binningNRows,
         nColumns: binningNColumns,
       };
-      this.$emit('update-binning', binningUpdated);
+      this.$emit('update:binning', binningUpdated);
     },
     onInputBinningNRows(nRows: number) {
       const { binningNRowsRange, enableBinning, binningNColumns } = this;
@@ -465,7 +465,7 @@ export default Vue.extend({
         nRows,
         nColumns: binningNColumns,
       };
-      this.$emit('update-binning', binningUpdated);
+      this.$emit('update:binning', binningUpdated);
     },
     onInputBinningNColumns(nColumns: number) {
       const { binningNColumnsRange, enableBinning, binningNRows } = this;
@@ -477,7 +477,7 @@ export default Vue.extend({
         nRows: binningNRows,
         nColumns,
       };
-      this.$emit('update-binning', binningUpdated);
+      this.$emit('update:binning', binningUpdated);
     },
     onClickEnableSubsampling(enabled: (true | null)) {
       const { subsamplingNSamples } = this;
@@ -485,7 +485,7 @@ export default Vue.extend({
         enabled: enabled === true,
         nSamples: subsamplingNSamples,
       };
-      this.$emit('update-subsampling', subsamplingUpdated);
+      this.$emit('update:subsampling', subsamplingUpdated);
     },
     onInputSubsamplingNSamples(nSamples: number) {
       const { enableSubsampling, subsamplingNSamplesRange } = this;
@@ -496,7 +496,7 @@ export default Vue.extend({
         enabled: enableSubsampling,
         nSamples,
       };
-      this.$emit('update-subsampling', subsamplingUpdated);
+      this.$emit('update:subsampling', subsamplingUpdated);
     },
   },
 });

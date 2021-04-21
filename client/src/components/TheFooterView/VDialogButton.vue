@@ -111,7 +111,7 @@ export default Vue.extend({
   methods: {
     onClickCloseDialog(): void {
       this.dialog = false;
-      this.$emit('click-close-dialog');
+      this.$emit('click:close');
     },
   },
 });

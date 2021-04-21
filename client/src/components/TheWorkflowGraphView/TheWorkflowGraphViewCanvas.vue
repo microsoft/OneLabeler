@@ -215,7 +215,7 @@ export default Vue.extend({
       return true;
     },
     onClickNode(node: WorkflowNode): void {
-      this.$emit('select-node', node);
+      this.$emit('click:node', node);
     },
     onRightClickNode(e: MouseEvent, node: WorkflowNode): void {
       e.preventDefault();
@@ -226,7 +226,7 @@ export default Vue.extend({
     },
     onRemoveNode(): void {
       const node = this.rightClickedNode;
-      this.$emit('remove-node', node);
+      this.$emit('remove:node', node);
     },
   },
 });

@@ -20,7 +20,7 @@
       small
       :icon="$vuetify.icons.values.new"
       :keyboard-trigger="keyboardTriggerNewProject"
-      @upload-files="onNewProject"
+      @upload:files="onNewProject"
     />
 
     <!-- The load project button. -->
@@ -31,7 +31,7 @@
       small
       :icon="$vuetify.icons.values.open"
       :keyboard-trigger="keyboardTriggerLoadProject"
-      @upload-file="onLoadProject"
+      @upload:file="onLoadProject"
     />
 
     <!-- The save label project button. -->
@@ -363,7 +363,7 @@ export default Vue.extend({
     },
     dataObjectSelectionAlgorithmicEnabled(): boolean {
       return (this.dataObjectSelectionMethod as DataObjectSelectionMethod[])
-        .findIndex((d) => d.algorithmic) >= 0;
+        .findIndex((d) => d.isAlgorithmic) >= 0;
     },
   },
   created(): void {

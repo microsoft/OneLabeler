@@ -109,11 +109,11 @@
                   {{ text }}
                 </v-list-item-title>
                 <p
-                  v-if="menuOfMethods.options[i].serverless"
+                  v-if="menuOfMethods.options[i].isServerless"
                   class="subtitle-2 text-right ma-1 grey--text"
                   style="width: 5em"
                 >
-                  serverless
+                  isServerless
                 </p>
                 <p
                   v-if="menuOfMethods.options[i].isBuiltIn"
@@ -153,7 +153,7 @@
             dense
             hide-details
             single-line
-            @input="onInputMethodName($event)"
+            @input="onEditMethodName($event)"
           />
         </v-list-item>
 
@@ -161,7 +161,7 @@
         <v-list-item>
           Method API
           <v-text-field
-            :value="method.serverless ? 'serverless' : method.api"
+            :value="method.isServerless ? 'isServerless' : method.api"
             :disabled="method.isBuiltIn"
             class="ma-0 pl-4 pt-1 subtitle-2"
             style="padding-bottom: 6px !important"
@@ -176,8 +176,8 @@
         <!-- The input box for process input parameters. -->
         <v-list-item>
           <v-autocomplete
-            :value="method.parameters"
-            :items="processInputNames"
+            :value="method.inputs"
+            :items="processInputList"
             :disabled="method.isBuiltIn"
             class="mt-3"
             label="Process Input"
@@ -206,9 +206,9 @@
               >
                 <v-checkbox
                   :label="data.item"
-                  :value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                  :input-value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                  :disabled="processInputNamesOfRequired.findIndex((d) => d === data.item) >= 0"
+                  :value="method.inputs.findIndex((d) => d === data.item) >= 0"
+                  :input-value="method.inputs.findIndex((d) => d === data.item) >= 0"
+                  :disabled="processInputListOfRequired.findIndex((d) => d === data.item) >= 0"
                   class="ma-0"
                   dense
                   hide-details
@@ -221,8 +221,8 @@
         <!-- The display of process output parameters. -->
         <v-list-item>
           <v-autocomplete
-            :value="processOutputName"
-            :items="[processOutputName]"
+            :value="processOutput"
+            :items="[processOutput]"
             :class="`mt-3 ${classNameOfProcessOutputWidget}`"
             label="Process Output"
             disabled
@@ -237,7 +237,7 @@
                 small
                 outlined
               >
-                {{ processOutputName }}
+                {{ processOutput }}
               </v-chip>
             </template>
           </v-autocomplete>
@@ -269,15 +269,15 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Interim Model Training Instantiation',
-      processInputNames: [
+      processInputList: [
         'model',
         'features',
         'labels',
       ],
-      processInputNamesOfRequired: [
+      processInputListOfRequired: [
         'model',
       ],
-      processOutputName: 'model',
+      processOutput: 'model',
       classNameOfPanel: 'parameter-panel',
       classNameOfCheckbox: 'parameter-panel-checkbox',
       classNameOfProcessOutputWidget: 'parameter-panel-process-output',
@@ -311,7 +311,7 @@ export default Vue.extend({
       });
     },
     onEditNode(newValue: InterimModelTrainingNode): void {
-      this.$emit('edit-node', newValue);
+      this.$emit('edit:node', newValue);
     },
     onClickMenuOfMethodsOption(option: InterimModelTrainingMethod): void {
       const { node } = this;
@@ -320,7 +320,7 @@ export default Vue.extend({
         value: { method: option },
       });
     },
-    onInputMethodName(name: string): void {
+    onEditMethodName(name: string): void {
       const { node, method } = this;
       this.onEditNode({
         ...node,
@@ -341,34 +341,34 @@ export default Vue.extend({
       this.onEditMethod({ ...method, api });
     },
     onCreateMethod(): void {
-      this.$emit('create-method');
+      this.$emit('create:method');
     },
     onEditMethod(newValue: InterimModelTrainingMethod): void {
-      this.$emit('edit-method', this.node.type, newValue);
+      this.$emit('edit:method', this.node.type, newValue);
     },
-    onClickParameterCheckbox(processInputNames: string[]): void {
+    onClickParameterCheckbox(processInputList: string[]): void {
       const {
         node,
-        processInputNamesOfRequired,
+        processInputListOfRequired,
         method,
       } = this;
-      const orders = this.processInputNames;
+      const orders = this.processInputList;
       const sorted = [
-        ...processInputNamesOfRequired,
-        ...processInputNames.filter((d) => processInputNamesOfRequired.indexOf(d) < 0),
+        ...processInputListOfRequired,
+        ...processInputList.filter((d) => processInputListOfRequired.indexOf(d) < 0),
       ].sort((a, b) => (
         orders.indexOf(a) - orders.indexOf(b)
       ));
       this.onEditNode({
         ...node,
         value: {
-          method: { ...method, parameters: sorted },
+          method: { ...method, inputs: sorted },
         },
       });
-      this.onEditMethod({ ...method, parameters: sorted });
+      this.onEditMethod({ ...method, inputs: sorted });
     },
     onClickRecompute(): void {
-      this.$emit('click-recompute', this.node);
+      this.$emit('click:recompute', this.node);
     },
   },
 });

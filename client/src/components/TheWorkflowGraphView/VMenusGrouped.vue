@@ -159,7 +159,7 @@ export default Vue.extend({
       return optionsText[index];
     },
     clickMenuOption(menuKey: string, option: unknown): void {
-      this.$emit('click-menu-option', menuKey, option);
+      this.$emit('click:menu-option', menuKey, option);
     },
   },
 });

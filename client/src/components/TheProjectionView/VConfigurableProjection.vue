@@ -12,10 +12,10 @@
       :binning-n-columns="binningNColumns"
       :enable-subsampling="enableSubsampling"
       :subsampling-n-samples="subsamplingNSamples"
-      @update-selected-feature-indices="onUpdateSelectedFeatureIndices"
-      @click-projection-method="onClickProjectionMethod"
-      @update-binning="onUpdateBinning"
-      @update-subsampling="onUpdateSubsampling"
+      @update:feature-indices="onUpdateSelectedFeatureIndices"
+      @click:projection-method="onClickProjectionMethod"
+      @update:binning="onUpdateBinning"
+      @update:subsampling="onUpdateSubsampling"
     />
 
     <!-- The dataset overview display. -->
@@ -31,7 +31,7 @@
       :x-extent="xExtent"
       :y-extent="yExtent"
       :label2color="label2color"
-      @select-uuids="onSelectUuids"
+      @select:uuids="onSelectUuids"
     />
     <VHeatmap
       v-else
@@ -46,7 +46,7 @@
       :y-extent="yExtent"
       :n-rows="binningNRows"
       :n-columns="binningNColumns"
-      @select-uuids="onSelectUuids"
+      @select:uuids="onSelectUuids"
     />
   </div>
 </template>
@@ -307,19 +307,19 @@ export default Vue.extend({
       return null;
     },
     onUpdateSelectedFeatureIndices(selectedFeatureIndices: number[]) {
-      this.$emit('update-selected-feature-indices', selectedFeatureIndices);
+      this.$emit('update:feature-indices', selectedFeatureIndices);
     },
     onClickProjectionMethod(projectionMethod: ProjectionMethodType) {
-      this.$emit('click-projection-method', projectionMethod);
+      this.$emit('click:projection-method', projectionMethod);
     },
     onUpdateBinning(binning: Binning) {
-      this.$emit('update-binning', binning);
+      this.$emit('update:binning', binning);
     },
     onUpdateSubsampling(subsampling: Subsampling) {
-      this.$emit('update-subsampling', subsampling);
+      this.$emit('update:subsampling', subsampling);
     },
     onSelectUuids(selectedUuids: string[]) {
-      this.$emit('select-uuids', selectedUuids);
+      this.$emit('select:uuids', selectedUuids);
     },
   },
 });

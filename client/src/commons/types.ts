@@ -95,7 +95,7 @@ export interface IMessage {
 /** The interface of a model service. */
 export interface ModelService {
   name: string;
-  serverless: boolean;
+  isServerless: boolean;
   type: string,
   isBuiltIn: boolean;
   objectId: string;
@@ -105,73 +105,95 @@ export interface ModelService {
   // isLocal: boolean;
 }
 
-/** The interface of an algorithmic feature extraction method. */
-export interface FeatureExtractionMethod {
+export type MethodParams = Record<string, {
+  value: unknown,
+  title: string,
+  options: { value: unknown, text: string }[],
+}>;
+
+/** The interface of a method instantiating a process. */
+export interface ProcessMethod {
   name: string;
-  serverless: boolean;
-  api: string; // for serverless methods, the api is the method's unique name
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api?: string; // for isServerless methods, the api is the method's unique name
+  params?: MethodParams;
+}
+
+/** The interface of an algorithmic feature extraction method. */
+export interface FeatureExtractionMethod extends ProcessMethod {
+  name: string;
+  id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
 }
 
 /** The interface of a data object selection method. */
-export interface DataObjectSelectionMethod {
+export interface DataObjectSelectionMethod extends ProcessMethod {
   name: string;
-  serverless: boolean;
-  algorithmic: boolean;
-  api: string; // for serverless methods, the api is the method's unique name
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
-  configuration?: Record<string, any>;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
+  params?: MethodParams;
 }
 
 /** The interface of an interim model training method. */
-export interface InterimModelTrainingMethod {
+export interface InterimModelTrainingMethod extends ProcessMethod {
   name: string;
-  serverless: boolean;
-  api: string; // for serverless methods, the api is the method's unique name
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
 }
 
 /** The interface of an algorithmic default labeling method. */
-export interface DefaultLabelingMethod {
+export interface DefaultLabelingMethod extends ProcessMethod {
   name: string;
-  serverless: boolean;
-  api: string; // for serverless methods, the api is the method's unique name
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
 }
 
 /** The interface of an interactive labeling method. */
-export interface InteractiveLabelingMethod {
+export interface InteractiveLabelingMethod extends ProcessMethod {
   name: string;
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
-  configuration?: Record<string, any>;
+  inputs: Array<string>;
+  isBuiltIn: boolean;
+  params?: MethodParams;
 }
 
 /** The interface of an interim model training method. */
-export interface StoppageAnalysisMethod {
+export interface StoppageAnalysisMethod extends ProcessMethod {
   name: string;
-  serverless: boolean;
-  api: string; // for serverless methods, the api is the method's unique name
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
 }
 
 /** The interface of a task transformation method. */
-export interface TaskTransformationMethod {
+export interface TaskTransformationMethod extends ProcessMethod {
   name: string;
-  parameters: Array<string>;
-  isBuiltIn: boolean;
   id: string;
+  inputs: Array<string>;
+  isBuiltIn: boolean;
 }
 
 /** The enum of projection method types. */

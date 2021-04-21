@@ -17,7 +17,7 @@ import {
 
 export const modelServices: ModelService[] = [{
   name: 'DecisionTree (Supervised)',
-  serverless: false,
+  isServerless: false,
   type: 'DecisionTree',
   isBuiltIn: true,
   objectId: (new ObjectId('DecisionTree')).toHexString(),
@@ -27,7 +27,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   name: 'SVM (Supervised)',
-  serverless: false,
+  isServerless: false,
   type: 'SVM',
   isBuiltIn: true,
   objectId: (new ObjectId('SVM000000000')).toHexString(),
@@ -37,7 +37,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   name: 'LogisticRegression (Supervised)',
-  serverless: false,
+  isServerless: false,
   type: 'LogisticRegression',
   isBuiltIn: true,
   objectId: (new ObjectId('LogisticRegr')).toHexString(),
@@ -47,7 +47,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   name: 'RestrictedBoltzmannMachine (Supervised)',
-  serverless: false,
+  isServerless: false,
   type: 'RestrictedBoltzmannMachine',
   isBuiltIn: true,
   objectId: (new ObjectId('RestrictedBo')).toHexString(),
@@ -57,7 +57,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   name: 'LabelSpreading (Semi-Supervised)',
-  serverless: false,
+  isServerless: false,
   type: 'LabelSpreading',
   isBuiltIn: true,
   objectId: (new ObjectId('LabelSpreadi')).toHexString(),
@@ -69,21 +69,21 @@ export const modelServices: ModelService[] = [{
 
 export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   name: 'Projection (User Sampling)',
-  serverless: true,
-  algorithmic: false,
+  isServerless: true,
+  isAlgorithmic: false,
   api: 'Projection',
-  parameters: ['features', 'labels'],
+  inputs: ['features', 'labels'],
   isBuiltIn: true,
   id: 'Projection',
 }, {
   name: 'Random (Dummy)',
-  serverless: true,
-  algorithmic: true,
+  isServerless: true,
+  isAlgorithmic: true,
   api: 'Random',
-  parameters: ['labels'],
+  inputs: ['labels'],
   isBuiltIn: true,
   id: 'Random-73417867',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -100,13 +100,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'Cluster (Clustering)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/Cluster`,
-  parameters: ['features', 'labels'],
+  inputs: ['features', 'labels'],
   isBuiltIn: true,
   id: 'Cluster-13466955',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -123,13 +123,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'DenseAreas (Clustering)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/DenseAreas`,
-  parameters: ['features', 'labels'],
+  inputs: ['features', 'labels'],
   isBuiltIn: true,
   id: 'DenseAreas-67390401',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -146,13 +146,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'ClusterCentroids (Clustering)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/ClusterCentroids`,
-  parameters: ['features', 'labels'],
+  inputs: ['features', 'labels'],
   isBuiltIn: true,
   id: 'ClusterCentroids-60587176',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -169,13 +169,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'Entropy (Active Learning)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/Entropy`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'Entropy-49394355',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -192,13 +192,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'LeastConfident (Active Learning)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/LeastConfident`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'LeastConfident-12520162',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -215,13 +215,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'SmallestMargin (Active Learning)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/SmallestMargin`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'SmallestMargin-74021796',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -238,13 +238,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'EntropyDiversity (Active Learning)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/EntropyDiversity`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'EntropyDiversity-98931757',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -261,13 +261,13 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }, {
   name: 'EntropyDiversityDensity (Active Learning)',
-  serverless: false,
-  algorithmic: true,
+  isServerless: false,
+  isAlgorithmic: true,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/EntropyDiversityDensity`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'EntropyDiversityDensity-60957928',
-  configuration: {
+  params: {
     nBatch: {
       value: 48,
       title: 'Selection Batch Size',
@@ -286,68 +286,68 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
 
 export const defaultLabelingMethods: DefaultLabelingMethod[] = [{
   name: 'ModelPrediction',
-  serverless: false,
+  isServerless: false,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/defaultLabels/ModelPrediction`,
-  parameters: ['features', 'model'],
+  inputs: ['features', 'model'],
   isBuiltIn: true,
   id: 'ModelPrediction-29967546',
 }, {
   name: 'Null (Dummy)',
-  serverless: true,
+  isServerless: true,
   api: 'Null',
-  parameters: ['features'],
+  inputs: ['features'],
   isBuiltIn: true,
   id: 'Null-35514905',
 }, {
   name: 'Random (Dummy)',
-  serverless: true,
+  isServerless: true,
   api: 'Random',
-  parameters: ['features'],
+  inputs: ['features'],
   isBuiltIn: true,
   id: 'Random-38398168',
 }];
 
 export const featureExtractionMethods: FeatureExtractionMethod[] = [{
   name: 'SVD (Unsupervised)',
-  serverless: false,
+  isServerless: false,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/SVD`,
-  parameters: ['dataObjects'],
+  inputs: ['dataObjects'],
   isBuiltIn: true,
   id: 'image-SVD-25940167',
 }, {
   name: 'BoW (Handcrafted)',
-  serverless: false,
+  isServerless: false,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/BoW`,
-  parameters: ['dataObjects'],
+  inputs: ['dataObjects'],
   isBuiltIn: true,
   id: 'image-BoW-6989392',
 }, {
   name: 'LDA (Supervised)',
-  serverless: false,
+  isServerless: false,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/LDA`,
-  parameters: ['dataObjects', 'labels'],
+  inputs: ['dataObjects', 'labels'],
   isBuiltIn: true,
   id: 'image-LDA-45100847',
 }, {
   name: 'Random3D (Dummy)',
-  serverless: true,
+  isServerless: true,
   api: 'Random3D',
-  parameters: ['dataObjects'],
+  inputs: ['dataObjects'],
   isBuiltIn: true,
   id: 'Random-87333124',
 }];
 
 export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
   name: 'Single Object Display',
-  parameters: ['dataObjects', 'samples'],
+  inputs: ['dataObjects', 'samples'],
   isBuiltIn: true,
   id: 'Single-Object-Display',
 }, {
   name: 'Grid Matrix',
-  parameters: ['dataObjects', 'samples'],
+  inputs: ['dataObjects', 'samples'],
   isBuiltIn: true,
   id: 'Grid-Matrix',
-  configuration: {
+  params: {
     nRows: {
       value: 6,
       title: 'Number of Objects per Column',
@@ -374,32 +374,32 @@ export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
 
 export const interimModelTrainingMethods: InterimModelTrainingMethod[] = [{
   name: 'Retrain',
-  serverless: false,
+  isServerless: false,
   api: `${PROTOCOL}://${IP}:${SERVER_PORT}/modelUpdated/Retrain`,
-  parameters: ['features', 'labels', 'model'],
+  inputs: ['features', 'labels', 'model'],
   isBuiltIn: true,
   id: 'Retrain-16440841',
 }, {
   name: 'Static',
-  serverless: true,
+  isServerless: true,
   api: 'Static',
-  parameters: ['model'],
+  inputs: ['model'],
   isBuiltIn: true,
   id: 'Static-72885436',
 }];
 
 export const stoppageAnalysisMethods: StoppageAnalysisMethod[] = [{
   name: 'AllChecked',
-  serverless: true,
+  isServerless: true,
   api: 'AllChecked',
-  parameters: ['labels'],
+  inputs: ['labels'],
   isBuiltIn: true,
   id: 'AllChecked-46322013',
 }];
 
 export const taskTransformationMethods: TaskTransformationMethod[] = [{
   name: 'DirectLabeling',
-  parameters: ['dataObjects', 'labelTask', 'labelSpace'],
+  inputs: ['dataObjects', 'labelTask', 'labelSpace'],
   isBuiltIn: true,
   id: 'DirectLabeling-97377357',
 }];

@@ -4,7 +4,7 @@
       :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
-      @click-set-batch-labels="onClickSetBatchLabels"
+      @click:batch-label="onClickBatchLabel"
     />
     <v-divider />
     <v-card-actions
@@ -20,7 +20,7 @@
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
         :label2color="label2color"
-        @click-card-label="onClickCardLabel"
+        @click:card-label="onClickCardLabel"
       />
       <p
         v-else
@@ -76,7 +76,7 @@ export default Vue.extend({
       console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
       return labels[idx];
     },
-    onClickSetBatchLabels(label: Label): void {
+    onClickBatchLabel(label: Label): void {
       const dataObjects = this.sampledDataObjects;
       const nBatch = dataObjects.length;
       const oldLabels = dataObjects.map((dataObject: IDataObject) => (

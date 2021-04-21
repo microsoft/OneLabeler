@@ -54,7 +54,7 @@ export const featureExtraction = showProgressBar(async (
   statuses: Status[] | null = null,
 ): Promise<{ dataObjects: IImage[], featureNames: string[] }> => {
   let response = null;
-  if (method.serverless && (method.api === 'Random3D')) {
+  if (method.isServerless && (method.api === 'Random3D')) {
     const SEED = '20';
     const random = xor4096(SEED);
 
@@ -107,9 +107,9 @@ export const defaultLabeling = showProgressBar(async (
   unlabeledMark: Label | null = null,
 ): Promise<Label[]> => {
   let labels = null;
-  if (method.serverless && (method.api === 'Null')) {
+  if (method.isServerless && (method.api === 'Null')) {
     labels = dataObjects.map(() => unlabeledMark);
-  } else if (method.serverless && (method.api === 'Random')) {
+  } else if (method.isServerless && (method.api === 'Random')) {
     const SEED = '20';
     const random = xor4096(SEED);
     const nClasses = (classes as Label[]).length;
@@ -149,7 +149,7 @@ export const dataObjectSelection = showProgressBar(async (
   dataObjects?: IDataObject[],
 ): Promise<number[]> => {
   let queryIndices = null;
-  if (method.serverless && (method.api === 'Random')) {
+  if (method.isServerless && (method.api === 'Random')) {
     const SEED = '20';
     const random = xor4096(SEED);
     const indicesNew = statuses

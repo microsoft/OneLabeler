@@ -26,263 +26,107 @@
       >
         <!-- The name of the process node. -->
         <v-list-item>
-          Node Name
-          <template v-if="!isTitleEditable">
-            <span class="pl-4 subtitle-2">
-              {{ node.title }}
-            </span>
-            <v-spacer />
-          </template>
-          <v-text-field
-            v-else
-            v-click-outside="onClickOutsideInputTitle"
-            :value="node.title"
-            :disabled="false"
-            class="ma-0 pl-4 pt-1 subtitle-2"
-            style="padding-bottom: 6px !important; letter-spacing: 0.01em !important"
-            type="text"
-            dense
-            hide-details
-            single-line
-            @input="onInputNodeTitle($event)"
+          <VNodeEditableTitle
+            :title="node.title"
+            @edit:title="onEditNodeTitle"
           />
-          <v-btn
-            title="edit"
-            x-small
-            icon
-            tile
-            @click="onClickEditNodeTitle"
-          >
-            <v-icon
-              aria-hidden="true"
-              class="px-0"
-              small
-            >
-              $vuetify.icons.values.edit
-            </v-icon>
-          </v-btn>
         </v-list-item>
 
         <!-- The methods used to instantiated the process. -->
-        <v-list-item class="mb-2 pa-0">
-          <v-container class="ma-0">
-            <v-row>
-              <v-col
-                class="py-0 pl-4"
-                style="width: 20%; max-width: 20%; flex-basis: 20%; height: 40px"
-              >
-                <span>Selected Methods</span>
-              </v-col>
-              <v-col
-                class="py-0 pl-0 pr-4"
-                style="width: 80%; max-width: 80%; flex-basis: 80%"
-              >
-                <v-autocomplete
-                  :value="selectedMethods"
-                  :items="methods"
-                  outlined
-                  dense
-                  multiple
-                  full-width
-                  hide-details
-                  @input="onClickMenuOfMethodsOption($event)"
-                >
-                  <template #selection="data">
-                    <v-chip
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      small
-                      label
-                      outlined
-                    >
-                      {{ data.item.name }}
-                    </v-chip>
-                  </template>
-                  <template #item="data">
-                    <v-list-item-title>
-                      <v-checkbox
-                        :label="data.item.name"
-                        :value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
-                        :input-value="selectedMethods.findIndex((d) => d.id === data.item.id) >= 0"
-                        class="my-0 parameter-panel-checkbox"
-                        dense
-                        hide-details
-                      />
-                    </v-list-item-title>
-                    <p
-                      v-if="!data.item.algorithmic"
-                      class="subtitle-2 text-right ma-1 grey--text"
-                    >
-                      interface
-                    </p>
-                    <p
-                      v-if="data.item.serverless"
-                      class="subtitle-2 text-right ma-1 grey--text"
-                    >
-                      serverless
-                    </p>
-                    <p
-                      v-if="data.item.isBuiltIn"
-                      class="subtitle-2 text-right grey--text ma-1"
-                      style="white-space: nowrap"
-                    >
-                      built-in
-                    </p>
-                  </template>
-                </v-autocomplete>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-list-item>
+          <VNodeSelectMethodMultiple
+            :selected-methods="selectedMethods"
+            :menu="menuOfMethods"
+            append-create-option
+            @update:selections="onUpdateMethodOptions"
+            @create:option="onCreateMethod"
+          />
         </v-list-item>
 
         <!-- for each of the selected method -->
         <v-container
           v-for="(method, i) in selectedMethods"
           :key="i"
-          class="pa-0"
+          class="pa-0 pt-2 pb-0"
         >
           <v-divider />
 
           <!-- The name of the method. -->
-          <v-list-item>
-            Method Name
-            <v-text-field
-              :value="method.name"
+          <v-list-item class="pt-2">
+            <VNodeEditableMethodName
+              :title="method.name"
               :disabled="method.isBuiltIn"
-              class="ma-0 pl-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
+              style="width: 100%"
+              @edit:title="onEditMethodName(method, $event)"
             />
           </v-list-item>
 
-          <!-- The input box for process input parameters. -->
-          <v-list-item>
-            <v-autocomplete
-              :value="method.parameters"
-              :items="processInputNames"
-              :disabled="method.isBuiltIn"
-              class="mt-3"
-              label="Process Input"
-              outlined
-              dense
-              multiple
-              hide-details
-            >
-              <template #selection="data">
-                <v-chip
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  color="#FF7F0E"
-                  text-color="black"
-                  small
-                  outlined
-                >
-                  {{ data.item }}
-                </v-chip>
-              </template>
-              <template #item="data">
-                <v-list-item-content
-                  dense
-                  :class="classNameOfCheckbox"
-                >
-                  <v-checkbox
-                    :label="data.item"
-                    :value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                    :input-value="method.parameters.findIndex((d) => d === data.item) >= 0"
-                    :disabled="processInputNamesOfRequired.findIndex((d) => d === data.item) >= 0"
-                    class="ma-0"
-                    dense
-                    hide-details
-                  />
-                </v-list-item-content>
-              </template>
-            </v-autocomplete>
+          <!-- The input and output of the process. -->
+          <v-list-item class="pt-2">
+            <v-row>
+              <v-col
+                class="pr-0"
+                style="width: 75%; max-width: 75%; flex-basis: 75%;"
+              >
+                <!-- The input box for process input parameters. -->
+                <VNodeEditableInput
+                  :process-input-list="processInputList"
+                  :process-input-list-of-required="processInputListOfRequired"
+                  :instance-input-list="method.inputs"
+                  :disabled="method.isBuiltIn"
+                  @edit:list="onEditInstanceInputList(method, $event)"
+                />
+              </v-col>
+              <v-col
+                style="width: 25%; max-width: 25%; flex-basis: 25%"
+              >
+                <!-- The display of process output parameters. -->
+                <VNodeOutput :process-output="processOutput" />
+              </v-col>
+            </v-row>
           </v-list-item>
 
-          <!-- The display of process output parameters. -->
-          <v-list-item>
-            <v-autocomplete
-              :value="processOutputName"
-              :items="[processOutputName]"
-              :class="`mt-3 pb-2 ${classNameOfProcessOutputWidget}`"
-              label="Process Output"
-              disabled
-              outlined
-              dense
-              hide-details
-            >
-              <template #selection>
-                <v-chip
-                  color="#FF7F0E"
-                  text-color="black"
-                  small
-                  outlined
-                >
-                  {{ processOutputName }}
-                </v-chip>
-              </template>
-            </v-autocomplete>
-          </v-list-item>
-
-          <template v-if="method.parameters.findIndex((d) => d === 'model') >= 0">
+          <!-- The url of the method service. -->
+          <v-list-item class="pt-2">
             <v-card
-              class="mx-4 mb-2"
+              outlined
+              style="width: 100%; display: flex; flex: 1 1 100%;"
+            >
+              <span class="pl-4 py-2 subtitle-2">
+                API
+              </span>
+              <v-text-field
+                :value="method.isServerless ? 'serverless' : method.api"
+                :disabled="method.isBuiltIn"
+                class="ma-0 px-4 pt-1 subtitle-2"
+                style="padding-bottom: 6px !important"
+                type="text"
+                dense
+                hide-details
+                single-line
+                @input="onInputMethodAPI($event)"
+              />
+            </v-card>
+          </v-list-item>
+
+          <template v-if="method.inputs.findIndex((d) => d === 'model') >= 0">
+            <v-card
+              class="mx-4 mt-2"
               outlined
             >
               <!-- The model used as input to the process. -->
-              <v-list-item
-                class="py-0"
-              >
-                <v-list-item-title
-                  class="subtitle-2"
-                  style="user-select: none"
-                >
-                  Model
-                </v-list-item-title>
-                <v-menu offset-y>
-                  <template #activator="{ on }">
-                    <v-btn
-                      class="subtitle-2 text-none"
-                      style="border-radius: 2px"
-                      small
-                      v-on="on"
-                    >
-                      {{ model === undefined ? '' : model.name }}
-                    </v-btn>
-                  </template>
-                  <v-list dense>
-                    <v-list-item
-                      v-for="(text, modelIdx) in menuOfModels.optionsText"
-                      :key="modelIdx"
-                      @click="onClickMenuOfModelsOption(method, menuOfModels.options[modelIdx])"
-                    >
-                      <v-list-item-title class="subtitle-2">
-                        {{ text }}
-                      </v-list-item-title>
-                      <p
-                        v-if="menuOfModels.options[modelIdx].serverless"
-                        class="subtitle-2 text-right ma-1 grey--text"
-                        style="width: 5em"
-                      >
-                        serverless
-                      </p>
-                      <p
-                        v-if="menuOfModels.options[modelIdx].isBuiltIn"
-                        class="subtitle-2 text-right ma-1 grey--text"
-                        style="width: 6em"
-                      >
-                        built-in
-                      </p>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+              <v-list-item>
+                <VNodeSelectModel
+                  :selected-model="model"
+                  :menu="menuOfModels"
+                  append-create-option
+                  @update:selection="onClickMenuOfModelsOption(method, $event)"
+                  @create:option="onCreateModel"
+                />
               </v-list-item>
 
               <template v-if="model !== undefined">
-                <!-- The name of the feature extraction method. -->
+                <!-- The name of the model. -->
                 <v-list-item>
                   Model Name
                   <v-text-field
@@ -302,7 +146,7 @@
                 <v-list-item>
                   Model Key
                   <v-text-field
-                    :value="model.serverless ? 'serverless' : model.objectId"
+                    :value="model.isServerless ? 'isServerless' : model.objectId"
                     :disabled="model.isBuiltIn"
                     class="ma-0 pl-4 pt-1 subtitle-2"
                     style="padding-bottom: 6px !important"
@@ -317,51 +161,17 @@
             </v-card>
           </template>
 
-          <template v-if="method.configuration !== undefined">
-            <v-card
-              class="mx-4 mb-2"
-              outlined
-            >
-              <!-- The configuration of the method. -->
-              <v-list-item
-                v-for="(entry, key) in method.configuration"
-                :key="key"
-                class="py-0"
-              >
-                <v-list-item-title
-                  class="subtitle-2"
-                  style="user-select: none"
-                >
-                  {{ entry.title }}
-                </v-list-item-title>
-                <v-menu offset-y>
-                  <template #activator="{ on }">
-                    <v-btn
-                      class="subtitle-2 text-none"
-                      style="border-radius: 2px"
-                      small
-                      v-on="on"
-                    >
-                      {{ entry.options
-                        .find((d) => d.value === entry.value)
-                        .text }}
-                    </v-btn>
-                  </template>
-                  <v-list dense>
-                    <v-list-item
-                      v-for="(option, optionIdx) in entry.options"
-                      :key="optionIdx"
-                      @click="onClickMethodConfiguration(
-                        method, key, option)"
-                    >
-                      <v-list-item-title class="subtitle-2">
-                        {{ option.text }}
-                      </v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-list-item>
-            </v-card>
+          <template v-if="method.params !== undefined">
+            <v-list-item class="pt-2">
+              <VNodeMethodParams
+                :params="method.params"
+                @click:param-option="onClickMethodParam(
+                  method,
+                  $event.paramName,
+                  $event.option,
+                )"
+              />
+            </v-list-item>
           </template>
         </v-container>
       </v-list>
@@ -376,9 +186,25 @@ import {
   DataObjectSelectionMethod,
 } from '@/commons/types';
 import { DataObjectSelectionNode } from './types';
+import VNodeEditableInput from './VNodeEditableInput.vue';
+import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
+import VNodeEditableTitle from './VNodeEditableTitle.vue';
+import VNodeMethodParams from './VNodeMethodParams.vue';
+import VNodeOutput from './VNodeOutput.vue';
+import VNodeSelectMethodMultiple from './VNodeSelectMethodMultiple.vue';
+import VNodeSelectModel from './VNodeSelectModel.vue';
 
 export default Vue.extend({
   name: 'TheNodeDetailsDataObjectSelection',
+  components: {
+    VNodeEditableInput,
+    VNodeEditableMethodName,
+    VNodeEditableTitle,
+    VNodeMethodParams,
+    VNodeOutput,
+    VNodeSelectMethodMultiple,
+    VNodeSelectModel,
+  },
   props: {
     models: {
       type: Array as PropType<ModelService[]>,
@@ -396,20 +222,17 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Data Object Selection Instantiation',
-      processInputNames: [
+      processInputList: [
         'labels',
         'features',
         'model',
         'samples',
       ],
-      processInputNamesOfRequired: [
+      processInputListOfRequired: [
         'labels',
       ],
-      processOutputName: 'samples',
+      processOutput: 'samples',
       classNameOfPanel: 'parameter-panel',
-      classNameOfCheckbox: 'parameter-panel-checkbox',
-      classNameOfProcessOutputWidget: 'parameter-panel-process-output',
-      isTitleEditable: false,
     };
   },
   computed: {
@@ -423,38 +246,28 @@ export default Vue.extend({
         return undefined;
       }
       return algorithmicInstantiation.model;
-      /*
-      const algorithmicInstantiation = this.node.value
-        .find((d) => d.method.parameters.findIndex((param) => param === 'model') >= -1);
-      if (algorithmicInstantiation === undefined) {
-        return undefined;
-      }
-      return algorithmicInstantiation.model;
-      */
     },
     menuOfMethods() {
       return {
         title: 'Method',
-        options: this.methods,
-        optionsText: this.methods.map((d) => d.name),
+        options: this.methods.map((d) => ({
+          value: d,
+          text: d.name,
+        })),
       };
     },
     menuOfModels() {
       return {
         title: 'Models',
-        options: this.models,
-        optionsText: this.models.map((d) => d.name),
+        options: this.models.map((d) => ({
+          value: d,
+          text: d.name,
+        })),
       };
     },
   },
   methods: {
-    onClickEditNodeTitle(): void {
-      this.isTitleEditable = true;
-    },
-    onClickOutsideInputTitle(): void {
-      this.isTitleEditable = false;
-    },
-    onInputNodeTitle(title: string): void {
+    onEditNodeTitle(title: string): void {
       const { node } = this;
       this.onEditNode({
         ...node,
@@ -462,33 +275,63 @@ export default Vue.extend({
       });
     },
     onEditNode(newValue: DataObjectSelectionNode): void {
-      this.$emit('edit-node', newValue);
+      this.$emit('edit:node', newValue);
     },
-    onClickMenuOfMethodsOption(options: DataObjectSelectionMethod[]): void {
+    onUpdateMethodOptions(options: DataObjectSelectionMethod[]): void {
       const { node } = this;
+
+      // Ensure at most one algorithmic option is chosen.
+      const algorithmicIds = options
+        .filter((d) => d.isAlgorithmic)
+        .map((d) => d.id);
+      let newOptions = options;
+      if (algorithmicIds.length >= 2) {
+        const oldAlgorithmicIds = node.value
+          .map((d) => d.method)
+          .filter((d) => d.isAlgorithmic)
+          .map((d) => d.id);
+        newOptions = options.filter((d) => (
+          !(oldAlgorithmicIds.indexOf(d.id) >= 0)
+        ));
+      }
       this.onEditNode({
         ...node,
-        value: options.map((d) => ({ method: d })),
+        value: newOptions.map((d) => ({ method: d })),
       });
     },
-    onClickMethodConfiguration(
+    onEditMethodName(method: DataObjectSelectionMethod, name: string): void {
+      const { node, model } = this;
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return {
+              method: { ...method, name },
+              model,
+            };
+          }
+          return d;
+        }),
+      });
+      this.onEditMethod({ ...method, name });
+    },
+    onClickMethodParam(
       method: DataObjectSelectionMethod,
-      configurationName: string,
+      paramName: string,
       option: { value: unknown, text: string },
     ): void {
       const { node } = this;
-      const { configuration } = method;
+      const { params } = method;
       const newMethod = {
         ...method,
-        configuration: {
-          ...configuration,
-          [configurationName]: {
-            ...configuration[configurationName],
+        params: {
+          ...params,
+          [paramName]: {
+            ...params[paramName],
             value: option.value,
           },
         },
       };
-
       this.onEditNode({
         ...node,
         value: node.value.map((d) => {
@@ -500,13 +343,14 @@ export default Vue.extend({
       });
       this.onEditMethod(newMethod);
     },
+    onCreateMethod(): void {
+      this.$emit('create:method');
+    },
     onEditMethod(newValue: DataObjectSelectionMethod): void {
-      this.$emit('edit-method', this.node.type, newValue);
+      this.$emit('edit:method', this.node.type, newValue);
     },
     onClickMenuOfModelsOption(method: DataObjectSelectionMethod, option: ModelService): void {
       const { node } = this;
-      console.log('click menu of models', option);
-
       this.onEditNode({
         ...node,
         value: node.value.map((d) => {
@@ -556,13 +400,35 @@ export default Vue.extend({
       });
     },
     onCreateModel(): void {
-      this.$emit('create-model');
+      this.$emit('create:model');
     },
     onEditModel(newValue: ModelService): void {
-      this.$emit('edit-model', newValue);
+      this.$emit('edit:model', newValue);
+    },
+    onEditInstanceInputList(
+      method: DataObjectSelectionMethod,
+      instanceInputList: string[],
+    ): void {
+      const {
+        node,
+        model,
+      } = this;
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => {
+          if (d.method.id === method.id) {
+            return {
+              method: { ...method, inputs: instanceInputList },
+              model,
+            };
+          }
+          return d;
+        }),
+      });
+      this.onEditMethod({ ...method, inputs: instanceInputList });
     },
     onClickRecompute(): void {
-      this.$emit('click-recompute', this.node);
+      this.$emit('click:recompute', this.node);
     },
   },
 });
@@ -571,15 +437,5 @@ export default Vue.extend({
 /** Make the letter spacing of v-text-field the same as text outside. */
 .parameter-panel input {
   letter-spacing: .0071428571em;
-}
-
-/** Change the font of checkbox text. */
-.parameter-panel-checkbox .v-label {
-  font-size: 0.875rem !important;
-}
-
-/** Hide the menu trigger button for process-output. */
-.parameter-panel-process-output .v-input__append-inner {
-  display: none;
 }
 </style>

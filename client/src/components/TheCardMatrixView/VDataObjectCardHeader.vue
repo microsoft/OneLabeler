@@ -64,7 +64,7 @@ export default Vue.extend({
   },
   methods: {
     onClickLabel(entry: Label, e: Event): void {
-      this.$emit('click-label', entry, e);
+      this.$emit('click:label', entry, e);
     },
   },
 });

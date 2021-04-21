@@ -9,11 +9,11 @@
       :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
-      @reset-image-size="onResetImageSize"
-      @set-stroke-label="onSetStrokeLabel"
-      @set-stroke-shape="onSetStrokeShape"
-      @set-stroke-width="onSetStrokeWidth"
-      @set-mouse-operation="onSetMouseOperation"
+      @reset:image-size="onResetImageSize"
+      @set:stroke-label="onSetStrokeLabel"
+      @set:stroke-shape="onSetStrokeShape"
+      @set:stroke-width="onSetStrokeWidth"
+      @set:mouse-operation="onSetMouseOperation"
     />
     <v-divider />
     <v-card-actions
@@ -43,10 +43,10 @@
             :stroke-label="strokeLabel"
             :label2color="label2color"
             :mouse-operation="mouseOperation"
-            @add-label-geometric-object="onAddLabelGeometricObject"
-            @update-label-geometric-object="onUpdateLabelGeometricObject"
-            @remove-label-geometric-object="onRemoveLabelGeometricObject"
-            @set-label-mask="onSetLabelMask"
+            @create:shape="onAddLabelGeometricObject"
+            @update:label-shape="onUpdateLabelGeometricObject"
+            @delete:shape="onRemoveLabelGeometricObject"
+            @update:label-mask="onSetLabelMask"
           />
         </v-row>
         <template v-if="enablePagination">

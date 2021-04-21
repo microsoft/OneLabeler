@@ -58,7 +58,7 @@ export const executeDataObjectSelectionAlgorithmic = async (
 
   // Sample data objects.
   const { dataObjects } = rootState;
-  const nBatch = method.configuration.nBatch.value;
+  const nBatch = method.params.nBatch.value;
   const newQueryIndices = (await API.dataObjectSelection(
     method,
     labels,
@@ -138,7 +138,7 @@ export const executeFeatureExtraction = async (
 
   if (dataObjects === null) return;
 
-  const requireLabels = method.parameters
+  const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
 
   if (requireLabels && (labels.length === 0)) return;

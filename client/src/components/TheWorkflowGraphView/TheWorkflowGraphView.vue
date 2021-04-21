@@ -28,8 +28,8 @@
           <v-card-actions>
             <TheWorkflowGraphViewCanvas
               :graph="graph"
-              @select-node="onSelectNode"
-              @remove-node="onRemoveNode"
+              @click:node="onSelectNode"
+              @remove:node="onRemoveNode"
             />
           </v-card-actions>
         </v-card>
@@ -40,13 +40,13 @@
       >
         <TheNodeDetails
           :node="selectedNode"
-          @set-node-value="onSetNodeValue"
-          @edit-node="onEditNode"
-          @create-method="onCreateMethod"
-          @edit-method="onEditMethod"
-          @create-model="onCreateModel"
-          @edit-model="onEditModel"
-          @click-recompute="onClickRecompute"
+          @set:node-value="onSetNodeValue"
+          @edit:node="onEditNode"
+          @create:method="onCreateMethod"
+          @edit:method="onEditMethod"
+          @create:model="onCreateModel"
+          @edit:model="onEditModel"
+          @click:recompute="onClickRecompute"
         />
       </v-col>
     </v-row>
@@ -99,9 +99,9 @@ const graph = {
       value: {
         method: {
           name: 'SVD (Unsupervised)',
-          serverless: false,
+          isServerless: false,
           api: 'http://localhost:8005/features/image/SVD',
-          parameters: ['dataObjects'],
+          inputs: ['dataObjects'],
           isBuiltIn: true,
           id: 'image-SVD-25940167',
         },
@@ -124,9 +124,9 @@ const graph = {
       value: {
         method: {
           name: 'Null (Dummy)',
-          serverless: true,
+          isServerless: true,
           api: 'Null',
-          parameters: ['features'],
+          inputs: ['features'],
           isBuiltIn: true,
           id: 'Null-35514905',
         },
@@ -142,7 +142,7 @@ const graph = {
       value: {
         method: {
           name: 'DirectLabeling',
-          parameters: ['dataObjects', 'labelTask', 'labelSpace'],
+          inputs: ['dataObjects', 'labelTask', 'labelSpace'],
           isBuiltIn: true,
           id: 'DirectLabeling-97377357',
         },
@@ -165,9 +165,9 @@ const graph = {
       value: {
         method: {
           name: 'AllChecked',
-          serverless: true,
+          isServerless: true,
           api: 'AllChecked',
-          parameters: ['labels'],
+          inputs: ['labels'],
           isBuiltIn: true,
           id: 'AllChecked-46322013',
         },
@@ -196,9 +196,9 @@ const graph = {
       value: {
         method: {
           name: 'Static',
-          serverless: true,
+          isServerless: true,
           api: 'Static',
-          parameters: ['model'],
+          inputs: ['model'],
           isBuiltIn: true,
           id: 'Static-72885436',
         },
@@ -297,9 +297,9 @@ export default Vue.extend({
       if (node.type === NodeTypes.DefaultLabeling) {
         this.setDefaultLabelingMethod({
           name: 'Null (Dummy)',
-          serverless: true,
+          isServerless: true,
           api: 'Null',
-          parameters: ['features'],
+          inputs: ['features'],
           isBuiltIn: true,
           id: 'Null-35514905',
         });
@@ -307,9 +307,9 @@ export default Vue.extend({
       if (node.type === NodeTypes.InterimModelTraining) {
         this.setInterimModelTrainingMethod({
           name: 'Static',
-          serverless: true,
+          isServerless: true,
           api: 'Static',
-          parameters: ['model'],
+          inputs: ['model'],
           isBuiltIn: true,
           id: 'Static-72885436',
         });
@@ -455,9 +455,9 @@ export default Vue.extend({
         const { dataObjectSelectionMethods } = this;
         const method = {
           name: 'custom',
-          serverless: false,
+          isServerless: false,
           api: '',
-          parameters: ['labels'],
+          inputs: ['labels'],
           isBuiltIn: false,
           id: `custom-${uuidv4()}`,
         };
@@ -470,9 +470,9 @@ export default Vue.extend({
         const { defaultLabelingMethods } = this;
         const method = {
           name: 'custom',
-          serverless: false,
+          isServerless: false,
           api: '',
-          parameters: ['features', 'model'],
+          inputs: ['features', 'model'],
           isBuiltIn: false,
           id: `custom-${uuidv4()}`,
         };
@@ -485,9 +485,9 @@ export default Vue.extend({
         const { featureExtractionMethods } = this;
         const method = {
           name: 'custom',
-          serverless: false,
+          isServerless: false,
           api: '',
-          parameters: ['dataObjects'],
+          inputs: ['dataObjects'],
           isBuiltIn: false,
           id: `custom-${uuidv4()}`,
         };
@@ -500,9 +500,9 @@ export default Vue.extend({
         const { interimModelTrainingMethods } = this;
         const method = {
           name: 'custom',
-          serverless: false,
+          isServerless: false,
           api: '',
-          parameters: ['model'],
+          inputs: ['model'],
           isBuiltIn: false,
           id: `custom-${uuidv4()}`,
         };
@@ -515,9 +515,9 @@ export default Vue.extend({
         const { stoppageAnalysisMethods } = this;
         const method = {
           name: 'custom',
-          serverless: false,
+          isServerless: false,
           api: '',
-          parameters: ['labels'],
+          inputs: ['labels'],
           isBuiltIn: false,
           id: `custom-${uuidv4()}`,
         };
@@ -540,7 +540,7 @@ export default Vue.extend({
       const { modelServices } = this;
       const model: ModelService = {
         name: 'custom',
-        serverless: false,
+        isServerless: false,
         type: '',
         isBuiltIn: false,
         objectId: (new ObjectId()).toHexString(),

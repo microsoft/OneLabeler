@@ -10,12 +10,12 @@
       :methods="dataObjectSelectionMethods"
       :models="modelServices.filter((d) => d.usableAsSampler)"
       :node="node"
-      @edit-node="onEditNode"
-      @create-method="onCreateMethod"
-      @edit-method="onEditMethod"
-      @create-model="onCreateModel"
-      @edit-model="onEditModel"
-      @click-recompute="onClickRecompute"
+      @edit:node="onEditNode"
+      @create:method="onCreateMethod"
+      @edit:method="onEditMethod"
+      @create:model="onCreateModel"
+      @edit:model="onEditModel"
+      @click:recompute="onClickRecompute"
     />
     <TheNodeDetailsDefaultLabeling
       v-else-if="(node !== null)
@@ -23,34 +23,34 @@
       :methods="defaultLabelingMethods"
       :models="modelServices"
       :node="node"
-      @edit-node="onEditNode"
-      @create-method="onCreateMethod"
-      @edit-method="onEditMethod"
-      @create-model="onCreateModel"
-      @edit-model="onEditModel"
-      @click-recompute="onClickRecompute"
+      @edit:node="onEditNode"
+      @create:method="onCreateMethod"
+      @edit:method="onEditMethod"
+      @create:model="onCreateModel"
+      @edit:model="onEditModel"
+      @click:recompute="onClickRecompute"
     />
     <TheNodeDetailsFeatureExtraction
       v-else-if="(node !== null)
         && (node.type === NodeTypes.FeatureExtraction)"
       :methods="featureExtractionMethods"
       :node="node"
-      @edit-node="onEditNode"
-      @create-method="onCreateMethod"
-      @edit-method="onEditMethod"
-      @click-recompute="onClickRecompute"
+      @edit:node="onEditNode"
+      @create:method="onCreateMethod"
+      @edit:method="onEditMethod"
+      @click:recompute="onClickRecompute"
     />
     <TheNodeDetailsInteractiveLabeling
       v-else-if="(node !== null)
         && (node.type === NodeTypes.InteractiveLabeling)"
       :methods="interactiveLabelingMethods"
       :node="node"
-      @edit-node="onEditNode"
-      @create-method="onCreateMethod"
-      @edit-method="onEditMethod"
-      @create-model="onCreateModel"
-      @edit-model="onEditModel"
-      @click-recompute="onClickRecompute"
+      @edit:node="onEditNode"
+      @create:method="onCreateMethod"
+      @edit:method="onEditMethod"
+      @create:model="onCreateModel"
+      @edit:model="onEditModel"
+      @click:recompute="onClickRecompute"
     />
     <TheNodeDetailsInterimModelTraining
       v-else-if="(node !== null)
@@ -58,26 +58,26 @@
       :methods="interimModelTrainingMethods"
       :models="modelServices"
       :node="node"
-      @edit-node="onEditNode"
-      @create-method="onCreateMethod"
-      @edit-method="onEditMethod"
-      @create-model="onCreateModel"
-      @edit-model="onEditModel"
-      @click-recompute="onClickRecompute"
+      @edit:node="onEditNode"
+      @create:method="onCreateMethod"
+      @edit:method="onEditMethod"
+      @create:model="onCreateModel"
+      @edit:model="onEditModel"
+      @click:recompute="onClickRecompute"
     />
     <TheNodeDetailsStoppageAnalysis
       v-else-if="(node !== null)
         && (node.type === NodeTypes.StoppageAnalysis)"
       :methods="stoppageAnalysisMethods"
       :node="node"
-      @edit-node="onEditNode"
+      @edit:node="onEditNode"
     />
     <TheNodeDetailsTaskTransformation
       v-else-if="(node !== null)
         && (node.type === NodeTypes.TaskTransformation)"
       :methods="taskTransformationMethods"
       :node="node"
-      @edit-node="onEditNode"
+      @edit:node="onEditNode"
     />
     <template v-else>
       <VMenusFlat
@@ -88,7 +88,7 @@
         :title="menuTitle"
         :menus-config="menu.entries"
         :selected-options="selectedOptions"
-        @click-menu-option="onClickMenuOption"
+        @click:menu-option="onClickMenuOption"
       />
       <VMenusGrouped
         v-else-if="(node !== null)
@@ -99,7 +99,7 @@
         :menus-config="menu.entries"
         :menu-tree="menu.hierarchy"
         :selected-options="selectedOptions"
-        @click-menu-option="onClickMenuOption"
+        @click:menu-option="onClickMenuOption"
       />
       <v-card
         v-else
@@ -169,8 +169,6 @@ const menuMapper = {
     },
   },
   [NodeTypes.DataType]: undefined,
-  [NodeTypes.LabelIdeation]: undefined,
-  [NodeTypes.QualityAssurance]: undefined,
   [NodeTypes.Decision]: undefined,
   [NodeTypes.Initialization]: undefined,
   [NodeTypes.Terminal]: undefined,
@@ -179,15 +177,6 @@ const menuMapper = {
 const menuTitleMapper: Record<NodeTypes, string> = {
   [NodeTypes.LabelTask]: 'Label Task Setting',
   [NodeTypes.DataType]: 'Data Type Setting',
-  [NodeTypes.LabelIdeation]: 'Label Ideation Instantiation',
-  [NodeTypes.FeatureExtraction]: 'Feature Extraction Instantiation',
-  [NodeTypes.DataObjectSelection]: 'Data Object Selection Instantiation',
-  [NodeTypes.DefaultLabeling]: 'Default Labeling Instantiation',
-  [NodeTypes.TaskTransformation]: 'Task Transformation Instantiation',
-  [NodeTypes.InteractiveLabeling]: 'Interactive Labeling Instantiation',
-  [NodeTypes.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
-  [NodeTypes.InterimModelTraining]: 'Interim Model Training Instantiation',
-  [NodeTypes.QualityAssurance]: 'Quality Assurance Instantiation',
   [NodeTypes.Decision]: 'Decision Criteria',
   [NodeTypes.Initialization]: 'Initialization Setting',
   [NodeTypes.Terminal]: 'Terminal',
@@ -289,25 +278,25 @@ export default Vue.extend({
       }
     },
     onSetNodeValue(node: WorkflowNode, value: unknown): void {
-      this.$emit('set-node-value', node, value);
+      this.$emit('set:node-value', node, value);
     },
     onEditNode(newValue: WorkflowNode): void {
-      this.$emit('edit-node', newValue);
+      this.$emit('edit:node', newValue);
     },
     onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod): void {
-      this.$emit('edit-method', nodeType, newValue);
+      this.$emit('edit:method', nodeType, newValue);
     },
     onCreateMethod(): void {
-      this.$emit('create-method', this.node.type);
+      this.$emit('create:method', this.node.type);
     },
     onEditModel(newValue: ModelService): void {
-      this.$emit('edit-model', newValue);
+      this.$emit('edit:model', newValue);
     },
     onCreateModel(): void {
-      this.$emit('create-model');
+      this.$emit('create:model');
     },
     onClickRecompute(node: WorkflowNode): void {
-      this.$emit('click-recompute', node);
+      this.$emit('click:recompute', node);
     },
   },
 });

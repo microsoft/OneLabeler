@@ -95,7 +95,7 @@ export default Vue.extend({
   },
   methods: {
     onSetMatrixShape(nRows: number, nColumns: number) {
-      this.$emit('set-matrix-shape', nRows, nColumns);
+      this.$emit('set:matrix-shape', nRows, nColumns);
     },
   },
 });

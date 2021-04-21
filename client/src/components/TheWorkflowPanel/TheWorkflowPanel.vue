@@ -20,7 +20,7 @@
         color="white"
         small
         :icon="$vuetify.icons.values.open"
-        @upload-file="onUploadFile"
+        @upload:file="onUploadFile"
       />
 
       <!-- The configuration export button. -->
@@ -185,7 +185,7 @@ export default Vue.extend({
       this.resetState();
     },
     onClickClose(): void {
-      this.$emit('click-close');
+      this.$emit('click:close');
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
