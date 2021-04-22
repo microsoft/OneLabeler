@@ -81,8 +81,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { TaskTransformationMethod } from '@/commons/types';
-import { TaskTransformationNode } from './types';
+import { TaskTransformationMethod, TaskTransformationNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';

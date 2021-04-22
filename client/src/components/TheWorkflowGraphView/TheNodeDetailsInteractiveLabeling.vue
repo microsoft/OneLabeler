@@ -102,8 +102,11 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { InteractiveLabelingMethod, MethodParams } from '@/commons/types';
-import { InteractiveLabelingNode } from './types';
+import {
+  InteractiveLabelingMethod,
+  InteractiveLabelingNode,
+  MethodParams,
+} from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';

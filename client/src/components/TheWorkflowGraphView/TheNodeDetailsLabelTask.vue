@@ -27,8 +27,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { LabelTaskType } from '@/commons/types';
-import { LabelTaskNode } from './types';
+import { LabelTaskType, LabelTaskNode } from '@/commons/types';
 import VNodeMethodParams from './VNodeMethodParams.vue';
 
 export default Vue.extend({

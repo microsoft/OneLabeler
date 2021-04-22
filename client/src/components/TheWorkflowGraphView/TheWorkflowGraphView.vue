@@ -45,7 +45,7 @@
           :models="models"
           :node="selectedNode"
           @edit:node="onEditNode"
-          @create:method="onCreateMethod"
+          @create:method="onCreateMethod(selectedNode.type)"
           @edit:method="onEditMethod"
           @create:model="onCreateModel"
           @edit:model="onEditModel"
@@ -64,25 +64,6 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   ModelService,
   ProcessMethod,
-  DataObjectSelectionMethod,
-  DefaultLabelingMethod,
-  FeatureExtractionMethod,
-  InteractiveLabelingMethod,
-  InterimModelTrainingMethod,
-  TaskTransformationMethod,
-  StoppageAnalysisMethod,
-} from '@/commons/types';
-import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
-import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
-import TheNodeDetailsEmpty from './TheNodeDetailsEmpty.vue';
-import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
-import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
-import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
-import TheNodeDetailsLabelTask from './TheNodeDetailsLabelTask.vue';
-import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
-import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
-import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
-import {
   WorkflowNode,
   NodeTypes,
   DataObjectSelectionNode,
@@ -93,163 +74,18 @@ import {
   TaskTransformationNode,
   StoppageAnalysisNode,
   LabelTaskNode,
-} from './types';
-
-const graph = {
-  nodes: [
-    {
-      id: 'labelTask-47353599',
-      title: 'label task',
-      type: NodeTypes.LabelTask,
-      value: [],
-      x: 25,
-      y: 25,
-    },
-    {
-      id: 'featureExtraction-37008559',
-      title: 'feature extraction',
-      type: NodeTypes.FeatureExtraction,
-      value: {
-        method: {
-          name: 'SVD (Unsupervised)',
-          isServerless: false,
-          api: 'http://localhost:8005/features/image/SVD',
-          inputs: ['dataObjects'],
-          isBuiltIn: true,
-          id: 'image-SVD-25940167',
-        },
-      },
-      x: 145,
-      y: 25,
-    },
-    {
-      id: 'dataObjectSelection-6411710',
-      title: 'data object selection',
-      type: NodeTypes.DataObjectSelection,
-      value: [],
-      x: 265,
-      y: 25,
-    },
-    {
-      id: 'defaultLabeling-86803967',
-      title: 'default labeling',
-      type: NodeTypes.DefaultLabeling,
-      value: {
-        method: {
-          name: 'Null (Dummy)',
-          isServerless: true,
-          api: 'Null',
-          inputs: ['features'],
-          isBuiltIn: true,
-          id: 'Null-35514905',
-        },
-        model: {},
-      },
-      x: 385,
-      y: 25,
-    },
-    {
-      id: 'taskTransformation-63746075',
-      title: 'task transform',
-      type: NodeTypes.TaskTransformation,
-      value: {
-        method: {
-          name: 'DirectLabeling',
-          inputs: ['dataObjects', 'labelTask', 'labelSpace'],
-          isBuiltIn: true,
-          id: 'DirectLabeling-97377357',
-        },
-      },
-      x: 505,
-      y: 25,
-    },
-    {
-      id: 'interactiveLabeling-44216216',
-      title: 'interactive labeling',
-      type: NodeTypes.InteractiveLabeling,
-      value: [],
-      x: 625,
-      y: 25,
-    },
-    {
-      id: 'stoppageAnalysis-70767097',
-      title: 'stoppage analysis',
-      type: NodeTypes.StoppageAnalysis,
-      value: {
-        method: {
-          name: 'AllChecked',
-          isServerless: true,
-          api: 'AllChecked',
-          inputs: ['labels'],
-          isBuiltIn: true,
-          id: 'AllChecked-46322013',
-        },
-      },
-      x: 745,
-      y: 25,
-    },
-    {
-      id: 'decision-69466632',
-      title: 'stop?',
-      type: NodeTypes.Decision,
-      x: 745,
-      y: 115,
-    },
-    {
-      id: 'terminal',
-      title: 'exit',
-      type: NodeTypes.Terminal,
-      x: 745,
-      y: 205,
-    },
-    {
-      id: 'interimModelTraining-14283634',
-      title: 'interim model training',
-      type: NodeTypes.InterimModelTraining,
-      value: {
-        method: {
-          name: 'Static',
-          isServerless: true,
-          api: 'Static',
-          inputs: ['model'],
-          isBuiltIn: true,
-          id: 'Static-72885436',
-        },
-      },
-      x: 265,
-      y: 115,
-    },
-  ],
-  edges: [
-    {
-      source: 1, target: 2, x1: 225, y1: 55, x2: 265, y2: 55,
-    },
-    {
-      source: 2, target: 4, x1: 345, y1: 55, x2: 385, y2: 55,
-    },
-    {
-      source: 4, target: 5, x1: 465, y1: 55, x2: 505, y2: 55,
-    },
-    {
-      source: 5, target: 6, x1: 585, y1: 55, x2: 625, y2: 55,
-    },
-    {
-      source: 7, target: 8, x1: 705, y1: 55, x2: 745, y2: 55,
-    },
-    {
-      source: 6, target: 7, x1: 785, y1: 85, x2: 785, y2: 115,
-    },
-    {
-      source: 8, target: 9, x1: 745, y1: 145, x2: 345, y2: 145,
-    },
-    {
-      source: 6, target: 7, x1: 785, y1: 175, x2: 785, y2: 205,
-    },
-    {
-      source: 9, target: 2, x1: 305, y1: 115, x2: 305, y2: 85,
-    },
-  ],
-};
+} from '@/commons/types';
+import graph from '@/commons/graph-template';
+import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
+import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
+import TheNodeDetailsEmpty from './TheNodeDetailsEmpty.vue';
+import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
+import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
+import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsLabelTask from './TheNodeDetailsLabelTask.vue';
+import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
+import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
+import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
@@ -430,53 +266,29 @@ export default Vue.extend({
       this.selectedNode = newValue;
     },
     onEditMethod(nodeType: NodeTypes, newValue: ProcessMethod) {
+      const { methods } = this;
+      const idx = methods.findIndex((d) => d.id === newValue.id);
+      const newMethods = [...methods];
+      newMethods[idx] = newValue;
       if (nodeType === NodeTypes.DataObjectSelection) {
-        const methods = this.dataObjectSelectionMethods as DataObjectSelectionMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setDataObjectSelectionMethods(newMethods);
       }
       if (nodeType === NodeTypes.DefaultLabeling) {
-        const methods = this.defaultLabelingMethods as DefaultLabelingMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setDefaultLabelingMethods(newMethods);
       }
       if (nodeType === NodeTypes.FeatureExtraction) {
-        const methods = this.featureExtractionMethods as FeatureExtractionMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setFeatureExtractionMethods(newMethods);
       }
       if (nodeType === NodeTypes.InteractiveLabeling) {
-        const methods = this.interactiveLabelingMethods as InteractiveLabelingMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setInteractiveLabelingMethods(newMethods);
       }
       if (nodeType === NodeTypes.InterimModelTraining) {
-        const methods = this.interimModelTrainingMethods as InterimModelTrainingMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setDefaultLabelingMethods(newMethods);
       }
       if (nodeType === NodeTypes.StoppageAnalysis) {
-        const methods = this.stoppageAnalysisMethods as StoppageAnalysisMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setStoppageAnalysisMethods(newMethods);
       }
       if (nodeType === NodeTypes.TaskTransformation) {
-        const methods = this.taskTransformationMethods as TaskTransformationMethod[];
-        const idx = methods.findIndex((d) => d.id === newValue.id);
-        const newMethods = [...methods];
-        newMethods[idx] = newValue;
         this.setTaskTransformationMethods(newMethods);
       }
     },

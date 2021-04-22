@@ -81,8 +81,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { StoppageAnalysisMethod } from '@/commons/types';
-import { StoppageAnalysisNode } from './types';
+import { StoppageAnalysisMethod, StoppageAnalysisNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';

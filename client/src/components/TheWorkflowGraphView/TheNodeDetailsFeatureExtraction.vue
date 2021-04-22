@@ -120,8 +120,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { FeatureExtractionMethod } from '@/commons/types';
-import { FeatureExtractionNode } from './types';
+import { FeatureExtractionMethod, FeatureExtractionNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';

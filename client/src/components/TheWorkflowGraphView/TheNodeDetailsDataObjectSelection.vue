@@ -100,7 +100,7 @@
                 dense
                 hide-details
                 single-line
-                @input="onInputMethodAPI"
+                @input="onInputMethodAPI(method, $event)"
               />
             </v-card>
           </v-list-item>
@@ -182,9 +182,9 @@ import Vue, { PropType } from 'vue';
 import {
   ModelService,
   DataObjectSelectionMethod,
+  DataObjectSelectionNode,
   MethodParams,
 } from '@/commons/types';
-import { DataObjectSelectionNode } from './types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';
@@ -296,6 +296,19 @@ export default Vue.extend({
     onEditMethodName(method: DataObjectSelectionMethod, name: string): void {
       const { node, model } = this;
       const newMethod = { ...method, name };
+      this.onEditNode({
+        ...node,
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method: newMethod, model }
+            : d
+        )),
+      });
+      this.onEditMethod(newMethod);
+    },
+    onInputMethodAPI(method: DataObjectSelectionMethod, api: string): void {
+      const { node, model } = this;
+      const newMethod = { ...method, api };
       this.onEditNode({
         ...node,
         value: node.value.map((d) => (

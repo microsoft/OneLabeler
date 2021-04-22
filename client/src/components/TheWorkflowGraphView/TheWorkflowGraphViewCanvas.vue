@@ -141,7 +141,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { WorkflowNode, NodeTypes } from './types';
+import { WorkflowNode, NodeTypes } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',

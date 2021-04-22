@@ -120,8 +120,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { InterimModelTrainingMethod } from '@/commons/types';
-import { InterimModelTrainingNode } from './types';
+import { InterimModelTrainingMethod, InterimModelTrainingNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';

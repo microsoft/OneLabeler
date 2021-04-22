@@ -167,8 +167,11 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { ModelService, DefaultLabelingMethod } from '@/commons/types';
-import { DefaultLabelingNode } from './types';
+import {
+  ModelService,
+  DefaultLabelingMethod,
+  DefaultLabelingNode,
+} from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';
