@@ -4,9 +4,7 @@
     style="width: 100%"
     tile
   >
-    <v-card-title
-      class="view-header"
-    >
+    <v-card-title class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -60,154 +58,108 @@
         <v-divider />
 
         <!-- The name of the feature extraction method. -->
-        <v-list-item>
-          Method Name
-          <v-text-field
-            :value="method.name"
+        <v-list-item class="pt-2">
+          <VNodeEditableMethodName
+            :title="method.name"
             :disabled="method.isBuiltIn"
-            class="ma-0 pl-4 pt-1 subtitle-2"
-            style="padding-bottom: 6px !important"
-            type="text"
-            dense
-            hide-details
-            single-line
-            @input="onEditMethodName($event)"
+            style="width: 100%"
+            @edit:title="onEditMethodName($event)"
           />
+        </v-list-item>
+
+        <v-list-item class="pt-2">
+          <v-row>
+            <v-col
+              class="pr-0"
+              style="width: 75%; max-width: 75%; flex-basis: 75%;"
+            >
+              <!-- The input box for process input parameters. -->
+              <VNodeEditableInput
+                :process-input-list="processInputList"
+                :process-input-list-of-required="processInputListOfRequired"
+                :instance-input-list="method.inputs"
+                :disabled="method.isBuiltIn"
+                @edit:list="onEditInstanceInputList($event)"
+              />
+            </v-col>
+            <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
+              <!-- The display of process output parameters. -->
+              <VNodeOutput :process-output="processOutput" />
+            </v-col>
+          </v-row>
         </v-list-item>
 
         <!-- The url of feature extraction service. -->
-        <v-list-item>
-          Method API
-          <v-text-field
-            :value="method.isServerless ? 'isServerless' : method.api"
-            :disabled="method.isBuiltIn"
-            class="ma-0 pl-4 pt-1 subtitle-2"
-            style="padding-bottom: 6px !important"
-            type="text"
-            dense
-            hide-details
-            single-line
-            @input="onInputMethodAPI($event)"
-          />
-        </v-list-item>
-
-        <!-- The input box for process input parameters. -->
-        <v-list-item>
-          <VNodeEditableInput
-            :process-input-list="processInputList"
-            :process-input-list-of-required="processInputListOfRequired"
-            :instance-input-list="method.inputs"
-            :disabled="method.isBuiltIn"
-            @edit:list="onEditInstanceInputList"
-          />
-        </v-list-item>
-
-        <!-- The display of process output parameters. -->
-        <v-list-item>
-          <VNodeOutput :process-output="processOutput" />
-        </v-list-item>
-
-        <template v-if="isModelRequired">
+        <v-list-item class="pt-2">
           <v-card
-            class="mx-4"
             outlined
+            style="width: 100%; display: flex; flex: 1 1 100%;"
           >
-            <!-- The model used as input to the process. -->
-            <v-list-item
-              class="py-0"
-            >
-              <v-list-item-title
-                class="subtitle-2"
-                style="user-select: none"
-              >
-                Model
-              </v-list-item-title>
-              <v-menu offset-y>
-                <template #activator="{ on }">
-                  <v-btn
-                    class="subtitle-2 text-none"
-                    style="border-radius: 2px"
-                    small
-                    v-on="on"
-                  >
-                    {{ model.name }}
-                  </v-btn>
-                </template>
-                <v-list dense>
-                  <v-list-item
-                    v-for="(text, i) in menuOfModels.optionsText"
-                    :key="i"
-                    @click="onClickMenuOfModelsOption(menuOfModels.options[i])"
-                  >
-                    <v-list-item-title class="subtitle-2">
-                      {{ text }}
-                    </v-list-item-title>
-                    <p
-                      v-if="menuOfModels.options[i].isServerless"
-                      class="subtitle-2 text-right ma-1 grey--text"
-                      style="width: 5em"
-                    >
-                      isServerless
-                    </p>
-                    <p
-                      v-if="menuOfModels.options[i].isBuiltIn"
-                      class="subtitle-2 text-right ma-1 grey--text"
-                      style="width: 6em"
-                    >
-                      built-in
-                    </p>
-                  </v-list-item>
-                  <!--
-                  <v-list-item @click="onCreateModel">
-                    <v-list-item-title class="subtitle-2">
-                      <v-icon
-                        aria-hidden="true"
-                        class="pr-2"
-                        x-small
-                      >
-                        $vuetify.icons.values.add
-                      </v-icon>
-                      Customize
-                    </v-list-item-title>
-                  </v-list-item>
-                  -->
-                </v-list>
-              </v-menu>
-            </v-list-item>
-
-            <!-- The name of the feature extraction method. -->
-            <v-list-item>
-              Model Name
-              <v-text-field
-                :value="model.name"
-                :disabled="model.isBuiltIn"
-                class="ma-0 pl-4 pt-1 subtitle-2"
-                style="padding-bottom: 6px !important"
-                type="text"
-                dense
-                hide-details
-                single-line
-                @input="onInputModelName($event)"
-              />
-            </v-list-item>
-
-            <!-- The url of the model. -->
-            <v-list-item>
-              Model Key
-              <v-text-field
-                :value="model.isServerless ? 'isServerless' : model.objectId"
-                :disabled="model.isBuiltIn"
-                class="ma-0 pl-4 pt-1 subtitle-2"
-                style="padding-bottom: 6px !important"
-                type="text"
-                dense
-                hide-details
-                single-line
-                @input="onInputModelAPI($event)"
-              />
-            </v-list-item>
+            <span class="pl-4 py-2 subtitle-2">
+              API
+            </span>
+            <v-text-field
+              :value="method.isServerless ? 'serverless' : method.api"
+              :disabled="method.isBuiltIn"
+              class="ma-0 px-4 pt-1 subtitle-2"
+              style="padding-bottom: 6px !important"
+              type="text"
+              dense
+              hide-details
+              single-line
+              @input="onInputMethodAPI($event)"
+            />
           </v-card>
-        </template>
+        </v-list-item>
+
+        <v-card
+          v-if="isModelRequired"
+          class="mx-4"
+          outlined
+        >
+          <!-- The model used as input to the process. -->
+          <v-list-item>
+            <VNodeSelectModel
+              :selected-model="model"
+              :menu="menuOfModels"
+              append-create-option
+              @update:selection="onClickMenuOfModelsOption($event)"
+              @create:option="onCreateModel"
+            />
+          </v-list-item>
+
+          <!-- The name of the feature extraction method. -->
+          <v-list-item>
+            Model Name
+            <v-text-field
+              :value="model.name"
+              :disabled="model.isBuiltIn"
+              class="ma-0 pl-4 pt-1 subtitle-2"
+              style="padding-bottom: 6px !important"
+              type="text"
+              dense
+              hide-details
+              single-line
+              @input="onInputModelName($event)"
+            />
+          </v-list-item>
+
+          <!-- The url of the model. -->
+          <v-list-item>
+            Model Key
+            <v-text-field
+              :value="model.isServerless ? 'serverless' : model.objectId"
+              :disabled="model.isBuiltIn"
+              class="ma-0 pl-4 pt-1 subtitle-2"
+              style="padding-bottom: 6px !important"
+              type="text"
+              dense
+              hide-details
+              single-line
+              @input="onInputModelAPI($event)"
+            />
+          </v-list-item>
+        </v-card>
       </v-list>
     </v-card-actions>
   </v-card>
@@ -215,23 +167,24 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
-  ModelService,
-  DefaultLabelingMethod,
-} from '@/commons/types';
+import { ModelService, DefaultLabelingMethod } from '@/commons/types';
 import { DefaultLabelingNode } from './types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
+import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';
 import VNodeOutput from './VNodeOutput.vue';
 import VNodeSelectMethodSingle from './VNodeSelectMethodSingle.vue';
+import VNodeSelectModel from './VNodeSelectModel.vue';
 
 export default Vue.extend({
   name: 'TheNodeDetailsDefaultLabeling',
   components: {
     VNodeEditableInput,
+    VNodeEditableMethodName,
     VNodeEditableTitle,
     VNodeOutput,
     VNodeSelectMethodSingle,
+    VNodeSelectModel,
   },
   props: {
     models: {
@@ -250,13 +203,8 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Default Labeling Instantiation',
-      processInputList: [
-        'features',
-        'model',
-      ],
-      processInputListOfRequired: [
-        'features',
-      ],
+      processInputList: ['features', 'model'],
+      processInputListOfRequired: ['features'],
       processOutput: 'labels',
       classNameOfPanel: 'parameter-panel',
     };
@@ -284,18 +232,17 @@ export default Vue.extend({
     menuOfModels() {
       return {
         title: 'Models',
-        options: this.models,
-        optionsText: this.models.map((d) => d.name),
+        options: this.models.map((d) => ({
+          value: d,
+          text: d.name,
+        })),
       };
     },
   },
   methods: {
     onEditNodeTitle(title: string): void {
       const { node } = this;
-      this.onEditNode({
-        ...node,
-        title,
-      });
+      this.onEditNode({ ...node, title });
     },
     onEditNode(newValue: DefaultLabelingNode): void {
       this.$emit('edit:node', newValue);
@@ -304,33 +251,26 @@ export default Vue.extend({
       const { node, model } = this;
       this.onEditNode({
         ...node,
-        value: {
-          method: option,
-          model,
-        },
+        value: { method: option, model },
       });
     },
     onEditMethodName(name: string): void {
       const { node, method, model } = this;
+      const newMethod = { ...method, name };
       this.onEditNode({
         ...node,
-        value: {
-          method: { ...method, name },
-          model,
-        },
+        value: { method: newMethod, model },
       });
-      this.onEditMethod({ ...method, name });
+      this.onEditMethod(newMethod);
     },
     onInputMethodAPI(api: string): void {
       const { node, method, model } = this;
+      const newMethod = { ...method, api };
       this.onEditNode({
         ...node,
-        value: {
-          method: { ...method, api },
-          model,
-        },
+        value: { method: newMethod, model },
       });
-      this.onEditMethod({ ...method, api });
+      this.onEditMethod(newMethod);
     },
     onCreateMethod(): void {
       this.$emit('create:method');
@@ -342,39 +282,26 @@ export default Vue.extend({
       const { node, method } = this;
       this.onEditNode({
         ...node,
-        value: {
-          method,
-          model: option,
-        },
+        value: { method, model: option },
       });
     },
     onInputModelName(name: string): void {
       const { node, method, model } = this;
+      const newModel = { ...(model as ModelService), name };
       this.onEditNode({
         ...node,
-        value: {
-          method,
-          model: { ...(model as ModelService), name },
-        },
+        value: { method, model: newModel },
       });
-      this.onEditModel({
-        ...(model as ModelService),
-        name,
-      });
+      this.onEditModel(newModel);
     },
     onInputModelAPI(api: string): void {
       const { node, method, model } = this;
+      const newModel = { ...(model as ModelService), api };
       this.onEditNode({
         ...node,
-        value: {
-          method,
-          model: { ...(model as ModelService), api },
-        },
+        value: { method, model: newModel },
       });
-      this.onEditModel({
-        ...(model as ModelService),
-        api,
-      });
+      this.onEditModel(newModel);
     },
     onCreateModel(): void {
       this.$emit('create:model');
@@ -382,20 +309,14 @@ export default Vue.extend({
     onEditModel(newValue: ModelService): void {
       this.$emit('edit:model', newValue);
     },
-    onEditInstanceInputList(instanceInputList: string[]): void {
-      const {
-        node,
-        method,
-        model,
-      } = this;
+    onEditInstanceInputList(inputs: string[]): void {
+      const { node, method, model } = this;
+      const newMethod = { ...method, inputs };
       this.onEditNode({
         ...node,
-        value: {
-          method: { ...method, inputs: instanceInputList },
-          model,
-        },
+        value: { method: newMethod, model },
       });
-      this.onEditMethod({ ...method, inputs: instanceInputList });
+      this.onEditMethod(newMethod);
     },
     onClickRecompute(): void {
       this.$emit('click:recompute', this.node);

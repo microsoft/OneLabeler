@@ -38,9 +38,12 @@
         class="pl-1"
         style="flex-basis: 40%;"
       >
-        <TheNodeDetails
+        <!-- The process parameter panel. -->
+        <component
+          :is="component"
+          :methods="methods"
+          :models="models"
           :node="selectedNode"
-          @set:node-value="onSetNodeValue"
           @edit:node="onEditNode"
           @create:method="onCreateMethod"
           @edit:method="onEditMethod"
@@ -60,6 +63,7 @@ import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ModelService,
+  ProcessMethod,
   DataObjectSelectionMethod,
   DefaultLabelingMethod,
   FeatureExtractionMethod,
@@ -68,8 +72,16 @@ import {
   TaskTransformationMethod,
   StoppageAnalysisMethod,
 } from '@/commons/types';
+import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
+import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
+import TheNodeDetailsEmpty from './TheNodeDetailsEmpty.vue';
+import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
+import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
+import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsLabelTask from './TheNodeDetailsLabelTask.vue';
+import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
+import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
-import TheNodeDetails from './TheNodeDetails.vue';
 import {
   WorkflowNode,
   NodeTypes,
@@ -80,6 +92,7 @@ import {
   InterimModelTrainingNode,
   TaskTransformationNode,
   StoppageAnalysisNode,
+  LabelTaskNode,
 } from './types';
 
 const graph = {
@@ -241,8 +254,16 @@ const graph = {
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
   components: {
+    TheNodeDetailsDataObjectSelection,
+    TheNodeDetailsDefaultLabeling,
+    TheNodeDetailsEmpty,
+    TheNodeDetailsFeatureExtraction,
+    TheNodeDetailsInteractiveLabeling,
+    TheNodeDetailsInterimModelTraining,
+    TheNodeDetailsLabelTask,
+    TheNodeDetailsStoppageAnalysis,
+    TheNodeDetailsTaskTransformation,
     TheWorkflowGraphViewCanvas,
-    TheNodeDetails,
   },
   data() {
     return {
@@ -261,6 +282,49 @@ export default Vue.extend({
       'stoppageAnalysisMethods',
       'taskTransformationMethods',
     ]),
+    component() {
+      const node = this.selectedNode;
+      if (node === null) return TheNodeDetailsEmpty;
+      const mapper = {
+        [NodeTypes.DataObjectSelection]: TheNodeDetailsDataObjectSelection,
+        [NodeTypes.DefaultLabeling]: TheNodeDetailsDefaultLabeling,
+        [NodeTypes.FeatureExtraction]: TheNodeDetailsFeatureExtraction,
+        [NodeTypes.InteractiveLabeling]: TheNodeDetailsInteractiveLabeling,
+        [NodeTypes.InterimModelTraining]: TheNodeDetailsInterimModelTraining,
+        [NodeTypes.StoppageAnalysis]: TheNodeDetailsStoppageAnalysis,
+        [NodeTypes.TaskTransformation]: TheNodeDetailsTaskTransformation,
+        [NodeTypes.LabelTask]: TheNodeDetailsLabelTask,
+      };
+      return mapper[(node as WorkflowNode).type];
+    },
+    methods() {
+      const node = this.selectedNode;
+      if (node === null) return null;
+      const mapper = {
+        [NodeTypes.DataObjectSelection]: this.dataObjectSelectionMethods,
+        [NodeTypes.DefaultLabeling]: this.defaultLabelingMethods,
+        [NodeTypes.FeatureExtraction]: this.featureExtractionMethods,
+        [NodeTypes.InteractiveLabeling]: this.interactiveLabelingMethods,
+        [NodeTypes.InterimModelTraining]: this.interimModelTrainingMethods,
+        [NodeTypes.StoppageAnalysis]: this.stoppageAnalysisMethods,
+        [NodeTypes.TaskTransformation]: this.taskTransformationMethods,
+        [NodeTypes.LabelTask]: null,
+      };
+      return mapper[(node as WorkflowNode).type];
+    },
+    models() {
+      const node = this.selectedNode;
+      if (node === null) return TheNodeDetailsEmpty;
+      if (node.type === NodeTypes.DataObjectSelection) {
+        return this.modelServices.filter((d) => d.usableAsSampler);
+      }
+      if (node.type === NodeTypes.DefaultLabeling
+        || node.type === NodeTypes.InterimModelTraining
+      ) {
+        return this.modelServices;
+      }
+      return null;
+    },
   },
   methods: {
     ...mapActions('workflow', [
@@ -323,6 +387,10 @@ export default Vue.extend({
       const idx = newGraph.nodes.findIndex((d) => d.id === newValue.id);
       newGraph.nodes[idx] = newValue;
       this.graph = newGraph;
+      if (newValue.type === NodeTypes.LabelTask) {
+        const labelTasks = (newValue as LabelTaskNode).value;
+        this.setLabelTasks(labelTasks);
+      }
       if (newValue.type === NodeTypes.DataObjectSelection) {
         const method = (newValue as DataObjectSelectionNode).value
           .map((d) => d.method);
@@ -361,45 +429,7 @@ export default Vue.extend({
       }
       this.selectedNode = newValue;
     },
-    onSetNodeValue(node: WorkflowNode, value: unknown) {
-      const newGraph = { ...this.graph };
-      const idx = newGraph.nodes.findIndex((d) => d.id === node.id);
-      newGraph.nodes[idx].value = value;
-      this.graph = newGraph;
-
-      if (node.type === NodeTypes.LabelTask) {
-        this.setLabelTasks(value);
-      }
-      if (node.type === NodeTypes.DataObjectSelection) {
-        const method = (node as DataObjectSelectionNode).value;
-        this.setDataObjectSelectionMethod(method);
-      }
-      if (node.type === NodeTypes.DefaultLabeling) {
-        const { method } = (node as DefaultLabelingNode).value;
-        this.setDefaultLabelingMethod(method);
-      }
-      if (node.type === NodeTypes.FeatureExtraction) {
-        const { method } = (node as FeatureExtractionNode).value;
-        this.setFeatureExtractionMethod(method);
-      }
-      if (node.type === NodeTypes.InteractiveLabeling) {
-        const method = (node as InteractiveLabelingNode).value;
-        this.setInteractiveLabelingMethod(method);
-      }
-      if (node.type === NodeTypes.InterimModelTraining) {
-        const { method } = (node as InterimModelTrainingNode).value;
-        this.setInterimModelTrainingMethod(method);
-      }
-      if (node.type === NodeTypes.StoppageAnalysis) {
-        const { method } = (node as StoppageAnalysisNode).value;
-        this.setStoppageAnalysisMethod(method);
-      }
-      if (node.type === NodeTypes.TaskTransformation) {
-        const { method } = (node as TaskTransformationNode).value;
-        this.setTaskTransformationMethod(method);
-      }
-    },
-    onEditMethod(nodeType: NodeTypes, newValue: FeatureExtractionMethod) {
+    onEditMethod(nodeType: NodeTypes, newValue: ProcessMethod) {
       if (nodeType === NodeTypes.DataObjectSelection) {
         const methods = this.dataObjectSelectionMethods as DataObjectSelectionMethod[];
         const idx = methods.findIndex((d) => d.id === newValue.id);
@@ -540,9 +570,10 @@ export default Vue.extend({
       const { modelServices } = this;
       const model: ModelService = {
         name: 'custom',
-        isServerless: false,
-        type: '',
         isBuiltIn: false,
+        isServerless: false,
+        usableAsSampler: true,
+        type: '',
         objectId: (new ObjectId()).toHexString(),
       };
       this.setModelServices([

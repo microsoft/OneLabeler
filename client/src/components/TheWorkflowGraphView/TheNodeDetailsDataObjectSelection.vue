@@ -4,9 +4,7 @@
     style="width: 100%"
     tile
   >
-    <v-card-title
-      class="view-header"
-    >
+    <v-card-title class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -77,9 +75,7 @@
                   @edit:list="onEditInstanceInputList(method, $event)"
                 />
               </v-col>
-              <v-col
-                style="width: 25%; max-width: 25%; flex-basis: 25%"
-              >
+              <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
                 <!-- The display of process output parameters. -->
                 <VNodeOutput :process-output="processOutput" />
               </v-col>
@@ -104,7 +100,7 @@
                 dense
                 hide-details
                 single-line
-                @input="onInputMethodAPI($event)"
+                @input="onInputMethodAPI"
               />
             </v-card>
           </v-list-item>
@@ -146,7 +142,7 @@
                 <v-list-item>
                   Model Key
                   <v-text-field
-                    :value="model.isServerless ? 'isServerless' : model.objectId"
+                    :value="model.isServerless ? 'serverless' : model.objectId"
                     :disabled="model.isBuiltIn"
                     class="ma-0 pl-4 pt-1 subtitle-2"
                     style="padding-bottom: 6px !important"
@@ -161,18 +157,20 @@
             </v-card>
           </template>
 
-          <template v-if="method.params !== undefined">
-            <v-list-item class="pt-2">
-              <VNodeMethodParams
-                :params="method.params"
-                @click:param-option="onClickMethodParam(
-                  method,
-                  $event.paramName,
-                  $event.option,
-                )"
-              />
-            </v-list-item>
-          </template>
+          <v-list-item
+            v-if="method.params !== undefined"
+            class="pt-2"
+          >
+            <VNodeMethodParams
+              :params="method.params"
+              style="width: 100%"
+              @click:param-option="onClickMethodParam(
+                method,
+                $event.paramName,
+                $event.option,
+              )"
+            />
+          </v-list-item>
         </v-container>
       </v-list>
     </v-card-actions>
@@ -184,6 +182,7 @@ import Vue, { PropType } from 'vue';
 import {
   ModelService,
   DataObjectSelectionMethod,
+  MethodParams,
 } from '@/commons/types';
 import { DataObjectSelectionNode } from './types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
@@ -228,9 +227,7 @@ export default Vue.extend({
         'model',
         'samples',
       ],
-      processInputListOfRequired: [
-        'labels',
-      ],
+      processInputListOfRequired: ['labels'],
       processOutput: 'samples',
       classNameOfPanel: 'parameter-panel',
     };
@@ -269,10 +266,7 @@ export default Vue.extend({
   methods: {
     onEditNodeTitle(title: string): void {
       const { node } = this;
-      this.onEditNode({
-        ...node,
-        title,
-      });
+      this.onEditNode({ ...node, title });
     },
     onEditNode(newValue: DataObjectSelectionNode): void {
       this.$emit('edit:node', newValue);
@@ -301,45 +295,41 @@ export default Vue.extend({
     },
     onEditMethodName(method: DataObjectSelectionMethod, name: string): void {
       const { node, model } = this;
+      const newMethod = { ...method, name };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return {
-              method: { ...method, name },
-              model,
-            };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method: newMethod, model }
+            : d
+        )),
       });
-      this.onEditMethod({ ...method, name });
+      this.onEditMethod(newMethod);
     },
     onClickMethodParam(
       method: DataObjectSelectionMethod,
       paramName: string,
       option: { value: unknown, text: string },
     ): void {
-      const { node } = this;
+      const { node, model } = this;
       const { params } = method;
       const newMethod = {
         ...method,
         params: {
           ...params,
           [paramName]: {
-            ...params[paramName],
+            ...(params as MethodParams)[paramName],
             value: option.value,
           },
         },
       };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return { method: newMethod };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method: newMethod, model }
+            : d
+        )),
       });
       this.onEditMethod(newMethod);
     },
@@ -353,51 +343,38 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return { method, model: option };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method, model: option }
+            : d
+        )),
       });
     },
     onInputModelName(method: DataObjectSelectionMethod, name: string): void {
       const { node, model } = this;
+      const newModel = { ...(model as ModelService), name };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return {
-              method,
-              model: { ...(model as ModelService), name },
-            };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method, model: newModel }
+            : d
+        )),
       });
-      this.onEditModel({
-        ...(model as ModelService),
-        name,
-      });
+      this.onEditModel(newModel);
     },
     onInputModelAPI(method: DataObjectSelectionMethod, api: string): void {
       const { node, model } = this;
+      const newModel = { ...(model as ModelService), api };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return {
-              method,
-              model: { ...(model as ModelService), api },
-            };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method, model: newModel }
+            : d
+        )),
       });
-      this.onEditModel({
-        ...(model as ModelService),
-        api,
-      });
+      this.onEditModel(newModel);
     },
     onCreateModel(): void {
       this.$emit('create:model');
@@ -407,25 +384,19 @@ export default Vue.extend({
     },
     onEditInstanceInputList(
       method: DataObjectSelectionMethod,
-      instanceInputList: string[],
+      inputs: string[],
     ): void {
-      const {
-        node,
-        model,
-      } = this;
+      const { node, model } = this;
+      const newMethod = { ...method, inputs };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => {
-          if (d.method.id === method.id) {
-            return {
-              method: { ...method, inputs: instanceInputList },
-              model,
-            };
-          }
-          return d;
-        }),
+        value: node.value.map((d) => (
+          d.method.id === method.id
+            ? { method: newMethod, model }
+            : d
+        )),
       });
-      this.onEditMethod({ ...method, inputs: instanceInputList });
+      this.onEditMethod(newMethod);
     },
     onClickRecompute(): void {
       this.$emit('click:recompute', this.node);

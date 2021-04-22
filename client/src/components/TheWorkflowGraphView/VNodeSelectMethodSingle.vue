@@ -10,8 +10,9 @@
       <template #activator="{ on }">
         <v-btn
           class="subtitle-2 text-none"
-          style="border-radius: 2px"
+          style="border-color: #e0e0e0"
           small
+          outlined
           v-on="on"
         >
           {{ selectedMethod.name }}
@@ -36,7 +37,7 @@
           <p
             v-if="option.value.isBuiltIn"
             class="subtitle-2 text-right ma-1 grey--text"
-            style="width: 6em"
+            style="width: 7em"
           >
             built-in
           </p>

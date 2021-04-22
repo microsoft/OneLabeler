@@ -10,8 +10,9 @@
       <template #activator="{ on }">
         <v-btn
           class="subtitle-2 text-none"
-          style="border-radius: 2px"
+          style="border-color: #e0e0e0"
           small
+          outlined
           v-on="on"
         >
           {{ selectedModel === null ? '' : selectedModel.name }}

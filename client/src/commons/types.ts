@@ -123,17 +123,6 @@ export interface ProcessMethod {
   params?: MethodParams;
 }
 
-/** The interface of an algorithmic feature extraction method. */
-export interface FeatureExtractionMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-}
-
 /** The interface of a data object selection method. */
 export interface DataObjectSelectionMethod extends ProcessMethod {
   name: string;
@@ -146,8 +135,8 @@ export interface DataObjectSelectionMethod extends ProcessMethod {
   params?: MethodParams;
 }
 
-/** The interface of an interim model training method. */
-export interface InterimModelTrainingMethod extends ProcessMethod {
+/** The interface of an algorithmic default labeling method. */
+export interface DefaultLabelingMethod extends ProcessMethod {
   name: string;
   id: string;
   inputs: Array<string>;
@@ -157,8 +146,8 @@ export interface InterimModelTrainingMethod extends ProcessMethod {
   api: string;
 }
 
-/** The interface of an algorithmic default labeling method. */
-export interface DefaultLabelingMethod extends ProcessMethod {
+/** The interface of an algorithmic feature extraction method. */
+export interface FeatureExtractionMethod extends ProcessMethod {
   name: string;
   id: string;
   inputs: Array<string>;
@@ -173,8 +162,21 @@ export interface InteractiveLabelingMethod extends ProcessMethod {
   name: string;
   id: string;
   inputs: Array<string>;
+  isAlgorithmic: boolean;
   isBuiltIn: boolean;
+  isServerless: boolean;
   params?: MethodParams;
+}
+
+/** The interface of an interim model training method. */
+export interface InterimModelTrainingMethod extends ProcessMethod {
+  name: string;
+  id: string;
+  inputs: Array<string>;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+  api: string;
 }
 
 /** The interface of an interim model training method. */
