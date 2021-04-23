@@ -127,11 +127,7 @@ export default Vue.extend({
       'currentNode',
     ]),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
-    ...mapGetters('workflow', [
-      'defaultLabelingMethod',
-      'interimModelTrainingMethod',
-      'nextNodes',
-    ]),
+    ...mapGetters('workflow', ['nextNodes']),
     nDataObjects(): number {
       return this.dataObjects.length;
     },

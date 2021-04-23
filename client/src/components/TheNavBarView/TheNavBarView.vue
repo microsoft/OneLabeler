@@ -309,9 +309,6 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters('workflow', [
-      'featureExtractionMethod',
-      'defaultLabelingMethod',
-      'interimModelTrainingMethod',
       'dataObjectSelectionMethod',
       'startNode',
       'nextNodes',

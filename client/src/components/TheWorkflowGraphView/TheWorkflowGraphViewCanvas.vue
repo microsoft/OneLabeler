@@ -141,7 +141,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
-import { WorkflowNode, WorkflowNodeType } from '@/commons/types';
+import { Process, WorkflowNode, WorkflowNodeType } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',
@@ -160,14 +160,6 @@ export default Vue.extend({
       rightClickY: null as null | number,
       rightClickedNode: null as null | WorkflowNode,
     };
-  },
-  computed: {
-    ...mapGetters('workflow', [
-      'dataObjectSelectionMethod',
-      'defaultLabelingMethod',
-      'interactiveLabelingMethod',
-      'interimModelTrainingMethod',
-    ]),
   },
   methods: {
     isDataNode(node: WorkflowNode): boolean {
@@ -199,16 +191,20 @@ export default Vue.extend({
     },
     isDummyNode(node: WorkflowNode): boolean {
       if (node.type === WorkflowNodeType.DataObjectSelection) {
-        return this.dataObjectSelectionMethod.length === 0;
+        return node.value === undefined
+          || (node.value as Process[]).length === 0;
       }
       if (node.type === WorkflowNodeType.DefaultLabeling) {
-        return this.defaultLabelingMethod.api === 'Null';
+        return node.value === undefined
+          || (node.value as Process).api === 'Null';
       }
       if (node.type === WorkflowNodeType.InteractiveLabeling) {
-        return this.interactiveLabelingMethod.length === 0;
+        return node.value === undefined
+          || (node.value as Process[]).length === 0;
       }
       if (node.type === WorkflowNodeType.InterimModelTraining) {
-        return this.interimModelTrainingMethod.api === 'Static';
+        return node.value === undefined
+          || (node.value as Process).api === 'Static';
       }
       return false;
     },

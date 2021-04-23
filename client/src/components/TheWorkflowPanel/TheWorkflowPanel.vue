@@ -88,7 +88,6 @@ import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import {
-  DefaultLabelingMethod,
   IMessage,
   MessageType,
   LabelTaskType,
@@ -99,7 +98,6 @@ import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.v
 
 type WorkflowConfigData = {
   nBatch: number,
-  defaultLabelingMethod: DefaultLabelingMethod,
   showDatasetOverview: boolean,
   itemsPerRow: number,
   itemsPerCol: number,
@@ -112,7 +110,6 @@ const schema: JSONSchemaType<Partial<WorkflowConfigData>> = {
   properties: {
     samplingStrategy: { type: 'string' },
     nBatch: { type: 'integer' },
-    defaultLabelingMethod: { type: 'string' },
     showDatasetOverview: { type: 'boolean' },
     itemsPerRow: { type: 'integer' },
     itemsPerCol: { type: 'integer' },
@@ -161,23 +158,18 @@ export default Vue.extend({
     },
   },
   computed: {
-    ...mapGetters('workflow', [
-      'defaultLabelingMethod',
-    ]),
+    ...mapGetters('workflow', ['nodes', 'edges']),
   },
   methods: {
     ...mapActions(['setMessage']),
     ...mapActions('workflow', [
-      'setDefaultLabelingMethod',
       'setLabelTasks',
       'resetState',
     ]),
     onClickExport(): void {
-      const {
-        defaultLabelingMethod,
-      } = this;
+      const { nodes, edges } = this;
       saveObjectAsJSONFile({
-        defaultLabelingMethod,
+        nodes, edges,
       }, 'workflow.config.json');
     },
     onClickReset(): void {
@@ -191,9 +183,6 @@ export default Vue.extend({
       if (file === null || file === undefined) return;
       const config = await JSONFileToObject(file);
       if (validate(config)) {
-        if ('defaultLabelingMethod' in config) {
-          this.setDefaultLabelingMethod(config.defaultLabelingMethod);
-        }
         if ('labelTasks' in config) {
           this.setLabelTasks(config.labelTasks);
         }
