@@ -14,10 +14,7 @@ import {
   Label,
   Status,
   ModelService,
-  FeatureExtractionMethod,
-  DataObjectSelectionMethod,
-  DefaultLabelingMethod,
-  InterimModelTrainingMethod,
+  Process,
 } from '@/commons/types';
 import uploadFile from './upload-file';
 
@@ -48,7 +45,7 @@ export const extractDataObjects = showProgressBar(async (
  * on the data object type.
  */
 export const featureExtraction = showProgressBar(async (
-  method: FeatureExtractionMethod,
+  method: Process,
   dataObjects: IImage[],
   labels: Label[] | null = null,
   statuses: Status[] | null = null,
@@ -77,7 +74,7 @@ export const featureExtraction = showProgressBar(async (
   } else {
     response = (
       await axios.post(
-        method.api,
+        method.api as string,
         JSON.stringify({
           dataObjects,
           labels,
@@ -100,7 +97,7 @@ export const featureExtraction = showProgressBar(async (
  * @returns defaultLabels - the default labels of the selected data objects.
  */
 export const defaultLabeling = showProgressBar(async (
-  method: DefaultLabelingMethod,
+  method: Process,
   dataObjects: IDataObject[],
   model: ModelService,
   classes: Label[] | null = null,
@@ -119,7 +116,7 @@ export const defaultLabeling = showProgressBar(async (
   } else {
     labels = (
       await axios.post(
-        method.api,
+        method.api as string,
         JSON.stringify({
           dataObjects,
           model,
@@ -141,7 +138,7 @@ export const defaultLabeling = showProgressBar(async (
  * @returns queryIndices - the indices of sampled data objects.
  */
 export const dataObjectSelection = showProgressBar(async (
-  method: DataObjectSelectionMethod,
+  method: Process,
   labels: Label[],
   statuses: Status[],
   nBatch: number,
@@ -171,7 +168,7 @@ export const dataObjectSelection = showProgressBar(async (
   } else {
     queryIndices = (
       await axios.post(
-        method.api,
+        method.api as string,
         JSON.stringify({
           labels,
           statuses,
@@ -196,7 +193,7 @@ export const dataObjectSelection = showProgressBar(async (
  * @returns modelUpdated - the updated model.
  */
 export const interimModelTraining = showProgressBar(async (
-  method: InterimModelTrainingMethod,
+  method: Process,
   model: ModelService,
   dataObjects: IDataObject[] | null = null,
   labels: Label[] | null = null,
@@ -208,7 +205,7 @@ export const interimModelTraining = showProgressBar(async (
   } else {
     modelUpdated = (
       await axios.post(
-        method.api,
+        method.api as string,
         JSON.stringify({
           model,
           dataObjects,

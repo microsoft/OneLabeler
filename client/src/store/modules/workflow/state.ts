@@ -10,6 +10,8 @@ import { modelServices, processes } from '@/commons/builtins';
 import graph from '@/commons/graph-template';
 
 export interface IState {
+  /** The node currently being processed. */
+  currentNode: WorkflowNode | null;
   /** The nodes in the workflow graph. */
   nodes: WorkflowNode[],
   /** The edges in the workflow graph. */
@@ -25,6 +27,7 @@ export interface IState {
 }
 
 export const createInitialState = (): IState => ({
+  currentNode: null,
   nodes: graph.nodes,
   edges: graph.edges,
   dataType: DataType.Image,

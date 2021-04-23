@@ -22,6 +22,9 @@ export default {
   [types.SET_CLASSES](state: IState, classes: Label[]): void {
     state.classes = classes;
   },
+  [types.SET_STOP](state: IState, stop: boolean): void {
+    state.stop = stop;
+  },
   [types.SET_LABELS](state: IState, labels: Label[]): void {
     state.labels = labels;
   },

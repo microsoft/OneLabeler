@@ -59,7 +59,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { DataObjectSelectionMethod, InteractiveLabelingMethod } from '@/commons/types';
+import { Process, MethodParams } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
@@ -83,26 +83,30 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
       'interactiveLabelingMethod',
     ]),
     enableProjectionOverview(): boolean {
-      const methods = this.dataObjectSelectionMethod as DataObjectSelectionMethod[];
+      const methods = this.dataObjectSelectionMethod as Process[];
       return methods.findIndex((d) => d.id === 'Projection') >= 0;
     },
     enableSingleObjectDisplay(): boolean {
-      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const methods = this.interactiveLabelingMethod as Process[];
       return methods.findIndex((d) => d.id === 'Single-Object-Display') >= 0;
     },
     enableGridMatrix(): boolean {
-      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const methods = this.interactiveLabelingMethod as Process[];
       return methods.findIndex((d) => d.id === 'Grid-Matrix') >= 0;
     },
     itemsPerRow(): number | null {
-      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const methods = this.interactiveLabelingMethod as Process[];
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
-      return gridMatrix === undefined ? null : gridMatrix.params.nColumns.value;
+      return gridMatrix === undefined
+        ? null
+        : (gridMatrix.params as MethodParams).nColumns.value as number;
     },
     itemsPerCol(): number | null {
-      const methods = this.interactiveLabelingMethod as InteractiveLabelingMethod[];
+      const methods = this.interactiveLabelingMethod as Process[];
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
-      return gridMatrix === undefined ? null : gridMatrix.params.nRows.value;
+      return gridMatrix === undefined
+        ? null
+        : (gridMatrix.params as MethodParams).nRows.value as number;
     },
     nViews(): number {
       const {

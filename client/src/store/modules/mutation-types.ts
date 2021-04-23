@@ -1,5 +1,6 @@
 export const SET_DATA_OBJECTS = 'SET_DATA_OBJECTS';
 export const SET_CLASSES = 'SET_CLASSES';
+export const SET_STOP = 'SET_STOP';
 export const SET_LABELS = 'SET_LABELS';
 export const SET_LABEL_GEOMETRIC_OBJECTS = 'SET_LABEL_GEOMETRIC_OBJECTS';
 export const SET_LABEL_MASKS = 'SET_LABEL_MASKS';

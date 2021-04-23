@@ -33,6 +33,13 @@ export const pushClasses = (
   commit(types.SET_CLASSES, [...classes, className]);
 };
 
+export const setStop = (
+  { commit }: ActionContext<IState, IState>,
+  stop: boolean,
+): void => {
+  commit(types.SET_STOP, stop);
+};
+
 export const setLabels = (
   { commit }: ActionContext<IState, IState>,
   labels: Label[],

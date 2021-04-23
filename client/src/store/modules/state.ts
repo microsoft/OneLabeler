@@ -14,6 +14,8 @@ export interface IState {
   dataObjects: IDataObject[],
   /** The label category options. */
   classes: Label[],
+  /** The decision whether the data labeling process should stop. */
+  stop: boolean,
   /** The data object labels. */
   labels: Label[],
   /** The data object geometric object annotations (one image can contain multiple objects). */
@@ -41,6 +43,7 @@ export interface IState {
 export const createInitialState = (): IState => ({
   dataObjects: [],
   classes: [],
+  stop: false,
   labels: [],
   labelGeometricObjects: [],
   labelMasks: [],

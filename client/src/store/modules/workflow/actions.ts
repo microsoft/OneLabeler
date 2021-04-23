@@ -10,6 +10,7 @@ import {
   ModelService,
   Process,
   DataType,
+  WorkflowNodeType,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -203,26 +204,47 @@ export const extractDataObjects = async (
 };
 
 export const executeInterimModelTraining = async (
-  { rootState }: ActionContext<IState, IRootState>,
-  { method, model }: { method: Process, model: ModelService },
+  { state, rootState }: ActionContext<IState, IRootState>,
+  method: Process,
 ): Promise<void> => {
   const {
     dataObjects,
     labels,
     statuses,
   } = rootState;
-  (await API.interimModelTraining(
-    method,
-    model,
-    dataObjects,
-    labels,
-    statuses,
-  ));
+  const { nodes } = state;
+  nodes.forEach(async (d) => {
+    if (Array.isArray(d.value)) {
+      const nodeMethods = d.value as Process[];
+      nodeMethods.forEach(async (m) => {
+        if (!m.isModelBased) return;
+        const model = m.model as ModelService;
+        (await API.interimModelTraining(
+          method,
+          model,
+          dataObjects,
+          labels,
+          statuses,
+        ));
+      });
+    } else {
+      const nodeMethod = d.value as Process;
+      if (!nodeMethod.isModelBased) return;
+      const model = nodeMethod.model as ModelService;
+      (await API.interimModelTraining(
+        method,
+        model,
+        dataObjects,
+        labels,
+        statuses,
+      ));
+    }
+  });
 };
 
 export const executeDataObjectSelectionAlgorithmic = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  { method }: { method: Process },
+  method: Process,
 ): Promise<void> => {
   const {
     labels,
@@ -289,7 +311,7 @@ export const executeDataObjectSelectionManual = async (
 
 export const executeDefaultLabeling = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  { method }: { method: Process },
+  method: Process,
 ): Promise<void> => {
   const {
     dataObjects,
@@ -316,7 +338,7 @@ export const executeDefaultLabeling = async (
 
 export const executeFeatureExtraction = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  { method }: { method: Process },
+  method: Process,
 ): Promise<void> => {
   const { dataObjects, labels, statuses } = rootState;
 
@@ -333,4 +355,134 @@ export const executeFeatureExtraction = async (
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+};
+
+export const executeStoppageAnalysis = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  method: Process,
+): Promise<void> => {
+  const { statuses, unlabeledMark } = rootState;
+  const stop = !(statuses.findIndex((d) => d === unlabeledMark) >= 0);
+  commit(rootTypes.SET_STOP, stop, { root: true });
+};
+
+const getOutputNodes = (
+  node: WorkflowNode,
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[],
+): WorkflowNode[] => {
+  const outputNodeIds = edges.filter(
+    (edge) => edge.source === node.id,
+  ).map((edge) => edge.target);
+  const outputNodes = outputNodeIds.map((id: string) => (
+    nodes.find((d) => d.id === id) as WorkflowNode
+  ));
+  return outputNodes;
+};
+
+export const executeWorkflow = async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  node: WorkflowNode,
+): Promise<void> => {
+  const { nodes, edges } = state;
+  let outputNode = null;
+
+  if (node.type === WorkflowNodeType.LabelTask) {
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.DataType) {
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.Initialization) {
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.Terminal) {
+    return;
+  }
+
+  if (node.type === WorkflowNodeType.Decision) {
+    const { stop } = rootState;
+    if (stop) {
+      [outputNode] = getOutputNodes(
+        node, nodes, edges.filter((d) => d.condition === true),
+      );
+    } else {
+      [outputNode] = getOutputNodes(
+        node, nodes, edges.filter((d) => d.condition === false),
+      );
+    }
+  }
+
+  if (node.type === WorkflowNodeType.LabelIdeation) {
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.FeatureExtraction) {
+    const method = node.value as Process;
+    await executeFeatureExtraction(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.DataObjectSelection) {
+    const method = node.value as Process;
+    if (!method.isAlgorithmic) {
+      return;
+    }
+    await executeDataObjectSelectionAlgorithmic(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.DefaultLabeling) {
+    const method = node.value as Process;
+    await executeDefaultLabeling(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.TaskTransformation) {
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.InteractiveLabeling) {
+    return;
+  }
+
+  if (node.type === WorkflowNodeType.StoppageAnalysis) {
+    const method = node.value as Process;
+    await executeStoppageAnalysis(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.InterimModelTraining) {
+    const method = node.value as Process;
+    await executeInterimModelTraining(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    [outputNode] = getOutputNodes(node, nodes, edges);
+  }
+
+  if (node.type === WorkflowNodeType.QualityAssurance) {
+    // TODO
+  }
+
+  commit(types.SET_CURRENT_NODE, outputNode);
+  await executeWorkflow(
+    { commit, state, rootState } as ActionContext<IState, IRootState>,
+    outputNode as WorkflowNode,
+  );
 };

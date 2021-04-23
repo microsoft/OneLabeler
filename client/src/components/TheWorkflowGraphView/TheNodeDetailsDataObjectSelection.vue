@@ -346,12 +346,11 @@ export default Vue.extend({
     },
     onClickMenuOfModelsOption(method: Process, option: ModelService): void {
       const { node } = this;
+      const newMethod = { ...method, model: option };
       this.onEditNode({
         ...node,
         value: (node.value as Process[]).map((d) => (
-          d.id === method.id
-            ? { ...method, model: option }
-            : d
+          d.id === method.id ? newMethod : d
         )),
       });
     },

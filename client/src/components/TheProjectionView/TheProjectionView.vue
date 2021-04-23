@@ -175,12 +175,12 @@ export default Vue.extend({
       const indices = uuids
         .map((uuid) => uuidToIdx[uuid]);
       await this.executeDataObjectSelectionManual(indices);
-      await this.executeInterimModelTraining({
-        method: this.interimModelTrainingMethod,
-      });
-      await this.executeDefaultLabeling({
-        method: this.defaultLabelingMethod,
-      });
+      await this.executeInterimModelTraining(
+        this.interimModelTrainingMethod,
+      );
+      await this.executeDefaultLabeling(
+        this.defaultLabelingMethod,
+      );
     },
     onSetMatrixShape(nRows: number, nColumns: number) {
       this.nRows = nRows;

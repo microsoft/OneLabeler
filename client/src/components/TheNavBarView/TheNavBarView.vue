@@ -417,9 +417,7 @@ export default Vue.extend({
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
       await this.extractDataObjects(files);
-      await this.executeFeatureExtraction({
-        method: this.featureExtractionMethod,
-      });
+      await this.executeFeatureExtraction(this.featureExtractionMethod);
       this.setMessage({
         content: 'Project Data Uploaded.',
         type: MessageType.Success,
@@ -484,21 +482,21 @@ export default Vue.extend({
       this.resetState();
     },
     async onClickNextBatch(): Promise<void> {
-      await this.executeDataObjectSelectionAlgorithmic({
-        method: this.dataObjectSelectionMethod.find((d) => d.algorithmic),
-      });
+      await this.executeDataObjectSelectionAlgorithmic(
+        this.dataObjectSelectionMethod.find((d) => d.algorithmic),
+      );
       if (this.queryIndices.length === 0) {
         this.setMessage({
           content: 'All Data Objects Labeled.',
           type: MessageType.Success,
         });
       } else {
-        await this.executeInterimModelTraining({
-          method: this.interimModelTrainingMethod,
-        });
-        await this.executeDefaultLabeling({
-          method: this.defaultLabelingMethod,
-        });
+        await this.executeInterimModelTraining(
+          this.interimModelTrainingMethod,
+        );
+        await this.executeDefaultLabeling(
+          this.defaultLabelingMethod,
+        );
       }
     },
     onClickUndo(): void {

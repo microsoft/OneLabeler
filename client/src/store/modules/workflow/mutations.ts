@@ -10,6 +10,12 @@ import { IState } from './state';
 import * as types from './mutation-types';
 
 export default {
+  [types.SET_CURRENT_NODE](
+    state: IState,
+    node: WorkflowNode,
+  ): void {
+    state.currentNode = node;
+  },
   [types.SET_NODES](
     state: IState,
     nodes: WorkflowNode[],
