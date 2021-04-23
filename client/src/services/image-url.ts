@@ -6,10 +6,10 @@
 import {
   PROTOCOL,
   IP,
-  SERVER_PORT,
+  PORT,
 } from './http-params';
 
 // image url formatter
 export default (filePath: string): string => (
-  `${PROTOCOL}://${IP}:${SERVER_PORT}/img/${filePath}`
+  `${PROTOCOL}://${IP}:${PORT}/img/${filePath}`
 );

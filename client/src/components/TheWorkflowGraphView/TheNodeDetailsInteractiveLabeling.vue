@@ -49,7 +49,7 @@
           <v-divider />
 
           <!-- The name of the method. -->
-           <v-list-item class="pt-2">
+          <v-list-item class="pt-2">
             <VNodeEditableMethodName
               :title="method.name"
               :disabled="method.isBuiltIn"
@@ -103,9 +103,9 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
-  InteractiveLabelingMethod,
-  InteractiveLabelingNode,
   MethodParams,
+  Process,
+  WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
@@ -126,11 +126,11 @@ export default Vue.extend({
   },
   props: {
     methods: {
-      type: Array as PropType<InteractiveLabelingMethod[]>,
+      type: Array as PropType<Process[]>,
       default: () => [],
     },
     node: {
-      type: Object as PropType<InteractiveLabelingNode>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -144,8 +144,8 @@ export default Vue.extend({
     };
   },
   computed: {
-    selectedMethods(): InteractiveLabelingMethod[] {
-      return this.node.value.map((d) => d.method);
+    selectedMethods(): Process[] {
+      return this.node.value as Process[];
     },
     menuOfMethods() {
       return {
@@ -162,18 +162,18 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, title });
     },
-    onEditNode(newValue: InteractiveLabelingNode): void {
+    onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
     },
-    onUpdateMethodOptions(options: InteractiveLabelingMethod[]): void {
+    onUpdateMethodOptions(options: Process[]): void {
       const { node } = this;
       this.onEditNode({
         ...node,
-        value: options.map((d) => ({ method: d })),
+        value: options,
       });
     },
     onClickMethodParam(
-      method: InteractiveLabelingMethod,
+      method: Process,
       paramName: string,
       option: { value: unknown, text: string },
     ): void {
@@ -191,16 +191,14 @@ export default Vue.extend({
       };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method: newMethod }
-            : d
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id ? newMethod : d
         )),
       });
       this.onEditMethod(newMethod);
     },
-    onEditMethod(newValue: InteractiveLabelingMethod): void {
-      this.$emit('edit:method', this.node.type, newValue);
+    onEditMethod(newValue: Process): void {
+      this.$emit('edit:method', newValue);
     },
   },
 });

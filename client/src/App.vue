@@ -58,7 +58,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import { DataObjectSelectionMethod, InteractiveLabelingMethod } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
@@ -78,7 +78,7 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     TheMessageView,
   },
   computed: {
-    ...mapState('workflow', [
+    ...mapGetters('workflow', [
       'dataObjectSelectionMethod',
       'interactiveLabelingMethod',
     ]),

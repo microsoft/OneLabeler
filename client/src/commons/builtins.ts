@@ -1,19 +1,6 @@
 import ObjectId from 'bson-objectid';
-import {
-  ModelService,
-  DataObjectSelectionMethod,
-  DefaultLabelingMethod,
-  FeatureExtractionMethod,
-  InteractiveLabelingMethod,
-  InterimModelTrainingMethod,
-  StoppageAnalysisMethod,
-  TaskTransformationMethod,
-} from '@/commons/types';
-import {
-  PROTOCOL,
-  IP,
-  SERVER_PORT,
-} from '@/services/http-params';
+import { ModelService, Process, ProcessType } from '@/commons/types';
+import { PROTOCOL, IP, PORT } from '@/services/http-params';
 
 export const modelServices: ModelService[] = [{
   name: 'DecisionTree (Supervised)',
@@ -21,9 +8,9 @@ export const modelServices: ModelService[] = [{
   type: 'DecisionTree',
   isBuiltIn: true,
   objectId: (new ObjectId('DecisionTree')).toHexString(),
-  usableAsSampler: false,
+  isValidSampler: false,
   // id: 'DecisionTree-95912701',
-  // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/DecisionTree`,
+  // api: `${PROTOCOL}://${IP}:${PORT}/model/DecisionTree`,
   // isLocal: true,
 }, {
   name: 'SVM (Supervised)',
@@ -31,9 +18,9 @@ export const modelServices: ModelService[] = [{
   type: 'SVM',
   isBuiltIn: true,
   objectId: (new ObjectId('SVM000000000')).toHexString(),
-  usableAsSampler: false,
+  isValidSampler: false,
   // id: 'SVM-99885399',
-  // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/SVM`,
+  // api: `${PROTOCOL}://${IP}:${PORT}/model/SVM`,
   // isLocal: true,
 }, {
   name: 'LogisticRegression (Supervised)',
@@ -41,9 +28,9 @@ export const modelServices: ModelService[] = [{
   type: 'LogisticRegression',
   isBuiltIn: true,
   objectId: (new ObjectId('LogisticRegr')).toHexString(),
-  usableAsSampler: true,
+  isValidSampler: true,
   // id: 'LogisticRegression-75095119',
-  // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/LogisticRegression`,
+  // api: `${PROTOCOL}://${IP}:${PORT}/model/LogisticRegression`,
   // isLocal: true,
 }, {
   name: 'RestrictedBoltzmannMachine (Supervised)',
@@ -51,9 +38,9 @@ export const modelServices: ModelService[] = [{
   type: 'RestrictedBoltzmannMachine',
   isBuiltIn: true,
   objectId: (new ObjectId('RestrictedBo')).toHexString(),
-  usableAsSampler: false,
+  isValidSampler: false,
   // id: 'RestrictedBoltzmannMachine-73157581',
-  // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/RestrictedBoltzmannMachine`,
+  // api: `${PROTOCOL}://${IP}:${PORT}/model/RestrictedBoltzmannMachine`,
   // isLocal: true,
 }, {
   name: 'LabelSpreading (Semi-Supervised)',
@@ -61,26 +48,30 @@ export const modelServices: ModelService[] = [{
   type: 'LabelSpreading',
   isBuiltIn: true,
   objectId: (new ObjectId('LabelSpreadi')).toHexString(),
-  usableAsSampler: true,
+  isValidSampler: true,
   // id: 'LabelSpreading-81419641',
-  // api: `${PROTOCOL}://${IP}:${SERVER_PORT}/model/LabelSpreading`,
+  // api: `${PROTOCOL}://${IP}:${PORT}/model/LabelSpreading`,
   // isLocal: true,
 }];
 
-export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
+const dataObjectSelectionMethods: Process[] = [{
+  type: ProcessType.DataObjectSelection,
   name: 'Projection (User Sampling)',
   id: 'Projection',
   inputs: ['features', 'labels'],
   isAlgorithmic: false,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Projection',
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'Random (Dummy)',
   id: 'Random-73417867',
   inputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Random',
   params: {
@@ -99,13 +90,15 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'Cluster (Clustering)',
   id: 'Cluster-13466955',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/Cluster`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/Cluster`,
   params: {
     nBatch: {
       value: 48,
@@ -122,13 +115,15 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'DenseAreas (Clustering)',
   id: 'DenseAreas-67390401',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/DenseAreas`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/DenseAreas`,
   params: {
     nBatch: {
       value: 48,
@@ -145,13 +140,15 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'ClusterCentroids (Clustering)',
   id: 'ClusterCentroids-60587176',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/ClusterCentroids`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/ClusterCentroids`,
   params: {
     nBatch: {
       value: 48,
@@ -168,13 +165,16 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'Entropy (Active Learning)',
   id: 'Entropy-49394355',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/Entropy`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/Entropy`,
+  model: undefined,
   params: {
     nBatch: {
       value: 48,
@@ -191,13 +191,16 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'LeastConfident (Active Learning)',
   id: 'LeastConfident-12520162',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/LeastConfident`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/LeastConfident`,
+  model: undefined,
   params: {
     nBatch: {
       value: 48,
@@ -214,13 +217,16 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'SmallestMargin (Active Learning)',
   id: 'SmallestMargin-74021796',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/SmallestMargin`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/SmallestMargin`,
+  model: undefined,
   params: {
     nBatch: {
       value: 48,
@@ -237,13 +243,16 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'EntropyDiversity (Active Learning)',
   id: 'EntropyDiversity-98931757',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/EntropyDiversity`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/EntropyDiversity`,
+  model: undefined,
   params: {
     nBatch: {
       value: 48,
@@ -260,13 +269,16 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
     },
   },
 }, {
+  type: ProcessType.DataObjectSelection,
   name: 'EntropyDiversityDensity (Active Learning)',
   id: 'EntropyDiversityDensity-60957928',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/selection/EntropyDiversityDensity`,
+  api: `${PROTOCOL}://${IP}:${PORT}/selection/EntropyDiversityDensity`,
+  model: undefined,
   params: {
     nBatch: {
       value: 48,
@@ -284,79 +296,98 @@ export const dataObjectSelectionMethods: DataObjectSelectionMethod[] = [{
   },
 }];
 
-export const defaultLabelingMethods: DefaultLabelingMethod[] = [{
+const defaultLabelingMethods: Process[] = [{
+  type: ProcessType.DefaultLabeling,
   name: 'ModelPrediction',
   id: 'ModelPrediction-29967546',
   inputs: ['features', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/defaultLabels/ModelPrediction`,
+  model: undefined,
+  api: `${PROTOCOL}://${IP}:${PORT}/defaultLabels/ModelPrediction`,
 }, {
+  type: ProcessType.DefaultLabeling,
   name: 'Null (Dummy)',
   id: 'Null-35514905',
   inputs: ['features'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Null',
 }, {
+  type: ProcessType.DefaultLabeling,
   name: 'Random (Dummy)',
   id: 'Random-38398168',
   inputs: ['features'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Random',
 }];
 
-export const featureExtractionMethods: FeatureExtractionMethod[] = [{
+const featureExtractionMethods: Process[] = [{
+  type: ProcessType.FeatureExtraction,
   name: 'SVD (Unsupervised)',
   id: 'image-SVD-25940167',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/SVD`,
+  api: `${PROTOCOL}://${IP}:${PORT}/features/image/SVD`,
 }, {
+  type: ProcessType.FeatureExtraction,
   name: 'BoW (Handcrafted)',
   id: 'image-BoW-6989392',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/BoW`,
+  api: `${PROTOCOL}://${IP}:${PORT}/features/image/BoW`,
 }, {
+  type: ProcessType.FeatureExtraction,
   name: 'LDA (Supervised)',
   id: 'image-LDA-45100847',
   inputs: ['dataObjects', 'labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/features/image/LDA`,
+  api: `${PROTOCOL}://${IP}:${PORT}/features/image/LDA`,
 }, {
+  type: ProcessType.FeatureExtraction,
   name: 'Random3D (Dummy)',
   id: 'Random-87333124',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Random3D',
 }];
 
-export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
+const interactiveLabelingMethods: Process[] = [{
+  type: ProcessType.InteractiveLabeling,
   name: 'Single Object Display',
   id: 'Single-Object-Display',
   inputs: ['dataObjects', 'samples'],
   isAlgorithmic: false,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
 }, {
+  type: ProcessType.InteractiveLabeling,
   name: 'Grid Matrix',
   id: 'Grid-Matrix',
   inputs: ['dataObjects', 'samples'],
   isAlgorithmic: false,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   params: {
     nRows: {
@@ -383,40 +414,58 @@ export const interactiveLabelingMethods: InteractiveLabelingMethod[] = [{
   },
 }];
 
-export const interimModelTrainingMethods: InterimModelTrainingMethod[] = [{
+const interimModelTrainingMethods: Process[] = [{
+  type: ProcessType.InterimModelTraining,
   name: 'Retrain',
   id: 'Retrain-16440841',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${SERVER_PORT}/modelUpdated/Retrain`,
+  api: `${PROTOCOL}://${IP}:${PORT}/modelUpdated/Retrain`,
 }, {
+  type: ProcessType.InterimModelTraining,
   name: 'Static',
   id: 'Static-72885436',
   inputs: ['model'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'Static',
 }];
 
-export const stoppageAnalysisMethods: StoppageAnalysisMethod[] = [{
+const stoppageAnalysisMethods: Process[] = [{
+  type: ProcessType.StoppageAnalysis,
   name: 'AllChecked',
   id: 'AllChecked-46322013',
   inputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'AllChecked',
 }];
 
-export const taskTransformationMethods: TaskTransformationMethod[] = [{
+const taskTransformationMethods: Process[] = [{
+  type: ProcessType.TaskTransformation,
   name: 'DirectLabeling',
   id: 'DirectLabeling-97377357',
   inputs: ['dataObjects', 'labelTask', 'labelSpace'],
   isAlgorithmic: true,
   isBuiltIn: true,
+  isModelBased: false,
   isServerless: true,
   api: 'DirectLabeling',
 }];
+
+export const processes: Process[] = [
+  ...dataObjectSelectionMethods,
+  ...defaultLabelingMethods,
+  ...featureExtractionMethods,
+  ...interactiveLabelingMethods,
+  ...interimModelTrainingMethods,
+  ...stoppageAnalysisMethods,
+  ...taskTransformationMethods,
+];

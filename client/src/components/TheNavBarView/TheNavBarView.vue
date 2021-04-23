@@ -149,7 +149,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import {
@@ -162,7 +162,7 @@ import {
   ILabelGeometricObject,
   MessageType,
   Status,
-  DataObjectSelectionMethod,
+  Process,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -308,6 +308,12 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapGetters('workflow', [
+      'featureExtractionMethod',
+      'defaultLabelingMethod',
+      'interimModelTrainingMethod',
+      'dataObjectSelectionMethod',
+    ]),
     ...mapState([
       'dataObjects',
       'classes',
@@ -319,14 +325,6 @@ export default Vue.extend({
       'featureNames',
       'queryIndices',
       'commandHistory',
-    ]),
-    ...mapState('workflow', [
-      'featureExtractionMethod',
-      'defaultLabelingMethod',
-      'defaultLabelingModel',
-      'interimModelTrainingMethod',
-      'dataObjectSelectionMethod',
-      'dataObjectSelectionModel',
     ]),
     disableSaveButton(): boolean {
       return this.dataObjects.length === 0;
@@ -362,7 +360,7 @@ export default Vue.extend({
       return '';
     },
     dataObjectSelectionAlgorithmicEnabled(): boolean {
-      return (this.dataObjectSelectionMethod as DataObjectSelectionMethod[])
+      return (this.dataObjectSelectionMethod as Process[])
         .findIndex((d) => d.isAlgorithmic) >= 0;
     },
   },
@@ -488,7 +486,6 @@ export default Vue.extend({
     async onClickNextBatch(): Promise<void> {
       await this.executeDataObjectSelectionAlgorithmic({
         method: this.dataObjectSelectionMethod.find((d) => d.algorithmic),
-        model: this.dataObjectSelectionModel,
       });
       if (this.queryIndices.length === 0) {
         this.setMessage({
@@ -501,7 +498,6 @@ export default Vue.extend({
         });
         await this.executeDefaultLabeling({
           method: this.defaultLabelingMethod,
-          model: this.defaultLabelingModel,
         });
       }
     },

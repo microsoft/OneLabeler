@@ -94,6 +94,13 @@ export interface IMessage {
   type: MessageType;
 }
 
+/** The enum of projection method types. */
+export enum ProjectionMethodType {
+  PCA = 'PCA',
+  MDS = 'MDS',
+  TSNE = 't-SNE',
+}
+
 /** The interface of a model service. */
 export interface ModelService {
   name: string;
@@ -101,7 +108,7 @@ export interface ModelService {
   type: string,
   isBuiltIn: boolean;
   objectId: string;
-  usableAsSampler: boolean;
+  isValidSampler: boolean;
   // id: string;
   // api: string;
   // isLocal: boolean;
@@ -113,20 +120,22 @@ export type MethodParams = Record<string, {
   options: { value: unknown, text: string }[],
 }>;
 
-/** The interface of a method instantiating a process. */
-export interface ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api?: string; // for isServerless methods, the api is the method's unique name
-  params?: MethodParams;
+export enum ProcessType {
+  LabelIdeation = 'LabelIdeation',
+  FeatureExtraction = 'FeatureExtraction',
+  DataObjectSelection = 'DataObjectSelection',
+  DefaultLabeling = 'DefaultLabeling',
+  TaskTransformation = 'TaskTransformation',
+  InteractiveLabeling = 'InteractiveLabeling',
+  StoppageAnalysis = 'StoppageAnalysis',
+  InterimModelTraining = 'InterimModelTraining',
+  QualityAssurance = 'QualityAssurance',
 }
 
 /** The data labeling process class. */
 export class Process {
+  public type: ProcessType | null;
+
   public name: string;
 
   public id: string;
@@ -137,39 +146,52 @@ export class Process {
 
   public isBuiltIn: boolean;
 
+  public isModelBased: boolean;
+
   public isServerless: boolean;
 
   // for serverless methods, the api is the method's unique name
   public api?: string;
 
+  public model?: ModelService;
+
   public params?: MethodParams;
 
   constructor({
+    type = null,
     name = 'custom',
     id = null,
     inputs = ['labels'],
     isAlgorithmic = true,
     isBuiltIn = false,
+    isModelBased = false,
     isServerless = false,
     api = undefined,
+    model = undefined,
     params = undefined,
   }: {
+    type?: ProcessType | null,
     name?: string;
     id?: string | null;
     inputs?: Array<string>;
     isAlgorithmic?: boolean;
     isBuiltIn?: boolean;
+    isModelBased?: boolean;
     isServerless?: boolean;
     api?: string;
+    model?: ModelService;
     params?: MethodParams;
   } = {}) {
+    this.type = type;
     this.name = name;
     this.id = id === null ? `custom-${uuidv4()}` : id as unknown as string;
     this.inputs = inputs;
     this.isAlgorithmic = isAlgorithmic;
     this.isBuiltIn = isBuiltIn;
+    this.isModelBased = isModelBased;
     this.isServerless = isServerless;
     if (api) this.api = api;
+    if (model) this.model = model;
     if (params) this.params = params;
   }
 
@@ -178,93 +200,12 @@ export class Process {
   }
 }
 
-/** The interface of a data object selection method. */
-export interface DataObjectSelectionMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-  params?: MethodParams;
-}
-
-/** The interface of an algorithmic default labeling method. */
-export interface DefaultLabelingMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-}
-
-/** The interface of an algorithmic feature extraction method. */
-export interface FeatureExtractionMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-}
-
-/** The interface of an interactive labeling method. */
-export interface InteractiveLabelingMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  params?: MethodParams;
-}
-
-/** The interface of an interim model training method. */
-export interface InterimModelTrainingMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-}
-
-/** The interface of an interim model training method. */
-export interface StoppageAnalysisMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isAlgorithmic: boolean;
-  isBuiltIn: boolean;
-  isServerless: boolean;
-  api: string;
-}
-
-/** The interface of a task transformation method. */
-export interface TaskTransformationMethod extends ProcessMethod {
-  name: string;
-  id: string;
-  inputs: Array<string>;
-  isBuiltIn: boolean;
-}
-
-/** The enum of projection method types. */
-export enum ProjectionMethodType {
-  PCA = 'PCA',
-  MDS = 'MDS',
-  TSNE = 't-SNE',
-}
-
-export enum NodeTypes {
-  /** types of data object and label property */
+export enum WorkflowNodeType {
   LabelTask = 'LabelTask',
   DataType = 'DataType', // eslint-disable-line @typescript-eslint/no-shadow
-  /** types of process */
+  Decision = 'Decision',
+  Initialization = 'Initialization',
+  Terminal = 'Terminal',
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -274,98 +215,22 @@ export enum NodeTypes {
   StoppageAnalysis = 'StoppageAnalysis',
   InterimModelTraining = 'InterimModelTraining',
   QualityAssurance = 'QualityAssurance',
-  /** type of decision */
-  Decision = 'Decision',
-  /** type of initialization */
-  Initialization = 'Initialization',
-  /** type of terminal */
-  Terminal = 'Terminal',
 }
 
-interface BaseNode {
+export type WorkflowNode = {
   id: string;
   title: string;
-  type: NodeTypes;
-  value: unknown;
+  type: WorkflowNodeType;
+  value?: Process | Process[] | LabelTaskType[];
+  x?: number;
+  y?: number;
 }
 
-export interface LabelTaskNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: LabelTaskType[];
+export type WorkflowEdge = {
+  source: string;
+  target: string;
+  x1?: number;
+  y1?: number;
+  x2?: number;
+  y2?: number;
 }
-
-export interface DataObjectSelectionNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: DataObjectSelectionMethod,
-    model?: ModelService,
-  }[];
-}
-
-export interface DefaultLabelingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: DefaultLabelingMethod,
-    model?: ModelService,
-  };
-}
-
-export interface FeatureExtractionNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: FeatureExtractionMethod,
-  };
-}
-
-export interface InteractiveLabelingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: InteractiveLabelingMethod,
-  }[];
-}
-
-export interface InterimModelTrainingNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: InterimModelTrainingMethod,
-  };
-}
-
-export interface StoppageAnalysisNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: StoppageAnalysisMethod,
-  };
-}
-
-export interface TaskTransformationNode extends BaseNode {
-  id: string;
-  title: string;
-  type: NodeTypes;
-  value: {
-    method: TaskTransformationMethod,
-  };
-}
-
-export type WorkflowNode = LabelTaskNode
-  | DataObjectSelectionNode
-  | DefaultLabelingNode
-  | FeatureExtractionNode
-  | InteractiveLabelingNode
-  | InterimModelTrainingNode
-  | StoppageAnalysisNode
-  | TaskTransformationNode;

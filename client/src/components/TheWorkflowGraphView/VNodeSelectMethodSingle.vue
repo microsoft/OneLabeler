@@ -64,12 +64,12 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { ProcessMethod } from '@/commons/types';
+import { Process } from '@/commons/types';
 
 interface MethodMenu {
   title: string,
   options: [{
-    value: ProcessMethod,
+    value: Process,
     text: string,
   }]
 }
@@ -78,7 +78,7 @@ export default Vue.extend({
   name: 'VNodeSelectMethodSingle',
   props: {
     selectedMethod: {
-      type: Object as PropType<ProcessMethod>,
+      type: Object as PropType<Process>,
       required: true,
     },
     menu: {
@@ -91,7 +91,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickMenuOption(option: ProcessMethod): void {
+    onClickMenuOption(option: Process): void {
       this.$emit('update:selection', option);
     },
     onCreateMenuOption(): void {

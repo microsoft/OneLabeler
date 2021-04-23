@@ -85,7 +85,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import {
   DefaultLabelingMethod,
@@ -161,7 +161,7 @@ export default Vue.extend({
     },
   },
   computed: {
-    ...mapState('workflow', [
+    ...mapGetters('workflow', [
       'defaultLabelingMethod',
     ]),
   },

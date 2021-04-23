@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import {
   PROTOCOL,
   IP,
-  SERVER_PORT,
+  PORT,
 } from './http-params';
 
 export default async function uploadFile(file: File): Promise<AxiosResponse<{ path: string }>> {
@@ -13,7 +13,7 @@ export default async function uploadFile(file: File): Promise<AxiosResponse<{ pa
   formData.append('key', name);
 
   return axios.post(
-    `${PROTOCOL}://${IP}:${SERVER_PORT}/uploadFile`,
+    `${PROTOCOL}://${IP}:${PORT}/uploadFile`,
     formData,
   );
 }

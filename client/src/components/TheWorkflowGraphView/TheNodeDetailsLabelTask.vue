@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { LabelTaskType, LabelTaskNode } from '@/commons/types';
+import { LabelTaskType, WorkflowNode } from '@/commons/types';
 import VNodeMethodParams from './VNodeMethodParams.vue';
 
 export default Vue.extend({
@@ -37,7 +37,7 @@ export default Vue.extend({
   },
   props: {
     node: {
-      type: Object as PropType<LabelTaskNode>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -49,11 +49,12 @@ export default Vue.extend({
   computed: {
     menus() {
       const { node } = this;
-      const enableClassification = node.value
+      const labelTasks = node.value as LabelTaskType[];
+      const enableClassification = labelTasks
         .findIndex((d) => d === LabelTaskType.Classification) >= 0;
-      const enableObjectDetection = node.value
+      const enableObjectDetection = labelTasks
         .findIndex((d) => d === LabelTaskType.ObjectDetection) >= 0;
-      const enableSegmentation = node.value
+      const enableSegmentation = labelTasks
         .findIndex((d) => d === LabelTaskType.Segmentation) >= 0;
       const menus = {
         Classification: {
@@ -102,12 +103,9 @@ export default Vue.extend({
       } else if (option.value === false && idx >= 0) {
         labelTasks.splice(idx, 1);
       }
-      this.onEditNode({
-        ...node,
-        value: labelTasks,
-      });
+      this.onEditNode({ ...node, value: labelTasks });
     },
-    onEditNode(newValue: LabelTaskNode): void {
+    onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
     },
   },

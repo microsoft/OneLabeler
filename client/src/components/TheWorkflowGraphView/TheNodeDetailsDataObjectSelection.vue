@@ -180,10 +180,10 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
-  ModelService,
-  DataObjectSelectionMethod,
-  DataObjectSelectionNode,
   MethodParams,
+  ModelService,
+  Process,
+  WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
@@ -205,16 +205,16 @@ export default Vue.extend({
     VNodeSelectModel,
   },
   props: {
+    methods: {
+      type: Array as PropType<Process[]>,
+      default: () => [],
+    },
     models: {
       type: Array as PropType<ModelService[]>,
       default: () => [],
     },
-    methods: {
-      type: Array as PropType<DataObjectSelectionMethod[]>,
-      default: () => [],
-    },
     node: {
-      type: Object as PropType<DataObjectSelectionNode>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -233,16 +233,15 @@ export default Vue.extend({
     };
   },
   computed: {
-    selectedMethods(): DataObjectSelectionMethod[] {
-      return this.node.value.map((d) => d.method);
+    selectedMethods(): Process[] {
+      return this.node.value as Process[];
     },
     model(): ModelService | undefined {
-      const algorithmicInstantiation = this.node.value
+      const modelBasedMethod = (this.node.value as Process[])
         .find((d) => d.model !== undefined);
-      if (algorithmicInstantiation === undefined) {
-        return undefined;
-      }
-      return algorithmicInstantiation.model;
+      return modelBasedMethod === undefined
+        ? undefined
+        : modelBasedMethod.model;
     },
     menuOfMethods() {
       return {
@@ -268,10 +267,10 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, title });
     },
-    onEditNode(newValue: DataObjectSelectionNode): void {
+    onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
     },
-    onUpdateMethodOptions(options: DataObjectSelectionMethod[]): void {
+    onUpdateMethodOptions(options: Process[]): void {
       const { node } = this;
 
       // Ensure at most one algorithmic option is chosen.
@@ -280,8 +279,7 @@ export default Vue.extend({
         .map((d) => d.id);
       let newOptions = options;
       if (algorithmicIds.length >= 2) {
-        const oldAlgorithmicIds = node.value
-          .map((d) => d.method)
+        const oldAlgorithmicIds = (node.value as Process[])
           .filter((d) => d.isAlgorithmic)
           .map((d) => d.id);
         newOptions = options.filter((d) => (
@@ -290,41 +288,37 @@ export default Vue.extend({
       }
       this.onEditNode({
         ...node,
-        value: newOptions.map((d) => ({ method: d })),
+        value: newOptions,
       });
     },
-    onEditMethodName(method: DataObjectSelectionMethod, name: string): void {
-      const { node, model } = this;
+    onEditMethodName(method: Process, name: string): void {
+      const { node } = this;
       const newMethod = { ...method, name };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method: newMethod, model }
-            : d
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id ? newMethod : d
         )),
       });
       this.onEditMethod(newMethod);
     },
-    onInputMethodAPI(method: DataObjectSelectionMethod, api: string): void {
-      const { node, model } = this;
+    onInputMethodAPI(method: Process, api: string): void {
+      const { node } = this;
       const newMethod = { ...method, api };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method: newMethod, model }
-            : d
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id ? newMethod : d
         )),
       });
       this.onEditMethod(newMethod);
     },
     onClickMethodParam(
-      method: DataObjectSelectionMethod,
+      method: Process,
       paramName: string,
       option: { value: unknown, text: string },
     ): void {
-      const { node, model } = this;
+      const { node } = this;
       const { params } = method;
       const newMethod = {
         ...method,
@@ -338,10 +332,8 @@ export default Vue.extend({
       };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method: newMethod, model }
-            : d
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id ? newMethod : d
         )),
       });
       this.onEditMethod(newMethod);
@@ -349,41 +341,41 @@ export default Vue.extend({
     onCreateMethod(): void {
       this.$emit('create:method');
     },
-    onEditMethod(newValue: DataObjectSelectionMethod): void {
-      this.$emit('edit:method', this.node.type, newValue);
+    onEditMethod(newValue: Process): void {
+      this.$emit('edit:method', newValue);
     },
-    onClickMenuOfModelsOption(method: DataObjectSelectionMethod, option: ModelService): void {
+    onClickMenuOfModelsOption(method: Process, option: ModelService): void {
       const { node } = this;
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method, model: option }
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id
+            ? { ...method, model: option }
             : d
         )),
       });
     },
-    onInputModelName(method: DataObjectSelectionMethod, name: string): void {
+    onInputModelName(method: Process, name: string): void {
       const { node, model } = this;
       const newModel = { ...(model as ModelService), name };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method, model: newModel }
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id
+            ? { ...method, model: newModel }
             : d
         )),
       });
       this.onEditModel(newModel);
     },
-    onInputModelAPI(method: DataObjectSelectionMethod, api: string): void {
+    onInputModelAPI(method: Process, api: string): void {
       const { node, model } = this;
       const newModel = { ...(model as ModelService), api };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method, model: newModel }
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id
+            ? { ...method, model: newModel }
             : d
         )),
       });
@@ -396,17 +388,15 @@ export default Vue.extend({
       this.$emit('edit:model', newValue);
     },
     onEditInstanceInputList(
-      method: DataObjectSelectionMethod,
+      method: Process,
       inputs: string[],
     ): void {
-      const { node, model } = this;
+      const { node } = this;
       const newMethod = { ...method, inputs };
       this.onEditNode({
         ...node,
-        value: node.value.map((d) => (
-          d.method.id === method.id
-            ? { method: newMethod, model }
-            : d
+        value: (node.value as Process[]).map((d) => (
+          d.id === method.id ? newMethod : d
         )),
       });
       this.onEditMethod(newMethod);

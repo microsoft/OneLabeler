@@ -89,12 +89,12 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { ProcessMethod } from '@/commons/types';
+import { Process } from '@/commons/types';
 
 interface MethodMenu {
   title: string,
   options: [{
-    value: ProcessMethod,
+    value: Process,
     text: string,
   }]
 }
@@ -103,7 +103,7 @@ export default Vue.extend({
   name: 'VNodeSelectMethodMultiple',
   props: {
     selectedMethods: {
-      type: Array as PropType<ProcessMethod[]>,
+      type: Array as PropType<Process[]>,
       required: true,
     },
     menu: {
@@ -116,7 +116,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickMenuOption(options: ProcessMethod[]): void {
+    onClickMenuOption(options: Process[]): void {
       // Sort by menu order.
       const orders = this.menu.options.map((d) => d.value.id);
       const sorted = options.sort((a, b) => (

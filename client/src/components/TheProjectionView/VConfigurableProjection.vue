@@ -56,26 +56,11 @@ import { xor4096 } from 'seedrandom';
 import Vue, { PropType } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
 import { Label, ProjectionMethodType, Status } from '@/commons/types';
+import { randomShuffle } from '@/plugins/random';
 import { Binning, Subsampling } from './types';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
-
-/** Randomly shuffle array. */
-function randomShuffle<T>(
-  array: T[],
-  seed: string | undefined = undefined,
-): T[] {
-  const random = xor4096(seed);
-
-  // Durstenfeld shuffle
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
 
 export default Vue.extend({
   name: 'VConfigurableProjection',
@@ -221,7 +206,7 @@ export default Vue.extend({
       // The seed guarantees that given the same points,
       // the sample results are the same.
       const seed = `${points.length}-${JSON.stringify(points[0])}`;
-      const shuffled = randomShuffle(selection, seed);
+      const shuffled = randomShuffle(selection, xor4096(seed));
       const indices = shuffled.slice(0, subsamplingNSamples);
       return indices;
     },

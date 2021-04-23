@@ -113,8 +113,8 @@
         </v-list-item>
 
         <v-card
-          v-if="isModelRequired"
-          class="mx-4"
+          v-if="isModelBased"
+          class="mx-4 mt-2"
           outlined
         >
           <!-- The model used as input to the process. -->
@@ -128,37 +128,39 @@
             />
           </v-list-item>
 
-          <!-- The name of the feature extraction method. -->
-          <v-list-item>
-            Model Name
-            <v-text-field
-              :value="model.name"
-              :disabled="model.isBuiltIn"
-              class="ma-0 pl-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-              @input="onInputModelName($event)"
-            />
-          </v-list-item>
+          <template v-if="model !== undefined">
+            <!-- The name of the method. -->
+            <v-list-item>
+              Model Name
+              <v-text-field
+                :value="model.name"
+                :disabled="model.isBuiltIn"
+                class="ma-0 pl-4 pt-1 subtitle-2"
+                style="padding-bottom: 6px !important"
+                type="text"
+                dense
+                hide-details
+                single-line
+                @input="onInputModelName($event)"
+              />
+            </v-list-item>
 
-          <!-- The url of the model. -->
-          <v-list-item>
-            Model Key
-            <v-text-field
-              :value="model.isServerless ? 'serverless' : model.objectId"
-              :disabled="model.isBuiltIn"
-              class="ma-0 pl-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-              @input="onInputModelAPI($event)"
-            />
-          </v-list-item>
+            <!-- The url of the model. -->
+            <v-list-item>
+              Model Key
+              <v-text-field
+                :value="model.isServerless ? 'serverless' : model.objectId"
+                :disabled="model.isBuiltIn"
+                class="ma-0 pl-4 pt-1 subtitle-2"
+                style="padding-bottom: 6px !important"
+                type="text"
+                dense
+                hide-details
+                single-line
+                @input="onInputModelAPI($event)"
+              />
+            </v-list-item>
+          </template>
         </v-card>
       </v-list>
     </v-card-actions>
@@ -169,8 +171,8 @@
 import Vue, { PropType } from 'vue';
 import {
   ModelService,
-  DefaultLabelingMethod,
-  DefaultLabelingNode,
+  Process,
+  WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
@@ -190,16 +192,16 @@ export default Vue.extend({
     VNodeSelectModel,
   },
   props: {
+    methods: {
+      type: Array as PropType<Process[]>,
+      default: () => [],
+    },
     models: {
       type: Array as PropType<ModelService[]>,
       default: () => [],
     },
-    methods: {
-      type: Array as PropType<DefaultLabelingMethod[]>,
-      default: () => [],
-    },
     node: {
-      type: Object as PropType<DefaultLabelingNode>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -213,13 +215,13 @@ export default Vue.extend({
     };
   },
   computed: {
-    method(): DefaultLabelingMethod {
-      return this.node.value.method;
+    method(): Process {
+      return this.node.value as Process;
     },
     model(): ModelService | undefined {
-      return this.node.value.model;
+      return (this.node.value as Process).model;
     },
-    isModelRequired(): boolean {
+    isModelBased(): boolean {
       return this.method.inputs
         .findIndex((d) => d === 'model') >= 0;
     },
@@ -247,45 +249,36 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, title });
     },
-    onEditNode(newValue: DefaultLabelingNode): void {
+    onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
     },
-    onUpdateMethodOption(option: DefaultLabelingMethod): void {
-      const { node, model } = this;
-      this.onEditNode({
-        ...node,
-        value: { method: option, model },
-      });
+    onUpdateMethodOption(option: Process): void {
+      const { node } = this;
+      this.onEditNode({ ...node, value: option });
     },
     onEditMethodName(name: string): void {
-      const { node, method, model } = this;
+      const { node, method } = this;
       const newMethod = { ...method, name };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod, model },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onInputMethodAPI(api: string): void {
-      const { node, method, model } = this;
+      const { node, method } = this;
       const newMethod = { ...method, api };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod, model },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onCreateMethod(): void {
       this.$emit('create:method');
     },
-    onEditMethod(newValue: DefaultLabelingMethod): void {
-      this.$emit('edit:method', this.node.type, newValue);
+    onEditMethod(newValue: Process): void {
+      this.$emit('edit:method', newValue);
     },
     onClickMenuOfModelsOption(option: ModelService): void {
       const { node, method } = this;
       this.onEditNode({
         ...node,
-        value: { method, model: option },
+        value: { ...method, model: option },
       });
     },
     onInputModelName(name: string): void {
@@ -293,7 +286,7 @@ export default Vue.extend({
       const newModel = { ...(model as ModelService), name };
       this.onEditNode({
         ...node,
-        value: { method, model: newModel },
+        value: { ...method, model: newModel },
       });
       this.onEditModel(newModel);
     },
@@ -302,7 +295,7 @@ export default Vue.extend({
       const newModel = { ...(model as ModelService), api };
       this.onEditNode({
         ...node,
-        value: { method, model: newModel },
+        value: { ...method, model: newModel },
       });
       this.onEditModel(newModel);
     },
@@ -313,12 +306,9 @@ export default Vue.extend({
       this.$emit('edit:model', newValue);
     },
     onEditInstanceInputList(inputs: string[]): void {
-      const { node, method, model } = this;
+      const { node, method } = this;
       const newMethod = { ...method, inputs };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod, model },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onClickRecompute(): void {

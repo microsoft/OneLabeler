@@ -123,12 +123,11 @@ export default Vue.extend({
       'uuidToIdx',
       'queryIndices',
     ]),
-    ...mapState('workflow', [
+    ...mapGetters(['featureValues', 'uuids', 'label2color']),
+    ...mapGetters('workflow', [
       'defaultLabelingMethod',
-      'defaultLabelingModel',
       'interimModelTrainingMethod',
     ]),
-    ...mapGetters(['featureValues', 'uuids', 'label2color']),
     nDataObjects(): number {
       return this.dataObjects.length;
     },
@@ -181,7 +180,6 @@ export default Vue.extend({
       });
       await this.executeDefaultLabeling({
         method: this.defaultLabelingMethod,
-        model: this.defaultLabelingModel,
       });
     },
     onSetMatrixShape(nRows: number, nColumns: number) {

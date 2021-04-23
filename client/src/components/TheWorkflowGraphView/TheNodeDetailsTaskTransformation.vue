@@ -81,7 +81,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { TaskTransformationMethod, TaskTransformationNode } from '@/commons/types';
+import { Process, WorkflowNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
 import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
 import VNodeEditableTitle from './VNodeEditableTitle.vue';
@@ -99,11 +99,11 @@ export default Vue.extend({
   },
   props: {
     methods: {
-      type: Array as PropType<TaskTransformationMethod[]>,
+      type: Array as PropType<Process[]>,
       default: [],
     },
     node: {
-      type: Object as PropType<TaskTransformationNode>,
+      type: Object as PropType<WorkflowNode>,
       default: null,
     },
   },
@@ -125,8 +125,8 @@ export default Vue.extend({
     };
   },
   computed: {
-    method(): TaskTransformationMethod {
-      return this.node.value.method;
+    method(): Process {
+      return this.node.value as Process;
     },
     menuOfMethods() {
       return {
@@ -143,47 +143,35 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, title });
     },
-    onEditNode(newValue: TaskTransformationNode): void {
+    onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
     },
-    onUpdateMethodOption(option: TaskTransformationMethod): void {
+    onUpdateMethodOption(option: Process): void {
       const { node } = this;
-      this.onEditNode({
-        ...node,
-        value: { method: option },
-      });
+      this.onEditNode({ ...node, value: option });
     },
     onEditMethodName(name: string): void {
       const { node, method } = this;
       const newMethod = { ...method, name };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onInputMethodAPI(api: string): void {
       const { node, method } = this;
       const newMethod = { ...method, api };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onCreateMethod(): void {
       this.$emit('create:method');
     },
-    onEditMethod(newValue: TaskTransformationMethod): void {
-      this.$emit('edit:method', this.node.type, newValue);
+    onEditMethod(newValue: Process): void {
+      this.$emit('edit:method', newValue);
     },
     onEditInstanceInputList(inputs: string[]): void {
       const { node, method } = this;
       const newMethod = { ...method, inputs };
-      this.onEditNode({
-        ...node,
-        value: { method: newMethod },
-      });
+      this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onClickRecompute(): void {

@@ -22,7 +22,7 @@
             :width="rectWidth"
             :height="rectHeight"
             :style="{
-              'stroke-dasharray': !isEnabledNode(node) ? '5 5' : undefined
+              'stroke-dasharray': isDummyNode(node) ? '5 5' : undefined
             }"
             @contextmenu="isProcessNode(node)
               ? onRightClickNode($event, node) : undefined"
@@ -72,7 +72,7 @@
             :dy="j === 0
               ? `${-(node.title.split(' ').length - 1) * 0.6}em`
               : '1.2em'"
-            :fill="isEnabledNode(node) ? '#000' : '#AAA'"
+            :fill="isDummyNode(node) ? '#AAA' : '#000'"
           >
             {{ word }}
           </tspan>
@@ -140,8 +140,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapState } from 'vuex';
-import { WorkflowNode, NodeTypes } from '@/commons/types';
+import { mapGetters } from 'vuex';
+import { WorkflowNode, WorkflowNodeType } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',
@@ -162,9 +162,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState('workflow', [
-      'taskTransformation',
-      'stoppageAnalysis',
+    ...mapGetters('workflow', [
       'dataObjectSelectionMethod',
       'defaultLabelingMethod',
       'interactiveLabelingMethod',
@@ -173,46 +171,46 @@ export default Vue.extend({
   },
   methods: {
     isDataNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.LabelTask)
-        || (node.type === NodeTypes.DataType);
+      return (node.type === WorkflowNodeType.LabelTask)
+        || (node.type === WorkflowNodeType.DataType);
     },
     isProcessNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.LabelIdeation)
-        || (node.type === NodeTypes.FeatureExtraction)
-        || (node.type === NodeTypes.DataObjectSelection)
-        || (node.type === NodeTypes.DefaultLabeling)
-        || (node.type === NodeTypes.TaskTransformation)
-        || (node.type === NodeTypes.InteractiveLabeling)
-        || (node.type === NodeTypes.StoppageAnalysis)
-        || (node.type === NodeTypes.InterimModelTraining)
-        || (node.type === NodeTypes.QualityAssurance);
+      return (node.type === WorkflowNodeType.LabelIdeation)
+        || (node.type === WorkflowNodeType.FeatureExtraction)
+        || (node.type === WorkflowNodeType.DataObjectSelection)
+        || (node.type === WorkflowNodeType.DefaultLabeling)
+        || (node.type === WorkflowNodeType.TaskTransformation)
+        || (node.type === WorkflowNodeType.InteractiveLabeling)
+        || (node.type === WorkflowNodeType.StoppageAnalysis)
+        || (node.type === WorkflowNodeType.InterimModelTraining)
+        || (node.type === WorkflowNodeType.QualityAssurance);
     },
     isDecisionNode(node: WorkflowNode): boolean {
-      return node.type === NodeTypes.Decision;
+      return node.type === WorkflowNodeType.Decision;
     },
     isTerminalNode(node: WorkflowNode): boolean {
-      return node.type === NodeTypes.Terminal;
+      return node.type === WorkflowNodeType.Terminal;
     },
     isDeletableNode(node: WorkflowNode): boolean {
-      return (node.type === NodeTypes.DataObjectSelection)
-        || (node.type === NodeTypes.DefaultLabeling)
-        || (node.type === NodeTypes.InteractiveLabeling)
-        || (node.type === NodeTypes.InterimModelTraining);
+      return (node.type === WorkflowNodeType.DataObjectSelection)
+        || (node.type === WorkflowNodeType.DefaultLabeling)
+        || (node.type === WorkflowNodeType.InteractiveLabeling)
+        || (node.type === WorkflowNodeType.InterimModelTraining);
     },
-    isEnabledNode(node: WorkflowNode): boolean {
-      if (node.type === NodeTypes.DataObjectSelection) {
-        return this.dataObjectSelectionMethod.length !== 0;
+    isDummyNode(node: WorkflowNode): boolean {
+      if (node.type === WorkflowNodeType.DataObjectSelection) {
+        return this.dataObjectSelectionMethod.length === 0;
       }
-      if (node.type === NodeTypes.DefaultLabeling) {
-        return this.defaultLabelingMethod.api !== 'Null';
+      if (node.type === WorkflowNodeType.DefaultLabeling) {
+        return this.defaultLabelingMethod.api === 'Null';
       }
-      if (node.type === NodeTypes.InteractiveLabeling) {
-        return this.interactiveLabelingMethod.length !== 0;
+      if (node.type === WorkflowNodeType.InteractiveLabeling) {
+        return this.interactiveLabelingMethod.length === 0;
       }
-      if (node.type === NodeTypes.InterimModelTraining) {
-        return this.interimModelTrainingMethod.api !== 'Static';
+      if (node.type === WorkflowNodeType.InterimModelTraining) {
+        return this.interimModelTrainingMethod.api === 'Static';
       }
-      return true;
+      return false;
     },
     onClickNode(node: WorkflowNode): void {
       this.$emit('click:node', node);
