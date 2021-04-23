@@ -6,6 +6,7 @@ import {
   WorkflowEdge,
   IImage,
   Status,
+  MessageType,
   LabelTaskType,
   ModelService,
   Process,
@@ -164,7 +165,7 @@ export const editProcess = (
   commit(types.SET_PROCESSES, processesUpdated);
 };
 
-export const extractDataObjects = async (
+export const executeDataObjectExtraction = async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   files: FileList,
 ): Promise<void> => {
@@ -172,7 +173,7 @@ export const extractDataObjects = async (
   const { unlabeledMark } = rootState;
 
   // Extract data objects.
-  const dataObjects = (await API.extractDataObjects(files));
+  const dataObjects = (await API.dataObjectExtraction(files));
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize labels and label statuses.
@@ -362,7 +363,17 @@ export const executeStoppageAnalysis = async (
   method: Process,
 ): Promise<void> => {
   const { statuses, unlabeledMark } = rootState;
-  const stop = !(statuses.findIndex((d) => d === unlabeledMark) >= 0);
+  const stop = !(statuses.findIndex((d) => (
+    d === Status.New
+    || d === Status.Viewed
+    || d === Status.Skipped
+  )) >= 0);
+  if (stop) {
+    commit(rootTypes.SET_MESSAGE, {
+      content: 'All Data Objects Labeled.',
+      type: MessageType.Success,
+    }, { root: true });
+  }
   commit(rootTypes.SET_STOP, stop, { root: true });
 };
 
@@ -381,9 +392,10 @@ const getOutputNodes = (
 };
 
 export const executeWorkflow = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  store: ActionContext<IState, IRootState>,
   node: WorkflowNode,
 ): Promise<void> => {
+  const { commit, state, rootState } = store;
   const { nodes, edges } = state;
   let outputNode = null;
 
@@ -422,31 +434,24 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.FeatureExtraction) {
     const method = node.value as Process;
-    await executeFeatureExtraction(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
+    await executeFeatureExtraction(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
-    const method = node.value as Process;
-    if (!method.isAlgorithmic) {
+    const interactiveMethod = (node.value as Process[])
+      .find((d) => !d.isAlgorithmic);
+    if (interactiveMethod !== undefined) {
       return;
     }
-    await executeDataObjectSelectionAlgorithmic(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
+    const [method] = node.value as Process[];
+    await executeDataObjectSelectionAlgorithmic(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {
     const method = node.value as Process;
-    await executeDefaultLabeling(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
+    await executeDefaultLabeling(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
@@ -460,19 +465,13 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.StoppageAnalysis) {
     const method = node.value as Process;
-    await executeStoppageAnalysis(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
+    await executeStoppageAnalysis(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.InterimModelTraining) {
     const method = node.value as Process;
-    await executeInterimModelTraining(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
+    await executeInterimModelTraining(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
@@ -481,8 +480,5 @@ export const executeWorkflow = async (
   }
 
   commit(types.SET_CURRENT_NODE, outputNode);
-  await executeWorkflow(
-    { commit, state, rootState } as ActionContext<IState, IRootState>,
-    outputNode as WorkflowNode,
-  );
+  await executeWorkflow(store, outputNode as WorkflowNode);
 };

@@ -19,7 +19,7 @@ class UploadHandler(tornado.web.RequestHandler):
         # server can be agnostic to the type of the uploaded file
         file_body = self.request.files['fileToUpload'][0]['body']
         path = UPLOAD_FOLDER_ROUTE + self.get_argument('fileName')
-        with open(path, 'wb') as file:
-            file.write(file_body)
-            file.close()
+        with open(path, 'wb') as f:
+            f.write(file_body)
+            f.close()
         self.write({'path': path})

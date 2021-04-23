@@ -44,8 +44,6 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
             img = cv.imdecode(np.frombuffer(r.content, np.uint8),
                               cv.IMREAD_COLOR)
             imgs.append(img)
-            data_object['width'] = img.shape[1]
-            data_object['height'] = img.shape[0]
 
         # normalized the images to gray scale 8 x 8
         h, w = 8, 8

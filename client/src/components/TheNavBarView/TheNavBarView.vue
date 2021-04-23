@@ -313,6 +313,11 @@ export default Vue.extend({
       'defaultLabelingMethod',
       'interimModelTrainingMethod',
       'dataObjectSelectionMethod',
+      'startNode',
+      'nextNodes',
+    ]),
+    ...mapState('workflow', [
+      'currentNode',
     ]),
     ...mapState([
       'dataObjects',
@@ -388,11 +393,8 @@ export default Vue.extend({
       'popCommandHistory',
     ]),
     ...mapActions('workflow', [
-      'extractDataObjects',
-      'executeFeatureExtraction',
-      'executeInterimModelTraining',
-      'executeDataObjectSelectionAlgorithmic',
-      'executeDefaultLabeling',
+      'executeDataObjectExtraction',
+      'executeWorkflow',
     ]),
     onKey(e: KeyboardEvent): void {
       const { ctrlKey, key } = e;
@@ -416,12 +418,12 @@ export default Vue.extend({
     },
     async onNewProject(files: FileList): Promise<void> {
       if (files === null || files === undefined) return;
-      await this.extractDataObjects(files);
-      await this.executeFeatureExtraction(this.featureExtractionMethod);
+      await this.executeDataObjectExtraction(files);
       this.setMessage({
         content: 'Project Data Uploaded.',
         type: MessageType.Success,
       });
+      await this.executeWorkflow(this.startNode);
     },
     async onLoadProject(file: File): Promise<void> {
       const data = await JSONFileToObject(file);
@@ -482,22 +484,8 @@ export default Vue.extend({
       this.resetState();
     },
     async onClickNextBatch(): Promise<void> {
-      await this.executeDataObjectSelectionAlgorithmic(
-        this.dataObjectSelectionMethod.find((d) => d.algorithmic),
-      );
-      if (this.queryIndices.length === 0) {
-        this.setMessage({
-          content: 'All Data Objects Labeled.',
-          type: MessageType.Success,
-        });
-      } else {
-        await this.executeInterimModelTraining(
-          this.interimModelTrainingMethod,
-        );
-        await this.executeDefaultLabeling(
-          this.defaultLabelingMethod,
-        );
-      }
+      if (this.nextNodes === null || this.nextNodes.length !== 1) return;
+      await this.executeWorkflow(this.nextNodes[0]);
     },
     onClickUndo(): void {
       if (this.lastCommand !== null) {

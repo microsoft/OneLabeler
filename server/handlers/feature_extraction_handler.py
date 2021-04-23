@@ -21,13 +21,8 @@ ListLike = Union[List[Any], np.ndarray]
 
 def extract_features_img_SVD(data_objects: ListLike
                              ) -> Tuple[ListLike, List[str]]:
-    imgs = []
-    for data_object in data_objects:
-        path = data_object['path']
-        img = cv.imread(path)
-        imgs.append(img)
-        data_object['width'] = img.shape[1]
-        data_object['height'] = img.shape[0]
+    imgs = [cv.imread(data_object['path'])
+            for data_object in data_objects]
 
     X, feature_names = resize_SVD(imgs)
     for i, data_object in enumerate(data_objects):
@@ -41,13 +36,8 @@ def extract_features_img_SVD(data_objects: ListLike
 
 def extract_features_img_BoW(data_objects: ListLike
                              ) -> Tuple[ListLike, List[str]]:
-    imgs = []
-    for data_object in data_objects:
-        path = data_object['path']
-        img = cv.imread(path)
-        imgs.append(img)
-        data_object['width'] = img.shape[1]
-        data_object['height'] = img.shape[0]
+    imgs = [cv.imread(data_object['path'])
+            for data_object in data_objects]
 
     extractors = [
         raw_flatten,
@@ -77,16 +67,11 @@ def extract_features_img_BoW(data_objects: ListLike
 def extract_features_img_LDA(data_objects: ListLike,
                              labels: np.ndarray,
                              statuses: np.ndarray) -> Tuple[ListLike, List[str]]:
-    imgs = []
-    for data_object in data_objects:
-        path = data_object['path']
-        img = cv.imread(path)
-        imgs.append(img)
-        data_object['width'] = img.shape[1]
-        data_object['height'] = img.shape[0]
+    imgs = [cv.imread(data_object['path'])
+            for data_object in data_objects]
 
     X, feature_names = resize_LDA(imgs, labels, statuses)
-    
+
     for i, data_object in enumerate(data_objects):
         data_objects[i]['features'] = X[i].tolist()
 

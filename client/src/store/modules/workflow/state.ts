@@ -7,7 +7,8 @@ import {
   WorkflowEdge,
 } from '@/commons/types';
 import { modelServices, processes } from '@/commons/builtins';
-import graph from '@/commons/graph-template';
+// import graph from '@/commons/graph-template';
+import graph from '@/commons/graph-template-simple';
 
 export interface IState {
   /** The node currently being processed. */

@@ -16,7 +16,11 @@ import {
   ModelService,
   Process,
 } from '@/commons/types';
-import uploadFile from './upload-file';
+import {
+  PROTOCOL,
+  IP,
+  PORT,
+} from './http-params';
 
 /**
  * Workflow Component - Data Object Extraction
@@ -26,12 +30,25 @@ import uploadFile from './upload-file';
  * @Note The extraction implementation is dependent
  * on the data source type and data object type.
  */
-export const extractDataObjects = showProgressBar(async (
+export const dataObjectExtraction = showProgressBar(async (
   files: FileList,
 ): Promise<IImage[]> => {
   const dataObjects = await Promise.all([...files].map(async (file) => {
-    const { path } = (await uploadFile(file)).data;
-    return { path, uuid: uuidv4() };
+    const { name } = file;
+    const formData = new FormData();
+    formData.append('fileToUpload', file);
+    formData.append('fileName', name);
+    formData.append('key', name);
+    const { path, width, height } = (await axios.post(
+      `${PROTOCOL}://${IP}:${PORT}/dataObject/image`,
+      formData,
+    )).data;
+    return {
+      path,
+      width,
+      height,
+      uuid: uuidv4(),
+    };
   })) as IImage[];
   return dataObjects;
 });
