@@ -13,6 +13,7 @@ export enum LabelTaskType {
   Classification = 'Classification',
   ObjectDetection = 'ObjectDetection',
   Segmentation = 'Segmentation',
+  WordClassification = 'WordClassification',
 }
 
 /** The interface of a data object to be labeled. */
@@ -103,11 +104,11 @@ export enum ProjectionMethodType {
 
 /** The interface of a model service. */
 export interface ModelService {
-  name: string;
-  isServerless: boolean;
   type: string,
-  isBuiltIn: boolean;
+  name: string;
   objectId: string;
+  isBuiltIn: boolean;
+  isServerless: boolean;
   isValidSampler: boolean;
   // id: string;
   // api: string;
@@ -201,11 +202,7 @@ export class Process {
 }
 
 export enum WorkflowNodeType {
-  LabelTask = 'LabelTask',
-  DataType = 'DataType', // eslint-disable-line @typescript-eslint/no-shadow
-  Decision = 'Decision',
   Initialization = 'Initialization',
-  Terminal = 'Terminal',
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -215,13 +212,17 @@ export enum WorkflowNodeType {
   StoppageAnalysis = 'StoppageAnalysis',
   InterimModelTraining = 'InterimModelTraining',
   QualityAssurance = 'QualityAssurance',
+  Decision = 'Decision',
+  Terminal = 'Terminal',
 }
 
 export type WorkflowNode = {
   id: string;
   title: string;
   type: WorkflowNodeType;
-  value?: Process | Process[] | LabelTaskType[];
+  value?: Process
+    | Process[]
+    | { dataType: DataType | null, labelTasks: LabelTaskType[] };
   x?: number;
   y?: number;
 }

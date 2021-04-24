@@ -31,6 +31,15 @@
               @click:node="onSelectNode"
               @remove:node="onRemoveNode"
             />
+            <TheWorkflowGraphViewConsole
+              :graph="{ nodes, edges }"
+              style="
+                position: absolute;
+                bottom: 8px;
+                left: 8px;
+                right: 8px;
+                height: 200px;"
+            />
           </v-card-actions>
         </v-card>
       </v-col>
@@ -42,7 +51,7 @@
         <component
           :is="component"
           :methods="methods"
-          :models="models"
+          :models="modelsFiltered"
           :node="selectedNode"
           @edit:node="onEditNode"
           @create:method="onCreateMethod(selectedNode.type)"
@@ -74,10 +83,11 @@ import TheNodeDetailsEmpty from './TheNodeDetailsEmpty.vue';
 import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
 import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
-import TheNodeDetailsLabelTask from './TheNodeDetailsLabelTask.vue';
+import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
 import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
+import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
@@ -88,10 +98,11 @@ export default Vue.extend({
     TheNodeDetailsFeatureExtraction,
     TheNodeDetailsInteractiveLabeling,
     TheNodeDetailsInterimModelTraining,
-    TheNodeDetailsLabelTask,
+    TheNodeDetailsInitialization,
     TheNodeDetailsStoppageAnalysis,
     TheNodeDetailsTaskTransformation,
     TheWorkflowGraphViewCanvas,
+    TheWorkflowGraphViewConsole,
   },
   data() {
     return {
@@ -116,7 +127,7 @@ export default Vue.extend({
         [WorkflowNodeType.InterimModelTraining]: TheNodeDetailsInterimModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsStoppageAnalysis,
         [WorkflowNodeType.TaskTransformation]: TheNodeDetailsTaskTransformation,
-        [WorkflowNodeType.LabelTask]: TheNodeDetailsLabelTask,
+        [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
       };
       return mapper[(node as WorkflowNode).type];
     },
@@ -137,9 +148,9 @@ export default Vue.extend({
       return (this.processes as Process[])
         .filter((d) => d.type === processType);
     },
-    models() {
+    modelsFiltered() {
       const node = this.selectedNode;
-      if (node === null) return TheNodeDetailsEmpty;
+      if (node === null) return null;
       if (node.type === WorkflowNodeType.DataObjectSelection) {
         return this.modelServices.filter((d: ModelService) => d.isValidSampler);
       }
@@ -153,7 +164,6 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('workflow', [
-      'setLabelTasks',
       'setModelServices',
       'editNode',
       'removeNode',

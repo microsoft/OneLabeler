@@ -38,6 +38,7 @@ const icons = {
   sync: 'fas fa-sync-alt',
   edit: 'fas fa-edit',
   server: 'fas fa-server',
+  info: 'fas fa-info-circle',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

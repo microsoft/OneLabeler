@@ -1,4 +1,5 @@
 import {
+  DataType,
   LabelTaskType,
   Process,
   WorkflowNode,
@@ -8,7 +9,7 @@ import { IState } from './state';
 
 export const startNode = (state: IState): WorkflowNode => {
   const { nodes } = state;
-  const type = WorkflowNodeType.LabelTask;
+  const type = WorkflowNodeType.Initialization;
   const node = nodes.find((d) => d.type === type) as WorkflowNode;
   return node;
 };
@@ -27,10 +28,18 @@ export const nextNodes = (state: IState): WorkflowNode[] | null => {
 
 export const labelTasks = (state: IState): LabelTaskType[] => {
   const { nodes } = state;
-  const type = WorkflowNodeType.LabelTask;
+  const type = WorkflowNodeType.Initialization;
   const node = nodes.find((d) => d.type === type);
   if (node === undefined) return [];
-  return node.value as LabelTaskType[];
+  return (node.value as { labelTasks: LabelTaskType[] }).labelTasks;
+};
+
+export const dataType = (state: IState): DataType | null => {
+  const { nodes } = state;
+  const type = WorkflowNodeType.Initialization;
+  const node = nodes.find((d) => d.type === type);
+  if (node === undefined) return null;
+  return (node.value as { dataType: DataType }).dataType;
 };
 
 export const dataObjectSelectionMethod = (

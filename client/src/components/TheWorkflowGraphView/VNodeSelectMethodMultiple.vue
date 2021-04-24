@@ -29,13 +29,13 @@
               label
               outlined
             >
-              {{ data.item.value.name }}
+              {{ data.item.text }}
             </v-chip>
           </template>
           <template #item="data">
             <v-list-item-title>
               <v-checkbox
-                :label="data.item.value.name"
+                :label="data.item.text"
                 :value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
                 :input-value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
                 class="py-0 ma-0 parameter-panel-checkbox"

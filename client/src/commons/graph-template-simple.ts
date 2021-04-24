@@ -10,9 +10,12 @@ export default {
   nodes: [
     {
       id: 'node-47353599',
-      title: 'label task',
-      type: WorkflowNodeType.LabelTask,
-      value: [],
+      title: 'initialization',
+      type: WorkflowNodeType.Initialization,
+      value: {
+        dataType: null,
+        labelTasks: [],
+      },
       x: 25,
       y: 25,
     },

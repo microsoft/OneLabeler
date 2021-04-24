@@ -8,13 +8,13 @@
         :key="`node-${i}`"
         :transform="`translate(${node.x},${node.y})`"
         :style="{
-          cursor: (isProcessNode(node) || isDataNode(node))
+          cursor: (isProcessNode(node) || isInitializationNode(node))
             ? 'pointer' : undefined
         }"
-        @click="(isProcessNode(node) || isDataNode(node))
+        @click="(isProcessNode(node) || isInitializationNode(node))
           ? onClickNode(node) : undefined"
       >
-        <template v-if="(isProcessNode(node) || isDataNode(node))">
+        <template v-if="(isProcessNode(node) || isInitializationNode(node))">
           <rect
             fill-opacity="0"
             stroke="black"
@@ -29,7 +29,7 @@
           />
           <rect
             :fill="isProcessNode(node) ? '#8C564B'
-              : (isDataNode(node) ? '#FF7F0E' : undefined)"
+              : (isInitializationNode(node) ? '#FF7F0E' : undefined)"
             stroke-width="1px"
             :width="rectWidth"
             :height="5"
@@ -140,8 +140,11 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
-import { Process, WorkflowNode, WorkflowNodeType } from '@/commons/types';
+import {
+  Process,
+  WorkflowNode,
+  WorkflowNodeType,
+} from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',
@@ -162,9 +165,8 @@ export default Vue.extend({
     };
   },
   methods: {
-    isDataNode(node: WorkflowNode): boolean {
-      return (node.type === WorkflowNodeType.LabelTask)
-        || (node.type === WorkflowNodeType.DataType);
+    isInitializationNode(node: WorkflowNode): boolean {
+      return node.type === WorkflowNodeType.Initialization;
     },
     isProcessNode(node: WorkflowNode): boolean {
       return (node.type === WorkflowNodeType.LabelIdeation)

@@ -399,14 +399,6 @@ export const executeWorkflow = async (
   const { nodes, edges } = state;
   let outputNode = null;
 
-  if (node.type === WorkflowNodeType.LabelTask) {
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
-  if (node.type === WorkflowNodeType.DataType) {
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
   if (node.type === WorkflowNodeType.Initialization) {
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
