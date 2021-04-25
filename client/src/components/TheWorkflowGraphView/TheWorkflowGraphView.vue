@@ -33,12 +33,14 @@
             />
             <TheWorkflowGraphViewConsole
               :graph="{ nodes, edges }"
-              style="
-                position: absolute;
-                bottom: 8px;
-                left: 8px;
-                right: 8px;
-                height: 200px;"
+              :style="{
+                position: 'absolute',
+                bottom: '8px',
+                left: '8px',
+                right: '8px',
+                height: '200px',
+              }"
+              @select:node="onSelectNode"
             />
           </v-card-actions>
         </v-card>

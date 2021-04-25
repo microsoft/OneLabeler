@@ -39,6 +39,9 @@ const icons = {
   edit: 'fas fa-edit',
   server: 'fas fa-server',
   info: 'fas fa-info-circle',
+  success: 'fas fa-check-circle',
+  warning: 'fas fa-exclamation-circle',
+  error: 'fas fa-times-circle',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

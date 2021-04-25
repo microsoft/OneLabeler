@@ -5,10 +5,11 @@ import {
   WorkflowNodeType,
 } from './types';
 
-interface Notification {
+export interface Notification {
   subject: WorkflowNode | WorkflowEdge | null;
-  message: string,
-  type: 'Error' | 'Warning',
+  message: string;
+  type: 'Error' | 'Warning' | 'Success';
+  category?: 'Data Structure Error' | 'Grammar Error' | 'Value Error';
 }
 
 // Grammatical Checking: Check whether the graph is valid.
@@ -35,8 +36,9 @@ export const validateWorkflow = (graph: {
     if (matchedNode.length !== 1) {
       notifications.push({
         subject: node,
-        message: `Data Structure Error: node id (id = ${node.id}) not unique`,
+        message: `node id (name = ${node.title}) not unique`,
         type: 'Error',
+        category: 'Data Structure Error',
       });
     }
   });
@@ -48,16 +50,18 @@ export const validateWorkflow = (graph: {
     if (matchedSource.length !== 1) {
       notifications.push({
         subject: edge,
-        message: `Data Structure Error: edge source (id = ${source}) not an existing node`,
+        message: `edge source (id = ${source}) not an existing node`,
         type: 'Error',
+        category: 'Data Structure Error',
       });
     }
     const matchedTarget = nodes.filter((d) => d.id === target);
     if (matchedTarget.length !== 1) {
       notifications.push({
         subject: edge,
-        message: `Data Structure Error: edge target (id = ${target}) not an existing node`,
+        message: `edge target (id = ${target}) not an existing node`,
         type: 'Error',
+        category: 'Data Structure Error',
       });
     }
   });
@@ -70,8 +74,9 @@ export const validateWorkflow = (graph: {
   if (initializationNodes.length !== 1) {
     notifications.push({
       subject: null,
-      message: 'Grammar Error: exactly one initialization node is needed',
+      message: 'exactly one initialization node is needed',
       type: 'Error',
+      category: 'Grammar Error',
     });
   }
 
@@ -82,8 +87,9 @@ export const validateWorkflow = (graph: {
   if (exitNodes.length !== 1) {
     notifications.push({
       subject: null,
-      message: 'Grammar Error: exactly one exit node is needed',
+      message: 'exactly one exit node is needed',
       type: 'Error',
+      category: 'Grammar Error',
     });
   }
 
@@ -94,8 +100,9 @@ export const validateWorkflow = (graph: {
   if (!existInteractiveLabelingNode) {
     notifications.push({
       subject: null,
-      message: 'Grammar Error: no interactive labeling node',
+      message: 'no interactive labeling node',
       type: 'Error',
+      category: 'Grammar Error',
     });
   }
 
@@ -110,8 +117,9 @@ export const validateWorkflow = (graph: {
   if (!allNodesVisited) {
     notifications.push({
       subject: null,
-      message: 'Grammar Error: not all the nodes reachable',
+      message: 'not all the nodes reachable',
       type: 'Error',
+      category: 'Grammar Error',
     });
   }
 
@@ -128,38 +136,43 @@ export const validateWorkflow = (graph: {
       if (indegree !== 0) {
         notifications.push({
           subject: node,
-          message: `Grammar Error: initialization node (id = ${node.id}) indegree != 1`,
+          message: `initialization node (name = ${node.title}) indegree != 1`,
           type: 'Error',
+          category: 'Grammar Error',
         });
       }
       if (outdegree !== 1) {
         notifications.push({
           subject: node,
-          message: `Grammar Error: initialization node (id = ${node.id}) outdegree != 1`,
+          message: `initialization node (name = ${node.title}) outdegree != 1`,
           type: 'Error',
+          category: 'Grammar Error',
         });
       }
     } else if (type === WorkflowNodeType.Decision) {
       if (outdegree !== 2) {
         notifications.push({
           subject: node,
-          message: `Grammar Error: decision node (id = ${node.id}) outdegree != 2`,
+          message: `decision node (name = ${node.title}) outdegree != 2`,
           type: 'Error',
+          category: 'Grammar Error',
         });
       }
     } else if (type === WorkflowNodeType.Terminal) {
       if (outdegree !== 0) {
         notifications.push({
           subject: node,
-          message: `Grammar Error: exit node (id = ${node.id}) outdegree != 0`,
+          message: `exit node (name = ${node.title}) outdegree != 0`,
           type: 'Error',
+          category: 'Grammar Error',
         });
       }
     } else if (outdegree !== 1) {
       notifications.push({
         subject: node,
-        message: `Grammar Error: process node (id = ${node.id}) outdegree != 1`,
+        message: `process node (name = ${node.title}) outdegree != 1`,
         type: 'Error',
+        category: 'Grammar Error',
       });
     }
   });
@@ -171,8 +184,9 @@ export const validateWorkflow = (graph: {
       const node = nodes.find((d) => d.id === source) as WorkflowNode;
       notifications.push({
         subject: node,
-        message: `Grammar Error: node (id = ${node.id}) has self loop`,
+        message: `node (name = ${node.title}) has self loop`,
         type: 'Error',
+        category: 'Grammar Error',
       });
     }
   });
@@ -211,8 +225,9 @@ export const validateInstantiations = (graph: {
     if (!isDataTypeValid) {
       notifications.push({
         subject: initializationNode,
-        message: 'Value Error: data type not selected',
+        message: 'data type not selected',
         type: 'Error',
+        category: 'Value Error',
       });
     }
     const isLabelTasksValid = initializationNode.value !== undefined
@@ -223,8 +238,9 @@ export const validateInstantiations = (graph: {
     if (!isLabelTasksValid) {
       notifications.push({
         subject: initializationNode,
-        message: 'Value Error: label task(s) not selected',
+        message: 'label task(s) not selected',
         type: 'Error',
+        category: 'Value Error',
       });
     }
   }
@@ -232,6 +248,8 @@ export const validateInstantiations = (graph: {
   // 2. All the processes in the graph must have at least one instantiation chosen
   nodes.forEach((node) => {
     if (node.type === WorkflowNodeType.Initialization) return;
+    if (node.type === WorkflowNodeType.Decision) return;
+    if (node.type === WorkflowNodeType.Terminal) return;
     const hasSingleInstance = !Array.isArray(node.value)
       && node.value !== undefined
       && node.value !== null;
@@ -240,8 +258,9 @@ export const validateInstantiations = (graph: {
     if (!hasSingleInstance && !hasMultipleInstances) {
       notifications.push({
         subject: node,
-        message: `Value Error: process (id = ${node.id}) instantiation(s) need to be selected`,
+        message: `process (name = ${node.title}) instantiation(s) not selected`,
         type: 'Error',
+        category: 'Value Error',
       });
     }
   });
