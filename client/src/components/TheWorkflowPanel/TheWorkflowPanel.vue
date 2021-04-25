@@ -57,6 +57,51 @@
         </v-icon>
       </v-btn>
 
+      <v-divider
+        class="app-header-divider"
+        vertical
+      />
+
+      <v-menu offset-y>
+        <template #activator="{ on }">
+          <v-btn
+            plain
+            class="subtitle-1 grey--text text--lighten-2 text-none px-1"
+            v-on="on"
+          >
+            <v-icon
+              class="pr-2"
+              aria-hidden="true"
+              small
+            >
+              $vuetify.icons.values.diagram
+            </v-icon>
+            Templates
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="({ name, value }, i) in templates"
+            :key="i"
+            style="min-height: 30px"
+            @click="onClickTemplate(value)"
+          >
+            <v-list-item-title
+              height="20"
+              class="subtitle-2 pa-0 ma-0"
+              style="height: 20px"
+            >
+              {{ name }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-divider
+        class="app-header-divider"
+        vertical
+      />
+
       <v-spacer />
 
       <v-btn
@@ -85,37 +130,54 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import {
   IMessage,
   MessageType,
-  LabelTaskType,
+  WorkflowGraph,
 } from '@/commons/types';
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
+import imageClassificationIML from '@/commons/workflow-templates/image-classification-iml';
+import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
 import VUploadButton from './VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 
-type WorkflowConfigData = {
-  nBatch: number,
-  showDatasetOverview: boolean,
-  itemsPerRow: number,
-  itemsPerCol: number,
-  labelTasks: LabelTaskType[],
-}
-
-const ajv = new Ajv();
-const schema: JSONSchemaType<Partial<WorkflowConfigData>> = {
+const ajv = new Ajv({
+  allowUnionTypes: true,
+});
+const schema: JSONSchemaType<Partial<WorkflowGraph>> = {
   type: 'object',
   properties: {
-    samplingStrategy: { type: 'string' },
-    nBatch: { type: 'integer' },
-    showDatasetOverview: { type: 'boolean' },
-    itemsPerRow: { type: 'integer' },
-    itemsPerCol: { type: 'integer' },
-    labelTasks: {
+    nodes: {
       type: 'array',
-      items: { type: 'string' },
+      items: {
+        type: 'object',
+        required: ['id', 'title', 'type'],
+        properties: {
+          id: { type: 'string' },
+          title: { type: 'string' },
+          type: { type: 'string' },
+          value: { type: ['object', 'array'] },
+          x: { type: 'number' },
+          y: { type: 'number' },
+        },
+      },
+    },
+    edges: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['source', 'target'],
+        properties: {
+          source: { type: 'string' },
+          target: { type: 'string' },
+          x1: { type: 'number' },
+          y1: { type: 'number' },
+          x2: { type: 'number' },
+          y2: { type: 'number' },
+        },
+      },
     },
   },
   additionalProperties: false,
@@ -157,35 +219,43 @@ export default Vue.extend({
       type: Number,
     },
   },
+  data() {
+    return {
+      templates: [
+        { name: 'Image Classification Minimal', value: imageClassificationMinimal },
+        { name: 'Image Classification with IML', value: imageClassificationIML },
+      ],
+    };
+  },
   computed: {
-    ...mapGetters('workflow', ['nodes', 'edges']),
+    ...mapState('workflow', ['nodes', 'edges']),
   },
   methods: {
     ...mapActions(['setMessage']),
     ...mapActions('workflow', [
+      'setGraph',
       'setLabelTasks',
-      'resetState',
+      'resetGraph',
     ]),
     onClickExport(): void {
       const { nodes, edges } = this;
-      saveObjectAsJSONFile({
-        nodes, edges,
-      }, 'workflow.config.json');
+      saveObjectAsJSONFile({ nodes, edges }, 'workflow.config.json');
     },
     onClickReset(): void {
       // reset workflow configurations
-      this.resetState();
+      this.resetGraph();
+    },
+    onClickTemplate(template: WorkflowGraph): void {
+      this.setGraph(template);
     },
     onClickClose(): void {
       this.$emit('click:close');
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
-      const config = await JSONFileToObject(file);
-      if (validate(config)) {
-        if ('labelTasks' in config) {
-          this.setLabelTasks(config.labelTasks);
-        }
+      const graph = await JSONFileToObject(file);
+      if (validate(graph)) {
+        this.setGraph(graph);
         this.setMessage({
           content: 'Workflow Configuration Uploaded.',
           type: MessageType.Success,

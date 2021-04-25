@@ -83,26 +83,31 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
       'interactiveLabelingMethod',
     ]),
     enableProjectionOverview(): boolean {
-      const methods = this.dataObjectSelectionMethod as Process[];
+      const methods = this.dataObjectSelectionMethod as Process[] | null;
+      if (methods === null) return false;
       return methods.findIndex((d) => d.id === 'Projection') >= 0;
     },
     enableSingleObjectDisplay(): boolean {
-      const methods = this.interactiveLabelingMethod as Process[];
+      const methods = this.interactiveLabelingMethod as Process[] | null;
+      if (methods === null) return false;
       return methods.findIndex((d) => d.id === 'Single-Object-Display') >= 0;
     },
     enableGridMatrix(): boolean {
-      const methods = this.interactiveLabelingMethod as Process[];
+      const methods = this.interactiveLabelingMethod as Process[] | null;
+      if (methods === null) return false;
       return methods.findIndex((d) => d.id === 'Grid-Matrix') >= 0;
     },
     itemsPerRow(): number | null {
-      const methods = this.interactiveLabelingMethod as Process[];
+      const methods = this.interactiveLabelingMethod as Process[] | null;
+      if (methods === null) return null;
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
       return gridMatrix === undefined
         ? null
         : (gridMatrix.params as MethodParams).nColumns.value as number;
     },
     itemsPerCol(): number | null {
-      const methods = this.interactiveLabelingMethod as Process[];
+      const methods = this.interactiveLabelingMethod as Process[] | null;
+      if (methods === null) return null;
       const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
       return gridMatrix === undefined
         ? null

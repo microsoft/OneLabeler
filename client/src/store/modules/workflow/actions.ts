@@ -2,8 +2,9 @@ import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
 import {
   MethodParams,
-  WorkflowNode,
   WorkflowEdge,
+  WorkflowGraph,
+  WorkflowNode,
   IImage,
   Status,
   MessageType,
@@ -72,6 +73,21 @@ export const pushEdges = (
   commit(types.SET_NODES, [...edges, edge]);
 };
 
+export const setGraph = (
+  { commit }: ActionContext<IState, IRootState>,
+  graph: WorkflowGraph,
+): void => {
+  commit(types.SET_NODES, graph.nodes);
+  commit(types.SET_EDGES, graph.edges);
+};
+
+export const resetGraph = (
+  { commit }: ActionContext<IState, IRootState>,
+): void => {
+  commit(types.SET_NODES, []);
+  commit(types.SET_EDGES, []);
+};
+
 export const setDataType = (
   { commit }: ActionContext<IState, IRootState>,
   dataType: DataType,
@@ -137,6 +153,30 @@ export const setModelServices = (
   services: ModelService[],
 ): void => {
   commit(types.SET_MODEL_SERVICES, services);
+};
+
+export const pushModelServices = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  service: ModelService,
+): void => {
+  const { modelServices } = state;
+  commit(types.SET_MODEL_SERVICES, [
+    ...modelServices,
+    service,
+  ]);
+};
+
+export const editModelService = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  newValue: ModelService,
+): void => {
+  const { modelServices } = state;
+  const idx = modelServices.findIndex(
+    (d: ModelService) => d.objectId === newValue.objectId,
+  );
+  const newModelServices = [...modelServices];
+  newModelServices[idx] = newValue;
+  commit(types.SET_MODEL_SERVICES, newModelServices);
 };
 
 export const setProcesses = (

@@ -362,8 +362,9 @@ export default Vue.extend({
       return '';
     },
     dataObjectSelectionAlgorithmicEnabled(): boolean {
-      return (this.dataObjectSelectionMethod as Process[])
-        .findIndex((d) => d.isAlgorithmic) >= 0;
+      const methods = this.dataObjectSelectionMethod as Process[] | null;
+      if (methods === null) return false;
+      return methods.findIndex((d) => d.isAlgorithmic) >= 0;
     },
   },
   created(): void {

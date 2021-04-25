@@ -7,8 +7,6 @@ import {
   WorkflowEdge,
 } from '@/commons/types';
 import { modelServices, processes } from '@/commons/builtins';
-// import graph from '@/commons/graph-template';
-import graph from '@/commons/graph-template-simple';
 
 export interface IState {
   /** The node currently being processed. */
@@ -29,8 +27,8 @@ export interface IState {
 
 export const createInitialState = (): IState => ({
   currentNode: null,
-  nodes: graph.nodes,
-  edges: graph.edges,
+  nodes: [],
+  edges: [],
   dataType: DataType.Image,
   labelTasks: [], // [LabelTaskType.Classification],
   modelServices,

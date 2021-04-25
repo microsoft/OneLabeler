@@ -1,10 +1,11 @@
 import {
-  Process,
+  DataType,
+  LabelTaskType,
   ProcessType,
   WorkflowEdge,
   WorkflowNode,
   WorkflowNodeType,
-} from './types';
+} from '../types';
 
 export default {
   nodes: [
@@ -13,25 +14,50 @@ export default {
       title: 'initialization',
       type: WorkflowNodeType.Initialization,
       value: {
-        dataType: null,
-        labelTasks: [],
+        dataType: DataType.Image,
+        labelTasks: [LabelTaskType.Classification],
       },
       x: 25,
       y: 25,
     },
     {
       id: 'node-6411710',
-      title: 'data object selection',
+      title: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [],
+      value: [{
+        type: ProcessType.DataObjectSelection,
+        name: 'Random (Dummy)',
+        id: 'Random-73417867',
+        inputs: ['labels'],
+        isAlgorithmic: true,
+        isBuiltIn: true,
+        isModelBased: false,
+        isServerless: true,
+        api: 'Random',
+        params: {
+          nBatch: {
+            value: 16,
+            title: 'Selection Batch Size',
+            options: [
+              { value: 1, text: '1' },
+              { value: 4, text: '4' },
+              { value: 16, text: '16' },
+              { value: 32, text: '32' },
+              { value: 48, text: '48' },
+              { value: 64, text: '64' },
+              { value: 96, text: '96' },
+            ],
+          },
+        },
+      }],
       x: 145,
       y: 25,
     },
     {
       id: 'node-63746075',
-      title: 'task transform',
+      title: 'direct labeling',
       type: WorkflowNodeType.TaskTransformation,
-      value: new Process({
+      value: {
         type: ProcessType.TaskTransformation,
         name: 'DirectLabeling',
         id: 'DirectLabeling-97377357',
@@ -40,23 +66,55 @@ export default {
         isBuiltIn: true,
         isModelBased: false,
         isServerless: true,
-      }),
+      },
       x: 265,
       y: 25,
     },
     {
       id: 'node-44216216',
-      title: 'interactive labeling',
+      title: 'grid matrix',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: [],
+      value: [{
+        type: ProcessType.InteractiveLabeling,
+        name: 'Grid Matrix',
+        id: 'Grid-Matrix',
+        inputs: ['dataObjects', 'samples'],
+        isAlgorithmic: false,
+        isBuiltIn: true,
+        isModelBased: false,
+        isServerless: true,
+        params: {
+          nRows: {
+            value: 4,
+            title: 'Number of Objects per Column',
+            options: [
+              { value: 1, text: '1' },
+              { value: 2, text: '2' },
+              { value: 4, text: '4' },
+              { value: 6, text: '6' },
+              { value: 8, text: '8' },
+            ],
+          },
+          nColumns: {
+            value: 4,
+            title: 'Number of Objects per Row',
+            options: [
+              { value: 1, text: '1' },
+              { value: 4, text: '4' },
+              { value: 8, text: '8' },
+              { value: 12, text: '12' },
+            ],
+          },
+        },
+      }],
       x: 385,
       y: 25,
     },
     {
       id: 'node-70767097',
-      title: 'stoppage analysis',
+      title: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
-      value: new Process({
+      value: {
         type: ProcessType.StoppageAnalysis,
         name: 'AllChecked',
         id: 'AllChecked-46322013',
@@ -66,7 +124,7 @@ export default {
         isModelBased: false,
         isServerless: true,
         api: 'AllChecked',
-      }),
+      },
       x: 505,
       y: 25,
     },

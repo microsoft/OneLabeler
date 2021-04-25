@@ -236,3 +236,8 @@ export type WorkflowEdge = {
   y2?: number;
   condition?: unknown;
 }
+
+export type WorkflowGraph = {
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+}

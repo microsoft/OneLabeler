@@ -19,11 +19,16 @@ export const validateWorkflow = (graph: {
 }): Notification[] => {
   const { nodes, edges } = graph;
 
+  // note: cytoscape adds id to the input nodes and edges
+  // if id doesn't exist yet,
+  // thus need to send deep copies to avoid cytoscape
+  // changing the input graph.
   const cy = cytoscape({
     elements: {
-      nodes: nodes.map((d) => ({ data: d })),
-      edges: edges.map((d) => ({ data: d })),
+      nodes: nodes.map((d) => ({ data: { ...d } })),
+      edges: edges.map((d) => ({ data: { ...d } })),
     },
+    headless: true,
   });
 
   const notifications = [] as Notification[];
@@ -108,19 +113,21 @@ export const validateWorkflow = (graph: {
 
   // 2. graph connectivity constraint
   // - all the nodes should be reachable from the initialization node
-  const [initializationNode] = initializationNodes;
-  const visitedNodes = cy.elements().bfs({
-    roots: cy.getElementById(initializationNode.id),
-    directed: true,
-  }).path.nodes();
-  const allNodesVisited = visitedNodes.length === nodes.length;
-  if (!allNodesVisited) {
-    notifications.push({
-      subject: null,
-      message: 'not all the nodes reachable',
-      type: 'Error',
-      category: 'Grammar Error',
-    });
+  if (initializationNodes.length === 1) {
+    const [initializationNode] = initializationNodes;
+    const visitedNodes = cy.elements().bfs({
+      roots: cy.getElementById(initializationNode.id),
+      directed: true,
+    }).path.nodes();
+    const allNodesVisited = visitedNodes.length === nodes.length;
+    if (!allNodesVisited) {
+      notifications.push({
+        subject: null,
+        message: 'not all the nodes reachable',
+        type: 'Error',
+        category: 'Grammar Error',
+      });
+    }
   }
 
   // 3. node linkage constraints

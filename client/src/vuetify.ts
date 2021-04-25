@@ -42,6 +42,7 @@ const icons = {
   success: 'fas fa-check-circle',
   warning: 'fas fa-exclamation-circle',
   error: 'fas fa-times-circle',
+  diagram: 'fas fa-project-diagram',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,
