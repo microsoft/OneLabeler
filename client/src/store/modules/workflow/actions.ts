@@ -73,6 +73,19 @@ export const pushEdges = (
   commit(types.SET_NODES, [...edges, edge]);
 };
 
+export const removeEdge = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  edge: WorkflowEdge,
+): void => {
+  const { edges } = state;
+  const idx = edges.findIndex((d) => d.id === edge.id);
+  const edgesUpdated = [
+    ...edges.slice(0, idx),
+    ...edges.slice(idx + 1),
+  ];
+  commit(types.SET_EDGES, edgesUpdated);
+};
+
 export const setGraph = (
   { commit }: ActionContext<IState, IRootState>,
   graph: WorkflowGraph,

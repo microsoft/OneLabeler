@@ -74,6 +74,7 @@ import { mapActions, mapState } from 'vuex';
 import {
   ModelService,
   Process,
+  WorkflowEdge,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
@@ -107,6 +108,7 @@ export default Vue.extend({
       'editModelService',
       'editNode',
       'removeNode',
+      'removeEdge',
       'pushProcesses',
       'editProcess',
       'executeDataObjectSelectionAlgorithmic',
@@ -118,6 +120,12 @@ export default Vue.extend({
       this.selectedNode = node;
     },
     onRemoveNode(node: WorkflowNode) {
+      const { edges } = this;
+      edges.forEach((edge: WorkflowEdge) => {
+        const { source, target } = edge;
+        const shouldRemove = source === node.id || target === node.id;
+        if (shouldRemove) this.removeEdge(edge);
+      });
       this.removeNode(node);
     },
     onEditNode(newValue: WorkflowNode) {

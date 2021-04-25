@@ -19,18 +19,6 @@ export const validateWorkflow = (graph: {
 }): Notification[] => {
   const { nodes, edges } = graph;
 
-  // note: cytoscape adds id to the input nodes and edges
-  // if id doesn't exist yet,
-  // thus need to send deep copies to avoid cytoscape
-  // changing the input graph.
-  const cy = cytoscape({
-    elements: {
-      nodes: nodes.map((d) => ({ data: { ...d } })),
-      edges: edges.map((d) => ({ data: { ...d } })),
-    },
-    headless: true,
-  });
-
   const notifications = [] as Notification[];
 
   // 0. basic data structure constraint
@@ -111,6 +99,29 @@ export const validateWorkflow = (graph: {
     });
   }
 
+  // note:
+  // 1. cytoscape adds id to the input nodes and edges
+  // if id doesn't exist yet,
+  // thus need to send deep copies to avoid cytoscape
+  // changing the input graph.
+  // 2. cytoscape raises error when the edge's
+  // source/target is not an existing node's id,
+  // thus needs to remove these invalid edges.
+  const edgesFiltered = edges.filter(({ source, target }) => {
+    const matchedSource = nodes.filter((d) => d.id === source);
+    if (matchedSource.length !== 1) return false;
+    const matchedTarget = nodes.filter((d) => d.id === target);
+    if (matchedTarget.length !== 1) return false;
+    return true;
+  });
+  const cy = cytoscape({
+    elements: {
+      nodes: nodes.map((d) => ({ data: { ...d } })),
+      edges: edgesFiltered.map((d) => ({ data: { ...d } })),
+    },
+    headless: true,
+  });
+
   // 2. graph connectivity constraint
   // - all the nodes should be reachable from the initialization node
   if (initializationNodes.length === 1) {
@@ -132,9 +143,9 @@ export const validateWorkflow = (graph: {
 
   // 3. node linkage constraints
   // 3.1. an initialization node has indegree 0 and outdegree 1
-  // 3.2. a decision node has arbitrary indegree and outdegree 2
-  // 3.3. an exist node has arbitrary indegree and outdegree 0
-  // 3.4. a process node has arbitrary indegree and outdegree 1
+  // 3.2. a decision node has >= 1 indegree and outdegree 2
+  // 3.3. an exist node has >= 1 indegree and outdegree 0
+  // 3.4. a process node has >= 1 indegree and outdegree 1
   nodes.forEach((node) => {
     const { id, type } = node;
     const indegree = cy.getElementById(id).indegree(true);
@@ -157,6 +168,14 @@ export const validateWorkflow = (graph: {
         });
       }
     } else if (type === WorkflowNodeType.Decision) {
+      if (indegree === 0) {
+        notifications.push({
+          subject: node,
+          message: `decision node (name = ${node.title}) indegree = 0`,
+          type: 'Error',
+          category: 'Grammar Error',
+        });
+      }
       if (outdegree !== 2) {
         notifications.push({
           subject: node,
@@ -166,6 +185,14 @@ export const validateWorkflow = (graph: {
         });
       }
     } else if (type === WorkflowNodeType.Terminal) {
+      if (indegree === 0) {
+        notifications.push({
+          subject: node,
+          message: `exit node (name = ${node.title}) indegree = 0`,
+          type: 'Error',
+          category: 'Grammar Error',
+        });
+      }
       if (outdegree !== 0) {
         notifications.push({
           subject: node,
@@ -174,13 +201,23 @@ export const validateWorkflow = (graph: {
           category: 'Grammar Error',
         });
       }
-    } else if (outdegree !== 1) {
-      notifications.push({
-        subject: node,
-        message: `process node (name = ${node.title}) outdegree != 1`,
-        type: 'Error',
-        category: 'Grammar Error',
-      });
+    } else {
+      if (indegree === 0) {
+        notifications.push({
+          subject: node,
+          message: `process node (name = ${node.title}) indegree = 0`,
+          type: 'Error',
+          category: 'Grammar Error',
+        });
+      }
+      if (outdegree !== 1) {
+        notifications.push({
+          subject: node,
+          message: `process node (name = ${node.title}) outdegree != 1`,
+          type: 'Error',
+          category: 'Grammar Error',
+        });
+      }
     }
   });
 

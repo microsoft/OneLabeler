@@ -2,8 +2,7 @@ import {
   DataType,
   LabelTaskType,
   ProcessType,
-  WorkflowEdge,
-  WorkflowNode,
+  WorkflowGraph,
   WorkflowNodeType,
 } from '../types';
 
@@ -145,6 +144,7 @@ export default {
   ],
   edges: [
     {
+      id: 'edge-78038813',
       source: 'node-47353599',
       target: 'node-6411710',
       x1: 105,
@@ -153,6 +153,7 @@ export default {
       y2: 55,
     },
     {
+      id: 'edge-79894315',
       source: 'node-6411710',
       target: 'node-63746075',
       x1: 225,
@@ -161,6 +162,7 @@ export default {
       y2: 55,
     },
     {
+      id: 'edge-23806236',
       source: 'node-63746075',
       target: 'node-44216216',
       x1: 345,
@@ -169,6 +171,7 @@ export default {
       y2: 55,
     },
     {
+      id: 'edge-41463625',
       source: 'node-44216216',
       target: 'node-70767097',
       x1: 465,
@@ -177,6 +180,7 @@ export default {
       y2: 55,
     },
     {
+      id: 'edge-25771154',
       source: 'node-70767097',
       target: 'node-69466632',
       x1: 545,
@@ -185,6 +189,7 @@ export default {
       y2: 115,
     },
     {
+      id: 'edge-15222705',
       source: 'node-69466632',
       target: 'node-29117539',
       x1: 545,
@@ -194,6 +199,7 @@ export default {
       condition: true,
     },
     {
+      id: 'edge-74991592',
       source: 'node-69466632',
       target: 'node-6411710',
       x1: 505,
@@ -203,7 +209,4 @@ export default {
       condition: false,
     },
   ],
-} as {
-  nodes: WorkflowNode[],
-  edges: WorkflowEdge[],
-};
+} as WorkflowGraph;

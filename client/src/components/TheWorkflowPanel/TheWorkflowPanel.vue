@@ -170,6 +170,7 @@ const schema: JSONSchemaType<Partial<WorkflowGraph>> = {
         type: 'object',
         required: ['source', 'target'],
         properties: {
+          id: { type: 'string' },
           source: { type: 'string' },
           target: { type: 'string' },
           x1: { type: 'number' },

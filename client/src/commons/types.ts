@@ -228,6 +228,7 @@ export type WorkflowNode = {
 }
 
 export type WorkflowEdge = {
+  id: string;
   source: string;
   target: string;
   x1?: number;

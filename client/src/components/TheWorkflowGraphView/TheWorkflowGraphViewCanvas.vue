@@ -8,13 +8,15 @@
         :key="`node-${i}`"
         :transform="`translate(${node.x},${node.y})`"
         :style="{
-          cursor: (isProcessNode(node) || isInitializationNode(node))
-            ? 'pointer' : undefined
+          cursor: (isNodeProcess(node) || isNodeInitialization(node))
+            ? 'pointer' : undefined,
+          opacity: isNodeImplemented(node) ? undefined : 0.3,
         }"
-        @click="(isProcessNode(node) || isInitializationNode(node))
+        @click="(isNodeProcess(node) || isNodeInitialization(node))
           ? onClickNode(node) : undefined"
+        @contextmenu="onRightClickNode($event, node)"
       >
-        <template v-if="(isProcessNode(node) || isInitializationNode(node))">
+        <template v-if="(isNodeProcess(node) || isNodeInitialization(node))">
           <rect
             fill-opacity="0"
             stroke="black"
@@ -22,21 +24,20 @@
             :width="rectWidth"
             :height="rectHeight"
             :style="{
-              'stroke-dasharray': isDummyNode(node) ? '5 5' : undefined
+              'stroke-dasharray': (!isNodeImplemented(node) || isNodeDummyImplemented(node))
+                ? '5 5' : undefined
             }"
-            @contextmenu="isProcessNode(node)
-              ? onRightClickNode($event, node) : undefined"
           />
           <rect
-            :fill="isProcessNode(node) ? '#8C564B'
-              : (isInitializationNode(node) ? '#FF7F0E' : undefined)"
+            :fill="isNodeProcess(node) ? '#8C564B'
+              : (isNodeInitialization(node) ? '#FF7F0E' : undefined)"
             stroke-width="1px"
             :width="rectWidth"
             :height="5"
             style="pointer-events: none"
           />
         </template>
-        <template v-else-if="isDecisionNode(node)">
+        <template v-else-if="isNodeDecision(node)">
           <polygon
             :points="`
               ${rectWidth/2},0
@@ -72,7 +73,6 @@
             :dy="j === 0
               ? `${-(node.title.split(' ').length - 1) * 0.6}em`
               : '1.2em'"
-            :fill="isDummyNode(node) ? '#AAA' : '#000'"
           >
             {{ word }}
           </tspan>
@@ -106,8 +106,9 @@
         marker-end="url(#arrowhead)"
       />
     </svg>
+    <!-- The context menu for nodes. -->
     <v-menu
-      v-model="showMenu"
+      v-model="showMenuOfNode"
       :position-x="rightClickX"
       :position-y="rightClickY"
       absolute
@@ -120,7 +121,7 @@
         <v-list-item
           class="py-0 pl-0 pr-1"
           style="min-height:24px"
-          :disabled="rightClickedNode === null || !isDeletableNode(rightClickedNode)"
+          :disabled="rightClickedNode === null"
           @click="onRemoveNode"
         >
           <v-icon
@@ -158,17 +159,17 @@ export default Vue.extend({
     return {
       rectWidth: 80,
       rectHeight: 60,
-      showMenu: false,
+      showMenuOfNode: false,
       rightClickX: null as null | number,
       rightClickY: null as null | number,
       rightClickedNode: null as null | WorkflowNode,
     };
   },
   methods: {
-    isInitializationNode(node: WorkflowNode): boolean {
+    isNodeInitialization(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Initialization;
     },
-    isProcessNode(node: WorkflowNode): boolean {
+    isNodeProcess(node: WorkflowNode): boolean {
       return (node.type === WorkflowNodeType.LabelIdeation)
         || (node.type === WorkflowNodeType.FeatureExtraction)
         || (node.type === WorkflowNodeType.DataObjectSelection)
@@ -179,34 +180,45 @@ export default Vue.extend({
         || (node.type === WorkflowNodeType.InterimModelTraining)
         || (node.type === WorkflowNodeType.QualityAssurance);
     },
-    isDecisionNode(node: WorkflowNode): boolean {
+    isNodeDecision(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Decision;
     },
-    isTerminalNode(node: WorkflowNode): boolean {
+    isNodeTerminal(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Terminal;
     },
-    isDeletableNode(node: WorkflowNode): boolean {
+    isNodeDummifiable(node: WorkflowNode): boolean {
       return (node.type === WorkflowNodeType.DataObjectSelection)
         || (node.type === WorkflowNodeType.DefaultLabeling)
         || (node.type === WorkflowNodeType.InteractiveLabeling)
         || (node.type === WorkflowNodeType.InterimModelTraining);
     },
-    isDummyNode(node: WorkflowNode): boolean {
+    isNodeImplemented(node: WorkflowNode): boolean {
+      if (!this.isNodeProcess(node)) return true;
+      if (node.value === undefined || node.value === null) return false;
+      if (Array.isArray(node.value) && node.value.length === 0) return false;
+      return true;
+    },
+    isNodeDummyImplemented(node: WorkflowNode): boolean {
+      if (!this.isNodeProcess(node)) return false;
+      if (node.value === undefined || node.value === null) return false;
+
+      if (node.type === WorkflowNodeType.FeatureExtraction) {
+        return (node.value as Process).api === 'Random3D';
+      }
       if (node.type === WorkflowNodeType.DataObjectSelection) {
-        return node.value === undefined
-          || (node.value as Process[]).length === 0;
+        if (!Array.isArray(node.value)) return false;
+        if (node.value.length === 0) return false;
+        return node.value.length === 1 && node.value[0].api === 'Random';
       }
       if (node.type === WorkflowNodeType.DefaultLabeling) {
-        return node.value === undefined
-          || (node.value as Process).api === 'Null';
+        return (node.value as Process).api === 'Null';
       }
       if (node.type === WorkflowNodeType.InteractiveLabeling) {
         return node.value === undefined
           || (node.value as Process[]).length === 0;
       }
       if (node.type === WorkflowNodeType.InterimModelTraining) {
-        return node.value === undefined
-          || (node.value as Process).api === 'Static';
+        return (node.value as Process).api === 'Static';
       }
       return false;
     },
@@ -215,7 +227,7 @@ export default Vue.extend({
     },
     onRightClickNode(e: MouseEvent, node: WorkflowNode): void {
       e.preventDefault();
-      this.showMenu = true;
+      this.showMenuOfNode = true;
       this.rightClickX = e.clientX;
       this.rightClickY = e.clientY;
       this.rightClickedNode = node;
