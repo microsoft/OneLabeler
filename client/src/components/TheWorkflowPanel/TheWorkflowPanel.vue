@@ -65,8 +65,10 @@
       <v-menu offset-y>
         <template #activator="{ on }">
           <v-btn
+            class="subtitle-1 text-none px-1"
+            color="white"
             plain
-            class="subtitle-1 grey--text text--lighten-2 text-none px-1"
+            tile
             v-on="on"
           >
             <v-icon
@@ -120,7 +122,6 @@
           $vuetify.icons.values.close
         </v-icon>
       </v-btn>
-
     </v-toolbar>
     <v-card-text class="px-2 py-2">
       <TheWorkflowGraphView />

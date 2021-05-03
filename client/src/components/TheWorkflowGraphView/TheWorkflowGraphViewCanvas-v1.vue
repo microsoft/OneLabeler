@@ -1,61 +1,122 @@
 <template>
-  <v-container
-    class="pa-0"
-    style="height: 600px"
-  >
-    <VFlowchart
-      id="flowchart-canvas"
-      ref="chart"
-      :nodes="flowchartGraph.nodes"
-      :edges="flowchartGraph.edges"
+  <v-container class="pa-0">
+    <!--
+    <svg
       style="height: 600px; width: 100%;"
-      @edit:node="onEditNode"
-      @create:edge="onCreateEdge"
-      @select:nodes="onSelectNodes"
-      @select:edges="onSelectEdges"
+      @contextmenu="onContextMenuOfCanvas($event)"
+    >
+    </svg>
+    -->
+    <VGraphCanvas
+      ref="canvas"
+      style="height: 600px; width: 100%;"
       @contextmenu="onContextMenuOfCanvas"
     >
-      <template #node-shape="props">
-        <g @contextmenu.stop="onContextMenuOfNode($event, props.node)">
-          <template v-if="isNodeInitialization(props.node) || isNodeProcess(props.node)">
-            <rect
-              :width="props.node.width"
-              :height="props.node.height"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
-              stroke-width="1"
-            />
-            <rect
-              :width="props.node.width"
-              :fill="isNodeProcess(props.node) ? '#8C564B' : '#FF7F0E'"
-              height="5"
-            />
-          </template>
-          <template v-else-if="isNodeDecision(props.node)">
-            <polygon
-              :points="`
-                ${props.node.width / 2},0
-                ${props.node.width},${props.node.height / 2}
-                ${props.node.width / 2},${props.node.height}
-                0,${props.node.height / 2}`"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
-              stroke-width="1"
-            />
-          </template>
-          <template v-else-if="isNodeTerminal(props.node)">
-            <circle
-              :r="props.node.height / 2"
-              :cx="props.node.width / 2"
-              :cy="props.node.height / 2"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
-              stroke-width="1"
-            />
-          </template>
-        </g>
-      </template>
-    </VFlowchart>
+      <g
+        v-for="(node, i) in graph.nodes"
+        :key="`node-${i}`"
+        :class="nodeGClass"
+        :transform="`translate(${node.x},${node.y})`"
+        :style="{
+          cursor: (isNodeProcess(node) || isNodeInitialization(node))
+            ? 'pointer' : undefined,
+          opacity: isNodeImplemented(node) ? undefined : 0.3,
+        }"
+        :nodeId="node.id"
+        @click="(isNodeProcess(node) || isNodeInitialization(node))
+          ? onClickNode(node) : undefined"
+        @contextmenu.stop="onContextMenuOfNode($event, node)"
+      >
+        <template v-if="(isNodeProcess(node) || isNodeInitialization(node))">
+          <rect
+            fill-opacity="0"
+            stroke="black"
+            stroke-width="1"
+            :width="rectWidth"
+            :height="rectHeight"
+            :style="{
+              'stroke-dasharray': (!isNodeImplemented(node) || isNodeDummyImplemented(node))
+                ? '5 5' : undefined
+            }"
+          />
+          <rect
+            :fill="isNodeProcess(node) ? '#8C564B'
+              : (isNodeInitialization(node) ? '#FF7F0E' : undefined)"
+            stroke-width="1"
+            :width="rectWidth"
+            :height="5"
+            style="pointer-events: none"
+          />
+        </template>
+        <template v-else-if="isNodeDecision(node)">
+          <polygon
+            :points="`
+              ${rectWidth/2},0
+              ${rectWidth},${rectHeight/2}
+              ${rectWidth/2},${rectHeight}
+              0,${rectHeight/2}`"
+            fill-opacity="0"
+            stroke="black"
+            stroke-width="1"
+          />
+        </template>
+        <template v-else>
+          <circle
+            :r="rectHeight / 2"
+            :cx="rectWidth / 2"
+            :cy="rectHeight / 2"
+            fill-opacity="0"
+            stroke="black"
+            stroke-width="1"
+          />
+        </template>
+        <text
+          :y="rectHeight / 2"
+          font-size="14px"
+          dominant-baseline="middle"
+          text-anchor="middle"
+          style="pointer-events: none"
+        >
+          <tspan
+            v-for="(word, j) in node.title.split(' ')"
+            :key="j"
+            :x="rectWidth / 2"
+            :dy="j === 0
+              ? `${-(node.title.split(' ').length - 1) * 0.6}em`
+              : '1.2em'"
+          >
+            {{ word }}
+          </tspan>
+        </text>
+      </g>
+      <defs>
+        <marker
+          id="arrowhead"
+          viewBox="0 -5 10 10"
+          refX="10"
+          refY="-0.5"
+          markerWidth="10"
+          markerHeight="10"
+          orient="auto"
+        >
+          <path
+            fill="black"
+            d="M0,-5L10,0L0,5"
+          />
+        </marker>
+      </defs>
+      <line
+        v-for="(edge, i) in graph.edges"
+        :key="`edge-${i}`"
+        stroke="black"
+        fill="black"
+        :x1="edge.x1"
+        :y1="edge.y1"
+        :x2="edge.x2"
+        :y2="edge.y2"
+        marker-end="url(#arrowhead)"
+      />
+    </VGraphCanvas>
 
     <!-- The context menu for nodes. -->
     <v-menu
@@ -72,7 +133,7 @@
         <v-list-item
           class="py-0 pl-0 pr-1"
           style="min-height:24px"
-          @click="onRemoveNode(rightClickedNode)"
+          @click="onRemoveNode"
         >
           <v-icon
             class="px-2"
@@ -115,15 +176,14 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import * as d3 from 'd3';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Process,
-  WorkflowEdge,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
-import VFlowchart from '../VFlowchart/VFlowchart.vue';
-import { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
+import VGraphCanvas from './VGraphCanvas.vue';
 
 const createNodeMenu = [
   {
@@ -168,36 +228,10 @@ const createNodeMenu = [
   },
 ];
 
-const nodeMapper = (node: WorkflowNode): FlowchartNode => ({
-  id: node.id,
-  label: node.title,
-  type: node.type,
-  x: node.x,
-  y: node.y,
-  width: 60,
-  height: 60,
-});
-
-const edgeMapper = (edge: WorkflowEdge): FlowchartEdge => ({
-  id: edge.id,
-  source: {
-    nodeId: edge.source,
-    direction: 'Right',
-    dx: 60,
-    dy: 30,
-  },
-  target: {
-    nodeId: edge.target,
-    direction: 'Left',
-    dx: 0,
-    dy: 30,
-  },
-});
-
 export default Vue.extend({
   name: 'TheWorkflowGraphViewCanvas',
   components: {
-    VFlowchart,
+    VGraphCanvas,
   },
   props: {
     graph: {
@@ -207,6 +241,9 @@ export default Vue.extend({
   },
   data() {
     return {
+      nodeGClass: 'workflow-graph-node-g',
+      rectWidth: 80,
+      rectHeight: 60,
       showMenuOfNode: false,
       showMenuOfCanvas: false,
       rightClickClientX: null as null | number,
@@ -215,26 +252,55 @@ export default Vue.extend({
       rightClickCanvasY: null as null | number,
       rightClickedNode: null as null | WorkflowNode,
       createNodeMenu,
-      selectedNodes: [] as FlowchartNode[],
-      selectedEdges: [] as FlowchartEdge[],
+      bind: false,
     };
   },
   computed: {
-    flowchartGraph() {
-      const { graph } = this;
+    graphWithoutPosition() {
+      console.log('recompute');
       return {
-        nodes: graph.nodes.map((d: WorkflowNode) => nodeMapper(d)),
-        edges: graph.edges.map((d: WorkflowEdge) => edgeMapper(d)),
+        nodes: this.graph.nodes.map((d) => (
+          { ...d, x: null, y: null }
+        )),
       };
     },
   },
-  created(): void {
-    window.addEventListener('keydown', this.onKey);
+  watch: {
+    graphWithoutPosition() {
+      if (this.bind) return;
+      this.bindDrag();
+      this.bind = true;
+    },
   },
-  beforeDestroy(): void {
-    window.removeEventListener('keydown', this.onKey);
+  mounted() {
+    this.bindDrag();
   },
   methods: {
+    bindDrag() {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const self = this;
+      console.log('bind drag');
+      /*
+      const dragged = function (e: MouseEvent) {
+        const nodeId = this.getAttribute('nodeId');
+        const node = self.graph.nodes.find((d) => d.id === nodeId);
+        console.log(node.x, node.y, e);
+      };
+      */
+      const dragged = function (e: MouseEvent) {
+        const nodeId = this.getAttribute('nodeId');
+        const node = self.graph.nodes.find((d) => d.id === nodeId);
+        self.$emit('edit:node', {
+          ...node,
+          x: e.x,
+          y: e.y,
+        });
+      };
+      this.$nextTick(() => {
+        d3.selectAll(`.${this.nodeGClass}`)
+          .call(d3.drag().on('drag', dragged));
+      });
+    },
     isNodeInitialization(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Initialization;
     },
@@ -291,54 +357,8 @@ export default Vue.extend({
       }
       return false;
     },
-    workflowToFlowchartNode(node: WorkflowNode): FlowchartNode {
-      return {
-        id: node.id,
-        label: node.title,
-        type: node.type,
-        x: node.x,
-        y: node.y,
-        width: 60,
-        height: 60,
-      };
-    },
-    flowchartToWorkflowNode(node: FlowchartNode): WorkflowNode {
-      const { id } = node;
-      const workflowNode = this.graph.nodes.find((d) => d.id === id);
-      return {
-        ...workflowNode,
-        title: node.label,
-        x: node.x,
-        y: node.y,
-        width: node.width,
-        height: node.height,
-      };
-    },
-    workflowToFlowchartEdge(edge: WorkflowEdge): FlowchartEdge {
-      return {
-        id: edge.id,
-        source: {
-          nodeId: edge.source,
-          direction: 'Right',
-          dx: 60,
-          dy: 30,
-        },
-        target: {
-          nodeId: edge.target,
-          direction: 'Left',
-          dx: 0,
-          dy: 30,
-        },
-      };
-    },
-    flowchartToWorkflowEdge(edge: FlowchartEdge): WorkflowEdge {
-      const { id } = edge;
-      const workflowEdge = this.graph.edges.find((d) => d.id === id);
-      return {
-        ...workflowEdge,
-        source: edge.source.nodeId,
-        target: edge.target.nodeId,
-      };
+    onClickNode(node: WorkflowNode): void {
+      this.$emit('click:node', node);
     },
     onContextMenuOfNode(e: MouseEvent, node: WorkflowNode): void {
       this.showMenuOfCanvas = false;
@@ -348,17 +368,21 @@ export default Vue.extend({
       this.rightClickClientY = e.clientY;
       this.rightClickedNode = node;
     },
-    onContextMenuOfCanvas(e: MouseEvent): void {
+    onContextMenuOfCanvas(
+      e: MouseEvent,
+      { xScaled, yScaled }: { xScaled: number, yScaled: number },
+    ): void {
       this.showMenuOfNode = false;
       e.preventDefault();
       this.showMenuOfCanvas = true;
       this.rightClickClientX = e.clientX;
       this.rightClickClientY = e.clientY;
-      this.rightClickCanvasX = e.offsetX;
-      this.rightClickCanvasY = e.offsetY;
+      this.rightClickCanvasX = xScaled;
+      this.rightClickCanvasY = yScaled;
     },
-    onClickNode(node: WorkflowNode): void {
-      this.$emit('click:node', node);
+    onRemoveNode(): void {
+      const node = this.rightClickedNode;
+      this.$emit('remove:node', node);
     },
     onCreateNode(e: MouseEvent, type: WorkflowNodeType) {
       const titleMapper = {
@@ -395,84 +419,6 @@ export default Vue.extend({
       } as WorkflowNode;
       this.$emit('create:node', node);
     },
-    onSelectNodes(nodes: FlowchartNode[]) {
-      this.selectedNodes = nodes;
-    },
-    onEditNode(node: FlowchartNode) {
-      const newValue = this.flowchartToWorkflowNode(node);
-      this.$emit('edit:node', newValue);
-    },
-    onRemoveNode(node: { id: string }): void {
-      this.$emit('remove:node', node);
-    },
-    onCreateEdge(edge: FlowchartEdge) {
-      if (edge.source.nodeId === edge.target.nodeId) return;
-      const newValue = this.flowchartToWorkflowEdge(edge);
-      this.$emit('create:edge', newValue);
-    },
-    onSelectEdges(edges: FlowchartEdge[]) {
-      this.selectedEdges = edges;
-    },
-    onRemoveEdge(edge: { id: string }) {
-      this.$emit('remove:edge', edge);
-    },
-    onDeleteSelected() {
-      const toBeRemovedNodes = this.selectedNodes;
-      const toBeRemovedEdges = this.flowchartGraph.edges.filter((edge) => (
-        this.selectedEdges.find((d) => d.id === edge.id) !== undefined
-        || toBeRemovedNodes.find((d) => d.id === edge.source.nodeId) !== undefined
-        || toBeRemovedNodes.find((d) => d.id === edge.target.nodeId) !== undefined
-      ));
-      toBeRemovedEdges.forEach((edge) => {
-        this.onRemoveEdge(edge);
-      });
-      toBeRemovedNodes.forEach((node) => {
-        this.onRemoveNode(node);
-      });
-    },
-    onKey(e: KeyboardEvent): void {
-      const { key, ctrlKey } = e;
-      const movementMapper = {
-        ArrowLeft: { dx: -10, dy: 0 },
-        ArrowUp: { dx: 0, dy: -10 },
-        ArrowRight: { dx: 10, dy: 0 },
-        ArrowDown: { dx: 0, dy: 10 },
-      } as Record<string, { dx: number, dy: number }>;
-      if (key in movementMapper) {
-        const { dx, dy } = movementMapper[key];
-        this.selectedNodes.forEach((node) => {
-          const nodeUpdated = {
-            ...node,
-            x: node.x + dx,
-            y: node.y + dy,
-          };
-          this.onEditNode(nodeUpdated);
-        });
-      }
-      if (key === 'a' && ctrlKey) {
-        e.preventDefault();
-        const component = this.$refs.chart as Vue & {
-          selectedNodeIds: string[],
-          selectedEdgeIds: string[],
-        };
-        component.selectedNodeIds = this.flowchartGraph.nodes.map((d) => d.id);
-        component.selectedEdgeIds = this.flowchartGraph.edges.map((d) => d.id);
-      }
-      if (key === 'Delete') {
-        this.onDeleteSelected();
-      }
-    },
   },
 });
 </script>
-<style>
-#flowchart-canvas {
-  background-size: 20px 20px, 20px 20px, 10px 10px, 10px 10px;
-  background-image: linear-gradient(to right, #dfdfdf 1px, transparent 1px),
-  linear-gradient(to bottom, #dfdfdf 1px, transparent 1px),
-  linear-gradient(to right, #f1f1f1 1px, transparent 1px),
-  linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
-  background-position: left -0.5px top -0.5px;
-  background-repeat: initial;
-}
-</style>

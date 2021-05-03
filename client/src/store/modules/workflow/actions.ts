@@ -70,7 +70,7 @@ export const pushEdges = (
   edge: WorkflowEdge,
 ): void => {
   const { edges } = state;
-  commit(types.SET_NODES, [...edges, edge]);
+  commit(types.SET_EDGES, [...edges, edge]);
 };
 
 export const removeEdge = (

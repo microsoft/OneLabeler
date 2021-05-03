@@ -25,12 +25,16 @@
             Workflow Graph
           </v-card-title>
           <v-divider />
-          <v-card-actions>
+          <v-card-actions class="pa-0">
             <!-- The graph canvas. -->
             <TheWorkflowGraphViewCanvas
               :graph="{ nodes, edges }"
               @click:node="onSelectNode"
+              @create:node="onCreateNode"
+              @edit:node="onEditNode"
               @remove:node="onRemoveNode"
+              @create:edge="onCreateEdge"
+              @remove:edge="onRemoveEdge"
             />
             <!-- The graph grammar checking console. -->
             <TheWorkflowGraphViewConsole
@@ -106,8 +110,10 @@ export default Vue.extend({
     ...mapActions('workflow', [
       'pushModelServices',
       'editModelService',
+      'pushNodes',
       'editNode',
       'removeNode',
+      'pushEdges',
       'removeEdge',
       'pushProcesses',
       'editProcess',
@@ -119,6 +125,13 @@ export default Vue.extend({
     onSelectNode(node: WorkflowNode) {
       this.selectedNode = node;
     },
+    onCreateNode(node: WorkflowNode) {
+      this.pushNodes(node);
+    },
+    onEditNode(newValue: WorkflowNode) {
+      this.editNode(newValue);
+      this.selectedNode = newValue;
+    },
     onRemoveNode(node: WorkflowNode) {
       const { edges } = this;
       edges.forEach((edge: WorkflowEdge) => {
@@ -128,9 +141,11 @@ export default Vue.extend({
       });
       this.removeNode(node);
     },
-    onEditNode(newValue: WorkflowNode) {
-      this.editNode(newValue);
-      this.selectedNode = newValue;
+    onCreateEdge(edge: WorkflowEdge) {
+      this.pushEdges(edge);
+    },
+    onRemoveEdge(edge: WorkflowEdge) {
+      this.removeEdge(edge);
     },
     onEditMethod(newValue: Process) {
       this.editProcess(newValue);
