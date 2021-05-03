@@ -6,16 +6,16 @@
     <v-card-title
       class="view-header px-2"
     >
-      <template v-if="!isTitleEditable">
+      <template v-if="!isLabelEditable">
         <span class="subtitle-2" style="padding-bottom: 7.4px; padding-top: 7px">
-          {{ title }}
+          {{ label }}
         </span>
         <v-spacer />
       </template>
       <v-text-field
         v-else
         v-click-outside="onClickOutsideEditField"
-        :value="title"
+        :value="label"
         :disabled="false"
         class="ma-0 py-1 subtitle-2"
         style="padding-bottom: 6px !important; letter-spacing: 0.01em !important;"
@@ -23,7 +23,7 @@
         dense
         hide-details
         single-line
-        @input="onEditTitle($event)"
+        @input="onEditLabel($event)"
       />
       <v-btn
         v-if="!disabled"
@@ -49,9 +49,9 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'VNodeEditableMethodName',
+  name: 'VNodeEditableMethodLabel',
   props: {
-    title: {
+    label: {
       type: String,
       default: '',
     },
@@ -62,18 +62,18 @@ export default Vue.extend({
   },
   data() {
     return {
-      isTitleEditable: false,
+      isLabelEditable: false,
     };
   },
   methods: {
     onClickEditButton(): void {
-      this.isTitleEditable = true;
+      this.isLabelEditable = true;
     },
     onClickOutsideEditField(): void {
-      this.isTitleEditable = false;
+      this.isLabelEditable = false;
     },
-    onEditTitle(title: string): void {
-      this.$emit('edit:title', title);
+    onEditLabel(label: string): void {
+      this.$emit('edit:label', label);
     },
   },
 });

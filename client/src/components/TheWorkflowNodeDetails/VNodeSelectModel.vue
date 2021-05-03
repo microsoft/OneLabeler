@@ -15,7 +15,7 @@
           outlined
           v-on="on"
         >
-          {{ selectedModel === null ? '' : selectedModel.name }}
+          {{ selectedModel === null ? '' : selectedModel.label }}
         </v-btn>
       </template>
       <v-list dense>
@@ -25,7 +25,7 @@
           @click="onClickMenuOption(option.value)"
         >
           <v-list-item-title class="subtitle-2">
-            {{ option.text }}
+            {{ option.label }}
           </v-list-item-title>
           <p
             v-if="option.value.isServerless"
@@ -70,7 +70,7 @@ interface ModelMenu {
   title: string,
   options: [{
     value: ModelService,
-    text: string,
+    label: string,
   }]
 }
 

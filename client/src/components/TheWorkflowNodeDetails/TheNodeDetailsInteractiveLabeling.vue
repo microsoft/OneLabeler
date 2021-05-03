@@ -22,11 +22,11 @@
         dense
         subheader
       >
-        <!-- The name of the process node. -->
+        <!-- The label of the process node. -->
         <v-list-item>
-          <VNodeEditableTitle
-            :title="node.title"
-            @edit:title="onEditNodeTitle"
+          <VNodeEditableLabel
+            :label="node.label"
+            @edit:label="onEditNodeLabel"
           />
         </v-list-item>
 
@@ -48,13 +48,13 @@
         >
           <v-divider />
 
-          <!-- The name of the method. -->
+          <!-- The label of the method. -->
           <v-list-item class="pt-2">
-            <VNodeEditableMethodName
-              :title="method.name"
+            <VNodeEditableMethodLabel
+              :label="method.label"
               :disabled="method.isBuiltIn"
               style="width: 100%"
-              @edit:title="onEditMethodName(method, $event)"
+              @edit:label="onEditMethodLabel(method, $event)"
             />
           </v-list-item>
 
@@ -88,7 +88,7 @@
                 style="width: 100%"
                 @click:param-option="onClickMethodParam(
                   method,
-                  $event.paramName,
+                  $event.paramKey,
                   $event.option,
                 )"
               />
@@ -108,8 +108,8 @@ import {
   WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
-import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
-import VNodeEditableTitle from './VNodeEditableTitle.vue';
+import VNodeEditableMethodLabel from './VNodeEditableMethodLabel.vue';
+import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeMethodParams from './VNodeMethodParams.vue';
 import VNodeOutput from './VNodeOutput.vue';
 import VNodeSelectMethodMultiple from './VNodeSelectMethodMultiple.vue';
@@ -118,8 +118,8 @@ export default Vue.extend({
   name: 'TheNodeDetailsInteractiveLabeling',
   components: {
     VNodeEditableInput,
-    VNodeEditableMethodName,
-    VNodeEditableTitle,
+    VNodeEditableMethodLabel,
+    VNodeEditableLabel,
     VNodeMethodParams,
     VNodeOutput,
     VNodeSelectMethodMultiple,
@@ -152,15 +152,15 @@ export default Vue.extend({
         title: 'Method',
         options: this.methods.map((d) => ({
           value: d,
-          text: d.name,
+          label: d.label,
         })),
       };
     },
   },
   methods: {
-    onEditNodeTitle(title: string): void {
+    onEditNodeLabel(label: string): void {
       const { node } = this;
-      this.onEditNode({ ...node, title });
+      this.onEditNode({ ...node, label });
     },
     onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
@@ -174,8 +174,8 @@ export default Vue.extend({
     },
     onClickMethodParam(
       method: Process,
-      paramName: string,
-      option: { value: unknown, text: string },
+      paramKey: string,
+      option: { value: unknown, label: string },
     ): void {
       const { node } = this;
       const { params } = method;
@@ -183,8 +183,8 @@ export default Vue.extend({
         ...method,
         params: {
           ...params,
-          [paramName]: {
-            ...(params as MethodParams)[paramName],
+          [paramKey]: {
+            ...(params as MethodParams)[paramKey],
             value: option.value,
           },
         },

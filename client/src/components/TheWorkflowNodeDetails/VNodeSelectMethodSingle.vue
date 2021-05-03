@@ -15,7 +15,7 @@
           outlined
           v-on="on"
         >
-          {{ selectedMethod.name }}
+          {{ selectedMethod.label }}
         </v-btn>
       </template>
       <v-list dense>
@@ -25,7 +25,7 @@
           @click="onClickMenuOption(option.value)"
         >
           <v-list-item-title class="subtitle-2">
-            {{ option.text }}
+            {{ option.label }}
           </v-list-item-title>
           <p
             v-if="option.value.isServerless"
@@ -70,7 +70,7 @@ interface MethodMenu {
   title: string,
   options: [{
     value: Process,
-    text: string,
+    label: string,
   }]
 }
 

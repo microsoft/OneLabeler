@@ -29,7 +29,7 @@ export const validateWorkflow = (graph: {
     if (matchedNode.length !== 1) {
       notifications.push({
         subject: node,
-        message: `node id (name = ${node.title}) not unique`,
+        message: `node id (label = ${node.label}) not unique`,
         type: 'Error',
         category: 'Data Structure Error',
       });
@@ -154,7 +154,7 @@ export const validateWorkflow = (graph: {
       if (indegree !== 0) {
         notifications.push({
           subject: node,
-          message: `initialization node (name = ${node.title}) indegree != 1`,
+          message: `initialization node (label = ${node.label}) indegree != 1`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -162,7 +162,7 @@ export const validateWorkflow = (graph: {
       if (outdegree !== 1) {
         notifications.push({
           subject: node,
-          message: `initialization node (name = ${node.title}) outdegree != 1`,
+          message: `initialization node (label = ${node.label}) outdegree != 1`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -171,7 +171,7 @@ export const validateWorkflow = (graph: {
       if (indegree === 0) {
         notifications.push({
           subject: node,
-          message: `decision node (name = ${node.title}) indegree = 0`,
+          message: `decision node (label = ${node.label}) indegree = 0`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -179,7 +179,7 @@ export const validateWorkflow = (graph: {
       if (outdegree !== 2) {
         notifications.push({
           subject: node,
-          message: `decision node (name = ${node.title}) outdegree != 2`,
+          message: `decision node (label = ${node.label}) outdegree != 2`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -188,7 +188,7 @@ export const validateWorkflow = (graph: {
       if (indegree === 0) {
         notifications.push({
           subject: node,
-          message: `exit node (name = ${node.title}) indegree = 0`,
+          message: `exit node (label = ${node.label}) indegree = 0`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -196,7 +196,7 @@ export const validateWorkflow = (graph: {
       if (outdegree !== 0) {
         notifications.push({
           subject: node,
-          message: `exit node (name = ${node.title}) outdegree != 0`,
+          message: `exit node (label = ${node.label}) outdegree != 0`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -205,7 +205,7 @@ export const validateWorkflow = (graph: {
       if (indegree === 0) {
         notifications.push({
           subject: node,
-          message: `process node (name = ${node.title}) indegree = 0`,
+          message: `process node (label = ${node.label}) indegree = 0`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -213,7 +213,7 @@ export const validateWorkflow = (graph: {
       if (outdegree !== 1) {
         notifications.push({
           subject: node,
-          message: `process node (name = ${node.title}) outdegree != 1`,
+          message: `process node (label = ${node.label}) outdegree != 1`,
           type: 'Error',
           category: 'Grammar Error',
         });
@@ -228,7 +228,7 @@ export const validateWorkflow = (graph: {
       const node = nodes.find((d) => d.id === source) as WorkflowNode;
       notifications.push({
         subject: node,
-        message: `node (name = ${node.title}) has self loop`,
+        message: `node (label = ${node.label}) has self loop`,
         type: 'Error',
         category: 'Grammar Error',
       });
@@ -302,7 +302,7 @@ export const validateInstantiations = (graph: {
     if (!hasSingleInstance && !hasMultipleInstances) {
       notifications.push({
         subject: node,
-        message: `process (name = ${node.title}) instantiation(s) not selected`,
+        message: `process (label = ${node.label}) instantiation(s) not selected`,
         type: 'Error',
         category: 'Value Error',
       });

@@ -37,11 +37,11 @@
         dense
         subheader
       >
-        <!-- The name of the process node. -->
+        <!-- The label of the process node. -->
         <v-list-item>
-          <VNodeEditableTitle
-            :title="node.title"
-            @edit:title="onEditNodeTitle"
+          <VNodeEditableLabel
+            :label="node.label"
+            @edit:label="onEditNodeLabel"
           />
         </v-list-item>
 
@@ -58,13 +58,13 @@
 
         <v-divider />
 
-        <!-- The name of the method. -->
+        <!-- The label of the method. -->
         <v-list-item class="pt-2">
-          <VNodeEditableMethodName
-            :title="method.name"
+          <VNodeEditableMethodLabel
+            :label="method.label"
             :disabled="method.isBuiltIn"
             style="width: 100%"
-            @edit:title="onEditMethodName"
+            @edit:label="onEditMethodLabel"
           />
         </v-list-item>
 
@@ -122,8 +122,8 @@
 import Vue, { PropType } from 'vue';
 import { Process, WorkflowNode } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
-import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
-import VNodeEditableTitle from './VNodeEditableTitle.vue';
+import VNodeEditableMethodLabel from './VNodeEditableMethodLabel.vue';
+import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeOutput from './VNodeOutput.vue';
 import VNodeSelectMethodSingle from './VNodeSelectMethodSingle.vue';
 
@@ -131,8 +131,8 @@ export default Vue.extend({
   name: 'TheNodeDetailsInterimModelTraining',
   components: {
     VNodeEditableInput,
-    VNodeEditableMethodName,
-    VNodeEditableTitle,
+    VNodeEditableMethodLabel,
+    VNodeEditableLabel,
     VNodeOutput,
     VNodeSelectMethodSingle,
   },
@@ -168,15 +168,15 @@ export default Vue.extend({
         title: 'Method',
         options: this.methods.map((d) => ({
           value: d,
-          text: d.name,
+          label: d.label,
         })),
       };
     },
   },
   methods: {
-    onEditNodeTitle(title: string): void {
+    onEditNodeLabel(label: string): void {
       const { node } = this;
-      this.onEditNode({ ...node, title });
+      this.onEditNode({ ...node, label });
     },
     onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
@@ -185,9 +185,9 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, value: option });
     },
-    onEditMethodName(name: string): void {
+    onEditMethodLabel(label: string): void {
       const { node, method } = this;
-      const newMethod = { ...method, name };
+      const newMethod: Process = { ...method, label };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },

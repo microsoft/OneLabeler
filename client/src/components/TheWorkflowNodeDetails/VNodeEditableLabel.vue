@@ -1,16 +1,16 @@
 <template>
   <div style="display: flex; flex: 1 1 100%; align-items: center;">
-    Node Name
-    <template v-if="!isTitleEditable">
+    Node Label
+    <template v-if="!isLabelEditable">
       <span class="pl-4 subtitle-2">
-        {{ title }}
+        {{ label }}
       </span>
       <v-spacer />
     </template>
     <v-text-field
       v-else
       v-click-outside="onClickOutsideEditField"
-      :value="title"
+      :value="label"
       :disabled="false"
       class="ma-0 pl-4 pt-1 subtitle-2"
       style="padding-bottom: 6px !important; letter-spacing: 0.01em !important;"
@@ -18,7 +18,7 @@
       dense
       hide-details
       single-line
-      @input="onEditTitle($event)"
+      @input="onEditLabel($event)"
     />
     <v-btn
       title="edit"
@@ -42,27 +42,27 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'VNodeEditableTitle',
+  name: 'VNodeEditableLabel',
   props: {
-    title: {
+    label: {
       type: String,
       default: '',
     },
   },
   data() {
     return {
-      isTitleEditable: false,
+      isLabelEditable: false,
     };
   },
   methods: {
     onClickEditButton(): void {
-      this.isTitleEditable = true;
+      this.isLabelEditable = true;
     },
     onClickOutsideEditField(): void {
-      this.isTitleEditable = false;
+      this.isLabelEditable = false;
     },
-    onEditTitle(title: string): void {
-      this.$emit('edit:title', title);
+    onEditLabel(label: string): void {
+      this.$emit('edit:label', label);
     },
   },
 });

@@ -4,7 +4,7 @@ import { PROTOCOL, IP, PORT } from '@/services/http-params';
 
 export const modelServices: ModelService[] = [{
   type: 'DecisionTree',
-  name: 'DecisionTree (Supervised)',
+  label: 'DecisionTree (Supervised)',
   objectId: (new ObjectId('DecisionTree')).toHexString(),
   isBuiltIn: true,
   isServerless: false,
@@ -14,7 +14,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   type: 'SVM',
-  name: 'SVM (Supervised)',
+  label: 'SVM (Supervised)',
   objectId: (new ObjectId('SVM000000000')).toHexString(),
   isBuiltIn: true,
   isServerless: false,
@@ -24,7 +24,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   type: 'LogisticRegression',
-  name: 'LogisticRegression (Supervised)',
+  label: 'LogisticRegression (Supervised)',
   objectId: (new ObjectId('LogisticRegr')).toHexString(),
   isBuiltIn: true,
   isServerless: false,
@@ -34,7 +34,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   type: 'RestrictedBoltzmannMachine',
-  name: 'RestrictedBoltzmannMachine (Supervised)',
+  label: 'RestrictedBoltzmannMachine (Supervised)',
   objectId: (new ObjectId('RestrictedBo')).toHexString(),
   isBuiltIn: true,
   isServerless: false,
@@ -44,7 +44,7 @@ export const modelServices: ModelService[] = [{
   // isLocal: true,
 }, {
   type: 'LabelSpreading',
-  name: 'LabelSpreading (Semi-Supervised)',
+  label: 'LabelSpreading (Semi-Supervised)',
   objectId: (new ObjectId('LabelSpreadi')).toHexString(),
   isBuiltIn: true,
   isServerless: false,
@@ -56,7 +56,7 @@ export const modelServices: ModelService[] = [{
 
 const dataObjectSelectionMethods: Process[] = [{
   type: ProcessType.DataObjectSelection,
-  name: 'Projection (User Sampling)',
+  label: 'Projection (User Sampling)',
   id: 'Projection',
   inputs: ['features', 'labels'],
   isAlgorithmic: false,
@@ -66,7 +66,7 @@ const dataObjectSelectionMethods: Process[] = [{
   api: 'Projection',
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'Random (Dummy)',
+  label: 'Random (Dummy)',
   id: 'Random-73417867',
   inputs: ['labels'],
   isAlgorithmic: true,
@@ -77,21 +77,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'Cluster (Clustering)',
+  label: 'Cluster (Clustering)',
   id: 'Cluster-13466955',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
@@ -102,21 +102,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'DenseAreas (Clustering)',
+  label: 'DenseAreas (Clustering)',
   id: 'DenseAreas-67390401',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
@@ -127,21 +127,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'ClusterCentroids (Clustering)',
+  label: 'ClusterCentroids (Clustering)',
   id: 'ClusterCentroids-60587176',
   inputs: ['features', 'labels'],
   isAlgorithmic: true,
@@ -152,21 +152,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'Entropy (Active Learning)',
+  label: 'Entropy (Active Learning)',
   id: 'Entropy-49394355',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -178,21 +178,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'LeastConfident (Active Learning)',
+  label: 'LeastConfident (Active Learning)',
   id: 'LeastConfident-12520162',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -204,21 +204,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'SmallestMargin (Active Learning)',
+  label: 'SmallestMargin (Active Learning)',
   id: 'SmallestMargin-74021796',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -230,21 +230,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'EntropyDiversity (Active Learning)',
+  label: 'EntropyDiversity (Active Learning)',
   id: 'EntropyDiversity-98931757',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -256,21 +256,21 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
 }, {
   type: ProcessType.DataObjectSelection,
-  name: 'EntropyDiversityDensity (Active Learning)',
+  label: 'EntropyDiversityDensity (Active Learning)',
   id: 'EntropyDiversityDensity-60957928',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -282,15 +282,15 @@ const dataObjectSelectionMethods: Process[] = [{
   params: {
     nBatch: {
       value: 48,
-      title: 'Selection Batch Size',
+      label: 'Selection Batch Size',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 16, text: '16' },
-        { value: 32, text: '32' },
-        { value: 48, text: '48' },
-        { value: 64, text: '64' },
-        { value: 96, text: '96' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 16, label: '16' },
+        { value: 32, label: '32' },
+        { value: 48, label: '48' },
+        { value: 64, label: '64' },
+        { value: 96, label: '96' },
       ],
     },
   },
@@ -298,7 +298,7 @@ const dataObjectSelectionMethods: Process[] = [{
 
 const defaultLabelingMethods: Process[] = [{
   type: ProcessType.DefaultLabeling,
-  name: 'ModelPrediction',
+  label: 'ModelPrediction',
   id: 'ModelPrediction-29967546',
   inputs: ['features', 'model'],
   isAlgorithmic: true,
@@ -309,7 +309,7 @@ const defaultLabelingMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/defaultLabels/ModelPrediction`,
 }, {
   type: ProcessType.DefaultLabeling,
-  name: 'Null (Dummy)',
+  label: 'Null (Dummy)',
   id: 'Null-35514905',
   inputs: ['features'],
   isAlgorithmic: true,
@@ -319,7 +319,7 @@ const defaultLabelingMethods: Process[] = [{
   api: 'Null',
 }, {
   type: ProcessType.DefaultLabeling,
-  name: 'Random (Dummy)',
+  label: 'Random (Dummy)',
   id: 'Random-38398168',
   inputs: ['features'],
   isAlgorithmic: true,
@@ -331,7 +331,7 @@ const defaultLabelingMethods: Process[] = [{
 
 const featureExtractionMethods: Process[] = [{
   type: ProcessType.FeatureExtraction,
-  name: 'SVD (Unsupervised)',
+  label: 'SVD (Unsupervised)',
   id: 'image-SVD-25940167',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
@@ -341,7 +341,7 @@ const featureExtractionMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/SVD`,
 }, {
   type: ProcessType.FeatureExtraction,
-  name: 'BoW (Handcrafted)',
+  label: 'BoW (Handcrafted)',
   id: 'image-BoW-6989392',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
@@ -351,7 +351,7 @@ const featureExtractionMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/BoW`,
 }, {
   type: ProcessType.FeatureExtraction,
-  name: 'LDA (Supervised)',
+  label: 'LDA (Supervised)',
   id: 'image-LDA-45100847',
   inputs: ['dataObjects', 'labels'],
   isAlgorithmic: true,
@@ -361,7 +361,7 @@ const featureExtractionMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/LDA`,
 }, {
   type: ProcessType.FeatureExtraction,
-  name: 'Random3D (Dummy)',
+  label: 'Random3D (Dummy)',
   id: 'Random-87333124',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
@@ -373,7 +373,7 @@ const featureExtractionMethods: Process[] = [{
 
 const interactiveLabelingMethods: Process[] = [{
   type: ProcessType.InteractiveLabeling,
-  name: 'Single Object Display',
+  label: 'Single Object Display',
   id: 'Single-Object-Display',
   inputs: ['dataObjects', 'samples'],
   isAlgorithmic: false,
@@ -382,7 +382,7 @@ const interactiveLabelingMethods: Process[] = [{
   isServerless: true,
 }, {
   type: ProcessType.InteractiveLabeling,
-  name: 'Grid Matrix',
+  label: 'Grid Matrix',
   id: 'Grid-Matrix',
   inputs: ['dataObjects', 'samples'],
   isAlgorithmic: false,
@@ -392,23 +392,23 @@ const interactiveLabelingMethods: Process[] = [{
   params: {
     nRows: {
       value: 6,
-      title: 'Number of Objects per Column',
+      label: 'Number of Objects per Column',
       options: [
-        { value: 1, text: '1' },
-        { value: 2, text: '2' },
-        { value: 4, text: '4' },
-        { value: 6, text: '6' },
-        { value: 8, text: '8' },
+        { value: 1, label: '1' },
+        { value: 2, label: '2' },
+        { value: 4, label: '4' },
+        { value: 6, label: '6' },
+        { value: 8, label: '8' },
       ],
     },
     nColumns: {
       value: 8,
-      title: 'Number of Objects per Row',
+      label: 'Number of Objects per Row',
       options: [
-        { value: 1, text: '1' },
-        { value: 4, text: '4' },
-        { value: 8, text: '8' },
-        { value: 12, text: '12' },
+        { value: 1, label: '1' },
+        { value: 4, label: '4' },
+        { value: 8, label: '8' },
+        { value: 12, label: '12' },
       ],
     },
   },
@@ -416,7 +416,7 @@ const interactiveLabelingMethods: Process[] = [{
 
 const interimModelTrainingMethods: Process[] = [{
   type: ProcessType.InterimModelTraining,
-  name: 'Retrain',
+  label: 'Retrain',
   id: 'Retrain-16440841',
   inputs: ['features', 'labels', 'model'],
   isAlgorithmic: true,
@@ -426,7 +426,7 @@ const interimModelTrainingMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/modelUpdated/Retrain`,
 }, {
   type: ProcessType.InterimModelTraining,
-  name: 'Static',
+  label: 'Static',
   id: 'Static-72885436',
   inputs: ['model'],
   isAlgorithmic: true,
@@ -438,7 +438,7 @@ const interimModelTrainingMethods: Process[] = [{
 
 const stoppageAnalysisMethods: Process[] = [{
   type: ProcessType.StoppageAnalysis,
-  name: 'AllChecked',
+  label: 'AllChecked',
   id: 'AllChecked-46322013',
   inputs: ['labels'],
   isAlgorithmic: true,
@@ -450,7 +450,7 @@ const stoppageAnalysisMethods: Process[] = [{
 
 const taskTransformationMethods: Process[] = [{
   type: ProcessType.TaskTransformation,
-  name: 'DirectLabeling',
+  label: 'DirectLabeling',
   id: 'DirectLabeling-97377357',
   inputs: ['dataObjects', 'labelTask', 'labelSpace'],
   isAlgorithmic: true,

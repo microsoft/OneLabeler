@@ -6,8 +6,8 @@
     <v-list dense class="py-0">
       <!-- The parameters of the method. -->
       <v-list-item
-        v-for="(param, paramName) in params"
-        :key="paramName"
+        v-for="(param, paramKey) in params"
+        :key="paramKey"
         class="py-0"
       >
         <v-list-item-title
@@ -25,17 +25,17 @@
               outlined
               v-on="on"
             >
-              {{ param.options.find((d) => d.value === param.value).text }}
+              {{ param.options.find((d) => d.value === param.value).label }}
             </v-btn>
           </template>
           <v-list dense>
             <v-list-item
               v-for="(option, optionIdx) in param.options"
               :key="optionIdx"
-              @click="onClickParamOption(paramName, option)"
+              @click="onClickParamOption(paramKey, option)"
             >
               <v-list-item-title class="subtitle-2">
-                {{ option.text }}
+                {{ option.label }}
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -62,10 +62,10 @@ export default Vue.extend({
   },
   methods: {
     onClickParamOption(
-      paramName: string,
-      option: { value: unknown, text: string },
+      paramKey: string,
+      option: { value: unknown, label: string },
     ): void {
-      this.$emit('click:param-option', { paramName, option });
+      this.$emit('click:param-option', { paramKey, option });
     },
   },
 });

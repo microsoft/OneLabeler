@@ -62,7 +62,6 @@
       v-model="showMenuOfNode"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      absolute
       offset-y
     >
       <v-list
@@ -106,7 +105,7 @@
           style="min-height:24px"
           @click="onCreateNode($event, option.value)"
         >
-          {{ option.text }}
+          {{ option.label }}
         </v-list-item>
       </v-list>
     </v-menu>
@@ -127,53 +126,53 @@ import { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
 
 const createNodeMenu = [
   {
-    text: 'create initialization node',
+    label: 'create initialization node',
     value: WorkflowNodeType.Initialization,
   },
   {
-    text: 'create feature extraction node',
+    label: 'create feature extraction node',
     value: WorkflowNodeType.FeatureExtraction,
   },
   {
-    text: 'create data object selection node',
+    label: 'create data object selection node',
     value: WorkflowNodeType.DataObjectSelection,
   },
   {
-    text: 'create default labeling node',
+    label: 'create default labeling node',
     value: WorkflowNodeType.DefaultLabeling,
   },
   {
-    text: 'create task transformation node',
+    label: 'create task transformation node',
     value: WorkflowNodeType.TaskTransformation,
   },
   {
-    text: 'create interactive labeling node',
+    label: 'create interactive labeling node',
     value: WorkflowNodeType.InteractiveLabeling,
   },
   {
-    text: 'create stoppage analysis node',
+    label: 'create stoppage analysis node',
     value: WorkflowNodeType.StoppageAnalysis,
   },
   {
-    text: 'create interim model training node',
+    label: 'create interim model training node',
     value: WorkflowNodeType.InterimModelTraining,
   },
   {
-    text: 'create decision node',
+    label: 'create decision node',
     value: WorkflowNodeType.Decision,
   },
   {
-    text: 'create terminal node',
+    label: 'create terminal node',
     value: WorkflowNodeType.Terminal,
   },
 ];
 
 const nodeMapper = (node: WorkflowNode): FlowchartNode => ({
   id: node.id,
-  label: node.title,
+  label: node.label,
   type: node.type,
-  x: node.x,
-  y: node.y,
+  x: node.layout.x,
+  y: node.layout.y,
   width: 60,
   height: 60,
 });
@@ -294,10 +293,10 @@ export default Vue.extend({
     workflowToFlowchartNode(node: WorkflowNode): FlowchartNode {
       return {
         id: node.id,
-        label: node.title,
+        label: node.label,
         type: node.type,
-        x: node.x,
-        y: node.y,
+        x: node.layout.x,
+        y: node.layout.y,
         width: 60,
         height: 60,
       };
@@ -307,7 +306,7 @@ export default Vue.extend({
       const workflowNode = this.graph.nodes.find((d) => d.id === id);
       return {
         ...workflowNode,
-        title: node.label,
+        label: node.label,
         x: node.x,
         y: node.y,
         width: node.width,
@@ -361,7 +360,7 @@ export default Vue.extend({
       this.$emit('click:node', node);
     },
     onCreateNode(e: MouseEvent, type: WorkflowNodeType) {
-      const titleMapper = {
+      const labelMapper = {
         [WorkflowNodeType.Initialization]: 'initialization',
         [WorkflowNodeType.FeatureExtraction]: 'feature extraction',
         [WorkflowNodeType.DataObjectSelection]: 'data object selection',
@@ -390,7 +389,7 @@ export default Vue.extend({
         type,
         x: this.rightClickCanvasX,
         y: this.rightClickCanvasY,
-        title: titleMapper[type],
+        label: labelMapper[type],
         value: valueMapper[type],
       } as WorkflowNode;
       this.$emit('create:node', node);

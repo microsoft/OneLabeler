@@ -29,13 +29,13 @@
               label
               outlined
             >
-              {{ data.item.text }}
+              {{ data.item.label }}
             </v-chip>
           </template>
           <template #item="data">
             <v-list-item-title>
               <v-checkbox
-                :label="data.item.text"
+                :label="data.item.label"
                 :value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
                 :input-value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
                 class="py-0 ma-0 parameter-panel-checkbox"
@@ -95,7 +95,7 @@ interface MethodMenu {
   title: string,
   options: [{
     value: Process,
-    text: string,
+    label: string,
   }]
 }
 

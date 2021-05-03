@@ -37,11 +37,11 @@
         dense
         subheader
       >
-        <!-- The name of the process node. -->
+        <!-- The label of the process node. -->
         <v-list-item>
-          <VNodeEditableTitle
-            :title="node.title"
-            @edit:title="onEditNodeTitle"
+          <VNodeEditableLabel
+            :label="node.label"
+            @edit:label="onEditNodeLabel"
           />
         </v-list-item>
 
@@ -57,13 +57,13 @@
         </v-list-item>
         <v-divider />
 
-        <!-- The name of the feature extraction method. -->
+        <!-- The label of the feature extraction method. -->
         <v-list-item class="pt-2">
-          <VNodeEditableMethodName
-            :title="method.name"
+          <VNodeEditableMethodLabel
+            :label="method.label"
             :disabled="method.isBuiltIn"
             style="width: 100%"
-            @edit:title="onEditMethodName($event)"
+            @edit:label="onEditMethodLabel($event)"
           />
         </v-list-item>
 
@@ -129,11 +129,11 @@
           </v-list-item>
 
           <template v-if="model !== undefined">
-            <!-- The name of the method. -->
+            <!-- The label of the method. -->
             <v-list-item>
-              Model Name
+              Model Label
               <v-text-field
-                :value="model.name"
+                :value="model.label"
                 :disabled="model.isBuiltIn"
                 class="ma-0 pl-4 pt-1 subtitle-2"
                 style="padding-bottom: 6px !important"
@@ -141,7 +141,7 @@
                 dense
                 hide-details
                 single-line
-                @input="onInputModelName($event)"
+                @input="onInputModelLabel($event)"
               />
             </v-list-item>
 
@@ -175,8 +175,8 @@ import {
   WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableInput from './VNodeEditableInput.vue';
-import VNodeEditableMethodName from './VNodeEditableMethodName.vue';
-import VNodeEditableTitle from './VNodeEditableTitle.vue';
+import VNodeEditableMethodLabel from './VNodeEditableMethodLabel.vue';
+import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeOutput from './VNodeOutput.vue';
 import VNodeSelectMethodSingle from './VNodeSelectMethodSingle.vue';
 import VNodeSelectModel from './VNodeSelectModel.vue';
@@ -185,8 +185,8 @@ export default Vue.extend({
   name: 'TheNodeDetailsDefaultLabeling',
   components: {
     VNodeEditableInput,
-    VNodeEditableMethodName,
-    VNodeEditableTitle,
+    VNodeEditableMethodLabel,
+    VNodeEditableLabel,
     VNodeOutput,
     VNodeSelectMethodSingle,
     VNodeSelectModel,
@@ -230,7 +230,7 @@ export default Vue.extend({
         title: 'Method',
         options: this.methods.map((d) => ({
           value: d,
-          text: d.name,
+          label: d.label,
         })),
       };
     },
@@ -239,15 +239,15 @@ export default Vue.extend({
         title: 'Models',
         options: this.models.map((d) => ({
           value: d,
-          text: d.name,
+          label: d.label,
         })),
       };
     },
   },
   methods: {
-    onEditNodeTitle(title: string): void {
+    onEditNodeLabel(label: string): void {
       const { node } = this;
-      this.onEditNode({ ...node, title });
+      this.onEditNode({ ...node, label });
     },
     onEditNode(newValue: WorkflowNode): void {
       this.$emit('edit:node', newValue);
@@ -256,9 +256,9 @@ export default Vue.extend({
       const { node } = this;
       this.onEditNode({ ...node, value: option });
     },
-    onEditMethodName(name: string): void {
+    onEditMethodLabel(label: string): void {
       const { node, method } = this;
-      const newMethod = { ...method, name };
+      const newMethod: Process = { ...method, label };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
@@ -281,9 +281,12 @@ export default Vue.extend({
         value: { ...method, model: option },
       });
     },
-    onInputModelName(name: string): void {
+    onInputModelLabel(label: string): void {
       const { node, method, model } = this;
-      const newModel = { ...(model as ModelService), name };
+      const newModel: ModelService = {
+        ...(model as ModelService),
+        label,
+      };
       this.onEditNode({
         ...node,
         value: { ...method, model: newModel },

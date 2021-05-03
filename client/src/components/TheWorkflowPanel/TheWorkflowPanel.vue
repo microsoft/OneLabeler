@@ -83,7 +83,7 @@
         </template>
         <v-list dense>
           <v-list-item
-            v-for="({ name, value }, i) in templates"
+            v-for="({ label, value }, i) in templates"
             :key="i"
             style="min-height: 30px"
             @click="onClickTemplate(value)"
@@ -93,7 +93,7 @@
               class="subtitle-2 pa-0 ma-0"
               style="height: 20px"
             >
-              {{ name }}
+              {{ label }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -154,10 +154,10 @@ const schema: JSONSchemaType<Partial<WorkflowGraph>> = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['id', 'title', 'type'],
+        required: ['id', 'label', 'type'],
         properties: {
           id: { type: 'string' },
-          title: { type: 'string' },
+          label: { type: 'string' },
           type: { type: 'string' },
           value: { type: ['object', 'array'] },
           x: { type: 'number' },
@@ -224,8 +224,8 @@ export default Vue.extend({
   data() {
     return {
       templates: [
-        { name: 'Image Classification Minimal', value: imageClassificationMinimal },
-        { name: 'Image Classification with IML', value: imageClassificationIML },
+        { label: 'Image Classification Minimal', value: imageClassificationMinimal },
+        { label: 'Image Classification with IML', value: imageClassificationIML },
       ],
     };
   },

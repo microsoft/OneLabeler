@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 /** The types of data objects. */
 export enum DataType {
@@ -105,7 +105,7 @@ export enum ProjectionMethodType {
 /** The interface of a model service. */
 export interface ModelService {
   type: string,
-  name: string;
+  label: string;
   objectId: string;
   isBuiltIn: boolean;
   isServerless: boolean;
@@ -117,8 +117,8 @@ export interface ModelService {
 
 export type MethodParams = Record<string, {
   value: unknown,
-  title: string,
-  options: { value: unknown, text: string }[],
+  label: string,
+  options: { value: unknown, label: string }[],
 }>;
 
 export enum ProcessType {
@@ -134,14 +134,32 @@ export enum ProcessType {
 }
 
 /** The data labeling process class. */
+export interface Process {
+  type: ProcessType;
+  label: string;
+  inputs: string[];
+  // for serverless methods, the api is the method's unique key
+  api: string;
+  id: string;
+  isAlgorithmic: boolean;
+  isBuiltIn: boolean;
+  isModelBased: boolean;
+  isServerless: boolean;
+  model?: ModelService;
+  params?: MethodParams;
+}
+/*
 export class Process {
-  public type: ProcessType | null;
+  public type: ProcessType;
 
-  public name: string;
-
-  public id: string;
+  public label: string;
 
   public inputs: Array<string>;
+
+  // for serverless methods, the api is the method's unique key
+  public api: string;
+
+  public id: string;
 
   public isAlgorithmic: boolean;
 
@@ -151,16 +169,13 @@ export class Process {
 
   public isServerless: boolean;
 
-  // for serverless methods, the api is the method's unique name
-  public api?: string;
-
   public model?: ModelService;
 
   public params?: MethodParams;
 
   constructor({
     type = null,
-    name = 'custom',
+    label = 'custom',
     id = null,
     inputs = ['labels'],
     isAlgorithmic = true,
@@ -171,8 +186,8 @@ export class Process {
     model = undefined,
     params = undefined,
   }: {
-    type?: ProcessType | null,
-    name?: string;
+    type?: ProcessType,
+    label?: string;
     id?: string | null;
     inputs?: Array<string>;
     isAlgorithmic?: boolean;
@@ -184,7 +199,7 @@ export class Process {
     params?: MethodParams;
   } = {}) {
     this.type = type;
-    this.name = name;
+    this.label = label;
     this.id = id === null ? `custom-${uuidv4()}` : id as unknown as string;
     this.inputs = inputs;
     this.isAlgorithmic = isAlgorithmic;
@@ -195,11 +210,8 @@ export class Process {
     if (model) this.model = model;
     if (params) this.params = params;
   }
-
-  static from(json: unknown): Process {
-    return Object.assign(new Process(), json);
-  }
 }
+*/
 
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
@@ -216,25 +228,30 @@ export enum WorkflowNodeType {
   Terminal = 'Terminal',
 }
 
+export type InitializationParams = {
+  dataType: DataType | null;
+  labelTasks: LabelTaskType[];
+}
+
 export type WorkflowNode = {
-  id: string;
-  title: string;
+  label: string;
   type: WorkflowNodeType;
+  id: string;
   value?: Process
     | Process[]
-    | { dataType: DataType | null, labelTasks: LabelTaskType[] };
-  x?: number;
-  y?: number;
+    | InitializationParams;
+  layout: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 export type WorkflowEdge = {
-  id: string;
   source: string;
   target: string;
-  x1?: number;
-  y1?: number;
-  x2?: number;
-  y2?: number;
+  id: string;
   condition?: unknown;
 }
 

@@ -120,14 +120,14 @@ export default Vue.extend({
       if (node === null) return;
       const nodeType = node.type;
       let method = {
-        name: 'custom',
+        label: 'custom',
         id: `custom-${uuidv4()}`,
         isAlgorithmic: true,
         isBuiltIn: false,
         isModelBased: false,
         isServerless: false,
         api: '',
-      } as Record<string, unknown>;
+      } as Partial<Process>;
       if (nodeType === WorkflowNodeType.DataObjectSelection) {
         method = {
           ...method,
@@ -170,7 +170,7 @@ export default Vue.extend({
     },
     onCreateModel(): void {
       const model: ModelService = {
-        name: 'custom',
+        label: 'custom',
         isBuiltIn: false,
         isServerless: false,
         isValidSampler: true,

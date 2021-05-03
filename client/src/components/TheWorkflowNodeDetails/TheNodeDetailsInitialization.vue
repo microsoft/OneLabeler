@@ -48,7 +48,7 @@
                   @click="onUpdateDataTypeOption(option.value)"
                 >
                   <v-list-item-title class="subtitle-2">
-                    {{ option.text }}
+                    {{ option.label }}
                   </v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -88,13 +88,13 @@
                       label
                       outlined
                     >
-                      {{ data.item.text }}
+                      {{ data.item.label }}
                     </v-chip>
                   </template>
                   <template #item="data">
                     <v-list-item-title>
                       <v-checkbox
-                        :label="data.item.text"
+                        :label="data.item.label"
                         :value="selectedLabelTasks
                           .findIndex((d) => d === data.item.value) >= 0"
                         :input-value="selectedLabelTasks
@@ -137,8 +137,8 @@ export default Vue.extend({
       menuOfDataType: {
         title: 'Data Type',
         options: [
-          { value: DataType.Image, text: 'Image' },
-          { value: DataType.Document, text: 'Document' },
+          { value: DataType.Image, label: 'Image' },
+          { value: DataType.Document, label: 'Document' },
         ],
       },
     };
@@ -175,9 +175,9 @@ export default Vue.extend({
     menuOfLabelTask() {
       const { validLabelTasks } = this;
       const options = [
-        { value: LabelTaskType.Classification, text: 'Classification' },
-        { value: LabelTaskType.ObjectDetection, text: 'Object Detection' },
-        { value: LabelTaskType.Segmentation, text: 'Segmentation' },
+        { value: LabelTaskType.Classification, label: 'Classification' },
+        { value: LabelTaskType.ObjectDetection, label: 'Object Detection' },
+        { value: LabelTaskType.Segmentation, label: 'Segmentation' },
       ];
       return {
         title: 'Label Tasks',
