@@ -21,12 +21,14 @@ import {
   ModelService,
   Process,
   ProcessType,
+  WorkflowEdge,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import TheElementDetailsSelectionEmpty from './TheElementDetailsSelectionEmpty.vue';
+import TheElementDetailsSelectionMultiple from './TheElementDetailsSelectionMultiple.vue';
 import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
 import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
-import TheNodeDetailsEmpty from './TheNodeDetailsEmpty.vue';
 import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
 import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
@@ -34,12 +36,17 @@ import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
 import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
 
+const isElementNode = (
+  element: WorkflowNode | WorkflowEdge,
+): boolean => 'type' in element;
+
 export default Vue.extend({
-  name: 'TheWorkflowGraphView',
+  name: 'TheElementDetails',
   components: {
+    TheElementDetailsSelectionEmpty,
+    TheElementDetailsSelectionMultiple,
     TheNodeDetailsDataObjectSelection,
     TheNodeDetailsDefaultLabeling,
-    TheNodeDetailsEmpty,
     TheNodeDetailsFeatureExtraction,
     TheNodeDetailsInteractiveLabeling,
     TheNodeDetailsInterimModelTraining,
@@ -56,14 +63,28 @@ export default Vue.extend({
       type: Array as PropType<ModelService[]>,
       default: () => [],
     },
-    node: {
-      type: Object as PropType<WorkflowNode | null>,
-      default: null,
+    selection: {
+      type: Array as PropType<(WorkflowNode | WorkflowEdge)[]>,
+      default: () => [],
     },
   },
   computed: {
+    node(): WorkflowNode | null {
+      const { selection } = this;
+      if (selection.length !== 1) return null;
+      const [element] = selection;
+      return isElementNode(element) ? (element as WorkflowNode) : null;
+    },
+    edge(): WorkflowEdge | null {
+      const { selection } = this;
+      if (selection.length !== 1) return null;
+      const [element] = selection;
+      return isElementNode(element) ? null : (element as WorkflowEdge);
+    },
     component(): VueConstructor {
-      const { node } = this;
+      const { node, selection } = this;
+      if (selection.length === 0) return TheElementDetailsSelectionEmpty;
+      if (selection.length >= 2) return TheElementDetailsSelectionMultiple;
       const mapper = {
         [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsDataObjectSelection,
         [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsDefaultLabeling,
@@ -74,7 +95,7 @@ export default Vue.extend({
         [WorkflowNodeType.TaskTransformation]: TheNodeDetailsTaskTransformation,
         [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
       } as Partial<Record<WorkflowNodeType, VueConstructor>>;
-      if (node === null || !(node.type in mapper)) return TheNodeDetailsEmpty;
+      if (node === null || !(node.type in mapper)) return TheElementDetailsSelectionEmpty;
       return mapper[node.type] as VueConstructor;
     },
     methodsFiltered(): Process[] | null {

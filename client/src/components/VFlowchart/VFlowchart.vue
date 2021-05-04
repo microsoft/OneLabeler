@@ -360,13 +360,17 @@ export default Vue.extend({
     },
   },
   watch: {
-    selectedNodes(selectedNodes: FlowchartNode[]): void {
+    selectedNodeIds(): void {
       // Emit the nodes selected by clicking or box selection.
-      this.$emit('select:nodes', selectedNodes);
+      // Node: watch node ids instead of node themselves
+      // to avoid infinite recursion in the parent component
+      // when the parent component listens to select:nodes
+      // and then edit nodes (causing select:nodes to be triggered again).
+      this.$emit('select:nodes', this.selectedNodes);
     },
-    selectedEdges(selectedEdges: FlowchartEdge[]): void {
+    selectedEdgeIds(): void {
       // Emit the edges selected by clicking or box selection.
-      this.$emit('select:edges', selectedEdges);
+      this.$emit('select:edges', this.selectedEdges);
     },
   },
   methods: {

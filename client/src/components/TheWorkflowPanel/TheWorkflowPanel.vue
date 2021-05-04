@@ -143,6 +143,7 @@ import imageClassificationIML from '@/commons/workflow-templates/image-classific
 import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
 import VUploadButton from './VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
+import { JsonGraphToWorkflowGraph } from './load-workflow';
 
 const ajv = new Ajv({
   allowUnionTypes: true,
@@ -255,7 +256,11 @@ export default Vue.extend({
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
-      const graph = await JSONFileToObject(file);
+      const jsonGraph = await JSONFileToObject(file);
+      const workflowGraph = JsonGraphToWorkflowGraph(jsonGraph);
+      console.log('json', jsonGraph);
+      console.log('workflow', workflowGraph);
+      /*
       if (validate(graph)) {
         this.setGraph(graph);
         this.setMessage({
@@ -267,6 +272,7 @@ export default Vue.extend({
         const message = computeErrorMessage(errors[0]);
         this.setMessage(message);
       }
+      */
     },
   },
 });

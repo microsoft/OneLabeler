@@ -107,7 +107,9 @@ export default Vue.extend({
   },
   methods: {
     onClickMessage(notification: Notification): void {
-      this.$emit('select:node', notification.subject);
+      const { subject } = notification;
+      if (subject === null) return;
+      this.$emit('update:selection', [subject]);
     },
     isSubjectNode(notification: Notification): boolean {
       const { subject } = notification;

@@ -29,12 +29,12 @@
             <!-- The graph canvas. -->
             <TheWorkflowGraphViewCanvas
               :graph="{ nodes, edges }"
-              @click:node="onSelectNode"
               @create:node="onCreateNode"
               @edit:node="onEditNode"
               @remove:node="onRemoveNode"
               @create:edge="onCreateEdge"
               @remove:edge="onRemoveEdge"
+              @update:selection="onUpdateSelection"
             />
             <!-- The graph grammar checking console. -->
             <TheWorkflowGraphViewConsole
@@ -46,7 +46,7 @@
                 right: '8px',
                 height: '200px',
               }"
-              @select:node="onSelectNode"
+              @update:selection="onUpdateSelection"
             />
           </v-card-actions>
         </v-card>
@@ -56,10 +56,10 @@
         style="flex-basis: 40%;"
       >
         <!-- The process parameter panel. -->
-        <TheNodeDetails
+        <TheElementDetails
           :methods="processes"
           :models="modelServices"
-          :node="selectedNode"
+          :selection="selection"
           @edit:node="onEditNode"
           @create:method="onCreateMethod"
           @edit:method="onEditMethod"
@@ -84,18 +84,18 @@ import {
 } from '@/commons/types';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
-import TheNodeDetails from '../TheWorkflowNodeDetails/TheNodeDetails.vue';
+import TheElementDetails from '../TheWorkflowNodeDetails/TheElementDetails.vue';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
   components: {
-    TheNodeDetails,
+    TheElementDetails,
     TheWorkflowGraphViewCanvas,
     TheWorkflowGraphViewConsole,
   },
   data() {
     return {
-      selectedNode: null as null | WorkflowNode,
+      selection: [] as (WorkflowNode | WorkflowEdge)[],
     };
   },
   computed: {
@@ -122,15 +122,14 @@ export default Vue.extend({
       'executeFeatureExtraction',
       'executeInterimModelTraining',
     ]),
-    onSelectNode(node: WorkflowNode) {
-      this.selectedNode = node;
+    onUpdateSelection(selection: (WorkflowNode | WorkflowEdge)[]) {
+      this.selection = selection;
     },
     onCreateNode(node: WorkflowNode) {
       this.pushNodes(node);
     },
     onEditNode(newValue: WorkflowNode) {
       this.editNode(newValue);
-      this.selectedNode = newValue;
     },
     onRemoveNode(node: WorkflowNode) {
       const { edges } = this;

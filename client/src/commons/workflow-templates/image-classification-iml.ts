@@ -2,6 +2,7 @@ import ObjectId from 'bson-objectid';
 import {
   DataType,
   LabelTaskType,
+  PortDirection,
   ProcessType,
   WorkflowGraph,
   WorkflowNodeType,
@@ -18,8 +19,8 @@ export default {
         labelTasks: [LabelTaskType.Classification],
       },
       layout: {
-        x: 25,
-        y: 25,
+        x: 40,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -40,8 +41,8 @@ export default {
         api: 'http://localhost:8005/features/image/SVD',
       },
       layout: {
-        x: 145,
-        y: 25,
+        x: 160,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -87,8 +88,8 @@ export default {
         },
       }],
       layout: {
-        x: 265,
-        y: 25,
+        x: 280,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -117,8 +118,8 @@ export default {
         api: 'http://localhost:8005/defaultLabels/ModelPrediction',
       },
       layout: {
-        x: 385,
-        y: 25,
+        x: 400,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -138,8 +139,8 @@ export default {
         isServerless: true,
       },
       layout: {
-        x: 505,
-        y: 25,
+        x: 520,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -182,8 +183,8 @@ export default {
         },
       }],
       layout: {
-        x: 625,
-        y: 25,
+        x: 640,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -204,8 +205,8 @@ export default {
         api: 'AllChecked',
       },
       layout: {
-        x: 745,
-        y: 25,
+        x: 760,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -215,8 +216,8 @@ export default {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
       layout: {
-        x: 745,
-        y: 115,
+        x: 760,
+        y: 130,
         width: 80,
         height: 60,
       },
@@ -226,8 +227,8 @@ export default {
       label: 'exit',
       type: WorkflowNodeType.Terminal,
       layout: {
-        x: 745,
-        y: 205,
+        x: 770,
+        y: 220,
         width: 60,
         height: 60,
       },
@@ -248,8 +249,8 @@ export default {
         api: 'http://localhost:8005/modelUpdated/Retrain',
       },
       layout: {
-        x: 265,
-        y: 115,
+        x: 280,
+        y: 130,
         width: 80,
         height: 60,
       },
@@ -260,53 +261,173 @@ export default {
       id: 'edge-97454187',
       source: 'node-47353599',
       target: 'node-37008559',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-21597796',
       source: 'node-37008559',
       target: 'node-6411710',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-55337014',
       source: 'node-6411710',
       target: 'node-86803967',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-33448528',
       source: 'node-86803967',
       target: 'node-63746075',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-23806236',
       source: 'node-63746075',
       target: 'node-44216216',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-41463625',
       source: 'node-44216216',
       target: 'node-70767097',
+      layout: {
+        source: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-25771154',
       source: 'node-70767097',
       target: 'node-69466632',
+      layout: {
+        source: {
+          direction: PortDirection.Bottom,
+          dx: 40,
+          dy: 60,
+        },
+        target: {
+          direction: PortDirection.Top,
+          dx: 40,
+          dy: 0,
+        },
+      },
     },
     {
       id: 'edge-15222705',
       source: 'node-69466632',
       target: 'node-29117539',
       condition: true,
+      layout: {
+        source: {
+          direction: PortDirection.Bottom,
+          dx: 40,
+          dy: 60,
+        },
+        target: {
+          direction: PortDirection.Top,
+          dx: 30,
+          dy: 0,
+        },
+      },
     },
     {
       id: 'edge-7667809',
       source: 'node-69466632',
       target: 'node-14283634',
       condition: false,
+      layout: {
+        source: {
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
+        },
+        target: {
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
+        },
+      },
     },
     {
       id: 'edge-94048020',
       source: 'node-14283634',
       target: 'node-6411710',
+      layout: {
+        source: {
+          direction: PortDirection.Top,
+          dx: 40,
+          dy: 0,
+        },
+        target: {
+          direction: PortDirection.Bottom,
+          dx: 40,
+          dy: 60,
+        },
+      },
     },
   ],
 } as WorkflowGraph;

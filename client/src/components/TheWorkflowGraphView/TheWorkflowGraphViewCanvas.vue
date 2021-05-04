@@ -62,6 +62,7 @@
       v-model="showMenuOfNode"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
+      content-class="elevation-2"
       offset-y
     >
       <v-list
@@ -71,7 +72,7 @@
         <v-list-item
           class="py-0 pl-0 pr-1"
           style="min-height:24px"
-          @click="onRemoveNode(rightClickedNode)"
+          @click="onRemoveSelected"
         >
           <v-icon
             class="px-2"
@@ -81,7 +82,7 @@
           >
             $vuetify.icons.values.close
           </v-icon>
-          Remove Node
+          Remove
         </v-list-item>
       </v-list>
     </v-menu>
@@ -91,7 +92,7 @@
       v-model="showMenuOfCanvas"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      absolute
+      content-class="elevation-2"
       offset-y
     >
       <v-list
@@ -113,16 +114,31 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Process,
   WorkflowEdge,
+  WorkflowGraph,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
+
+// TODO: may reduce the frequency of syncing the flowchart graph
+// and workflow graph to improve the performance.
+// E.g., only save the flowchart graph to workflow when clicking
+// the save button.
+// Or only save the flowchart graph when drag end instead of drag move.
+// Alternatively, separate the storage of graph itself and the layout.
+// So that layout update will not affect the component listening to
+// the graph's update.
+
+type FlowchartGraph = {
+  nodes: FlowchartNode[];
+  edges: FlowchartEdge[];
+}
 
 const createNodeMenu = [
   {
@@ -167,29 +183,29 @@ const createNodeMenu = [
   },
 ];
 
-const nodeMapper = (node: WorkflowNode): FlowchartNode => ({
+const nodeAdaptor = (node: WorkflowNode): FlowchartNode => ({
   id: node.id,
   label: node.label,
   type: node.type,
   x: node.layout.x,
   y: node.layout.y,
-  width: 60,
-  height: 60,
+  width: node.layout.width,
+  height: node.layout.height,
 });
 
-const edgeMapper = (edge: WorkflowEdge): FlowchartEdge => ({
+const edgeAdaptor = (edge: WorkflowEdge): FlowchartEdge => ({
   id: edge.id,
   source: {
     nodeId: edge.source,
-    direction: 'Right',
-    dx: 60,
-    dy: 30,
+    direction: edge.layout.source.direction,
+    dx: edge.layout.source.dx,
+    dy: edge.layout.source.dy,
   },
   target: {
     nodeId: edge.target,
-    direction: 'Left',
-    dx: 0,
-    dy: 30,
+    direction: edge.layout.target.direction,
+    dx: edge.layout.target.dx,
+    dy: edge.layout.target.dy,
   },
 });
 
@@ -200,7 +216,7 @@ export default Vue.extend({
   },
   props: {
     graph: {
-      type: Object,
+      type: Object as PropType<WorkflowGraph>,
       default: null,
     },
   },
@@ -214,17 +230,29 @@ export default Vue.extend({
       rightClickCanvasY: null as null | number,
       rightClickedNode: null as null | WorkflowNode,
       createNodeMenu,
-      selectedNodes: [] as FlowchartNode[],
-      selectedEdges: [] as FlowchartEdge[],
+      selectedNodeIds: [] as string[],
+      selectedEdgeIds: [] as string[],
     };
   },
   computed: {
-    flowchartGraph() {
+    flowchartGraph(): FlowchartGraph {
       const { graph } = this;
       return {
-        nodes: graph.nodes.map((d: WorkflowNode) => nodeMapper(d)),
-        edges: graph.edges.map((d: WorkflowEdge) => edgeMapper(d)),
+        nodes: graph.nodes.map((d: WorkflowNode) => nodeAdaptor(d)),
+        edges: graph.edges.map((d: WorkflowEdge) => edgeAdaptor(d)),
       };
+    },
+    selectedNodes(): WorkflowNode[] {
+      const { nodes } = this.graph;
+      return this.selectedNodeIds.map((d) => (
+        nodes.find((node) => node.id === d) as WorkflowNode
+      ));
+    },
+    selectedEdges(): WorkflowEdge[] {
+      const { edges } = this.graph;
+      return this.selectedEdgeIds.map((d) => (
+        edges.find((edge) => edge.id === d) as WorkflowEdge
+      ));
     },
   },
   created(): void {
@@ -290,55 +318,6 @@ export default Vue.extend({
       }
       return false;
     },
-    workflowToFlowchartNode(node: WorkflowNode): FlowchartNode {
-      return {
-        id: node.id,
-        label: node.label,
-        type: node.type,
-        x: node.layout.x,
-        y: node.layout.y,
-        width: 60,
-        height: 60,
-      };
-    },
-    flowchartToWorkflowNode(node: FlowchartNode): WorkflowNode {
-      const { id } = node;
-      const workflowNode = this.graph.nodes.find((d) => d.id === id);
-      return {
-        ...workflowNode,
-        label: node.label,
-        x: node.x,
-        y: node.y,
-        width: node.width,
-        height: node.height,
-      };
-    },
-    workflowToFlowchartEdge(edge: WorkflowEdge): FlowchartEdge {
-      return {
-        id: edge.id,
-        source: {
-          nodeId: edge.source,
-          direction: 'Right',
-          dx: 60,
-          dy: 30,
-        },
-        target: {
-          nodeId: edge.target,
-          direction: 'Left',
-          dx: 0,
-          dy: 30,
-        },
-      };
-    },
-    flowchartToWorkflowEdge(edge: FlowchartEdge): WorkflowEdge {
-      const { id } = edge;
-      const workflowEdge = this.graph.edges.find((d) => d.id === id);
-      return {
-        ...workflowEdge,
-        source: edge.source.nodeId,
-        target: edge.target.nodeId,
-      };
-    },
     onContextMenuOfNode(e: MouseEvent, node: WorkflowNode): void {
       this.showMenuOfCanvas = false;
       e.preventDefault();
@@ -356,16 +335,13 @@ export default Vue.extend({
       this.rightClickCanvasX = e.offsetX;
       this.rightClickCanvasY = e.offsetY;
     },
-    onClickNode(node: WorkflowNode): void {
-      this.$emit('click:node', node);
-    },
     onCreateNode(e: MouseEvent, type: WorkflowNodeType) {
       const labelMapper = {
         [WorkflowNodeType.Initialization]: 'initialization',
         [WorkflowNodeType.FeatureExtraction]: 'feature extraction',
         [WorkflowNodeType.DataObjectSelection]: 'data object selection',
         [WorkflowNodeType.DefaultLabeling]: 'default labeling',
-        [WorkflowNodeType.TaskTransformation]: 'task transformation',
+        [WorkflowNodeType.TaskTransformation]: 'task transform',
         [WorkflowNodeType.InteractiveLabeling]: 'interactive labeling',
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
         [WorkflowNodeType.InterimModelTraining]: 'interim model training',
@@ -387,35 +363,68 @@ export default Vue.extend({
       const node = {
         id: uuidv4(),
         type,
-        x: this.rightClickCanvasX,
-        y: this.rightClickCanvasY,
         label: labelMapper[type],
         value: valueMapper[type],
+        layout: {
+          x: this.rightClickCanvasX,
+          y: this.rightClickCanvasY,
+          width: type === WorkflowNodeType.Terminal ? 60 : 80,
+          height: 60,
+        },
       } as WorkflowNode;
       this.$emit('create:node', node);
     },
-    onSelectNodes(nodes: FlowchartNode[]) {
-      this.selectedNodes = nodes;
-    },
     onEditNode(node: FlowchartNode) {
-      const newValue = this.flowchartToWorkflowNode(node);
+      const { id } = node;
+      const workflowNode = this.graph.nodes.find((d) => d.id === id) as WorkflowNode;
+      const newValue: WorkflowNode = {
+        ...workflowNode,
+        label: node.label,
+        layout: {
+          x: node.x,
+          y: node.y,
+          width: node.width,
+          height: node.height,
+        },
+      };
       this.$emit('edit:node', newValue);
     },
     onRemoveNode(node: { id: string }): void {
       this.$emit('remove:node', node);
     },
+    onSelectNodes(nodes: FlowchartNode[]) {
+      this.selectedNodeIds = nodes.map((d) => d.id);
+      this.$emit('update:selection', this.getSelection());
+    },
     onCreateEdge(edge: FlowchartEdge) {
       if (edge.source.nodeId === edge.target.nodeId) return;
-      const newValue = this.flowchartToWorkflowEdge(edge);
+      const newValue = {
+        id: edge.id,
+        source: edge.source.nodeId,
+        target: edge.target.nodeId,
+        layout: {
+          source: {
+            direction: edge.source.direction,
+            dx: edge.source.dx,
+            dy: edge.source.dy,
+          },
+          target: {
+            direction: edge.target.direction,
+            dx: edge.target.dx,
+            dy: edge.target.dy,
+          },
+        },
+      };
       this.$emit('create:edge', newValue);
-    },
-    onSelectEdges(edges: FlowchartEdge[]) {
-      this.selectedEdges = edges;
     },
     onRemoveEdge(edge: { id: string }) {
       this.$emit('remove:edge', edge);
     },
-    onDeleteSelected() {
+    onSelectEdges(edges: FlowchartEdge[]) {
+      this.selectedEdgeIds = edges.map((d) => d.id);
+      this.$emit('update:selection', this.getSelection());
+    },
+    onRemoveSelected() {
       const toBeRemovedNodes = this.selectedNodes;
       const toBeRemovedEdges = this.flowchartGraph.edges.filter((edge) => (
         this.selectedEdges.find((d) => d.id === edge.id) !== undefined
@@ -439,7 +448,7 @@ export default Vue.extend({
       } as Record<string, { dx: number, dy: number }>;
       if (key in movementMapper) {
         const { dx, dy } = movementMapper[key];
-        this.selectedNodes.forEach((node) => {
+        this.selectedNodes.map((d) => nodeAdaptor(d)).forEach((node) => {
           const nodeUpdated = {
             ...node,
             x: node.x + dx,
@@ -458,8 +467,14 @@ export default Vue.extend({
         component.selectedEdgeIds = this.flowchartGraph.edges.map((d) => d.id);
       }
       if (key === 'Delete') {
-        this.onDeleteSelected();
+        this.onRemoveSelected();
       }
+    },
+    getSelection(): (WorkflowNode | WorkflowEdge)[] {
+      return [
+        ...this.selectedNodes,
+        ...this.selectedEdges,
+      ];
     },
   },
 });

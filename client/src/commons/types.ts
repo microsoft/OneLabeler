@@ -148,70 +148,6 @@ export interface Process {
   model?: ModelService;
   params?: MethodParams;
 }
-/*
-export class Process {
-  public type: ProcessType;
-
-  public label: string;
-
-  public inputs: Array<string>;
-
-  // for serverless methods, the api is the method's unique key
-  public api: string;
-
-  public id: string;
-
-  public isAlgorithmic: boolean;
-
-  public isBuiltIn: boolean;
-
-  public isModelBased: boolean;
-
-  public isServerless: boolean;
-
-  public model?: ModelService;
-
-  public params?: MethodParams;
-
-  constructor({
-    type = null,
-    label = 'custom',
-    id = null,
-    inputs = ['labels'],
-    isAlgorithmic = true,
-    isBuiltIn = false,
-    isModelBased = false,
-    isServerless = false,
-    api = undefined,
-    model = undefined,
-    params = undefined,
-  }: {
-    type?: ProcessType,
-    label?: string;
-    id?: string | null;
-    inputs?: Array<string>;
-    isAlgorithmic?: boolean;
-    isBuiltIn?: boolean;
-    isModelBased?: boolean;
-    isServerless?: boolean;
-    api?: string;
-    model?: ModelService;
-    params?: MethodParams;
-  } = {}) {
-    this.type = type;
-    this.label = label;
-    this.id = id === null ? `custom-${uuidv4()}` : id as unknown as string;
-    this.inputs = inputs;
-    this.isAlgorithmic = isAlgorithmic;
-    this.isBuiltIn = isBuiltIn;
-    this.isModelBased = isModelBased;
-    this.isServerless = isServerless;
-    if (api) this.api = api;
-    if (model) this.model = model;
-    if (params) this.params = params;
-  }
-}
-*/
 
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
@@ -248,11 +184,30 @@ export type WorkflowNode = {
   };
 }
 
+export enum PortDirection {
+  Top = 'Top',
+  Left = 'Left',
+  Bottom = 'Bottom',
+  Right = 'Right',
+}
+
 export type WorkflowEdge = {
   source: string;
   target: string;
   id: string;
-  condition?: unknown;
+  condition?: boolean;
+  layout: {
+    source: {
+      direction: PortDirection,
+      dx: number;
+      dy: number;
+    },
+    target: {
+      direction: PortDirection,
+      dx: number;
+      dy: number;
+    }
+  };
 }
 
 export type WorkflowGraph = {

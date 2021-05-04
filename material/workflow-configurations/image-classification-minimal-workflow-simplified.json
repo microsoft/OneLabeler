@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "label": "initialization",
+      "type": "Initialization"
+    },
+    {
+      "label": "random sampling",
+      "type": "DataObjectSelection"
+    },
+    {
+      "label": "direct labeling",
+      "type": "TaskTransformation"
+    },
+    {
+      "label": "grid matrix",
+      "type": "InteractiveLabeling"
+    },
+    {
+      "label": "check all labeled",
+      "type": "StoppageAnalysis"
+    },
+    {
+      "label": "stop?",
+      "type": "Decision"
+    },
+    {
+      "label": "exit",
+      "type": "Terminal"
+    }
+  ],
+  "edges": [
+    {
+      "source": "initialization",
+      "target": "random sampling"
+    },
+    {
+      "source": "random sampling",
+      "target": "direct labeling"
+    },
+    {
+      "source": "direct labeling",
+      "target": "grid matrix"
+    },
+    {
+      "source": "grid matrix",
+      "target": "check all labeled"
+    },
+    {
+      "source": "check all labeled",
+      "target": "stop?"
+    },
+    {
+      "source": "stop?",
+      "target": "exit",
+      "condition": true
+    },
+    {
+      "source": "stop?",
+      "target": "random sampling",
+      "condition": false
+    }
+  ]
+}

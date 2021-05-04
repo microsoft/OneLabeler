@@ -26,6 +26,6 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'TheNodeDetailsEmpty',
+  name: 'TheElementDetailsSelectionEmpty',
 });
 </script>
