@@ -121,13 +121,13 @@ export default Vue.extend({
   },
   computed: {
     ...mapState(['classes', 'unlabeledMark']),
-    ...mapState('workflow', ['labelTasks']),
     ...mapGetters([
       'sampledDataObjects',
       'sampledDataObjectLabelGeometricObjects',
       'sampledDataObjectLabelMasks',
       'label2color',
     ]),
+    ...mapGetters('workflow', ['labelTasks']),
     showCanvas() {
       const { sampledDataObjects } = this;
       return sampledDataObjects !== null && sampledDataObjects.length !== 0;

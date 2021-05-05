@@ -1,5 +1,3 @@
-// import { v4 as uuidv4 } from 'uuid';
-
 /** The types of data objects. */
 export enum DataType {
   Image = 'Image',
@@ -173,9 +171,11 @@ export type WorkflowNode = {
   label: string;
   type: WorkflowNodeType;
   id: string;
-  value?: Process
-    | Process[]
-    | InitializationParams;
+  value: Process // for node with a single instantiation
+    | Process[] // for node with multiple concurrent instantiations
+    | InitializationParams // for initialization node
+    | null // for node with a single instantiation not yet chosen
+    | undefined; // for decision and terminal nodes
   layout: {
     x: number;
     y: number;

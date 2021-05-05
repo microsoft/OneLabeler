@@ -204,6 +204,10 @@ import {
   getZaggedPathPoints,
 } from './geometry';
 
+const isSuperset = (set: string[], subset: string[]) => (
+  [...subset].every((d) => set.includes(d))
+);
+
 export default Vue.extend({
   name: 'Flowchart',
   props: {
@@ -372,6 +376,22 @@ export default Vue.extend({
       // Emit the edges selected by clicking or box selection.
       this.$emit('select:edges', this.selectedEdges);
     },
+    nodes(): void {
+      const validNodeIds = this.nodes.map((d) => d.id);
+      if (isSuperset(validNodeIds, this.selectedNodeIds)) return;
+      // When the nodes is updated, update the node selection.
+      // Typically needed when a new graph is passed.
+      this.selectedNodeIds = this.selectedNodeIds
+        .filter((d) => validNodeIds.includes(d));
+    },
+    edges(): void {
+      const validEdgeIds = this.edges.map((d) => d.id);
+      if (isSuperset(validEdgeIds, this.selectedEdgeIds)) return;
+      // When the edges is updated, update the edge selection.
+      // Typically needed when a new graph is passed.
+      this.selectedEdgeIds = this.selectedEdgeIds
+        .filter((d) => validEdgeIds.includes(d));
+    },
   },
   methods: {
     onEditNode(newValue: FlowchartNode): void {
@@ -505,11 +525,11 @@ export default Vue.extend({
       };
       if (draggedNode !== null) {
         this.selectedNodes.forEach((node) => {
-          this.onEditNode({
-            ...node,
-            x: nodePositionFormatter(node.x),
-            y: nodePositionFormatter(node.y),
-          });
+          const x = nodePositionFormatter(node.x);
+          const y = nodePositionFormatter(node.y);
+          if (x !== node.x || y !== node.y) {
+            this.onEditNode({ ...node, x, y });
+          }
         });
       }
 

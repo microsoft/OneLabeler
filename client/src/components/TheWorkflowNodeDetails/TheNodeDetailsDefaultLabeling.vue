@@ -57,111 +57,115 @@
         </v-list-item>
         <v-divider />
 
-        <!-- The label of the feature extraction method. -->
-        <v-list-item class="pt-2">
-          <VNodeEditableMethodLabel
-            :label="method.label"
-            :disabled="method.isBuiltIn"
-            style="width: 100%"
-            @edit:label="onEditMethodLabel($event)"
-          />
-        </v-list-item>
+        <template v-if="method !== null">
 
-        <v-list-item class="pt-2">
-          <v-row>
-            <v-col
-              class="pr-0"
-              style="width: 75%; max-width: 75%; flex-basis: 75%;"
-            >
-              <!-- The input box for process input parameters. -->
-              <VNodeEditableInput
-                :process-input-list="processInputList"
-                :process-input-list-of-required="processInputListOfRequired"
-                :instance-input-list="method.inputs"
-                :disabled="method.isBuiltIn"
-                @edit:list="onEditInstanceInputList($event)"
-              />
-            </v-col>
-            <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
-              <!-- The display of process output parameters. -->
-              <VNodeOutput :process-output="processOutput" />
-            </v-col>
-          </v-row>
-        </v-list-item>
-
-        <!-- The url of feature extraction service. -->
-        <v-list-item class="pt-2">
-          <v-card
-            outlined
-            style="width: 100%; display: flex; flex: 1 1 100%;"
-          >
-            <span class="pl-4 py-2 subtitle-2">
-              API
-            </span>
-            <v-text-field
-              :value="method.isServerless ? 'serverless' : method.api"
+          <!-- The label of the feature extraction method. -->
+          <v-list-item class="pt-2">
+            <VNodeEditableMethodLabel
+              :label="method.label"
               :disabled="method.isBuiltIn"
-              class="ma-0 px-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-              @input="onInputMethodAPI($event)"
-            />
-          </v-card>
-        </v-list-item>
-
-        <v-card
-          v-if="isModelBased"
-          class="mx-4 mt-2"
-          outlined
-        >
-          <!-- The model used as input to the process. -->
-          <v-list-item>
-            <VNodeSelectModel
-              :selected-model="model"
-              :menu="menuOfModels"
-              append-create-option
-              @update:selection="onClickMenuOfModelsOption($event)"
-              @create:option="onCreateModel"
+              style="width: 100%"
+              @edit:label="onEditMethodLabel($event)"
             />
           </v-list-item>
 
-          <template v-if="model !== undefined">
-            <!-- The label of the method. -->
-            <v-list-item>
-              Model Label
+          <v-list-item class="pt-2">
+            <v-row>
+              <v-col
+                class="pr-0"
+                style="width: 75%; max-width: 75%; flex-basis: 75%;"
+              >
+                <!-- The input box for process input parameters. -->
+                <VNodeEditableInput
+                  :process-input-list="processInputList"
+                  :process-input-list-of-required="processInputListOfRequired"
+                  :instance-input-list="method.inputs"
+                  :disabled="method.isBuiltIn"
+                  @edit:list="onEditInstanceInputList($event)"
+                />
+              </v-col>
+              <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
+                <!-- The display of process output parameters. -->
+                <VNodeOutput :process-output="processOutput" />
+              </v-col>
+            </v-row>
+          </v-list-item>
+
+          <!-- The url of feature extraction service. -->
+          <v-list-item class="pt-2">
+            <v-card
+              outlined
+              style="width: 100%; display: flex; flex: 1 1 100%;"
+            >
+              <span class="pl-4 py-2 subtitle-2">
+                API
+              </span>
               <v-text-field
-                :value="model.label"
-                :disabled="model.isBuiltIn"
-                class="ma-0 pl-4 pt-1 subtitle-2"
+                :value="method.isServerless ? 'serverless' : method.api"
+                :disabled="method.isBuiltIn"
+                class="ma-0 px-4 pt-1 subtitle-2"
                 style="padding-bottom: 6px !important"
                 type="text"
                 dense
                 hide-details
                 single-line
-                @input="onInputModelLabel($event)"
+                @input="onInputMethodAPI($event)"
+              />
+            </v-card>
+          </v-list-item>
+
+          <v-card
+            v-if="isModelBased"
+            class="mx-4 mt-2"
+            outlined
+          >
+            <!-- The model used as input to the process. -->
+            <v-list-item>
+              <VNodeSelectModel
+                :selected-model="model"
+                :menu="menuOfModels"
+                append-create-option
+                @update:selection="onClickMenuOfModelsOption($event)"
+                @create:option="onCreateModel"
               />
             </v-list-item>
 
-            <!-- The url of the model. -->
-            <v-list-item>
-              Model Key
-              <v-text-field
-                :value="model.isServerless ? 'serverless' : model.objectId"
-                :disabled="model.isBuiltIn"
-                class="ma-0 pl-4 pt-1 subtitle-2"
-                style="padding-bottom: 6px !important"
-                type="text"
-                dense
-                hide-details
-                single-line
-                @input="onInputModelAPI($event)"
-              />
-            </v-list-item>
-          </template>
-        </v-card>
+            <template v-if="model !== undefined">
+              <!-- The label of the method. -->
+              <v-list-item>
+                Model Label
+                <v-text-field
+                  :value="model.label"
+                  :disabled="model.isBuiltIn"
+                  class="ma-0 pl-4 pt-1 subtitle-2"
+                  style="padding-bottom: 6px !important"
+                  type="text"
+                  dense
+                  hide-details
+                  single-line
+                  @input="onInputModelLabel($event)"
+                />
+              </v-list-item>
+
+              <!-- The url of the model. -->
+              <v-list-item>
+                Model Key
+                <v-text-field
+                  :value="model.isServerless ? 'serverless' : model.objectId"
+                  :disabled="model.isBuiltIn"
+                  class="ma-0 pl-4 pt-1 subtitle-2"
+                  style="padding-bottom: 6px !important"
+                  type="text"
+                  dense
+                  hide-details
+                  single-line
+                  @input="onInputModelAPI($event)"
+                />
+              </v-list-item>
+            </template>
+          </v-card>
+
+        </template>
       </v-list>
     </v-card-actions>
   </v-card>
@@ -215,19 +219,20 @@ export default Vue.extend({
     };
   },
   computed: {
-    method(): Process {
-      return this.node.value as Process;
+    method(): Process | null {
+      return this.node.value as Process | null;
     },
     model(): ModelService | undefined {
       return (this.node.value as Process).model;
     },
     isModelBased(): boolean {
+      if (this.method === null) return false;
       return this.method.inputs
         .findIndex((d) => d === 'model') >= 0;
     },
     menuOfMethods() {
       return {
-        title: 'Method',
+        label: 'Method',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,
@@ -236,7 +241,7 @@ export default Vue.extend({
     },
     menuOfModels() {
       return {
-        title: 'Models',
+        label: 'Models',
         options: this.models.map((d) => ({
           value: d,
           label: d.label,
@@ -257,14 +262,16 @@ export default Vue.extend({
       this.onEditNode({ ...node, value: option });
     },
     onEditMethodLabel(label: string): void {
+      if (this.method === null) return;
       const { node, method } = this;
       const newMethod: Process = { ...method, label };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onInputMethodAPI(api: string): void {
+      if (this.method === null) return;
       const { node, method } = this;
-      const newMethod = { ...method, api };
+      const newMethod: Process = { ...method, api };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
@@ -275,6 +282,7 @@ export default Vue.extend({
       this.$emit('edit:method', newValue);
     },
     onClickMenuOfModelsOption(option: ModelService): void {
+      if (this.method === null) return;
       const { node, method } = this;
       this.onEditNode({
         ...node,
@@ -282,6 +290,7 @@ export default Vue.extend({
       });
     },
     onInputModelLabel(label: string): void {
+      if (this.method === null) return;
       const { node, method, model } = this;
       const newModel: ModelService = {
         ...(model as ModelService),
@@ -294,6 +303,7 @@ export default Vue.extend({
       this.onEditModel(newModel);
     },
     onInputModelAPI(api: string): void {
+      if (this.method === null) return;
       const { node, method, model } = this;
       const newModel = { ...(model as ModelService), api };
       this.onEditNode({
@@ -309,6 +319,7 @@ export default Vue.extend({
       this.$emit('edit:model', newValue);
     },
     onEditInstanceInputList(inputs: string[]): void {
+      if (this.method === null) return;
       const { node, method } = this;
       const newMethod = { ...method, inputs };
       this.onEditNode({ ...node, value: newMethod });

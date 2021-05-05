@@ -90,17 +90,17 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     enableSingleObjectDisplay(): boolean {
       const methods = this.interactiveLabelingMethod as Process[] | null;
       if (methods === null) return false;
-      return methods.findIndex((d) => d.id === 'Single-Object-Display') >= 0;
+      return methods.findIndex((d) => d.api === 'SingleObjectDisplay') >= 0;
     },
     enableGridMatrix(): boolean {
       const methods = this.interactiveLabelingMethod as Process[] | null;
       if (methods === null) return false;
-      return methods.findIndex((d) => d.id === 'Grid-Matrix') >= 0;
+      return methods.findIndex((d) => d.api === 'GridMatrix') >= 0;
     },
     itemsPerRow(): number | null {
       const methods = this.interactiveLabelingMethod as Process[] | null;
       if (methods === null) return null;
-      const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
+      const gridMatrix = methods.find((d) => d.api === 'GridMatrix');
       return gridMatrix === undefined
         ? null
         : (gridMatrix.params as MethodParams).nColumns.value as number;
@@ -108,7 +108,7 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     itemsPerCol(): number | null {
       const methods = this.interactiveLabelingMethod as Process[] | null;
       if (methods === null) return null;
-      const gridMatrix = methods.find((d) => d.id === 'Grid-Matrix');
+      const gridMatrix = methods.find((d) => d.api === 'GridMatrix');
       return gridMatrix === undefined
         ? null
         : (gridMatrix.params as MethodParams).nRows.value as number;

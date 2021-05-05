@@ -67,7 +67,7 @@ import Vue, { PropType } from 'vue';
 import { ModelService } from '@/commons/types';
 
 interface ModelMenu {
-  title: string,
+  label: string,
   options: [{
     value: ModelService,
     label: string,

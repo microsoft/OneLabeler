@@ -149,7 +149,7 @@ export default Vue.extend({
     },
     menuOfMethods() {
       return {
-        title: 'Method',
+        label: 'Method',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,

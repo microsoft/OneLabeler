@@ -15,7 +15,7 @@
           outlined
           v-on="on"
         >
-          {{ selectedMethod.label }}
+          {{ selectedMethod !== null ? selectedMethod.label : '' }}
         </v-btn>
       </template>
       <v-list dense>
@@ -67,19 +67,19 @@ import Vue, { PropType } from 'vue';
 import { Process } from '@/commons/types';
 
 interface MethodMenu {
-  title: string,
-  options: [{
-    value: Process,
-    label: string,
-  }]
+  label: string;
+  options: {
+    value: Process;
+    label: string;
+  }[];
 }
 
 export default Vue.extend({
   name: 'VNodeSelectMethodSingle',
   props: {
     selectedMethod: {
-      type: Object as PropType<Process>,
-      required: true,
+      type: [Object, null] as PropType<Process>,
+      default: null,
     },
     menu: {
       type: Object as PropType<MethodMenu>,

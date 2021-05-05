@@ -245,7 +245,7 @@ export default Vue.extend({
     },
     menuOfMethods() {
       return {
-        title: 'Method',
+        label: 'Method',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,
@@ -254,7 +254,7 @@ export default Vue.extend({
     },
     menuOfModels() {
       return {
-        title: 'Models',
+        label: 'Models',
         options: this.models.map((d) => ({
           value: d,
           label: d.label,

@@ -89,12 +89,13 @@ export default {
       value: [{
         type: ProcessType.InteractiveLabeling,
         label: 'Grid Matrix',
-        id: 'Grid-Matrix',
+        id: 'GridMatrix-89670576',
         inputs: ['dataObjects', 'samples'],
         isAlgorithmic: false,
         isBuiltIn: true,
         isModelBased: false,
         isServerless: true,
+        api: 'GridMatrix',
         params: {
           nRows: {
             value: 4,

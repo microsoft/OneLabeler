@@ -12,14 +12,14 @@
         style="width: 82%; max-width: 82%; flex-basis: 82%"
       >
         <v-autocomplete
-          :value="selectedMethods"
+          :value="selectedOptions"
           :items="menu.options"
           outlined
           dense
           multiple
           full-width
           hide-details
-          @input="onClickMenuOption($event)"
+          @input="onClickMenuOption"
         >
           <template #selection="data">
             <v-chip
@@ -36,8 +36,10 @@
             <v-list-item-title>
               <v-checkbox
                 :label="data.item.label"
-                :value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
-                :input-value="selectedMethods.findIndex((d) => d.id === data.item.value.id) >= 0"
+                :value="selectedOptions
+                  .findIndex((d) => d.value.id === data.item.value.id) >= 0"
+                :input-value="selectedOptions
+                  .findIndex((d) => d.value.id === data.item.value.id) >= 0"
                 class="py-0 ma-0 parameter-panel-checkbox"
                 dense
                 hide-details
@@ -92,11 +94,11 @@ import Vue, { PropType } from 'vue';
 import { Process } from '@/commons/types';
 
 interface MethodMenu {
-  title: string,
-  options: [{
-    value: Process,
-    label: string,
-  }]
+  label: string;
+  options: {
+    value: Process;
+    label: string;
+  }[];
 }
 
 export default Vue.extend({
@@ -113,6 +115,14 @@ export default Vue.extend({
     appendCreateOption: {
       type: Boolean,
       default: true,
+    },
+  },
+  computed: {
+    selectedOptions() {
+      const { menu } = this;
+      return this.selectedMethods.map((d) => (
+        menu.options.find((option) => option.value.id === d.id)
+      ));
     },
   },
   methods: {

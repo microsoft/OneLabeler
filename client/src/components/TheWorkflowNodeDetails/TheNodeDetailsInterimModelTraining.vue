@@ -58,61 +58,65 @@
 
         <v-divider />
 
-        <!-- The label of the method. -->
-        <v-list-item class="pt-2">
-          <VNodeEditableMethodLabel
-            :label="method.label"
-            :disabled="method.isBuiltIn"
-            style="width: 100%"
-            @edit:label="onEditMethodLabel"
-          />
-        </v-list-item>
+        <template v-if="method !== null">
 
-        <!-- The input and output of the process. -->
-        <v-list-item class="pt-2">
-          <v-row>
-            <v-col
-              class="pr-0"
-              style="width: 75%; max-width: 75%; flex-basis: 75%;"
-            >
-              <!-- The input box for process input parameters. -->
-              <VNodeEditableInput
-                :process-input-list="processInputList"
-                :process-input-list-of-required="processInputListOfRequired"
-                :instance-input-list="method.inputs"
-                :disabled="method.isBuiltIn"
-                @edit:list="onEditInstanceInputList"
-              />
-            </v-col>
-            <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
-              <!-- The display of process output parameters. -->
-              <VNodeOutput :process-output="processOutput" />
-            </v-col>
-          </v-row>
-        </v-list-item>
-
-        <!-- The url of the method service. -->
-        <v-list-item class="pt-2">
-          <v-card
-            outlined
-            style="width: 100%; display: flex; flex: 1 1 100%;"
-          >
-            <span class="pl-4 py-2 subtitle-2">
-              API
-            </span>
-            <v-text-field
-              :value="method.isServerless ? 'serverless' : method.api"
+          <!-- The label of the method. -->
+          <v-list-item class="pt-2">
+            <VNodeEditableMethodLabel
+              :label="method.label"
               :disabled="method.isBuiltIn"
-              class="ma-0 px-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-              @input="onInputMethodAPI"
+              style="width: 100%"
+              @edit:label="onEditMethodLabel"
             />
-          </v-card>
-        </v-list-item>
+          </v-list-item>
+
+          <!-- The input and output of the process. -->
+          <v-list-item class="pt-2">
+            <v-row>
+              <v-col
+                class="pr-0"
+                style="width: 75%; max-width: 75%; flex-basis: 75%;"
+              >
+                <!-- The input box for process input parameters. -->
+                <VNodeEditableInput
+                  :process-input-list="processInputList"
+                  :process-input-list-of-required="processInputListOfRequired"
+                  :instance-input-list="method.inputs"
+                  :disabled="method.isBuiltIn"
+                  @edit:list="onEditInstanceInputList"
+                />
+              </v-col>
+              <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
+                <!-- The display of process output parameters. -->
+                <VNodeOutput :process-output="processOutput" />
+              </v-col>
+            </v-row>
+          </v-list-item>
+
+          <!-- The url of the method service. -->
+          <v-list-item class="pt-2">
+            <v-card
+              outlined
+              style="width: 100%; display: flex; flex: 1 1 100%;"
+            >
+              <span class="pl-4 py-2 subtitle-2">
+                API
+              </span>
+              <v-text-field
+                :value="method.isServerless ? 'serverless' : method.api"
+                :disabled="method.isBuiltIn"
+                class="ma-0 px-4 pt-1 subtitle-2"
+                style="padding-bottom: 6px !important"
+                type="text"
+                dense
+                hide-details
+                single-line
+                @input="onInputMethodAPI"
+              />
+            </v-card>
+          </v-list-item>
+
+        </template>
       </v-list>
     </v-card-actions>
   </v-card>
@@ -160,12 +164,12 @@ export default Vue.extend({
     };
   },
   computed: {
-    method(): Process {
-      return this.node.value as Process;
+    method(): Process | null {
+      return this.node.value as Process | null;
     },
     menuOfMethods() {
       return {
-        title: 'Method',
+        label: 'Method',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,
@@ -186,14 +190,16 @@ export default Vue.extend({
       this.onEditNode({ ...node, value: option });
     },
     onEditMethodLabel(label: string): void {
+      if (this.method === null) return;
       const { node, method } = this;
       const newMethod: Process = { ...method, label };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
     onInputMethodAPI(api: string): void {
+      if (this.method === null) return;
       const { node, method } = this;
-      const newMethod = { ...method, api };
+      const newMethod: Process = { ...method, api };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
@@ -204,8 +210,9 @@ export default Vue.extend({
       this.$emit('edit:method', newValue);
     },
     onEditInstanceInputList(inputs: string[]): void {
+      if (this.method === null) return;
       const { node, method } = this;
-      const newMethod = { ...method, inputs };
+      const newMethod: Process = { ...method, inputs };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },

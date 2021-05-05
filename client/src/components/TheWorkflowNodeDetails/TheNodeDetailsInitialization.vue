@@ -78,7 +78,7 @@
                   multiple
                   full-width
                   hide-details
-                  @input="onUpdateLabelTaskOptions($event)"
+                  @input="onUpdateLabelTaskOptions"
                 >
                   <template #selection="data">
                     <v-chip
@@ -135,7 +135,7 @@ export default Vue.extend({
     return {
       viewTitle: 'Initialization Setting',
       menuOfDataType: {
-        title: 'Data Type',
+        label: 'Data Type',
         options: [
           { value: DataType.Image, label: 'Image' },
           { value: DataType.Document, label: 'Document' },
@@ -180,7 +180,7 @@ export default Vue.extend({
         { value: LabelTaskType.Segmentation, label: 'Segmentation' },
       ];
       return {
-        title: 'Label Tasks',
+        label: 'Label Tasks',
         options: options.filter((d) => validLabelTasks.indexOf(d.value) >= 0),
       };
     },

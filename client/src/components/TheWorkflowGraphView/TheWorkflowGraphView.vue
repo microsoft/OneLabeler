@@ -32,9 +32,10 @@
               @create:node="onCreateNode"
               @edit:node="onEditNode"
               @remove:node="onRemoveNode"
+              @select:nodes="onSelectNodes"
               @create:edge="onCreateEdge"
               @remove:edge="onRemoveEdge"
-              @update:selection="onUpdateSelection"
+              @select:edges="onSelectEdges"
             />
             <!-- The graph grammar checking console. -->
             <TheWorkflowGraphViewConsole
@@ -46,7 +47,8 @@
                 right: '8px',
                 height: '200px',
               }"
-              @update:selection="onUpdateSelection"
+              @select:nodes="onSelectNodes"
+              @select:edges="onSelectEdges"
             />
           </v-card-actions>
         </v-card>
@@ -95,7 +97,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      selection: [] as (WorkflowNode | WorkflowEdge)[],
+      selectedNodeIds: [] as string[],
+      selectedEdgeIds: [] as string[],
     };
   },
   computed: {
@@ -105,6 +108,26 @@ export default Vue.extend({
       'modelServices',
       'processes',
     ]),
+    selection(): (WorkflowNode | WorkflowEdge)[] {
+      // Note: make the selection computed instead of directly stored
+      // to ensure the selection is updated when the nodes/edges are modified.
+      const {
+        nodes,
+        edges,
+        selectedNodeIds,
+        selectedEdgeIds,
+      } = this;
+      const selectedNodes = selectedNodeIds.map((d) => (
+        nodes.find((node) => node.id === d) as WorkflowNode
+      ));
+      const selectedEdges = selectedEdgeIds.map((d) => (
+        edges.find((edge) => edge.id === d) as WorkflowEdge
+      ));
+      return [
+        ...selectedNodes,
+        ...selectedEdges,
+      ];
+    },
   },
   methods: {
     ...mapActions('workflow', [
@@ -122,9 +145,6 @@ export default Vue.extend({
       'executeFeatureExtraction',
       'executeInterimModelTraining',
     ]),
-    onUpdateSelection(selection: (WorkflowNode | WorkflowEdge)[]) {
-      this.selection = selection;
-    },
     onCreateNode(node: WorkflowNode) {
       this.pushNodes(node);
     },
@@ -140,11 +160,17 @@ export default Vue.extend({
       });
       this.removeNode(node);
     },
+    onSelectNodes(ids: string[]) {
+      this.selectedNodeIds = ids;
+    },
     onCreateEdge(edge: WorkflowEdge) {
       this.pushEdges(edge);
     },
     onRemoveEdge(edge: WorkflowEdge) {
       this.removeEdge(edge);
+    },
+    onSelectEdges(ids: string[]) {
+      this.selectedEdgeIds = ids;
     },
     onEditMethod(newValue: Process) {
       this.editProcess(newValue);

@@ -14,7 +14,7 @@
           class="subtitle-2"
           style="user-select: none"
         >
-          {{ param.title }}
+          {{ param.label }}
         </v-list-item-title>
         <v-menu offset-y>
           <template #activator="{ on }">

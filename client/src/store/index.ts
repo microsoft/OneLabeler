@@ -5,6 +5,7 @@ import mutations from './modules/mutations';
 import * as actions from './modules/actions';
 import * as getters from './modules/getters';
 import workflow from './modules/workflow';
+import plugins from './modules/plugins';
 
 Vue.use(Vuex);
 
@@ -18,4 +19,5 @@ export default new Vuex.Store({
   modules: {
     workflow,
   },
+  plugins,
 });

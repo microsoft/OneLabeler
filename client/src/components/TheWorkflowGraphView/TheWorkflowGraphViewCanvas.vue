@@ -350,13 +350,13 @@ export default Vue.extend({
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {
         [WorkflowNodeType.Initialization]: { dataType: null, labelTasks: [] },
-        [WorkflowNodeType.FeatureExtraction]: undefined,
+        [WorkflowNodeType.FeatureExtraction]: null,
         [WorkflowNodeType.DataObjectSelection]: [],
-        [WorkflowNodeType.DefaultLabeling]: undefined,
-        [WorkflowNodeType.TaskTransformation]: undefined,
+        [WorkflowNodeType.DefaultLabeling]: null,
+        [WorkflowNodeType.TaskTransformation]: null,
         [WorkflowNodeType.InteractiveLabeling]: [],
-        [WorkflowNodeType.StoppageAnalysis]: undefined,
-        [WorkflowNodeType.InterimModelTraining]: undefined,
+        [WorkflowNodeType.StoppageAnalysis]: null,
+        [WorkflowNodeType.InterimModelTraining]: null,
         [WorkflowNodeType.Decision]: undefined,
         [WorkflowNodeType.Terminal]: undefined,
       } as Record<WorkflowNodeType, unknown>;
@@ -393,8 +393,10 @@ export default Vue.extend({
       this.$emit('remove:node', node);
     },
     onSelectNodes(nodes: FlowchartNode[]) {
+      // Note: store the node ids instead of directly storing the nodes
+      // in case the node properties stored in the child component is not up to date.
       this.selectedNodeIds = nodes.map((d) => d.id);
-      this.$emit('update:selection', this.getSelection());
+      this.$emit('select:nodes', this.selectedNodeIds);
     },
     onCreateEdge(edge: FlowchartEdge) {
       if (edge.source.nodeId === edge.target.nodeId) return;
@@ -421,8 +423,10 @@ export default Vue.extend({
       this.$emit('remove:edge', edge);
     },
     onSelectEdges(edges: FlowchartEdge[]) {
+      // Note: store the node ids instead of directly storing the nodes
+      // in case the node properties stored in the child component is not up to date.
       this.selectedEdgeIds = edges.map((d) => d.id);
-      this.$emit('update:selection', this.getSelection());
+      this.$emit('select:edges', this.selectedEdgeIds);
     },
     onRemoveSelected() {
       const toBeRemovedNodes = this.selectedNodes;
@@ -469,12 +473,6 @@ export default Vue.extend({
       if (key === 'Delete') {
         this.onRemoveSelected();
       }
-    },
-    getSelection(): (WorkflowNode | WorkflowEdge)[] {
-      return [
-        ...this.selectedNodes,
-        ...this.selectedEdges,
-      ];
     },
   },
 });
