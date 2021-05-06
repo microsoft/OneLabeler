@@ -4,6 +4,7 @@
     :methods="methodsFiltered"
     :models="modelsFiltered"
     :node="node"
+    :edge="edge"
     @edit:node="onEditNode"
     @create:method="onCreateMethod"
     @edit:method="onEditMethod"
@@ -25,9 +26,11 @@ import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import TheEdgeDetails from './TheEdgeDetails.vue';
 import TheElementDetailsSelectionEmpty from './TheElementDetailsSelectionEmpty.vue';
 import TheElementDetailsSelectionMultiple from './TheElementDetailsSelectionMultiple.vue';
 import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
+import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
 import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
 import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
@@ -35,6 +38,7 @@ import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTrai
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
 import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
+import TheNodeDetailsTerminal from './TheNodeDetailsTerminal.vue';
 
 const isElementNode = (
   element: WorkflowNode | WorkflowEdge,
@@ -43,9 +47,11 @@ const isElementNode = (
 export default Vue.extend({
   name: 'TheElementDetails',
   components: {
+    TheEdgeDetails,
     TheElementDetailsSelectionEmpty,
     TheElementDetailsSelectionMultiple,
     TheNodeDetailsDataObjectSelection,
+    TheNodeDetailsDecision,
     TheNodeDetailsDefaultLabeling,
     TheNodeDetailsFeatureExtraction,
     TheNodeDetailsInteractiveLabeling,
@@ -53,6 +59,7 @@ export default Vue.extend({
     TheNodeDetailsInitialization,
     TheNodeDetailsStoppageAnalysis,
     TheNodeDetailsTaskTransformation,
+    TheNodeDetailsTerminal,
   },
   props: {
     methods: {
@@ -82,11 +89,12 @@ export default Vue.extend({
       return isElementNode(element) ? null : (element as WorkflowEdge);
     },
     component(): VueConstructor {
-      const { node, selection } = this;
+      const { edge, node, selection } = this;
       if (selection.length === 0) return TheElementDetailsSelectionEmpty;
       if (selection.length >= 2) return TheElementDetailsSelectionMultiple;
       const mapper = {
         [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsDataObjectSelection,
+        [WorkflowNodeType.Decision]: TheNodeDetailsDecision,
         [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsDefaultLabeling,
         [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsFeatureExtraction,
         [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsInteractiveLabeling,
@@ -94,9 +102,11 @@ export default Vue.extend({
         [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsStoppageAnalysis,
         [WorkflowNodeType.TaskTransformation]: TheNodeDetailsTaskTransformation,
         [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
+        [WorkflowNodeType.Terminal]: TheNodeDetailsTerminal,
       } as Partial<Record<WorkflowNodeType, VueConstructor>>;
-      if (node === null || !(node.type in mapper)) return TheElementDetailsSelectionEmpty;
-      return mapper[node.type] as VueConstructor;
+      if (node !== null && node.type in mapper) return mapper[node.type] as VueConstructor;
+      if (edge !== null) return TheEdgeDetails as VueConstructor;
+      return TheElementDetailsSelectionEmpty;
     },
     methodsFiltered(): Process[] | null {
       const { node } = this;

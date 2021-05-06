@@ -110,9 +110,9 @@ export default Vue.extend({
       const { subject } = notification;
       if (subject === null) return;
       if (this.isSubjectNode(notification)) {
-        this.$emit('select:nodes', [subject]);
+        this.$emit('select:nodes', [subject.id]);
       } else {
-        this.$emit('select:edges', [subject]);
+        this.$emit('select:edges', [subject.id]);
       }
     },
     isSubjectNode(notification: Notification): boolean {

@@ -309,7 +309,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters('workflow', [
-      'dataObjectSelectionMethod',
+      'dataObjectSelectionMethods',
       'startNode',
       'nextNodes',
     ]),
@@ -362,7 +362,7 @@ export default Vue.extend({
       return '';
     },
     dataObjectSelectionAlgorithmicEnabled(): boolean {
-      const methods = this.dataObjectSelectionMethod as Process[] | null;
+      const methods = this.dataObjectSelectionMethods as Process[] | null;
       if (methods === null) return false;
       return methods.findIndex((d) => d.isAlgorithmic) >= 0;
     },
@@ -501,11 +501,14 @@ export default Vue.extend({
       const labeledData = dataObjects.map((d: IImage, i: number) => {
         const pathSegments = (d.path as string).split('/');
         const filename = pathSegments[pathSegments.length - 1];
+        const classification = labels === null ? undefined : labels[i];
+        const objects = labelGeometricObjects === null ? undefined : labelGeometricObjects[i];
+        const mask = labelMasks === null ? undefined : labelMasks[i];
         return {
           filename,
-          label: labels[i],
-          labelGeometricObjects: labelGeometricObjects[i],
-          labelMask: labelMasks[i],
+          classification,
+          objects,
+          mask,
         };
       });
       saveObjectAsJSONFile(labeledData, 'labels.json');

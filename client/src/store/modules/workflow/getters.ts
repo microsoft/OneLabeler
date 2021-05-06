@@ -42,22 +42,22 @@ export const dataType = (state: IState): DataType | null => {
   return (node.value as { dataType: DataType }).dataType;
 };
 
-export const dataObjectSelectionMethod = (
+export const dataObjectSelectionMethods = (
   state: IState,
 ): Process[] | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.DataObjectSelection;
-  const node = nodes.find((d) => d.type === type);
-  if (node === undefined) return null;
-  return node.value as Process[];
+  const processes = nodes.filter((d) => d.type === type)
+    .map((d) => d.value).flat() as Process[];
+  return processes;
 };
 
-export const interactiveLabelingMethod = (
+export const interactiveLabelingMethods = (
   state: IState,
 ): Process[] | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.InteractiveLabeling;
-  const node = nodes.find((d) => d.type === type);
-  if (node === undefined) return null;
-  return node.value as Process[];
+  const processes = nodes.filter((d) => d.type === type)
+    .map((d) => d.value).flat() as Process[];
+  return processes;
 };

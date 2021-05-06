@@ -1,6 +1,4 @@
 import {
-  DataType,
-  LabelTaskType,
   ModelService,
   Process,
   WorkflowNode,
@@ -27,18 +25,6 @@ export default {
     edges: WorkflowEdge[],
   ): void {
     state.edges = edges;
-  },
-  [types.SET_DATA_TYPE](
-    state: IState,
-    dataType: DataType,
-  ): void {
-    state.dataType = dataType;
-  },
-  [types.SET_LABEL_TASKS](
-    state: IState,
-    labelTasks: LabelTaskType[],
-  ): void {
-    state.labelTasks = labelTasks;
   },
   [types.SET_MODEL_SERVICES](
     state: IState,

@@ -11,42 +11,42 @@ import {
 export interface IState {
   /** The data labeling project record attributes. */
   /** The data objects to be labeled */
-  dataObjects: IDataObject[],
+  dataObjects: IDataObject[];
   /** The label category options. */
-  classes: Label[],
+  classes: Label[];
   /** The decision whether the data labeling process should stop. */
-  stop: boolean,
+  stop: boolean;
   /** The data object labels. */
-  labels: Label[],
+  labels: Label[] | null;
   /** The data object geometric object annotations (one image can contain multiple objects). */
-  labelGeometricObjects: ILabelGeometricObject[][],
+  labelGeometricObjects: ILabelGeometricObject[][] | null;
   /** The data object segmentation masks. */
-  labelMasks: ILabelMask[],
+  labelMasks: ILabelMask[] | null;
   /** The label statuses of the data objects. */
-  statuses: Status[],
+  statuses: Status[];
   /** The label mark of unlabeled data objects. */
-  unlabeledMark: Label,
+  unlabeledMark: Label;
   /** The names of data object features. */
-  featureNames: string[],
+  featureNames: string[];
 
   /** The data labeling system status attributes. */
   /** The cache storing mapping from uuids to data object index. */
-  uuidToIdx: { [key: string]: number },
+  uuidToIdx: { [key: string]: number };
   /** The indices of sampled data objects. */
-  queryIndices: number[],
+  queryIndices: number[];
   /** The history of label editing commands (used for undo command). */
-  commandHistory: ICommand[],
+  commandHistory: ICommand[];
   /** The popup message to be shown in the interface. */
-  message: IMessage | null,
+  message: IMessage | null;
 }
 
 export const createInitialState = (): IState => ({
   dataObjects: [],
   classes: [],
   stop: false,
-  labels: [],
-  labelGeometricObjects: [],
-  labelMasks: [],
+  labels: null,
+  labelGeometricObjects: null,
+  labelMasks: null,
   statuses: [],
   unlabeledMark: '-1',
   featureNames: [],

@@ -1,0 +1,62 @@
+<template>
+  <v-card
+    style="width: 100%; height: 100%"
+    tile
+  >
+    <v-card-title class="view-header">
+      <v-icon
+        class="px-2"
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.parameter
+      </v-icon>
+      {{ viewTitle }}
+    </v-card-title>
+    <v-divider />
+    <v-card-actions class="pa-0">
+      <v-list
+        style="width: 100%"
+        dense
+        subheader
+      >
+        <!-- The data type selection. -->
+        <v-list-item class="pa-0">
+          <span class="pl-4 py-2 subtitle-2">
+            Decision Criteria
+          </span>
+          <span
+            class="pl-4 py-2 subtitle-2 grey--text"
+            style="
+              text-decoration: underline;
+              text-decoration-style: dotted;
+              text-underline-position: under;
+            "
+          >
+            stop == true ?
+          </span>
+        </v-list-item>
+      </v-list>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script lang="ts">
+import Vue, { PropType } from 'vue';
+import { WorkflowNode } from '@/commons/types';
+
+export default Vue.extend({
+  name: 'TheNodeDetailsDecision',
+  props: {
+    node: {
+      type: Object as PropType<WorkflowNode>,
+      default: null,
+    },
+  },
+  data() {
+    return {
+      viewTitle: 'Decision',
+    };
+  },
+});
+</script>

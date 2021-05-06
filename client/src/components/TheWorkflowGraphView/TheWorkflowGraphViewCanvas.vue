@@ -1,28 +1,56 @@
 <template>
-  <v-container
+  <div
     class="pa-0"
-    style="height: 600px"
+    style="height: 600px; width: 100%;"
   >
+    <!-- set tabindex=-1 to make the element focusable -->
     <VFlowchart
       id="flowchart-canvas"
       ref="chart"
       :nodes="flowchartGraph.nodes"
       :edges="flowchartGraph.edges"
+      tabindex="-1"
       style="height: 600px; width: 100%;"
       @edit:node="onEditNode"
       @create:edge="onCreateEdge"
       @select:nodes="onSelectNodes"
       @select:edges="onSelectEdges"
       @contextmenu="onContextMenuOfCanvas"
+      @contextmenu:edge="onContextMenuOfEdge"
     >
       <template #node-shape="props">
-        <g @contextmenu.stop="onContextMenuOfNode($event, props.node)">
+        <g @contextmenu.stop="onContextMenuOfNode(props.node, $event)">
           <template v-if="isNodeInitialization(props.node) || isNodeProcess(props.node)">
+            <template v-if="isNodeInteractive(props.node)">
+              <!-- icon denoting the node is interactive -->
+              <rect
+                width="20"
+                height="20"
+                y="-20"
+                fill="white"
+                stroke="#bbb"
+                stroke-width="1"
+              />
+              <text
+                x="10"
+                y="-5"
+                style="
+                  text-anchor: middle;
+                  user-select: none;
+                  font-family: Font Awesome\ 5 Free;
+                  font-weight: 900;
+                "
+              >
+                &#xf007;
+              </text>
+            </template>
             <rect
               :width="props.node.width"
               :height="props.node.height"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
+              :stroke="props.isSelected
+                ? 'black'
+                : (isNodeCurrent(props.node) ? 'red' : '#bbb')"
+              fill="white"
               stroke-width="1"
             />
             <rect
@@ -38,8 +66,10 @@
                 ${props.node.width},${props.node.height / 2}
                 ${props.node.width / 2},${props.node.height}
                 0,${props.node.height / 2}`"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
+              :stroke="props.isSelected
+                ? 'black'
+                : (isNodeCurrent(props.node) ? 'red' : '#bbb')"
+              fill="white"
               stroke-width="1"
             />
           </template>
@@ -48,44 +78,16 @@
               :r="props.node.height / 2"
               :cx="props.node.width / 2"
               :cy="props.node.height / 2"
-              :stroke="props.isSelected ? 'black' : '#bbb'"
-              fill-opacity="0"
+              :stroke="props.isSelected
+                ? 'black'
+                : (isNodeCurrent(props.node) ? 'red' : '#bbb')"
+              fill="white"
               stroke-width="1"
             />
           </template>
         </g>
       </template>
     </VFlowchart>
-
-    <!-- The context menu for nodes. -->
-    <v-menu
-      v-model="showMenuOfNode"
-      :position-x="rightClickClientX"
-      :position-y="rightClickClientY"
-      content-class="elevation-2"
-      offset-y
-    >
-      <v-list
-        class="py-0"
-        style="font-size:12px"
-      >
-        <v-list-item
-          class="py-0 pl-0 pr-1"
-          style="min-height:24px"
-          @click="onRemoveSelected"
-        >
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            style="font-size:12px"
-            small
-          >
-            $vuetify.icons.values.close
-          </v-icon>
-          Remove
-        </v-list-item>
-      </v-list>
-    </v-menu>
 
     <!-- The context menu for canvas. -->
     <v-menu
@@ -110,7 +112,83 @@
         </v-list-item>
       </v-list>
     </v-menu>
-  </v-container>
+
+    <!-- The context menu for edges. -->
+    <v-menu
+      v-model="showMenuOfEdge"
+      :position-x="rightClickClientX"
+      :position-y="rightClickClientY"
+      content-class="elevation-2"
+      offset-y
+    >
+      <v-list
+        class="py-0"
+        style="font-size:12px"
+      >
+        <v-list-item
+          class="py-0 pl-0 pr-1"
+          style="min-height:24px"
+          @click="onRemoveSelected"
+        >
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            style="font-size:12px; width: 1.5rem;"
+            small
+          >
+            $vuetify.icons.values.reset
+          </v-icon>
+          Remove
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
+    <!-- The context menu for nodes. -->
+    <v-menu
+      v-model="showMenuOfNode"
+      :position-x="rightClickClientX"
+      :position-y="rightClickClientY"
+      content-class="elevation-2"
+      offset-y
+    >
+      <v-list
+        class="py-0"
+        style="font-size:12px"
+      >
+        <v-list-item
+          v-if="selectedEdges.length === 0 && selectedNodes.length === 1"
+          class="py-0 pl-0 pr-1"
+          style="min-height:24px"
+          @click="onJumpToSelectedNode"
+        >
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            style="font-size:12px; width: 1.5rem;"
+            small
+          >
+            $vuetify.icons.values.skip
+          </v-icon>
+          Jump To
+        </v-list-item>
+        <v-list-item
+          class="py-0 pl-0 pr-1"
+          style="min-height:24px"
+          @click="onRemoveSelected"
+        >
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            style="font-size:12px; width: 1.5rem;"
+            small
+          >
+            $vuetify.icons.values.reset
+          </v-icon>
+          Remove
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </div>
 </template>
 
 <script lang="ts">
@@ -219,16 +297,20 @@ export default Vue.extend({
       type: Object as PropType<WorkflowGraph>,
       default: null,
     },
+    currentNode: {
+      type: Object as PropType<WorkflowNode>,
+      default: null,
+    },
   },
   data() {
     return {
-      showMenuOfNode: false,
       showMenuOfCanvas: false,
+      showMenuOfEdge: false,
+      showMenuOfNode: false,
       rightClickClientX: null as null | number,
       rightClickClientY: null as null | number,
       rightClickCanvasX: null as null | number,
       rightClickCanvasY: null as null | number,
-      rightClickedNode: null as null | WorkflowNode,
       createNodeMenu,
       selectedNodeIds: [] as string[],
       selectedEdgeIds: [] as string[],
@@ -318,18 +400,51 @@ export default Vue.extend({
       }
       return false;
     },
-    onContextMenuOfNode(e: MouseEvent, node: WorkflowNode): void {
-      this.showMenuOfCanvas = false;
+    isNodeInteractive(node: FlowchartNode): boolean {
+      const match = this.graph.nodes.find((d) => d.id === node.id);
+      if (match === undefined) return false;
+      if (!this.isNodeProcess(match)) return false;
+      if (match.value === null) return false;
+      if (Array.isArray(match.value)) {
+        return (match.value as Process[]).find((d) => !d.isAlgorithmic) !== undefined;
+      }
+      return !(match.value as Process).isAlgorithmic;
+    },
+    isNodeCurrent(node: WorkflowNode): boolean {
+      if (this.currentNode === null) return false;
+      return node.id === this.currentNode.id;
+    },
+    isCanvasActive(): boolean {
+      const { activeElement } = document;
+      if (activeElement === null) return false;
+      const canvas = ((this.$refs.chart as Vue).$el as HTMLElement);
+      return activeElement === canvas;
+    },
+    focusToCanvas() {
+      const canvas = ((this.$refs.chart as Vue).$el as HTMLElement);
+      canvas.focus();
+    },
+    onContextMenuOfNode(node: FlowchartNode, e: MouseEvent): void {
       e.preventDefault();
+      this.showMenuOfCanvas = false;
+      this.showMenuOfEdge = false;
       this.showMenuOfNode = true;
       this.rightClickClientX = e.clientX;
       this.rightClickClientY = e.clientY;
-      this.rightClickedNode = node;
+    },
+    onContextMenuOfEdge(edge: FlowchartNode, e: MouseEvent): void {
+      e.preventDefault();
+      this.showMenuOfCanvas = false;
+      this.showMenuOfEdge = true;
+      this.showMenuOfNode = false;
+      this.rightClickClientX = e.clientX;
+      this.rightClickClientY = e.clientY;
     },
     onContextMenuOfCanvas(e: MouseEvent): void {
-      this.showMenuOfNode = false;
       e.preventDefault();
       this.showMenuOfCanvas = true;
+      this.showMenuOfEdge = false;
+      this.showMenuOfNode = false;
       this.rightClickClientX = e.clientX;
       this.rightClickClientY = e.clientY;
       this.rightClickCanvasX = e.offsetX;
@@ -373,6 +488,7 @@ export default Vue.extend({
         },
       } as WorkflowNode;
       this.$emit('create:node', node);
+      this.focusToCanvas();
     },
     onEditNode(node: FlowchartNode) {
       const { id } = node;
@@ -441,8 +557,17 @@ export default Vue.extend({
       toBeRemovedNodes.forEach((node) => {
         this.onRemoveNode(node);
       });
+      this.focusToCanvas();
+    },
+    onJumpToSelectedNode() {
+      if (this.selectedNodes.length !== 1) return;
+      const [node] = this.selectedNodes;
+      this.$emit('jumpto:node', node);
+      this.focusToCanvas();
     },
     onKey(e: KeyboardEvent): void {
+      if (!this.isCanvasActive()) return;
+
       const { key, ctrlKey } = e;
       const movementMapper = {
         ArrowLeft: { dx: -10, dy: 0 },

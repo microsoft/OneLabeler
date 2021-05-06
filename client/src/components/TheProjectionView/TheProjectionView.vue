@@ -12,7 +12,7 @@
       style="height: calc(100% - 30px)"
     >
       <v-container
-        v-if="nDataObjects >= 2"
+        v-if="nDataObjects >= 2 && isFeatureValuesValid"
         :style="{
           height: '100%',
           display: 'grid',
@@ -50,10 +50,16 @@
         />
       </v-container>
       <p
-        v-else
+        v-else-if="nDataObjects <= 1"
         class="mx-auto subtitle-1"
       >
         Less Than 2 Data Objects Loaded
+      </p>
+      <p
+        v-else
+        class="mx-auto subtitle-1"
+      >
+        Feature Values not Computed
       </p>
     </v-card-actions>
   </v-card>
@@ -130,6 +136,11 @@ export default Vue.extend({
     ...mapGetters('workflow', ['nextNodes']),
     nDataObjects(): number {
       return this.dataObjects.length;
+    },
+    isFeatureValuesValid(): boolean {
+      const { featureValues } = this;
+      return Array.isArray(featureValues)
+        && featureValues.every((d) => Array.isArray(d));
     },
   },
   watch: {

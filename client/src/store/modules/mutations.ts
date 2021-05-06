@@ -45,6 +45,7 @@ export default {
       inQueryIndices,
     }: { uuid: string, label: Label, inQueryIndices: boolean },
   ): void {
+    if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabels = [...state.labels];
     const idx = inQueryIndices
@@ -61,6 +62,7 @@ export default {
       inQueryIndices,
     }: { uuids: string[], labels: Label[], inQueryIndices: boolean },
   ): void {
+    if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabels = [...state.labels];
     uuids.forEach((uuid: string, i: number) => {
@@ -80,6 +82,7 @@ export default {
       inQueryIndices,
     }: { uuid: string, labelMask: ILabelMask, inQueryIndices: boolean },
   ): void {
+    if (state.labelMasks === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabelMasks = [...state.labelMasks];
     const idx = inQueryIndices
@@ -100,6 +103,7 @@ export default {
         inQueryIndices: boolean,
     },
   ): void {
+    if (state.labelGeometricObjects === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabelGeometricObjects = [...state.labelGeometricObjects];
     const idx = inQueryIndices

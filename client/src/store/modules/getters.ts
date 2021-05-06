@@ -28,20 +28,23 @@ export const sampledDataObjects = (state: IState): IDataObject[] => {
   return queryIndices.map((index: number) => dataObjects[index]);
 };
 
-export const sampledDataObjectLabels = (state: IState): Label[] => {
+export const sampledDataObjectLabels = (state: IState): Label[] | null => {
   const { labels, queryIndices } = state;
+  if (labels === null) return null;
   return queryIndices.map((index: number) => labels[index]);
 };
 
 export const sampledDataObjectLabelGeometricObjects = (
   state: IState,
-): ILabelGeometricObject[][] => {
+): ILabelGeometricObject[][] | null => {
   const { labelGeometricObjects, queryIndices } = state;
+  if (labelGeometricObjects === null) return null;
   return queryIndices.map((index: number) => labelGeometricObjects[index]);
 };
 
-export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] => {
+export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] | null => {
   const { labelMasks, queryIndices } = state;
+  if (labelMasks === null) return null;
   return queryIndices.map((index: number) => labelMasks[index]);
 };
 

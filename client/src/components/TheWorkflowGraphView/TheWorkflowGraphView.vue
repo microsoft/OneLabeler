@@ -29,10 +29,12 @@
             <!-- The graph canvas. -->
             <TheWorkflowGraphViewCanvas
               :graph="{ nodes, edges }"
+              :current-node="currentNode"
               @create:node="onCreateNode"
               @edit:node="onEditNode"
               @remove:node="onRemoveNode"
               @select:nodes="onSelectNodes"
+              @jumpto:node="onJumpToNode"
               @create:edge="onCreateEdge"
               @remove:edge="onRemoveEdge"
               @select:edges="onSelectEdges"
@@ -103,6 +105,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('workflow', [
+      'currentNode',
       'nodes',
       'edges',
       'modelServices',
@@ -131,6 +134,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions('workflow', [
+      'setCurrentNode',
       'pushModelServices',
       'editModelService',
       'pushNodes',
@@ -162,6 +166,9 @@ export default Vue.extend({
     },
     onSelectNodes(ids: string[]) {
       this.selectedNodeIds = ids;
+    },
+    onJumpToNode(node: WorkflowNode) {
+      this.setCurrentNode(node);
     },
     onCreateEdge(edge: WorkflowEdge) {
       this.pushEdges(edge);

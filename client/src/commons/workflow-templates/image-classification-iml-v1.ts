@@ -49,9 +49,19 @@ export default {
     },
     {
       id: 'node-6411710',
-      label: 'clustering',
+      label: 'projection + clustering',
       type: WorkflowNodeType.DataObjectSelection,
       value: [{
+        type: ProcessType.DataObjectSelection,
+        label: 'Projection (User Sampling)',
+        id: 'Projection',
+        inputs: ['features', 'labels'],
+        isAlgorithmic: false,
+        isBuiltIn: true,
+        isModelBased: false,
+        isServerless: true,
+        api: 'Projection',
+      }, {
         type: ProcessType.DataObjectSelection,
         label: 'Cluster (Clustering)',
         id: 'Cluster-13466955',
@@ -115,58 +125,6 @@ export default {
       },
     },
     {
-      id: 'node-44355165',
-      label: 'projection',
-      type: WorkflowNodeType.DataObjectSelection,
-      value: [{
-        type: ProcessType.DataObjectSelection,
-        label: 'Projection (User Sampling)',
-        id: 'Projection',
-        inputs: ['features', 'labels'],
-        isAlgorithmic: false,
-        isBuiltIn: true,
-        isModelBased: false,
-        isServerless: true,
-        api: 'Projection',
-      }],
-      layout: {
-        x: 520,
-        y: 40,
-        width: 80,
-        height: 60,
-      },
-    },
-    {
-      id: 'node-44909500',
-      label: 'decision tree prelabel',
-      type: WorkflowNodeType.DefaultLabeling,
-      value: {
-        type: ProcessType.DefaultLabeling,
-        label: 'ModelPrediction',
-        id: 'ModelPrediction-29967546',
-        inputs: ['features', 'model'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: true,
-        isServerless: false,
-        model: {
-          type: 'DecisionTree',
-          label: 'DecisionTree (Supervised)',
-          objectId: (new ObjectId('DecisionTree')).toHexString(),
-          isBuiltIn: true,
-          isServerless: false,
-          isValidSampler: false,
-        },
-        api: 'http://localhost:8005/defaultLabels/ModelPrediction',
-      },
-      layout: {
-        x: 640,
-        y: 40,
-        width: 80,
-        height: 60,
-      },
-    },
-    {
       id: 'node-63746075',
       label: 'direct labeling',
       type: WorkflowNodeType.TaskTransformation,
@@ -181,7 +139,7 @@ export default {
         isServerless: true,
       },
       layout: {
-        x: 760,
+        x: 520,
         y: 40,
         width: 80,
         height: 60,
@@ -226,8 +184,8 @@ export default {
         },
       }],
       layout: {
-        x: 760,
-        y: 140,
+        x: 640,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -248,8 +206,8 @@ export default {
         api: 'AllChecked',
       },
       layout: {
-        x: 640,
-        y: 140,
+        x: 760,
+        y: 40,
         width: 80,
         height: 60,
       },
@@ -259,8 +217,8 @@ export default {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
       layout: {
-        x: 520,
-        y: 140,
+        x: 760,
+        y: 130,
         width: 80,
         height: 60,
       },
@@ -270,8 +228,8 @@ export default {
       label: 'exit',
       type: WorkflowNodeType.Terminal,
       layout: {
-        x: 530,
-        y: 240,
+        x: 770,
+        y: 220,
         width: 60,
         height: 60,
       },
@@ -292,8 +250,8 @@ export default {
         api: 'http://localhost:8005/modelUpdated/Retrain',
       },
       layout: {
-        x: 400,
-        y: 140,
+        x: 280,
+        y: 130,
         width: 80,
         height: 60,
       },
@@ -354,40 +312,6 @@ export default {
     {
       id: 'edge-33448528',
       source: 'node-86803967',
-      target: 'node-44355165',
-      layout: {
-        source: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
-        },
-        target: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
-        },
-      },
-    },
-    {
-      id: 'edge-13012653',
-      source: 'node-44355165',
-      target: 'node-44909500',
-      layout: {
-        source: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
-        },
-        target: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
-        },
-      },
-    },
-    {
-      id: 'edge-16973588',
-      source: 'node-44909500',
       target: 'node-63746075',
       layout: {
         source: {
@@ -408,14 +332,14 @@ export default {
       target: 'node-44216216',
       layout: {
         source: {
-          direction: PortDirection.Bottom,
-          dx: 40,
-          dy: 60,
+          direction: PortDirection.Right,
+          dx: 80,
+          dy: 30,
         },
         target: {
-          direction: PortDirection.Top,
-          dx: 40,
-          dy: 0,
+          direction: PortDirection.Left,
+          dx: 0,
+          dy: 30,
         },
       },
     },
@@ -425,13 +349,13 @@ export default {
       target: 'node-70767097',
       layout: {
         source: {
-          direction: PortDirection.Left,
-          dx: 0,
+          direction: PortDirection.Right,
+          dx: 80,
           dy: 30,
         },
         target: {
-          direction: PortDirection.Right,
-          dx: 80,
+          direction: PortDirection.Left,
+          dx: 0,
           dy: 30,
         },
       },
@@ -442,14 +366,14 @@ export default {
       target: 'node-69466632',
       layout: {
         source: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
+          direction: PortDirection.Bottom,
+          dx: 40,
+          dy: 60,
         },
         target: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
+          direction: PortDirection.Top,
+          dx: 40,
+          dy: 0,
         },
       },
     },
@@ -495,9 +419,9 @@ export default {
       target: 'node-6411710',
       layout: {
         source: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
+          direction: PortDirection.Top,
+          dx: 40,
+          dy: 0,
         },
         target: {
           direction: PortDirection.Bottom,

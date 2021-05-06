@@ -19,6 +19,13 @@ import * as rootTypes from '../mutation-types';
 import { IState } from './state';
 import { IState as IRootState } from '../state';
 
+export const setCurrentNode = (
+  { commit }: ActionContext<IState, IRootState>,
+  node: WorkflowNode | null,
+): void => {
+  commit(types.SET_CURRENT_NODE, node);
+};
+
 export const setNodes = (
   { commit }: ActionContext<IState, IRootState>,
   nodes: WorkflowNode[],
@@ -99,66 +106,7 @@ export const resetGraph = (
 ): void => {
   commit(types.SET_NODES, []);
   commit(types.SET_EDGES, []);
-};
-
-export const setDataType = (
-  { commit }: ActionContext<IState, IRootState>,
-  dataType: DataType,
-): void => {
-  commit(types.SET_DATA_TYPE, dataType);
-};
-
-export const setLabelTasks = (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-  labelTasks: LabelTaskType[],
-): void => {
-  const labelTasksOld = state.labelTasks;
-  const { dataObjects, unlabeledMark } = rootState;
-  commit(types.SET_LABEL_TASKS, labelTasks);
-
-  // Initialize labels for new tasks, and reset labels for deleted tasks.
-  const enableImageClassificationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableObjectDetectionOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableObjectDetection = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableImageSegmentationOld = labelTasksOld.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-  const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-
-  if (!enableImageClassification) {
-    commit(rootTypes.SET_LABELS, [], { root: true });
-  }
-  if (!enableImageClassificationOld && enableImageClassification) {
-    const labels = Array(dataObjects.length).fill(unlabeledMark);
-    commit(rootTypes.SET_LABELS, labels, { root: true });
-  }
-  if (!enableObjectDetection) {
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, [], { root: true });
-  }
-  if (!enableObjectDetectionOld && enableObjectDetection) {
-    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
-  }
-  if (!enableImageSegmentation) {
-    commit(rootTypes.SET_LABEL_MASKS, [], { root: true });
-  }
-  if (!enableImageSegmentationOld && enableImageSegmentation) {
-    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
-      path: null,
-    }));
-    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
-  }
+  commit(types.SET_CURRENT_NODE, null);
 };
 
 export const setModelServices = (
@@ -219,60 +167,41 @@ export const editProcess = (
 };
 
 export const executeDataObjectExtraction = async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  { commit }: ActionContext<IState, IRootState>,
   files: FileList,
 ): Promise<void> => {
-  const { labelTasks } = state;
-  const { unlabeledMark } = rootState;
-
   // Extract data objects.
   const dataObjects = (await API.dataObjectExtraction(files));
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
-  // Initialize labels and label statuses.
-  const enableImageClassification = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Classification,
-  ) >= 0;
-  const enableObjectDetection = labelTasks.findIndex(
-    (d) => d === LabelTaskType.ObjectDetection,
-  ) >= 0;
-  const enableImageSegmentation = labelTasks.findIndex(
-    (d) => d === LabelTaskType.Segmentation,
-  ) >= 0;
-  if (enableImageClassification) {
-    const labels = Array(dataObjects.length).fill(unlabeledMark);
-    commit(rootTypes.SET_LABELS, labels, { root: true });
-  }
-  if (enableObjectDetection) {
-    const labelGeometricObjects = Array(dataObjects.length).fill(null).map(() => Array(0));
-    commit(rootTypes.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects, { root: true });
-  }
-  if (enableImageSegmentation) {
-    const labelMasks = Array(dataObjects.length).fill(null).map(() => ({
-      path: null,
-    }));
-    commit(rootTypes.SET_LABEL_MASKS, labelMasks, { root: true });
-  }
+  // Initialize label statuses.
   const statuses = Array(dataObjects.length).fill(Status.New);
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
-export const executeInterimModelTraining = async (
+export const executeInterimModelTraining = (
   { state, rootState }: ActionContext<IState, IRootState>,
   method: Process,
-): Promise<void> => {
+) => {
+  const isProcessNode = (node: WorkflowNode): boolean => (
+    node.type !== WorkflowNodeType.Initialization
+    && node.type !== WorkflowNodeType.Decision
+    && node.type !== WorkflowNodeType.Terminal
+  );
   const {
     dataObjects,
     labels,
     statuses,
   } = rootState;
   const { nodes } = state;
-  nodes.forEach(async (d) => {
-    if (Array.isArray(d.value)) {
-      const nodeMethods = d.value as Process[];
-      nodeMethods.forEach(async (m) => {
-        if (!m.isModelBased) return;
-        const model = m.model as ModelService;
+  nodes.filter((d) => isProcessNode(d))
+    .forEach((d) => {
+      const nodeMethods = Array.isArray(d.value)
+        ? d.value as Process[]
+        : [d.value as Process];
+      nodeMethods.forEach(async (nodeMethod) => {
+        if (!nodeMethod.isModelBased) return;
+        const model = nodeMethod.model as ModelService;
         (await API.interimModelTraining(
           method,
           model,
@@ -281,19 +210,7 @@ export const executeInterimModelTraining = async (
           statuses,
         ));
       });
-    } else {
-      const nodeMethod = d.value as Process;
-      if (!nodeMethod.isModelBased) return;
-      const model = nodeMethod.model as ModelService;
-      (await API.interimModelTraining(
-        method,
-        model,
-        dataObjects,
-        labels,
-        statuses,
-      ));
-    }
-  });
+    });
 };
 
 export const executeDataObjectSelectionAlgorithmic = async (
@@ -306,6 +223,8 @@ export const executeDataObjectSelectionAlgorithmic = async (
     queryIndices,
     unlabeledMark,
   } = rootState;
+
+  if (labels === null) return;
 
   // Set the labels of samples in the last batch confirmed
   const newStatuses = [...statuses];
@@ -345,6 +264,8 @@ export const executeDataObjectSelectionManual = async (
     queryIndices,
     unlabeledMark,
   } = rootState;
+
+  if (labels === null) return;
 
   // Set the labels of samples in the last batch confirmed
   const newStatuses = [...statuses];
@@ -397,6 +318,7 @@ export const executeFeatureExtraction = async (
   const { dataObjects, labels, statuses } = rootState;
 
   if (dataObjects === null) return;
+  if (labels === null) return;
 
   const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
@@ -484,14 +406,18 @@ export const executeWorkflow = async (
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
+    const algorithmicMethod = (node.value as Process[])
+      .find((d) => d.isAlgorithmic);
     const interactiveMethod = (node.value as Process[])
       .find((d) => !d.isAlgorithmic);
+    if (algorithmicMethod !== undefined) {
+      await executeDataObjectSelectionAlgorithmic(store, algorithmicMethod);
+    }
     if (interactiveMethod !== undefined) {
       return;
     }
-    const [method] = node.value as Process[];
-    await executeDataObjectSelectionAlgorithmic(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
+    commit(types.SET_CURRENT_NODE, outputNode);
   }
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {

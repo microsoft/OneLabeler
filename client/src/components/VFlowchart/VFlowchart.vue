@@ -10,19 +10,6 @@
     @mouseleave="onMouseLeaveCanvas"
     @contextmenu="onContextMenu"
   >
-    <!-- The selection box -->
-    <rect
-      v-if="selectionBox !== null"
-      :x="selectionBox.xMin"
-      :y="selectionBox.yMin"
-      :width="selectionBox.xMax - selectionBox.xMin"
-      :height="selectionBox.yMax - selectionBox.yMin"
-      stroke="#ababab"
-      stroke-width="1"
-      fill="black"
-      fill-opacity="0.1"
-    />
-
     <!-- The flowchart edges. -->
     <g
       v-for="edge in [...edges].sort((a, b) => {
@@ -34,7 +21,8 @@
       })"
       :key="edge.id"
       cursor="pointer"
-      @click="onClickEdge(edge, $event)"
+      @mousedown="onMouseDownEdge(edge, $event)"
+      @contextmenu.stop="onContextMenuOfEdge(edge, $event)"
     >
       <slot
         name="edge"
@@ -154,6 +142,19 @@
         @mousedown.stop="onMouseDownPort(port)"
       />
     </g>
+
+    <!-- The selection box -->
+    <rect
+      v-if="selectionBox !== null"
+      :x="selectionBox.xMin"
+      :y="selectionBox.yMin"
+      :width="selectionBox.xMax - selectionBox.xMin"
+      :height="selectionBox.yMax - selectionBox.yMin"
+      stroke="#ababab"
+      stroke-width="1"
+      fill="black"
+      fill-opacity="0.1"
+    />
 
     <!-- The edge arrow head. -->
     <marker
@@ -400,7 +401,7 @@ export default Vue.extend({
     onCreateEdge(edge: FlowchartEdge): void {
       this.$emit('create:edge', edge);
     },
-    onClickEdge(edge: FlowchartEdge, event: MouseEvent): void {
+    onMouseDownEdge(edge: FlowchartEdge, event: MouseEvent): void {
       const { ctrlKey } = event;
       const isSelected = this.isEdgeSelected(edge);
       if (!ctrlKey && !isSelected) {
@@ -538,10 +539,7 @@ export default Vue.extend({
       const source = this.draggedPort;
       if (source !== null && target !== null) {
         this.onCreateEdge({
-          id: `${source.nodeId}
-            -${source.direction}
-            -${target.nodeId}
-            -${target.direction}`,
+          id: `${source.nodeId}-${source.direction}-${target.nodeId}-${target.direction}`,
           source,
           target,
         });
@@ -558,6 +556,9 @@ export default Vue.extend({
     },
     onContextMenu(e: MouseEvent) {
       this.$emit('contextmenu', e);
+    },
+    onContextMenuOfEdge(edge: FlowchartEdge, e: MouseEvent) {
+      this.$emit('contextmenu:edge', edge, e);
     },
     clearDragState(): void {
       this.dragStartPoint = null;
