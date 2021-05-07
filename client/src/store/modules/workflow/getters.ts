@@ -7,11 +7,11 @@ import {
 } from '@/commons/types';
 import { IState } from './state';
 
-export const startNode = (state: IState): WorkflowNode => {
+export const startNode = (state: IState): WorkflowNode | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.Initialization;
   const node = nodes.find((d) => d.type === type) as WorkflowNode;
-  return node;
+  return node === undefined ? null : node;
 };
 
 export const nextNodes = (state: IState): WorkflowNode[] | null => {

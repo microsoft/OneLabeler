@@ -141,7 +141,7 @@ import {
 import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
 import imageClassificationIML from '@/commons/workflow-templates/image-classification-iml';
 import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
-import VUploadButton from './VUploadButton.vue';
+import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
   JsonGraph,
@@ -173,16 +173,10 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
 };
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogButton',
+  name: 'TheWorkflowPanel',
   components: {
     VUploadButton,
     TheWorkflowGraphView,
-  },
-  props: {
-    height: {
-      default: 40,
-      type: Number,
-    },
   },
   data() {
     return {

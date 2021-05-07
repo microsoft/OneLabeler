@@ -44,6 +44,7 @@ const icons = {
   error: 'fas fa-times-circle',
   diagram: 'fas fa-project-diagram',
   skip: 'fas fa-forward',
+  dashboard: 'fas fa-tachometer-alt',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

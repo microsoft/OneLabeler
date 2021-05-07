@@ -2,7 +2,7 @@
   <v-dialog
     v-model="dialog"
     persistent
-    max-width="1700px"
+    width="fit-content"
     content-class="rounded-0"
   >
     <template #activator="{ on }">
@@ -16,12 +16,12 @@
           aria-hidden="true"
           small
         >
-          $vuetify.icons.values.config
+          $vuetify.icons.values.dashboard
         </v-icon>
-        Workflow
+        Dashboard
       </v-btn>
     </template>
-    <TheWorkflowPanel
+    <TheDashboardPanel
       @click:close="onClickClose"
     />
   </v-dialog>
@@ -29,12 +29,12 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import TheWorkflowPanel from '../TheWorkflowPanel/TheWorkflowPanel.vue';
+import TheDashboardPanel from '../TheDashboardPanel/TheDashboardPanel.vue';
 
 export default Vue.extend({
-  name: 'TheNavBarViewDialogButton',
+  name: 'TheNavBarViewDashboardDialogButton',
   components: {
-    TheWorkflowPanel,
+    TheDashboardPanel,
   },
   data() {
     return {

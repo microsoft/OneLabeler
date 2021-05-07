@@ -9,12 +9,8 @@
         class="pr-1"
         style="flex-basis: 60%;"
       >
-        <v-card
-          tile
-        >
-          <v-card-title
-            class="view-header"
-          >
+        <v-card tile>
+          <v-card-title class="view-header">
             <v-icon
               class="px-2"
               aria-hidden="true"
@@ -84,7 +80,6 @@ import {
   Process,
   WorkflowEdge,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
@@ -121,10 +116,10 @@ export default Vue.extend({
         selectedEdgeIds,
       } = this;
       const selectedNodes = selectedNodeIds.map((d) => (
-        nodes.find((node) => node.id === d) as WorkflowNode
+        (nodes as WorkflowNode[]).find((node) => node.id === d) as WorkflowNode
       ));
       const selectedEdges = selectedEdgeIds.map((d) => (
-        edges.find((edge) => edge.id === d) as WorkflowEdge
+        (edges as WorkflowEdge[]).find((edge) => edge.id === d) as WorkflowEdge
       ));
       return [
         ...selectedNodes,

@@ -142,8 +142,11 @@
     </template>
     <v-spacer />
 
-    <!-- The configuration button. -->
-    <TheNavBarViewDialogButton />
+    <!-- The dashboard dialog button. -->
+    <TheNavBarViewDashboardDialogButton />
+
+    <!-- The workflow dialog button. -->
+    <TheNavBarViewWorkflowDialogButton />
   </v-toolbar>
 </template>
 
@@ -166,8 +169,9 @@ import {
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
-import VUploadButton from './VUploadButton.vue';
-import TheNavBarViewDialogButton from './TheNavBarViewDialogButton.vue';
+import VUploadButton from '../VUploadButton/VUploadButton.vue';
+import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
+import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
 
 type ProjectData = {
   dataObjects: IDataObject[],
@@ -289,7 +293,8 @@ export default Vue.extend({
   name: 'TheNavBarView',
   components: {
     VUploadButton,
-    TheNavBarViewDialogButton,
+    TheNavBarViewDashboardDialogButton,
+    TheNavBarViewWorkflowDialogButton,
   },
   props: {
     height: {
@@ -419,6 +424,7 @@ export default Vue.extend({
         content: 'Project Data Uploaded.',
         type: MessageType.Success,
       });
+      if (this.startNode === null) return;
       await this.executeWorkflow(this.startNode);
     },
     async onLoadProject(file: File): Promise<void> {
