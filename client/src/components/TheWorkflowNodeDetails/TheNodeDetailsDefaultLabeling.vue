@@ -13,22 +13,6 @@
         $vuetify.icons.values.parameter
       </v-icon>
       {{ viewTitle }}
-      <v-spacer />
-      <v-btn
-        title="recompute"
-        class="view-header-button mr-1"
-        x-small
-        icon
-        @click="onClickRecompute"
-      >
-        <v-icon
-          aria-hidden="true"
-          class="px-0"
-          small
-        >
-          $vuetify.icons.values.sync
-        </v-icon>
-      </v-btn>
     </v-card-title>
     <v-divider />
     <v-card-actions class="pa-0">
@@ -324,9 +308,6 @@ export default Vue.extend({
       const newMethod = { ...method, inputs };
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
-    },
-    onClickRecompute(): void {
-      this.$emit('click:recompute', this.node);
     },
   },
 });

@@ -159,6 +159,22 @@
           v-if="selectedEdges.length === 0 && selectedNodes.length === 1"
           class="py-0 pl-0 pr-1"
           style="min-height:24px"
+          @click="onFlowFromSelectedNode"
+        >
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            style="font-size:12px; width: 1.5rem;"
+            small
+          >
+            $vuetify.icons.values.flowChart
+          </v-icon>
+          Jump To & Flow
+        </v-list-item>
+        <v-list-item
+          v-if="selectedEdges.length === 0 && selectedNodes.length === 1"
+          class="py-0 pl-0 pr-1"
+          style="min-height:24px"
           @click="onJumpToSelectedNode"
         >
           <v-icon
@@ -563,6 +579,12 @@ export default Vue.extend({
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('jumpto:node', node);
+      this.focusToCanvas();
+    },
+    onFlowFromSelectedNode() {
+      if (this.selectedNodes.length !== 1) return;
+      const [node] = this.selectedNodes;
+      this.$emit('flowfrom:node', node);
       this.focusToCanvas();
     },
     onKey(e: KeyboardEvent): void {

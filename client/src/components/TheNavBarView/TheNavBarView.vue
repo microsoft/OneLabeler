@@ -172,12 +172,12 @@ import TheNavBarViewDialogButton from './TheNavBarViewDialogButton.vue';
 type ProjectData = {
   dataObjects: IDataObject[],
   classes: Label[],
-  labels: Label[],
-  labelMasks: ILabelMask[],
-  labelGeometricObjects: ILabelGeometricObject[][],
+  labels?: Label[],
+  labelMasks?: ILabelMask[],
+  labelGeometricObjects?: ILabelGeometricObject[][],
   statuses: Status[],
   unlabeledMark: Label,
-  featureNames: string[],
+  featureNames?: string[],
 }
 
 const ajv = new Ajv();
@@ -188,7 +188,6 @@ const schema: JSONSchemaType<ProjectData> = {
     'statuses',
     'classes',
     'unlabeledMark',
-    'featureNames',
   ],
   properties: {
     dataObjects: {
@@ -197,7 +196,6 @@ const schema: JSONSchemaType<ProjectData> = {
         type: 'object',
         required: [
           'uuid',
-          'features',
         ],
         properties: {
           uuid: { type: 'string' },
@@ -438,12 +436,20 @@ export default Vue.extend({
         } = data as ProjectData;
         this.setDataObjects(dataObjects);
         this.setClasses(classes);
-        this.setLabels(labels);
-        this.setLabelGeometricObjects(labelGeometricObjects);
-        this.setLabelMasks(labelMasks);
+        if (labels !== undefined) {
+          this.setLabels(labels);
+        }
+        if (labelGeometricObjects !== undefined) {
+          this.setLabelGeometricObjects(labelGeometricObjects);
+        }
+        if (labelMasks !== undefined) {
+          this.setLabelMasks(labelMasks);
+        }
         this.setStatuses(statuses);
         this.setUnlabeledMark(unlabeledMark);
-        this.setFeatureNames(featureNames);
+        if (featureNames !== undefined) {
+          this.setFeatureNames(featureNames);
+        }
         this.setMessage({
           content: 'Project Progress Uploaded.',
           type: MessageType.Success,
@@ -468,12 +474,16 @@ export default Vue.extend({
       const projectData: ProjectData = {
         dataObjects,
         classes,
-        labels,
-        labelGeometricObjects,
-        labelMasks,
+        labels: labels === null
+          ? undefined : labels,
+        labelGeometricObjects: labelGeometricObjects === null
+          ? undefined : labelGeometricObjects,
+        labelMasks: labelMasks === null
+          ? undefined : labelMasks,
         statuses,
         unlabeledMark,
-        featureNames,
+        featureNames: featureNames.length === 0
+          ? undefined : featureNames,
       };
       saveObjectAsJSONFile(projectData, 'project.json');
     },

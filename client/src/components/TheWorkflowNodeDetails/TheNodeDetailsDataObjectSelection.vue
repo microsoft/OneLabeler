@@ -403,9 +403,6 @@ export default Vue.extend({
       });
       this.onEditMethod(newMethod);
     },
-    onClickRecompute(): void {
-      this.$emit('click:recompute', this.node);
-    },
   },
 });
 </script>

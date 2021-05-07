@@ -10,7 +10,6 @@
     @edit:method="onEditMethod"
     @create:model="onCreateModel"
     @edit:model="onEditModel"
-    @click:recompute="onClickRecompute"
   />
 </template>
 
@@ -209,9 +208,6 @@ export default Vue.extend({
         objectId: (new ObjectId()).toHexString(),
       };
       this.$emit('create:model', model);
-    },
-    onClickRecompute(node: WorkflowNode): void {
-      this.$emit('click:recompute', node);
     },
   },
 });

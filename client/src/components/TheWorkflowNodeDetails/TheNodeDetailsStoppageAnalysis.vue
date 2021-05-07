@@ -178,9 +178,6 @@ export default Vue.extend({
       this.onEditNode({ ...node, value: newMethod });
       this.onEditMethod(newMethod);
     },
-    onClickRecompute(): void {
-      this.$emit('click:recompute', this.node);
-    },
   },
 });
 </script>

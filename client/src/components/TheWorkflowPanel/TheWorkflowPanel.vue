@@ -132,7 +132,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
+import { DefinedError } from 'ajv';
 import {
   IMessage,
   MessageType,
@@ -143,49 +143,11 @@ import imageClassificationIML from '@/commons/workflow-templates/image-classific
 import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
 import VUploadButton from './VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
-import { JsonGraphToWorkflowGraph } from './load-workflow';
-
-const ajv = new Ajv({
-  allowUnionTypes: true,
-});
-const schema: JSONSchemaType<Partial<WorkflowGraph>> = {
-  type: 'object',
-  properties: {
-    nodes: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['id', 'label', 'type'],
-        properties: {
-          id: { type: 'string' },
-          label: { type: 'string' },
-          type: { type: 'string' },
-          value: { type: ['object', 'array'] },
-          x: { type: 'number' },
-          y: { type: 'number' },
-        },
-      },
-    },
-    edges: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['source', 'target'],
-        properties: {
-          id: { type: 'string' },
-          source: { type: 'string' },
-          target: { type: 'string' },
-          x1: { type: 'number' },
-          y1: { type: 'number' },
-          x2: { type: 'number' },
-          y2: { type: 'number' },
-        },
-      },
-    },
-  },
-  additionalProperties: false,
-};
-const validate = ajv.compile(schema);
+import {
+  JsonGraph,
+  JsonGraphToWorkflowGraph,
+  validate,
+} from './load-workflow';
 
 /** Compute alert message according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -237,7 +199,6 @@ export default Vue.extend({
     ...mapActions(['setMessage']),
     ...mapActions('workflow', [
       'setGraph',
-      'setLabelTasks',
       'resetGraph',
     ]),
     onClickExport(): void {
@@ -257,12 +218,11 @@ export default Vue.extend({
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
       const jsonGraph = await JSONFileToObject(file);
-      const workflowGraph = JsonGraphToWorkflowGraph(jsonGraph);
-      console.log('json', jsonGraph);
-      console.log('workflow', workflowGraph);
-      /*
-      if (validate(graph)) {
-        this.setGraph(graph);
+      if (validate(jsonGraph)) {
+        const workflowGraph = JsonGraphToWorkflowGraph(
+          jsonGraph as JsonGraph,
+        );
+        this.setGraph(workflowGraph);
         this.setMessage({
           content: 'Workflow Configuration Uploaded.',
           type: MessageType.Success,
@@ -272,7 +232,6 @@ export default Vue.extend({
         const message = computeErrorMessage(errors[0]);
         this.setMessage(message);
       }
-      */
     },
   },
 });

@@ -35,6 +35,7 @@
               @remove:node="onRemoveNode"
               @select:nodes="onSelectNodes"
               @jumpto:node="onJumpToNode"
+              @flowfrom:node="onFlowFromNode"
               @create:edge="onCreateEdge"
               @remove:edge="onRemoveEdge"
               @select:edges="onSelectEdges"
@@ -69,7 +70,6 @@
           @edit:method="onEditMethod"
           @create:model="onCreateModel"
           @edit:model="onEditModel"
-          @click:recompute="onClickRecompute"
         />
       </v-col>
     </v-row>
@@ -144,10 +144,7 @@ export default Vue.extend({
       'removeEdge',
       'pushProcesses',
       'editProcess',
-      'executeDataObjectSelectionAlgorithmic',
-      'executeDefaultLabeling',
-      'executeFeatureExtraction',
-      'executeInterimModelTraining',
+      'executeWorkflow',
     ]),
     onCreateNode(node: WorkflowNode) {
       this.pushNodes(node);
@@ -170,6 +167,10 @@ export default Vue.extend({
     onJumpToNode(node: WorkflowNode) {
       this.setCurrentNode(node);
     },
+    onFlowFromNode(node: WorkflowNode) {
+      this.setCurrentNode(node);
+      this.executeWorkflow(node);
+    },
     onCreateEdge(edge: WorkflowEdge) {
       this.pushEdges(edge);
     },
@@ -190,20 +191,6 @@ export default Vue.extend({
     },
     onCreateModel(newValue: ModelService) {
       this.pushModelServices(newValue);
-    },
-    onClickRecompute(node: WorkflowNode) {
-      if (node.type === WorkflowNodeType.DataObjectSelection) {
-        this.executeDataObjectSelectionAlgorithmic(node.value);
-      }
-      if (node.type === WorkflowNodeType.DefaultLabeling) {
-        this.executeDefaultLabeling(node.value);
-      }
-      if (node.type === WorkflowNodeType.FeatureExtraction) {
-        this.executeFeatureExtraction(node.value);
-      }
-      if (node.type === WorkflowNodeType.InterimModelTraining) {
-        this.executeInterimModelTraining(node.value);
-      }
     },
   },
 });

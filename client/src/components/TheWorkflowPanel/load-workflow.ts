@@ -14,47 +14,6 @@ import {
 } from '@/commons/types';
 import { processes } from '@/commons/builtins';
 
-const ajv = new Ajv({
-  allowUnionTypes: true,
-});
-const schema: JSONSchemaType<Partial<WorkflowGraph>> = {
-  type: 'object',
-  properties: {
-    nodes: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['label', 'type'],
-        properties: {
-          label: { type: 'string' },
-          id: { type: 'string' },
-          type: { type: 'string' },
-          value: { type: ['object', 'array'] },
-          x: { type: 'number' },
-          y: { type: 'number' },
-        },
-      },
-    },
-    edges: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['source', 'target'],
-        properties: {
-          id: { type: 'string' },
-          source: { type: 'string' },
-          target: { type: 'string' },
-          x1: { type: 'number' },
-          y1: { type: 'number' },
-          x2: { type: 'number' },
-          y2: { type: 'number' },
-        },
-      },
-    },
-  },
-  additionalProperties: false,
-};
-
 type JsonMethodParams = Record<string, unknown | {
   value: unknown,
   label: string,
@@ -79,9 +38,7 @@ type JsonNode = {
   label: string;
   type: WorkflowNodeType;
   id?: string;
-  value?: JsonProcess
-    | JsonProcess[]
-    | InitializationParams;
+  value?: WorkflowNode['value'];
   layout?: WorkflowNode['layout'];
 }
 
@@ -93,10 +50,82 @@ type JsonEdge = {
   layout?: WorkflowEdge['layout'];
 }
 
-type JsonGraph = {
+export type JsonGraph = {
   nodes: JsonNode[];
   edges: JsonEdge[];
 }
+
+const ajv = new Ajv({
+  allowUnionTypes: true,
+});
+const schema: JSONSchemaType<Partial<JsonGraph>> = {
+  type: 'object',
+  properties: {
+    nodes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['label', 'type'],
+        properties: {
+          label: { type: 'string' },
+          type: { type: 'string' },
+          id: { type: 'string' },
+          value: {
+            type: ['object', 'array', 'null'],
+          },
+          layout: {
+            type: 'object',
+            required: ['x', 'y', 'width', 'height'],
+            properties: {
+              x: { type: 'number' },
+              y: { type: 'number' },
+              width: { type: 'number' },
+              height: { type: 'number' },
+            },
+          },
+        },
+      },
+    },
+    edges: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['source', 'target'],
+        properties: {
+          source: { type: 'string' },
+          target: { type: 'string' },
+          id: { type: 'string' },
+          condition: { type: 'boolean' },
+          layout: {
+            type: 'object',
+            required: ['source', 'target'],
+            properties: {
+              source: {
+                type: 'object',
+                required: ['direction', 'dx', 'dy'],
+                properties: {
+                  direction: { type: 'string' },
+                  dx: { type: 'number' },
+                  dy: { type: 'number' },
+                },
+              },
+              target: {
+                type: 'object',
+                required: ['direction', 'dx', 'dy'],
+                properties: {
+                  direction: { type: 'string' },
+                  dx: { type: 'number' },
+                  dy: { type: 'number' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  additionalProperties: false,
+};
 
 /** Validate the schema of the json. */
 export const validate = ajv.compile(schema);
