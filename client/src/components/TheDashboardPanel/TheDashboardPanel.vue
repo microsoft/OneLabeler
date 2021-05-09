@@ -32,20 +32,36 @@
         </v-icon>
       </v-btn>
     </v-toolbar>
-    <v-card-text class="px-2 py-2">
-      <TheDashboardStatsView />
+    <v-card-text class="pa-1">
+      <v-row no-gutters>
+        <TheDashboardProgressView />
+        <TheDashboardLabelDistributionView
+          v-if="containsClassification"
+          class="ml-1"
+        />
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import TheDashboardStatsView from './TheDashboardStatsView.vue';
+import { mapGetters } from 'vuex';
+import { LabelTaskType } from '@/commons/types';
+import TheDashboardProgressView from './TheDashboardProgressView.vue';
+import TheDashboardLabelDistributionView from './TheDashboardLabelDistributionView.vue';
 
 export default Vue.extend({
   name: 'TheDashboardPanel',
   components: {
-    TheDashboardStatsView,
+    TheDashboardProgressView,
+    TheDashboardLabelDistributionView,
+  },
+  computed: {
+    ...mapGetters('workflow', ['labelTasks']),
+    containsClassification(): boolean {
+      return (this.labelTasks as LabelTaskType[]).includes(LabelTaskType.Classification);
+    },
   },
   methods: {
     onClickClose(): void {

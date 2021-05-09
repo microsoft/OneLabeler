@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    width="220"
-    tile
-  >
+  <v-card width="250">
     <v-card-title class="view-header">
       <v-icon
         class="px-2"
@@ -15,121 +12,37 @@
     </v-card-title>
     <v-divider />
     <v-card-actions class="pa-0">
-      <v-container
-        class="ma-0"
-        style="height: 200px; width: fit-content;"
-      >
-        <template v-if="nTotal === 0">
-          <div
-            class="pa-0 ma-0"
-            :style="{
-              'width': '40px',
-              'height': '100%',
-              'background-color': '#0078d4',
-            }"
-          />
-        </template>
-        <template v-else>
-          <div
-            :style="{
-              'width': '40px',
-              'height': nLabeled / nTotal * 100 + '%',
-              'background-color': '#0078d4',
-            }"
-          />
-          <div
-            :style="{
-              'width': '40px',
-              'height': nSkipped / nTotal * 100 + '%',
-              'background-color': '#9a765e',
-            }"
-          />
-          <div
-            :style="{
-              'width': '40px',
-              'height': nUnseen / nTotal * 100 + '%',
-              'background-color': '#d9d9d9',
-            }"
-          />
-          <div
-            :style="{
-              'width': '40px',
-              'height': nViewing / nTotal * 100 + '%',
-              'background-color': '#ea8d18',
-            }"
-          />
-        </template>
+      <v-container style="height: 200px; width: fit-content;">
+        <div
+          v-for="(bar, i) in stackedBars"
+          :key="i"
+          :style="{
+            'width': '40px',
+            'height': bar.height,
+            'background-color': bar.color,
+          }"
+        />
       </v-container>
-      <v-list dense>
-        <v-list-item>
+      <v-list
+        style="margin: auto"
+        dense
+      >
+        <v-list-item
+          v-for="(entry, i) in statusList"
+          :key="i"
+        >
           <v-icon
             class="pr-2"
             aria-hidden="true"
             small
-            style="color: white"
+            :style="{ color: entry.color }"
           >
             $vuetify.icons.values.square
           </v-icon>
-          <span style="width: 60px">
-            Total
+          <span style="width: 4rem">
+            {{ entry.label }}
           </span>
-          {{ nTotal }}
-        </v-list-item>
-        <v-list-item>
-          <v-icon
-            class="pr-2"
-            aria-hidden="true"
-            small
-            style="color: #0078d4"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-          <span style="width: 60px">
-            Labeled
-          </span>
-          {{ nLabeled }}
-        </v-list-item>
-        <v-list-item>
-          <v-icon
-            class="pr-2"
-            aria-hidden="true"
-            small
-            style="color: #9a765e"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-          <span style="width: 60px">
-            Skipped
-          </span>
-          {{ nSkipped }}
-        </v-list-item>
-        <v-list-item>
-          <v-icon
-            class="pr-2"
-            aria-hidden="true"
-            small
-            style="color: #d9d9d9"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-          <span style="width: 60px">
-            Unseen
-          </span>
-          {{ nUnseen }}
-        </v-list-item>
-        <v-list-item>
-          <v-icon
-            class="pr-2"
-            aria-hidden="true"
-            small
-            style="color: #ea8d18"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-          <span style="width: 60px">
-            Viewing
-          </span>
-          {{ nViewing }}
+          {{ entry.value }}
         </v-list-item>
       </v-list>
     </v-card-actions>
@@ -145,6 +58,14 @@ export default Vue.extend({
   name: 'TheDashboardProgressView',
   computed: {
     ...mapState(['statuses']),
+    nLabeled(): number {
+      const { statuses } = this as { statuses: Status[] };
+      return statuses.filter((d) => d === Status.Labeled).length;
+    },
+    nSkipped(): number {
+      const { statuses } = this as { statuses: Status[] };
+      return statuses.filter((d) => d === Status.Skipped).length;
+    },
     nTotal(): number {
       return this.statuses.length;
     },
@@ -156,13 +77,41 @@ export default Vue.extend({
       const { statuses } = this as { statuses: Status[] };
       return statuses.filter((d) => d === Status.Viewed).length;
     },
-    nLabeled(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Labeled).length;
+    statusList() {
+      const {
+        nLabeled,
+        nSkipped,
+        nTotal,
+        nUnseen,
+        nViewing,
+      } = this;
+      return [
+        { label: 'Total', value: nTotal, color: 'white' },
+        { label: 'Labeled', value: nLabeled, color: '#0078d4' },
+        { label: 'Skipped', value: nSkipped, color: '#9a765e' },
+        { label: 'Unseen', value: nUnseen, color: '#d9d9d9' },
+        { label: 'Viewing', value: nViewing, color: '#ea8d18' },
+      ];
     },
-    nSkipped(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Skipped).length;
+    stackedBars() {
+      const {
+        nLabeled,
+        nSkipped,
+        nTotal,
+        nUnseen,
+        nViewing,
+      } = this;
+      if (nTotal === 0) {
+        return [
+          { height: '100%', color: '#0078d4' },
+        ];
+      }
+      return [
+        { height: `${(nLabeled / nTotal) * 100}%`, color: '#0078d4' },
+        { height: `${(nSkipped / nTotal) * 100}%`, color: '#9a765e' },
+        { height: `${(nUnseen / nTotal) * 100}%`, color: '#d9d9d9' },
+        { height: `${(nViewing / nTotal) * 100}%`, color: '#ea8d18' },
+      ];
     },
   },
 });
