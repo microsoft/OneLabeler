@@ -21,6 +21,7 @@
         }"
       >
         <VDataObjectCard
+          :data-type="dataType"
           :data-object="dataObject"
           :label="labelsInPage[i]"
           :classes="classes"
@@ -59,7 +60,11 @@
  */
 
 import Vue, { PropType } from 'vue';
-import { IImage, Label } from '@/commons/types';
+import {
+  DataType,
+  IDataObject,
+  Label,
+} from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
 
 export default Vue.extend({
@@ -68,8 +73,12 @@ export default Vue.extend({
     VDataObjectCard,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     dataObjects: {
-      type: Array as PropType<IImage[]>,
+      type: Array as PropType<IDataObject[]>,
       required: true,
     },
     labels: {
@@ -125,7 +134,7 @@ export default Vue.extend({
         ((page - 1) * itemsPerPage <= i) && (i < page * itemsPerPage)
       ));
     },
-    dataObjectsInPage(): IImage[] {
+    dataObjectsInPage(): IDataObject[] {
       const { dataObjects, indicesInPage } = this;
       return indicesInPage.map((i: number) => dataObjects[i]);
     },
@@ -151,7 +160,7 @@ export default Vue.extend({
     this.updateCardSize();
   },
   methods: {
-    onClickCardLabel(dataObject: IImage, label: Label) {
+    onClickCardLabel(dataObject: IDataObject, label: Label) {
       this.$emit('click:card-label', dataObject, label);
     },
     updateCardSize() {

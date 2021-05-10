@@ -4,7 +4,7 @@
     :height="height"
   >
     <v-toolbar-title class="app-header-logo pl-2 pr-2">
-      Image Labeler
+      Generic Labeler
     </v-toolbar-title>
 
     <v-divider
@@ -15,11 +15,12 @@
     <!-- The new project button. -->
     <VUploadButton
       title="New Label Project (Ctrl + N)"
-      type="folder"
+      :type="dataType === DataType.Image ? 'folder' : 'file'"
       color="white"
       small
       :icon="$vuetify.icons.values.new"
       :keyboard-trigger="keyboardTriggerNewProject"
+      @upload:file="onNewProject"
       @upload:files="onNewProject"
     />
 
@@ -154,8 +155,9 @@
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
-import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
+import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import {
+  DataType,
   ICommand,
   IDataObject,
   IImage,
@@ -304,6 +306,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      DataType,
       // Ctrl + N: create new project
       keyboardTriggerNewProject: (e: KeyboardEvent) => (e.key === 'n' && e.ctrlKey),
       // Ctrl + O: load existing project
@@ -312,6 +315,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters('workflow', [
+      'dataType',
       'dataObjectSelectionMethods',
       'startNode',
       'nextNodes',
@@ -417,9 +421,9 @@ export default Vue.extend({
         }
       }
     },
-    async onNewProject(files: FileList): Promise<void> {
-      if (files === null || files === undefined) return;
-      await this.executeDataObjectExtraction(files);
+    async onNewProject(input: File | FileList): Promise<void> {
+      if (input === null || input === undefined) return;
+      await this.executeDataObjectExtraction(input);
       this.setMessage({
         content: 'Project Data Uploaded.',
         type: MessageType.Success,
@@ -428,7 +432,7 @@ export default Vue.extend({
       await this.executeWorkflow(this.startNode);
     },
     async onLoadProject(file: File): Promise<void> {
-      const data = await JSONFileToObject(file);
+      const data = await loadJsonFile(file);
       if (validate(data)) {
         const {
           dataObjects,
@@ -491,7 +495,7 @@ export default Vue.extend({
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
       };
-      saveObjectAsJSONFile(projectData, 'project.json');
+      saveJsonFile(projectData, 'project.json');
     },
     onClickReset(): void {
       // reset root store
@@ -527,7 +531,7 @@ export default Vue.extend({
           mask,
         };
       });
-      saveObjectAsJSONFile(labeledData, 'labels.json');
+      saveJsonFile(labeledData, 'labels.json');
     },
   },
 });

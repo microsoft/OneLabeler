@@ -7,9 +7,12 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { xor4096 } from 'seedrandom';
 import showProgressBar from '@/plugins/nprogress-interceptor';
+import { loadJsonFile } from '@/plugins/json-utils';
 import { randomChoice } from '@/plugins/random';
 import {
+  DataType,
   IDataObject,
+  IText,
   IImage,
   Label,
   Status,
@@ -31,26 +34,40 @@ import {
  * on the data source type and data object type.
  */
 export const dataObjectExtraction = showProgressBar(async (
-  files: FileList,
-): Promise<IImage[]> => {
-  const dataObjects = await Promise.all([...files].map(async (file) => {
-    const { name } = file;
-    const formData = new FormData();
-    formData.append('fileToUpload', file);
-    formData.append('fileName', name);
-    formData.append('key', name);
-    const { path, width, height } = (await axios.post(
-      `${PROTOCOL}://${IP}:${PORT}/dataObject/image`,
-      formData,
-    )).data;
-    return {
-      path,
-      width,
-      height,
+  input: File | FileList,
+  dataType: DataType,
+): Promise<IImage[] | IText[]> => {
+  if (dataType === DataType.Image) {
+    const files = input as FileList;
+    const dataObjects = await Promise.all([...files].map(async (file) => {
+      const { name } = file;
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('fileName', name);
+      formData.append('key', name);
+      const { path, width, height } = (await axios.post(
+        `${PROTOCOL}://${IP}:${PORT}/dataObject/image`,
+        formData,
+      )).data;
+      return {
+        path,
+        width,
+        height,
+        uuid: uuidv4(),
+      };
+    })) as IImage[];
+    return dataObjects;
+  }
+  if (dataType === DataType.Text) {
+    const file = input as File;
+    const dataObjects = (await loadJsonFile(file) as string[]).map((doc) => ({
       uuid: uuidv4(),
-    };
-  })) as IImage[];
-  return dataObjects;
+      content: doc,
+    })) as IText[];
+    return dataObjects;
+  }
+  console.warn(`Invalid Data Type: ${dataType}`);
+  return [];
 });
 
 /**

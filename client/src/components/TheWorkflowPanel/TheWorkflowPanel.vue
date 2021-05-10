@@ -138,7 +138,7 @@ import {
   MessageType,
   WorkflowGraph,
 } from '@/commons/types';
-import { saveObjectAsJSONFile, JSONFileToObject } from '@/plugins/json-utils';
+import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import imageClassificationIML from '@/commons/workflow-templates/image-classification-iml';
 import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
@@ -197,7 +197,7 @@ export default Vue.extend({
     ]),
     onClickExport(): void {
       const { nodes, edges } = this;
-      saveObjectAsJSONFile({ nodes, edges }, 'workflow.config.json');
+      saveJsonFile({ nodes, edges }, 'workflow.config.json');
     },
     onClickReset(): void {
       // reset workflow configurations
@@ -211,7 +211,7 @@ export default Vue.extend({
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
-      const jsonGraph = await JSONFileToObject(file);
+      const jsonGraph = await loadJsonFile(file);
       if (validate(jsonGraph)) {
         const workflowGraph = JsonGraphToWorkflowGraph(
           jsonGraph as JsonGraph,

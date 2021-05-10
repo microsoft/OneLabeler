@@ -14,6 +14,7 @@
       <VCardMatrix
         v-if="queryIndices !== null && queryIndices.length !== 0"
         style="height: 100%"
+        :data-type="dataType"
         :data-objects="sampledDataObjects"
         :labels="sampledDataObjectLabels"
         :classes="classes"
@@ -58,8 +59,19 @@ export default Vue.extend({
     },
   },
   computed: {
-    ...mapState(['dataObjects', 'classes', 'labels', 'queryIndices', 'unlabeledMark']),
-    ...mapGetters(['sampledDataObjects', 'sampledDataObjectLabels', 'label2color']),
+    ...mapState([
+      'dataObjects',
+      'classes',
+      'labels',
+      'queryIndices',
+      'unlabeledMark',
+    ]),
+    ...mapGetters([
+      'sampledDataObjects',
+      'sampledDataObjectLabels',
+      'label2color',
+    ]),
+    ...mapGetters('workflow', ['dataType']),
   },
   methods: {
     ...mapActions([

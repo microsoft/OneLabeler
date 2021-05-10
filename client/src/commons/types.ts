@@ -3,7 +3,7 @@ export enum DataType {
   Image = 'Image',
   Video = 'Video',
   Audio = 'Audio',
-  Document = 'Document',
+  Text = 'Text',
 }
 
 /** The types of label tasks. */
@@ -30,6 +30,12 @@ export interface IImage extends IDataObject {
   width?: number | null;
   /** The height of the image. */
   height?: number | null;
+}
+
+/** The interface of an text data object. */
+export interface IText extends IDataObject {
+  /** The text content. */
+  content: string;
 }
 
 /** The type of data labels. */

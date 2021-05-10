@@ -8,16 +8,15 @@ import {
   IImage,
   Status,
   MessageType,
-  LabelTaskType,
   ModelService,
   Process,
-  DataType,
   WorkflowNodeType,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import { IState } from './state';
 import { IState as IRootState } from '../state';
+import { dataType } from './getters';
 
 export const setCurrentNode = (
   { commit }: ActionContext<IState, IRootState>,
@@ -167,11 +166,14 @@ export const editProcess = (
 };
 
 export const executeDataObjectExtraction = async (
-  { commit }: ActionContext<IState, IRootState>,
-  files: FileList,
+  { commit, state }: ActionContext<IState, IRootState>,
+  input: File | FileList,
 ): Promise<void> => {
+  const type = dataType(state);
+  if (type === null) return;
+
   // Extract data objects.
-  const dataObjects = (await API.dataObjectExtraction(files));
+  const dataObjects = (await API.dataObjectExtraction(input, type));
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize label statuses.

@@ -138,7 +138,7 @@ export default Vue.extend({
         label: 'Data Type',
         options: [
           { value: DataType.Image, label: 'Image' },
-          { value: DataType.Document, label: 'Document' },
+          { value: DataType.Text, label: 'Text' },
         ],
       },
     };
@@ -166,7 +166,7 @@ export default Vue.extend({
           LabelTaskType.ObjectDetection,
           LabelTaskType.Segmentation,
         ],
-        [DataType.Document]: [
+        [DataType.Text]: [
           LabelTaskType.Classification,
         ],
       } as Record<DataType, LabelTaskType[]>;

@@ -23,7 +23,8 @@
       class="pa-0"
       pointer-events="none"
     >
-      <VDataObjectDisplay
+      <component
+        :is="component"
         :data-object="dataObject"
         :height="bodyHeight"
         :width="bodyWidth"
@@ -39,20 +40,30 @@
  * This component have access to the global state.
  */
 
-import Vue, { PropType } from 'vue';
-import { IImage, Label } from '@/commons/types';
+import Vue, { PropType, VueConstructor } from 'vue';
+import {
+  DataType,
+  IDataObject,
+  Label,
+} from '@/commons/types';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
-import VDataObjectDisplay from './VDataObjectDisplay.vue';
+import VDisplayImage from './VDisplayImage.vue';
+import VDisplayText from './VDisplayText.vue';
 
 export default Vue.extend({
   name: 'VDataObjectCard',
   components: {
     VDataObjectCardHeader,
-    VDataObjectDisplay,
+    VDisplayImage,
+    VDisplayText,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     dataObject: {
-      type: Object as PropType<IImage>,
+      type: Object as PropType<IDataObject>,
       required: true,
     },
     label: {
@@ -85,6 +96,15 @@ export default Vue.extend({
     },
   },
   computed: {
+    component(): VueConstructor | null {
+      const { dataType } = this;
+      const mapper = {
+        [DataType.Image]: VDisplayImage,
+        [DataType.Text]: VDisplayText,
+      } as Partial<Record<DataType, VueConstructor>>;
+      if (dataType !== null && dataType in mapper) return mapper[dataType];
+      return null;
+    },
     bodyHeight(): number {
       return Math.max(this.height - this.headerHeight, 0);
     },
@@ -97,10 +117,10 @@ export default Vue.extend({
       const { dataObject } = this;
       this.$emit('click:card-label', dataObject, label);
     },
-    onHoverCard(dataObject: IImage): void {
+    onHoverCard(dataObject: IDataObject): void {
       this.$emit('hover:card', dataObject);
     },
-    onLeaveCard(dataObject: IImage): void {
+    onLeaveCard(dataObject: IDataObject): void {
       this.$emit('leave:card', dataObject);
     },
   },
