@@ -361,6 +361,16 @@ const featureExtractionMethods: Process[] = [{
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/LDA`,
 }, {
   type: ProcessType.FeatureExtraction,
+  label: 'NMF (Unsupervised)',
+  id: 'text-NMF-78139065',
+  inputs: ['dataObjects'],
+  isAlgorithmic: true,
+  isBuiltIn: true,
+  isModelBased: false,
+  isServerless: false,
+  api: `${PROTOCOL}://${IP}:${PORT}/features/text/NMF`,
+}, {
+  type: ProcessType.FeatureExtraction,
   label: 'Random3D (Dummy)',
   id: 'Random-87333124',
   inputs: ['dataObjects'],

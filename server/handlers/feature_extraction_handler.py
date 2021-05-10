@@ -3,6 +3,8 @@ import json
 
 import cv2 as cv
 import numpy as np
+from sklearn.decomposition import NMF
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 import tornado.web
 
@@ -78,6 +80,26 @@ def extract_features_img_LDA(data_objects: ListLike,
     return data_objects, feature_names
 
 
+def extract_features_text_NMF(data_objects: ListLike,
+                              ) -> Tuple[ListLike, List[str]]:
+    X = [data_object['content'] for data_object in data_objects]
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.95, min_df=2,
+                                       max_features=5000,
+                                       stop_words='english')
+    X_tfidf = tfidf_vectorizer.fit_transform(X)
+    n_components = 20
+    nmf = NMF(n_components=n_components, init='random',
+              random_state=0, alpha=.1, l1_ratio=.5)
+    X_nmf = nmf.fit_transform(X_tfidf)
+
+    for i, data_object in enumerate(data_objects):
+        data_objects[i]['features'] = X_nmf[i].tolist()
+
+    feature_names = [f'NMF[{i}]' for i in range(n_components)]
+
+    return data_objects, feature_names
+
+
 class FeatureExtractionHandler(tornado.web.RequestHandler):
     """
     The handler for feature extraction.
@@ -87,7 +109,8 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        assert key in ['image/SVD', 'image/BoW', 'image/LDA']
+        assert key in ['image/SVD', 'image/BoW',
+                       'image/LDA', 'text/NMF']
 
         # process input: (dataObjects, labels?, statuses?)
         data_objects = json_data['dataObjects']
@@ -105,6 +128,9 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
             statuses = np.array(statuses, dtype=str)
             data_objects, feature_names = extract_features_img_LDA(
                 data_objects, labels, statuses)
+        if key == 'text/NMF':
+            data_objects, feature_names = extract_features_text_NMF(
+                data_objects)
 
         self.write({
             'dataObjects': data_objects,
