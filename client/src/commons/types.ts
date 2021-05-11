@@ -108,7 +108,7 @@ export enum ProjectionMethodType {
 
 /** The interface of a model service. */
 export interface ModelService {
-  type: string,
+  type: string;
   label: string;
   objectId: string;
   isBuiltIn: boolean;
@@ -142,13 +142,16 @@ export interface Process {
   type: ProcessType;
   label: string;
   inputs: string[];
-  // for serverless methods, the api is the method's unique key
+  // For serverless methods, the api is the method's unique key.
   api: string;
   id: string;
   isAlgorithmic: boolean;
   isBuiltIn: boolean;
   isModelBased: boolean;
   isServerless: boolean;
+  // The restriction on data types that the process can handle.
+  // If not given, the process is regarded agnostic of data types.
+  dataTypes?: DataType[];
   model?: ModelService;
   params?: MethodParams;
 }

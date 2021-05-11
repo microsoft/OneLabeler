@@ -1,5 +1,10 @@
 import ObjectId from 'bson-objectid';
-import { ModelService, Process, ProcessType } from '@/commons/types';
+import {
+  DataType,
+  ModelService,
+  Process,
+  ProcessType,
+} from '@/commons/types';
 import { PROTOCOL, IP, PORT } from '@/services/http-params';
 
 export const modelServices: ModelService[] = [{
@@ -339,6 +344,7 @@ const featureExtractionMethods: Process[] = [{
   isModelBased: false,
   isServerless: false,
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/SVD`,
+  dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
   label: 'BoW (Handcrafted)',
@@ -349,6 +355,7 @@ const featureExtractionMethods: Process[] = [{
   isModelBased: false,
   isServerless: false,
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/BoW`,
+  dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
   label: 'LDA (Supervised)',
@@ -359,6 +366,7 @@ const featureExtractionMethods: Process[] = [{
   isModelBased: false,
   isServerless: false,
   api: `${PROTOCOL}://${IP}:${PORT}/features/image/LDA`,
+  dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
   label: 'NMF (Unsupervised)',
@@ -369,6 +377,7 @@ const featureExtractionMethods: Process[] = [{
   isModelBased: false,
   isServerless: false,
   api: `${PROTOCOL}://${IP}:${PORT}/features/text/NMF`,
+  dataTypes: [DataType.Text],
 }, {
   type: ProcessType.FeatureExtraction,
   label: 'Random3D (Dummy)',

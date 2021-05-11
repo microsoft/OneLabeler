@@ -16,7 +16,7 @@
         class="pa-1"
         no-gutters
       >
-        <template v-if="enableProjectionOverview">
+        <template v-if="enableProjection">
           <v-col
             :cols="12/nViews"
             :class="(enableSingleObjectDisplay
@@ -58,8 +58,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { Process, MethodParams } from '@/commons/types';
+import { mapState } from 'vuex';
+import {
+  Process,
+  MethodParams,
+  WorkflowNode,
+  WorkflowNodeType,
+} from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
 import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
@@ -78,31 +83,42 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     TheMessageView,
   },
   computed: {
-    ...mapGetters('workflow', [
-      'dataObjectSelectionMethods',
-      'interactiveLabelingMethods',
-    ]),
-    enableProjectionOverview(): boolean {
-      const methods = this.dataObjectSelectionMethods as Process[];
-      return methods.findIndex((d) => d.id === 'Projection') >= 0;
+    ...mapState('workflow', ['nodes']),
+    methodsOfSampling(): Process[] {
+      const nodes = this.nodes as WorkflowNode[];
+      const type = WorkflowNodeType.DataObjectSelection;
+      const methods = nodes.filter((d) => d.type === type)
+        .map((d) => d.value).flat() as Process[];
+      return methods;
+    },
+    methodsOfLabeling(): Process[] {
+      const nodes = this.nodes as WorkflowNode[];
+      const type = WorkflowNodeType.InteractiveLabeling;
+      const methods = nodes.filter((d) => d.type === type)
+        .map((d) => d.value).flat() as Process[];
+      return methods;
+    },
+    enableProjection(): boolean {
+      const methods = this.methodsOfSampling;
+      return methods.findIndex((d) => d.api === 'Projection') >= 0;
     },
     enableSingleObjectDisplay(): boolean {
-      const methods = this.interactiveLabelingMethods as Process[];
+      const methods = this.methodsOfLabeling;
       return methods.findIndex((d) => d.api === 'SingleObjectDisplay') >= 0;
     },
     enableGridMatrix(): boolean {
-      const methods = this.interactiveLabelingMethods as Process[];
+      const methods = this.methodsOfLabeling;
       return methods.findIndex((d) => d.api === 'GridMatrix') >= 0;
     },
     itemsPerRow(): number | null {
-      const methods = this.interactiveLabelingMethods as Process[];
+      const methods = this.methodsOfLabeling;
       const gridMatrix = methods.find((d) => d.api === 'GridMatrix');
       return gridMatrix === undefined
         ? null
         : (gridMatrix.params as MethodParams).nColumns.value as number;
     },
     itemsPerCol(): number | null {
-      const methods = this.interactiveLabelingMethods as Process[];
+      const methods = this.methodsOfLabeling;
       const gridMatrix = methods.find((d) => d.api === 'GridMatrix');
       return gridMatrix === undefined
         ? null
@@ -110,11 +126,11 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     },
     nViews(): number {
       const {
-        enableProjectionOverview,
+        enableProjection,
         enableSingleObjectDisplay,
         enableGridMatrix,
       } = this;
-      return Number(enableProjectionOverview)
+      return Number(enableProjection)
         + Number(enableSingleObjectDisplay)
         + Number(enableGridMatrix);
     },

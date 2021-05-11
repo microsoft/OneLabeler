@@ -117,16 +117,16 @@
       vertical
     />
 
-    <template v-if="dataObjectSelectionAlgorithmicEnabled">
+    <template v-if="showExecutionButton">
       <!-- The start data labeling button. -->
       <v-btn
-        title="Next Batch (Ctrl + ->)"
+        title="Submit (Ctrl + ->)"
         color="white"
         icon
         tile
         small
-        :disabled="disableNextBatchButton"
-        @click="onClickNextBatch"
+        :disabled="disableExecutionButton"
+        @click="onClickExecution"
       >
         <v-icon
           aria-hidden="true"
@@ -167,7 +167,6 @@ import {
   ILabelGeometricObject,
   MessageType,
   Status,
-  Process,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -316,7 +315,6 @@ export default Vue.extend({
   computed: {
     ...mapGetters('workflow', [
       'dataType',
-      'dataObjectSelectionMethods',
       'startNode',
       'nextNodes',
     ]),
@@ -341,14 +339,18 @@ export default Vue.extend({
     disableResetButton(): boolean {
       return this.dataObjects.length === 0;
     },
-    disableNextBatchButton(): boolean {
-      return this.dataObjects.length === 0;
+    disableExecutionButton(): boolean {
+      return this.currentNode === null
+        || this.dataObjects.length === 0;
     },
     disableUndoButton(): boolean {
       return this.commandHistory.length === 0;
     },
     disableExportButton(): boolean {
       return this.dataObjects.length === 0;
+    },
+    showExecutionButton(): boolean {
+      return this.currentNode !== null;
     },
     lastCommand(): ICommand | null {
       if (this.commandHistory.length === 0) {
@@ -367,11 +369,6 @@ export default Vue.extend({
         return 'Edit Single';
       }
       return '';
-    },
-    dataObjectSelectionAlgorithmicEnabled(): boolean {
-      const methods = this.dataObjectSelectionMethods as Process[] | null;
-      if (methods === null) return false;
-      return methods.findIndex((d) => d.isAlgorithmic) >= 0;
     },
   },
   created(): void {
@@ -414,10 +411,10 @@ export default Vue.extend({
         this.onClickSave();
       }
       // shortcut for next batch: Ctrl + ArrowRight
-      if (!this.disableNextBatchButton && key === 'ArrowRight' && ctrlKey) {
-        if (this.dataObjectSelectionAlgorithmicEnabled) {
+      if (!this.disableExecutionButton && key === 'ArrowRight' && ctrlKey) {
+        if (this.showExecutionButton) {
           e.preventDefault();
-          this.onClickNextBatch();
+          this.onClickExecution();
         }
       }
     },
@@ -501,7 +498,7 @@ export default Vue.extend({
       // reset root store
       this.resetState();
     },
-    async onClickNextBatch(): Promise<void> {
+    async onClickExecution(): Promise<void> {
       if (this.nextNodes === null || this.nextNodes.length !== 1) return;
       await this.executeWorkflow(this.nextNodes[0]);
     },

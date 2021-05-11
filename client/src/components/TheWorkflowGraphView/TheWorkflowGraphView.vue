@@ -58,7 +58,7 @@
       >
         <!-- The process parameter panel. -->
         <TheElementDetails
-          :methods="processes"
+          :methods="processesValid"
           :models="modelServices"
           :selection="selection"
           @edit:node="onEditNode"
@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   ModelService,
   Process,
@@ -104,8 +104,8 @@ export default Vue.extend({
       'nodes',
       'edges',
       'modelServices',
-      'processes',
     ]),
+    ...mapGetters('workflow', ['processesValid']),
     selection(): (WorkflowNode | WorkflowEdge)[] {
       // Note: make the selection computed instead of directly stored
       // to ensure the selection is updated when the nodes/edges are modified.
