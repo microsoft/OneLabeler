@@ -6,6 +6,7 @@ import tornado.web
 
 UPLOAD_FOLDER_ROUTE = '.uploads/'
 
+
 class DataObjectExtractionHandler(tornado.web.RequestHandler):
     """
     The handler for default labeling.
@@ -22,9 +23,9 @@ class DataObjectExtractionHandler(tornado.web.RequestHandler):
 
             # server can be agnostic to the type of the uploaded file
             file_body = self.request.files['fileToUpload'][0]['body']
-            
+
             img = cv.imdecode(np.frombuffer(file_body, np.uint8),
-                            cv.IMREAD_COLOR)
+                              cv.IMREAD_COLOR)
             h = img.shape[0]
             w = img.shape[1]
 

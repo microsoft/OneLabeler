@@ -1,3 +1,3 @@
-# Image Labeler
+# Generic Labeler
 
-- A system for image labeling
+- A system for multiple data labeling tasks

@@ -5,7 +5,6 @@ import cv2 as cv
 import numpy as np
 from sklearn.decomposition import NMF
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.preprocessing import LabelEncoder
 import tornado.web
 
 from .utils.data_labeling.feature_extraction import (
@@ -21,10 +20,13 @@ from .utils.data_labeling.feature_extraction import (
 ListLike = Union[List[Any], np.ndarray]
 
 
+def get_image(data_object) -> np.ndarray:
+    return cv.imread(data_object['path'])
+
+
 def extract_features_img_SVD(data_objects: ListLike
                              ) -> Tuple[ListLike, List[str]]:
-    imgs = [cv.imread(data_object['path'])
-            for data_object in data_objects]
+    imgs = [get_image(data_object) for data_object in data_objects]
 
     X, feature_names = resize_SVD(imgs)
     for i, data_object in enumerate(data_objects):
@@ -38,8 +40,7 @@ def extract_features_img_SVD(data_objects: ListLike
 
 def extract_features_img_BoW(data_objects: ListLike
                              ) -> Tuple[ListLike, List[str]]:
-    imgs = [cv.imread(data_object['path'])
-            for data_object in data_objects]
+    imgs = [get_image(data_object) for data_object in data_objects]
 
     extractors = [
         raw_flatten,
@@ -69,8 +70,7 @@ def extract_features_img_BoW(data_objects: ListLike
 def extract_features_img_LDA(data_objects: ListLike,
                              labels: np.ndarray,
                              statuses: np.ndarray) -> Tuple[ListLike, List[str]]:
-    imgs = [cv.imread(data_object['path'])
-            for data_object in data_objects]
+    imgs = [get_image(data_object) for data_object in data_objects]
 
     X, feature_names = resize_LDA(imgs, labels, statuses)
 

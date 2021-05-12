@@ -4,6 +4,7 @@ from handlers import (FeatureExtractionHandler,
                       DefaultLabelingHandler,
                       InterimModelTrainingHandler,
                       ImageHandler,
+                      ImageProcessingHandler,
                       ProjectionHandler,
                       UploadHandler)
 
@@ -14,6 +15,8 @@ url = [
     (r'/img/(.+)', ImageHandler),
     # request for projection computed with dimension reduction algorithms
     (r'/projection/(\w+)', ProjectionHandler),
+    # request for image processing algorithms
+    (r'/imgproc/(.*)', ImageProcessingHandler),
     # request for data object computed with data object extraction algorithms
     (r'/dataObject/(.*)', DataObjectExtractionHandler),
     # request for features computed with features extraction algorithms

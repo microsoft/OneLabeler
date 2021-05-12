@@ -46,6 +46,7 @@ const icons = {
   skip: 'fas fa-forward',
   dashboard: 'fas fa-tachometer-alt',
   verified: 'fas fa-user-check',
+  superpixel: 'fas fa-puzzle-piece',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,
