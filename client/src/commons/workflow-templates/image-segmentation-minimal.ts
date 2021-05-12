@@ -1,4 +1,3 @@
-import ObjectId from 'bson-objectid';
 import {
   DataType,
   LabelTaskType,
@@ -16,7 +15,7 @@ export default {
       type: WorkflowNodeType.Initialization,
       value: {
         dataType: DataType.Image,
-        labelTasks: [LabelTaskType.Classification],
+        labelTasks: [LabelTaskType.Segmentation],
       },
       layout: {
         x: 40,
@@ -26,54 +25,22 @@ export default {
       },
     },
     {
-      id: 'node-37008559',
-      label: 'SVD features',
-      type: WorkflowNodeType.FeatureExtraction,
-      value: {
-        type: ProcessType.FeatureExtraction,
-        label: 'SVD (Unsupervised)',
-        id: 'image-SVD-25940167',
-        inputs: ['dataObjects'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: false,
-        isServerless: false,
-        api: 'http://localhost:8005/features/image/SVD',
-      },
-      layout: {
-        x: 160,
-        y: 40,
-        width: 80,
-        height: 60,
-      },
-    },
-    {
       id: 'node-6411710',
-      label: 'projection + clustering',
+      label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
       value: [{
         type: ProcessType.DataObjectSelection,
-        label: 'Projection (User Sampling)',
-        id: 'Projection',
-        inputs: ['features', 'labels'],
-        isAlgorithmic: false,
-        isBuiltIn: true,
-        isModelBased: false,
-        isServerless: true,
-        api: 'Projection',
-      }, {
-        type: ProcessType.DataObjectSelection,
-        label: 'Cluster (Clustering)',
-        id: 'Cluster-13466955',
-        inputs: ['features', 'labels'],
+        label: 'Random (Dummy)',
+        id: 'Random-73417867',
+        inputs: ['labels'],
         isAlgorithmic: true,
         isBuiltIn: true,
         isModelBased: false,
-        isServerless: false,
-        api: 'http://localhost:8005/selection/Cluster',
+        isServerless: true,
+        api: 'Random',
         params: {
           nBatch: {
-            value: 16,
+            value: 1,
             label: 'Selection Batch Size',
             options: [
               { value: 1, label: '1' },
@@ -88,37 +55,7 @@ export default {
         },
       }],
       layout: {
-        x: 280,
-        y: 40,
-        width: 80,
-        height: 60,
-      },
-    },
-    {
-      id: 'node-86803967',
-      label: 'decision tree prelabel',
-      type: WorkflowNodeType.DefaultLabeling,
-      value: {
-        type: ProcessType.DefaultLabeling,
-        label: 'ModelPrediction',
-        id: 'ModelPrediction-29967546',
-        inputs: ['features', 'model'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: true,
-        isServerless: false,
-        model: {
-          type: 'DecisionTree',
-          label: 'DecisionTree (Supervised)',
-          objectId: (new ObjectId('DecisionTree')).toHexString(),
-          isBuiltIn: true,
-          isServerless: false,
-          isValidSampler: false,
-        },
-        api: 'http://localhost:8005/defaultLabels/ModelPrediction',
-      },
-      layout: {
-        x: 400,
+        x: 160,
         y: 40,
         width: 80,
         height: 60,
@@ -140,7 +77,7 @@ export default {
         api: 'DirectLabeling',
       },
       layout: {
-        x: 520,
+        x: 280,
         y: 40,
         width: 80,
         height: 60,
@@ -148,44 +85,21 @@ export default {
     },
     {
       id: 'node-44216216',
-      label: 'grid matrix',
+      label: 'single object display',
       type: WorkflowNodeType.InteractiveLabeling,
       value: [{
         type: ProcessType.InteractiveLabeling,
-        label: 'Grid Matrix',
-        id: 'GridMatrix-89670576',
+        label: 'Single Object Display',
+        id: 'SingleObjectDisplay-48263667',
         inputs: ['dataObjects', 'samples'],
         isAlgorithmic: false,
         isBuiltIn: true,
         isModelBased: false,
         isServerless: true,
-        api: 'GridMatrix',
-        params: {
-          nRows: {
-            value: 4,
-            label: 'Number of Objects per Column',
-            options: [
-              { value: 1, label: '1' },
-              { value: 2, label: '2' },
-              { value: 4, label: '4' },
-              { value: 6, label: '6' },
-              { value: 8, label: '8' },
-            ],
-          },
-          nColumns: {
-            value: 4,
-            label: 'Number of Objects per Row',
-            options: [
-              { value: 1, label: '1' },
-              { value: 4, label: '4' },
-              { value: 8, label: '8' },
-              { value: 12, label: '12' },
-            ],
-          },
-        },
+        api: 'SingleObjectDisplay',
       }],
       layout: {
-        x: 640,
+        x: 400,
         y: 40,
         width: 80,
         height: 60,
@@ -207,7 +121,7 @@ export default {
         api: 'AllChecked',
       },
       layout: {
-        x: 760,
+        x: 520,
         y: 40,
         width: 80,
         height: 60,
@@ -218,7 +132,7 @@ export default {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
       layout: {
-        x: 760,
+        x: 520,
         y: 130,
         width: 80,
         height: 60,
@@ -229,56 +143,17 @@ export default {
       label: 'exit',
       type: WorkflowNodeType.Terminal,
       layout: {
-        x: 770,
+        x: 530,
         y: 220,
         width: 60,
-        height: 60,
-      },
-    },
-    {
-      id: 'node-14283634',
-      label: 'interim model training',
-      type: WorkflowNodeType.InterimModelTraining,
-      value: {
-        type: ProcessType.InterimModelTraining,
-        label: 'Retrain',
-        id: 'Retrain-16440841',
-        inputs: ['features', 'labels', 'model'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: false,
-        isServerless: false,
-        api: 'http://localhost:8005/modelUpdated/Retrain',
-      },
-      layout: {
-        x: 280,
-        y: 130,
-        width: 80,
         height: 60,
       },
     },
   ],
   edges: [
     {
-      id: 'edge-97454187',
+      id: 'edge-78038813',
       source: 'node-47353599',
-      target: 'node-37008559',
-      layout: {
-        source: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
-        },
-        target: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
-        },
-      },
-    },
-    {
-      id: 'edge-21597796',
-      source: 'node-37008559',
       target: 'node-6411710',
       layout: {
         source: {
@@ -294,25 +169,8 @@ export default {
       },
     },
     {
-      id: 'edge-55337014',
+      id: 'edge-79894315',
       source: 'node-6411710',
-      target: 'node-86803967',
-      layout: {
-        source: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
-        },
-        target: {
-          direction: PortDirection.Left,
-          dx: 0,
-          dy: 30,
-        },
-      },
-    },
-    {
-      id: 'edge-33448528',
-      source: 'node-86803967',
       target: 'node-63746075',
       layout: {
         source: {
@@ -397,32 +255,15 @@ export default {
       },
     },
     {
-      id: 'edge-7667809',
+      id: 'edge-74991592',
       source: 'node-69466632',
-      target: 'node-14283634',
+      target: 'node-6411710',
       condition: false,
       layout: {
         source: {
           direction: PortDirection.Left,
           dx: 0,
           dy: 30,
-        },
-        target: {
-          direction: PortDirection.Right,
-          dx: 80,
-          dy: 30,
-        },
-      },
-    },
-    {
-      id: 'edge-94048020',
-      source: 'node-14283634',
-      target: 'node-6411710',
-      layout: {
-        source: {
-          direction: PortDirection.Top,
-          dx: 40,
-          dy: 0,
         },
         target: {
           direction: PortDirection.Bottom,

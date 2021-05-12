@@ -74,6 +74,7 @@ export default {
         isBuiltIn: true,
         isModelBased: false,
         isServerless: true,
+        api: 'DirectLabeling',
       },
       layout: {
         x: 280,

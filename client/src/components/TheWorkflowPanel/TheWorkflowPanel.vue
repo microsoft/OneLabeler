@@ -141,6 +141,7 @@ import {
 import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import imageClassificationIML from '@/commons/workflow-templates/image-classification-iml';
 import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
+import imageSegmentationMinimal from '@/commons/workflow-templates/image-segmentation-minimal';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
@@ -183,6 +184,7 @@ export default Vue.extend({
       templates: [
         { label: 'Image Classification Minimal', value: imageClassificationMinimal },
         { label: 'Image Classification with IML', value: imageClassificationIML },
+        { label: 'Image Segmentation Minimal', value: imageSegmentationMinimal },
       ],
     };
   },
