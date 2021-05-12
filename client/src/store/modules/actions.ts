@@ -119,6 +119,28 @@ export const setStatuses = (
   commit(types.SET_STATUSES, statuses);
 };
 
+export const setStatusOf = (
+  { commit }: ActionContext<IState, IState>,
+  {
+    uuid,
+    status,
+    inQueryIndices = false,
+  }: { uuid: string, status: Status, inQueryIndices: boolean },
+): void => {
+  commit(types.SET_STATUS_OF, { uuid, status, inQueryIndices });
+};
+
+export const setStatusesOf = (
+  { commit }: ActionContext<IState, IState>,
+  {
+    uuids,
+    statuses,
+    inQueryIndices = false,
+  }: { uuids: string[], statuses: Status[], inQueryIndices: boolean },
+): void => {
+  commit(types.SET_STATUSES_OF, { uuids, statuses, inQueryIndices });
+};
+
 export const setUnlabeledMark = (
   { commit }: ActionContext<IState, IState>,
   unlabeledMark: Label,

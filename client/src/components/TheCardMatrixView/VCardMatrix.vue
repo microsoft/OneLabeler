@@ -11,8 +11,8 @@
       no-gutters
     >
       <v-col
-        v-for="(dataObject, i) in dataObjectsInPage"
-        :key="dataObject.uuid"
+        v-for="i in indicesInPage"
+        :key="dataObjects[i].uuid"
         :style="{
           'padding': `${padding}px`,
           'width': `${100/itemsPerRow}%`,
@@ -22,11 +22,12 @@
       >
         <VDataObjectCard
           :data-type="dataType"
-          :data-object="dataObject"
-          :label="labelsInPage[i]"
+          :data-object="dataObjects[i]"
+          :label="labels[i]"
+          :status="statuses[i]"
           :classes="classes"
           :title="''"
-          :button-color="label2color === null ? null : label2color(labelsInPage[i])"
+          :button-color="label2color === null ? null : label2color(labels[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
           @click:card-label="onClickCardLabel"
@@ -64,6 +65,7 @@ import {
   DataType,
   IDataObject,
   Label,
+  Status,
 } from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
 
@@ -83,6 +85,10 @@ export default Vue.extend({
     },
     labels: {
       type: Array as PropType<Label[]>,
+      required: true,
+    },
+    statuses: {
+      type: Array as PropType<Status[]>,
       required: true,
     },
     classes: {
@@ -134,19 +140,8 @@ export default Vue.extend({
         ((page - 1) * itemsPerPage <= i) && (i < page * itemsPerPage)
       ));
     },
-    dataObjectsInPage(): IDataObject[] {
-      const { dataObjects, indicesInPage } = this;
-      return indicesInPage.map((i: number) => dataObjects[i]);
-    },
-    labelsInPage(): Label[] {
-      const { labels, indicesInPage } = this;
-      return indicesInPage.map((i: number) => labels[i]);
-    },
   },
   watch: {
-    page(val) {
-      this.$emit('click:page', val, this.dataObjectsInPage);
-    },
     dataObjects() {
       // Reset the page number to the first page when
       // the data objects to be shown are changed.

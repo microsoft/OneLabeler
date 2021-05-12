@@ -17,6 +17,7 @@
         :data-type="dataType"
         :data-objects="sampledDataObjects"
         :labels="sampledDataObjectLabels"
+        :statuses="sampledDataObjectStatuses"
         :classes="classes"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
@@ -36,7 +37,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { IDataObject, Label } from '@/commons/types';
+import { IDataObject, Label, Status } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VCardMatrix from './VCardMatrix.vue';
@@ -69,6 +70,7 @@ export default Vue.extend({
     ...mapGetters([
       'sampledDataObjects',
       'sampledDataObjectLabels',
+      'sampledDataObjectStatuses',
       'label2color',
     ]),
     ...mapGetters('workflow', ['dataType']),
@@ -77,6 +79,8 @@ export default Vue.extend({
     ...mapActions([
       'setDataObjectLabel',
       'setDataObjectLabels',
+      'setStatusOf',
+      'setStatusesOf',
       'pushCommandHistory',
     ]),
     getLabel(dataObject: IDataObject, inQueryIndices = false): Label {
@@ -101,6 +105,11 @@ export default Vue.extend({
           labels: ls,
           inQueryIndices: true,
         });
+        this.setStatusesOf({
+          uuids: ds.map((d: IDataObject) => d.uuid),
+          statuses: ds.map((d: IDataObject) => Status.Labeled),
+          inQueryIndices: true,
+        });
       };
       const editBatchCommand = new EditBatchCommand(dataObjects, oldLabels, newLabels, editBatch);
       editBatchCommand.execute();
@@ -110,6 +119,7 @@ export default Vue.extend({
       const oldLabel = this.getLabel(dataObject, true);
       const editSingle = (d: IDataObject, l: Label): void => {
         this.setDataObjectLabel({ uuid: d.uuid, label: l, inQueryIndices: true });
+        this.setStatusOf({ uuid: d.uuid, status: Status.Labeled, inQueryIndices: true });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
       editSingleCommand.execute();

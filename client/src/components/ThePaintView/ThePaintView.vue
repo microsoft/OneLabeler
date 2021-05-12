@@ -89,6 +89,7 @@ import {
   ILabelGeometricObject,
   ILabelMask,
   Label,
+  Status,
 } from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
 import ThePaintViewHeader from './ThePaintViewHeader.vue';
@@ -170,6 +171,7 @@ export default Vue.extend({
     ...mapActions([
       'setDataObjectLabelGeometricObjects',
       'setDataObjectLabelMask',
+      'setStatusOf',
     ]),
     initializeStrokeLabel() {
       if (this.strokeLabel === null && this.classes.length !== 0) {
@@ -200,6 +202,11 @@ export default Vue.extend({
           labelMask,
           inQueryIndices: true,
         });
+        this.setStatusOf({
+          uuid,
+          status: Status.Labeled,
+          inQueryIndices: true,
+        });
       });
     },
     onAddLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
@@ -209,6 +216,11 @@ export default Vue.extend({
       this.setDataObjectLabelGeometricObjects({
         uuid,
         labelGeometricObjects: [...labelGeometricObjects, labelGeometricObject],
+        inQueryIndices: true,
+      });
+      this.setStatusOf({
+        uuid,
+        status: Status.Labeled,
         inQueryIndices: true,
       });
     },
@@ -228,6 +240,11 @@ export default Vue.extend({
         labelGeometricObjects: updatedLabelGeometricObjects,
         inQueryIndices: true,
       });
+      this.setStatusOf({
+        uuid,
+        status: Status.Labeled,
+        inQueryIndices: true,
+      });
     },
     onRemoveLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
       const { dataObject, labelGeometricObjects } = this;
@@ -242,6 +259,11 @@ export default Vue.extend({
       this.setDataObjectLabelGeometricObjects({
         uuid,
         labelGeometricObjects: updatedLabelGeometricObjects,
+        inQueryIndices: true,
+      });
+      this.setStatusOf({
+        uuid,
+        status: Status.Labeled,
         inQueryIndices: true,
       });
     },

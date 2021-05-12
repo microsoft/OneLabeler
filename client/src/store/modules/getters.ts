@@ -28,6 +28,11 @@ export const sampledDataObjects = (state: IState): IDataObject[] => {
   return queryIndices.map((index: number) => dataObjects[index]);
 };
 
+export const sampledDataObjectStatuses = (state: IState): Status[] => {
+  const { statuses, queryIndices } = state;
+  return queryIndices.map((index: number) => statuses[index]);
+};
+
 export const sampledDataObjectLabels = (state: IState): Label[] | null => {
   const { labels, queryIndices } = state;
   if (labels === null) return null;

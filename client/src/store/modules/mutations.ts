@@ -115,6 +115,43 @@ export default {
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;
   },
+  [types.SET_STATUS_OF](
+    state: IState,
+    {
+      uuid,
+      status,
+      inQueryIndices,
+    }: { uuid: string, status: Status, inQueryIndices: boolean },
+  ): void {
+    if (state.statuses === null) return;
+    const { dataObjects, queryIndices } = state;
+    const newStatuses = [...state.statuses];
+    const idx = inQueryIndices
+      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
+      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newStatuses[idx as number] = status;
+    state.statuses = newStatuses;
+  },
+  [types.SET_STATUSES_OF](
+    state: IState,
+    {
+      uuids,
+      statuses,
+      inQueryIndices,
+    }: { uuids: string[], statuses: Status[], inQueryIndices: boolean },
+  ): void {
+    if (state.statuses === null) return;
+    const { dataObjects, queryIndices } = state;
+    const newStatuses = [...state.statuses];
+    uuids.forEach((uuid: string, i: number) => {
+      const status = statuses[i];
+      const idx = inQueryIndices
+        ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
+        : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+      newStatuses[idx as number] = status;
+    });
+    state.statuses = newStatuses;
+  },
   [types.SET_UNLABELED_MARK](state: IState, unlabeledMark: Label): void {
     state.unlabeledMark = unlabeledMark;
   },

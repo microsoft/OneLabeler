@@ -11,6 +11,7 @@
       class="px-1 py-0 white--text"
       pointer-events="none"
       :label="label"
+      :status="status"
       :classes="classes"
       :title="title"
       :button-color="buttonColor"
@@ -45,6 +46,7 @@ import {
   DataType,
   IDataObject,
   Label,
+  Status,
 } from '@/commons/types';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
 import VDisplayImage from './VDisplayImage.vue';
@@ -68,6 +70,10 @@ export default Vue.extend({
     },
     label: {
       type: [String, Number, Boolean] as PropType<Label>,
+      required: true,
+    },
+    status: {
+      type: String as PropType<Status>,
       required: true,
     },
     classes: {

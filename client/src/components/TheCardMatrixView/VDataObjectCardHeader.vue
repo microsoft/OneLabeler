@@ -4,6 +4,16 @@
     style="user-select: none;"
   >
     {{ title }}
+    <v-icon
+      v-if="isLabeled"
+      class="px-2"
+      color="white"
+      aria-hidden="true"
+      style="font-size:12px; width: 1.5rem;"
+      small
+    >
+      $vuetify.icons.values.verified
+    </v-icon>
     <v-spacer />
 
     <!-- The data object label menu. -->
@@ -40,13 +50,17 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Label } from '@/commons/types';
+import { Label, Status } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',
   props: {
     label: {
       type: [String, Number, Boolean] as PropType<Label>,
+      required: true,
+    },
+    status: {
+      type: String as PropType<Status>,
       required: true,
     },
     classes: {
@@ -60,6 +74,11 @@ export default Vue.extend({
     buttonColor: {
       type: String as PropType<string | null>,
       default: null,
+    },
+  },
+  computed: {
+    isLabeled(): boolean {
+      return this.status === Status.Labeled;
     },
   },
   methods: {

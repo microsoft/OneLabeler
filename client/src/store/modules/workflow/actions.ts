@@ -249,8 +249,11 @@ export const executeDataObjectSelectionAlgorithmic = async (
   ));
   commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
 
-  // Set the labels of samples in the current batch viewed.
+  // Set the labels status of samples in the current batch.
+  // If the samples had been labeled, keep it unchanged.
+  // Else, set it to be viewed.
   newQueryIndices.forEach((index: number) => {
+    if (newStatuses[index] === Status.Labeled) return;
     newStatuses[index] = Status.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
@@ -269,7 +272,7 @@ export const executeDataObjectSelectionManual = async (
 
   if (labels === null) return;
 
-  // Set the labels of samples in the last batch confirmed
+  // Set the label status of samples in the last batch labeled.
   const newStatuses = [...statuses];
   queryIndices.forEach((index: number) => {
     const isUnlabeled = labels[index] === unlabeledMark;
@@ -279,8 +282,11 @@ export const executeDataObjectSelectionManual = async (
   // Sample data objects.
   commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
 
-  // Set the labels of samples in the current batch viewed.
+  // Set the labels status of samples in the current batch.
+  // If the samples had been labeled, keep it unchanged.
+  // Else, set it to be viewed.
   newQueryIndices.forEach((index: number) => {
+    if (newStatuses[index] === Status.Labeled) return;
     newStatuses[index] = Status.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
