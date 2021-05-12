@@ -89,12 +89,12 @@ export default Vue.extend({
       required: true,
     },
     labelGeometricObjects: {
-      type: Array as PropType<ILabelGeometricObject[]>,
-      required: true,
+      type: Array as PropType<ILabelGeometricObject[] | null>,
+      default: null,
     },
     labelMask: {
-      type: Object as PropType<ILabelMask>,
-      required: true,
+      type: Object as PropType<ILabelMask | null>,
+      default: null,
     },
     unlabeledMark: {
       type: String as PropType<Label>,

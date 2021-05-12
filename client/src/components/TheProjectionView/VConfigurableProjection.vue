@@ -107,8 +107,8 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[]>,
-      required: true,
+      type: Array as PropType<Label[] | null>,
+      default: null,
     },
     statuses: {
       type: Array as PropType<Status[]>,
@@ -227,11 +227,10 @@ export default Vue.extend({
       }
       return sampledDataObjectIndices.map((d: number) => uuids[d]);
     },
-    labelsSampled(): Label[] {
+    labelsSampled(): Label[] | null {
       const { labels, sampledDataObjectIndices } = this;
-      if (sampledDataObjectIndices === null) {
-        return labels;
-      }
+      if (labels === null) return null;
+      if (sampledDataObjectIndices === null) return labels;
       return sampledDataObjectIndices.map((d: number) => labels[d]);
     },
     statusesSampled(): Status[] {

@@ -37,8 +37,8 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[]>,
-      required: true,
+      type: Array as PropType<Label[] | null>,
+      default: null,
     },
     statuses: {
       type: Array as PropType<Status[]>,

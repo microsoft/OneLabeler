@@ -226,13 +226,14 @@ export const executeDataObjectSelectionAlgorithmic = async (
     unlabeledMark,
   } = rootState;
 
-  if (labels === null) return;
-
   // Set the labels of samples in the last batch confirmed
   const newStatuses = [...statuses];
   queryIndices.forEach((index: number) => {
-    const isUnlabeled = labels[index] === unlabeledMark;
-    newStatuses[index] = isUnlabeled ? Status.Skipped : Status.Labeled;
+    let newStatus = Status.Labeled;
+    if (labels !== null && labels[index] === unlabeledMark) {
+      newStatus = Status.Skipped;
+    }
+    newStatuses[index] = newStatus;
   });
 
   // Sample data objects.
@@ -241,7 +242,6 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const nBatch = (method.params as MethodParams).nBatch.value as number;
   const newQueryIndices = (await API.dataObjectSelection(
     method,
-    labels,
     statuses,
     nBatch,
     model,
@@ -270,13 +270,14 @@ export const executeDataObjectSelectionManual = async (
     unlabeledMark,
   } = rootState;
 
-  if (labels === null) return;
-
   // Set the label status of samples in the last batch labeled.
   const newStatuses = [...statuses];
   queryIndices.forEach((index: number) => {
-    const isUnlabeled = labels[index] === unlabeledMark;
-    newStatuses[index] = isUnlabeled ? Status.Skipped : Status.Labeled;
+    let newStatus = Status.Labeled;
+    if (labels !== null && labels[index] === unlabeledMark) {
+      newStatus = Status.Skipped;
+    }
+    newStatuses[index] = newStatus;
   });
 
   // Sample data objects.
@@ -326,12 +327,11 @@ export const executeFeatureExtraction = async (
   const { dataObjects, labels, statuses } = rootState;
 
   if (dataObjects === null) return;
-  if (labels === null) return;
 
   const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
 
-  if (requireLabels && (labels.length === 0)) return;
+  if (requireLabels && (labels === null || labels.length === 0)) return;
 
   const response = requireLabels
     ? (await API.featureExtraction(method, dataObjects as IImage[], labels, statuses))

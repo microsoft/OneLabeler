@@ -31,32 +31,32 @@ export default Vue.extend({
   name: 'VUploadButton',
   props: {
     title: {
-      default: 'Upload',
       type: String,
+      default: 'Upload',
     },
     type: {
-      default: 'file',
       type: String as PropType<UploadTarget>,
+      default: 'file',
     },
     color: {
-      default: 'black',
       type: String,
+      default: 'black',
     },
     multiple: {
-      default: false,
       type: Boolean,
+      default: false,
     },
     small: {
-      default: false,
       type: Boolean,
+      default: false,
     },
     icon: {
-      default: '+',
       type: String,
+      default: '+',
     },
     keyboardTrigger: {
+      type: Function as PropType<KeyboardTrigger | null>,
       default: null,
-      type: [Function, null] as PropType<KeyboardTrigger>,
     },
   },
   created(): void {

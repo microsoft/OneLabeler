@@ -105,7 +105,7 @@ export default class Scatterplot implements IScatterplot {
 
   #rAccessor: NumberAccessor = () => 3;
 
-  #fillAccessor: ColorStringAccessor = () => '#ff7f0e';
+  #fillAccessor: ColorStringAccessor = () => '#888888';
 
   #strokeAccessor: ColorStringAccessor = () => '#bbbbbb';
 

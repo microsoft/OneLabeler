@@ -139,10 +139,12 @@ export default Vue.extend({
     },
     labelGeometricObjects(): ILabelGeometricObject[] | null {
       if (!this.showCanvas) return null;
+      if (this.sampledDataObjectLabelGeometricObjects === null) return null;
       return this.sampledDataObjectLabelGeometricObjects[this.page - 1];
     },
     labelMask(): ILabelMask | null {
       if (!this.showCanvas) return null;
+      if (this.sampledDataObjectLabelMasks === null) return null;
       return this.sampledDataObjectLabelMasks[this.page - 1];
     },
     enablePagination(): boolean {

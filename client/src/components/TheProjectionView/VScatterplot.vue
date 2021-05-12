@@ -28,8 +28,8 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[]>,
-      required: true,
+      type: Array as PropType<Label[] | null>,
+      default: null,
     },
     statuses: {
       type: Array as PropType<Status[]>,
@@ -173,7 +173,7 @@ export default Vue.extend({
     async renderScatterplot(
       points: [number, number][],
       uuids: string[],
-      labels: Label[],
+      labels: Label[] | null,
       svg: SVGSVGElement,
       xAxis: Axis | null,
       yAxis: Axis | null,
@@ -204,8 +204,10 @@ export default Vue.extend({
         .yAxis(yAxis)
         .xAccessor((d: unknown) => ((d as Datum).x))
         .yAccessor((d: unknown) => ((d as Datum).y))
-        .fillAccessor((d: unknown, i: number) => label2color(labels[i] as string))
         .rAccessor(() => this.dotRadius);
+      if (labels !== null) {
+        chart.fillAccessor((d: unknown, i: number) => label2color(labels[i]));
+      }
       await chart.render(svg, data as Datum[]);
       this.chart = chart;
     },

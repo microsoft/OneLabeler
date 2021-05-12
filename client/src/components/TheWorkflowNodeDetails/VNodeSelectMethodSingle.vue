@@ -78,7 +78,7 @@ export default Vue.extend({
   name: 'VNodeSelectMethodSingle',
   props: {
     selectedMethod: {
-      type: [Object, null] as PropType<Process>,
+      type: Object as PropType<Process | null>,
       default: null,
     },
     menu: {

@@ -167,13 +167,11 @@ export const defaultLabeling = showProgressBar(async (
  * Workflow Component - Data Object Selection (Algorithmic)
  * Sample a batch of data objects from the pool of data objects.
  * @param dataObjects The data objects to be sampled from.
- * @param labels The labels of the data objects.
  * @param nBatch The number of data objects to sample.
  * @returns queryIndices - the indices of sampled data objects.
  */
 export const dataObjectSelection = showProgressBar(async (
   method: Process,
-  labels: Label[],
   statuses: Status[],
   nBatch: number,
   model?: ModelService,
@@ -204,7 +202,6 @@ export const dataObjectSelection = showProgressBar(async (
       await axios.post(
         method.api as string,
         JSON.stringify({
-          labels,
           statuses,
           nBatch,
           dataObjects,
