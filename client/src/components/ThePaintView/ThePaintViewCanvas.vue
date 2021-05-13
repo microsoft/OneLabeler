@@ -82,7 +82,7 @@ import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
 
 export default Vue.extend({
-  name: 'VPaintBody',
+  name: 'ThePaintViewCanvas',
   props: {
     dataObject: {
       type: Object as PropType<IImage>,

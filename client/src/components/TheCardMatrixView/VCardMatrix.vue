@@ -27,9 +27,11 @@
           :status="statuses[i]"
           :classes="classes"
           :title="''"
+          :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
           :button-color="label2color === null ? null : label2color(labels[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
+          @click:card="onClickCard"
           @click:card-label="onClickCardLabel"
         />
       </v-col>
@@ -95,6 +97,10 @@ export default Vue.extend({
       type: Array as PropType<Label[]>,
       required: true,
     },
+    selectedUuids: {
+      type: Array as PropType<string[]>,
+      required: true,
+    },
     itemsPerRow: {
       type: Number,
       default: 2,
@@ -155,6 +161,9 @@ export default Vue.extend({
     this.updateCardSize();
   },
   methods: {
+    onClickCard(dataObject: IDataObject, e: MouseEvent) {
+      this.$emit('click:card', dataObject, e);
+    },
     onClickCardLabel(dataObject: IDataObject, label: Label) {
       this.$emit('click:card-label', dataObject, label);
     },

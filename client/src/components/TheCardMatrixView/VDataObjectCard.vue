@@ -1,7 +1,11 @@
 <template>
   <v-card
-    style="overflow: hidden"
+    :style="{
+      'overflow': 'hidden',
+      'box-shadow': isSelected ? '0px 0px 0px 3px #757575 !important' : undefined,
+    }"
     :ripple="false"
+    @click="onClickCard"
     @mouseenter="onHoverCard(dataObject)"
     @mouseleave="onLeaveCard(dataObject)"
   >
@@ -84,6 +88,10 @@ export default Vue.extend({
       type: String,
       default: '',
     },
+    isSelected: {
+      type: Boolean,
+      default: false,
+    },
     buttonColor: {
       type: String as PropType<string | null>,
       default: null,
@@ -119,6 +127,10 @@ export default Vue.extend({
     },
   },
   methods: {
+    onClickCard(e: MouseEvent): void {
+      const { dataObject } = this;
+      this.$emit('click:card', dataObject, e);
+    },
     onClickCardLabel(label: Label): void {
       const { dataObject } = this;
       this.$emit('click:card-label', dataObject, label);

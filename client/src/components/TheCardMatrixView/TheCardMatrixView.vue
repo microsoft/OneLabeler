@@ -19,9 +19,11 @@
         :labels="sampledDataObjectLabels"
         :statuses="sampledDataObjectStatuses"
         :classes="classes"
+        :selected-uuids="selectedUuids"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
         :label2color="label2color"
+        @click:card="onClickCard"
         @click:card-label="onClickCardLabel"
       />
       <p
@@ -59,6 +61,11 @@ export default Vue.extend({
       required: true,
     },
   },
+  data() {
+    return {
+      selectedUuids: [] as string[],
+    };
+  },
   computed: {
     ...mapState([
       'dataObjects',
@@ -93,7 +100,14 @@ export default Vue.extend({
       return labels[idx];
     },
     onClickBatchLabel(label: Label): void {
-      const dataObjects = this.sampledDataObjects;
+      const { selectedUuids } = this;
+      let dataObjects = this.sampledDataObjects as IDataObject[];
+
+      // If multi-selection is applied, set the labels for the selected objects.
+      if (selectedUuids.length !== 0) {
+        dataObjects = dataObjects.filter((d) => selectedUuids.includes(d.uuid));
+      }
+
       const nBatch = dataObjects.length;
       const oldLabels = dataObjects.map((dataObject: IDataObject) => (
         this.getLabel(dataObject, true)
@@ -107,7 +121,7 @@ export default Vue.extend({
         });
         this.setStatusesOf({
           uuids: ds.map((d: IDataObject) => d.uuid),
-          statuses: ds.map((d: IDataObject) => Status.Labeled),
+          statuses: ds.map(() => Status.Labeled),
           inQueryIndices: true,
         });
       };
@@ -124,6 +138,24 @@ export default Vue.extend({
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
       editSingleCommand.execute();
       this.pushCommandHistory(editSingleCommand);
+    },
+    onClickCard(dataObject: IDataObject, e: MouseEvent): void {
+      const { uuid } = dataObject;
+      const { ctrlKey } = e;
+      if (!ctrlKey) {
+        this.selectedUuids = [];
+        return;
+      }
+      const idx = this.selectedUuids.findIndex((d) => d === uuid);
+      if (idx >= 0) {
+        const selectedUuids = [
+          ...this.selectedUuids.slice(0, idx),
+          ...this.selectedUuids.slice(idx + 1),
+        ];
+        this.selectedUuids = selectedUuids;
+      } else {
+        this.selectedUuids = [...this.selectedUuids, uuid];
+      }
     },
   },
 });
