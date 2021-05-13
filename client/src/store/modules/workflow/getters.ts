@@ -2,9 +2,11 @@ import {
   DataType,
   LabelTaskType,
   Process,
+  TaskWindow,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import { isNodeInteractive } from '@/commons/utils';
 import { IState } from './state';
 
 export const startNode = (state: IState): WorkflowNode | null => {
@@ -49,4 +51,20 @@ export const processesValid = (state: IState): Process[] => {
     if (d.dataTypes === undefined) return true;
     return d.dataTypes.findIndex((type) => type === dataTypeValue) >= 0;
   });
+};
+
+export const taskWindows = (state: IState): TaskWindow[] => {
+  const { nodes } = state;
+  const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
+  const result: TaskWindow[] = [];
+  nodesWithInterface.forEach((node) => {
+    if (Array.isArray(node.value)) {
+      node.value.forEach((process) => {
+        result.push({ node, process });
+      });
+    } else {
+      result.push({ node, process: node.value as Process });
+    }
+  });
+  return result;
 };

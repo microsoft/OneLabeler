@@ -13,6 +13,7 @@
           :text="buttonText !== undefined"
           class="mr-2"
           color="white"
+          style="display: inline-flex; align-items: center; height: 100%;"
           x-small
           tile
           v-on="on"

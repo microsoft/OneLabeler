@@ -217,6 +217,10 @@ import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import {
+  isNodeProcess,
+  isNodeInteractive,
+} from '@/commons/utils';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
 
@@ -360,31 +364,15 @@ export default Vue.extend({
     window.removeEventListener('keydown', this.onKey);
   },
   methods: {
+    isNodeProcess,
     isNodeInitialization(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Initialization;
-    },
-    isNodeProcess(node: WorkflowNode): boolean {
-      return (node.type === WorkflowNodeType.LabelIdeation)
-        || (node.type === WorkflowNodeType.FeatureExtraction)
-        || (node.type === WorkflowNodeType.DataObjectSelection)
-        || (node.type === WorkflowNodeType.DefaultLabeling)
-        || (node.type === WorkflowNodeType.TaskTransformation)
-        || (node.type === WorkflowNodeType.InteractiveLabeling)
-        || (node.type === WorkflowNodeType.StoppageAnalysis)
-        || (node.type === WorkflowNodeType.InterimModelTraining)
-        || (node.type === WorkflowNodeType.QualityAssurance);
     },
     isNodeDecision(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Decision;
     },
     isNodeTerminal(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Terminal;
-    },
-    isNodeDummifiable(node: WorkflowNode): boolean {
-      return (node.type === WorkflowNodeType.DataObjectSelection)
-        || (node.type === WorkflowNodeType.DefaultLabeling)
-        || (node.type === WorkflowNodeType.InteractiveLabeling)
-        || (node.type === WorkflowNodeType.InterimModelTraining);
     },
     isNodeImplemented(node: WorkflowNode): boolean {
       if (!this.isNodeProcess(node)) return true;
@@ -419,12 +407,7 @@ export default Vue.extend({
     isNodeInteractive(node: FlowchartNode): boolean {
       const match = this.graph.nodes.find((d) => d.id === node.id);
       if (match === undefined) return false;
-      if (!this.isNodeProcess(match)) return false;
-      if (match.value === null) return false;
-      if (Array.isArray(match.value)) {
-        return (match.value as Process[]).find((d) => !d.isAlgorithmic) !== undefined;
-      }
-      return !(match.value as Process).isAlgorithmic;
+      return isNodeInteractive(match);
     },
     isNodeCurrent(node: WorkflowNode): boolean {
       if (this.currentNode === null) return false;

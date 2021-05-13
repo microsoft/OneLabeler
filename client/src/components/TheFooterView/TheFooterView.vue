@@ -1,75 +1,43 @@
 <template>
-  <v-toolbar
+  <div
     dense
     class="app-footer"
-    :height="height"
+    :style="{
+      flex: '1 1 auto',
+      display: 'inherit',
+      height: `${height}px`,
+    }"
   >
-    <v-toolbar-title class="mx-2 subtitle-2 grey--text text--lighten-2">
-      {{ `${dataObjects.length} data objects` }}
-    </v-toolbar-title>
-    <v-divider
-      class="app-footer-divider"
-      vertical
-    />
-    <v-toolbar-title class="mx-2 subtitle-2 grey--text text--lighten-2">
-      {{ `${dataObjects.length - unlabeledIndices.length} / ${dataObjects.length} labeled` }}
-    </v-toolbar-title>
-    <v-divider
-      class="app-footer-divider"
-      vertical
-    />
-    <v-toolbar-title class="ml-2 mr-1 subtitle-2 grey--text text--lighten-2">
-      {{ `${classes.length} classes` }}
-    </v-toolbar-title>
-    <!-- The create new class option button. -->
-    <VDialogButton
-      dialog-header-title="Add New Class Option"
-      max-width="400px"
-      :button-icon="$vuetify.icons.values.add"
-      button-title="Add Class"
-      @click:close="onClickClose"
-    >
-      <template #dialog-body>
-        <v-form
-          ref="form"
-          v-model="classNameValid"
-          @submit.prevent
-        >
-          <v-text-field
-            v-model="className"
-            :rules="classNameRules"
-            label="Class Name"
-            required
-            desnse
-          />
-          <v-btn
-            x-small
-            class="view-header-button subtitle-2"
-            type="submit"
-            @click="onClickAddClassOption(className)"
-          >
-            submit
-          </v-btn>
-        </v-form>
-      </template>
-    </VDialogButton>
-    <v-divider
-      class="app-footer-divider"
-      vertical
-    />
-  </v-toolbar>
+    <div style="height: 100%">
+      <button
+        v-for="(taskWindow, i) in taskWindows"
+        :key="i"
+        class="mx-1 subtitle-2 grey--text text--lighten-2 window-bar"
+        :style="{
+          'background': isNodeCurrent(taskWindow.node)
+            ? 'rgba(255,255,255,0.2)' : undefined,
+        }"
+      >
+        <div class="mx-2">
+          {{ `${taskWindow.node.label} - ${taskWindow.process.label}` }}
+        </div>
+      </button>
+    </div>
+    <v-spacer />
+    <TheFooterViewStats />
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapGetters, mapState } from 'vuex';
-import { Label } from '@/commons/types';
-import VDialogButton from './VDialogButton.vue';
+import { mapState, mapGetters } from 'vuex';
+import { WorkflowNode } from '@/commons/types';
+import TheFooterViewStats from './TheFooterViewStats.vue';
 
 export default Vue.extend({
   name: 'TheFooterView',
   components: {
-    VDialogButton,
+    TheFooterViewStats,
   },
   props: {
     height: {
@@ -77,48 +45,28 @@ export default Vue.extend({
       type: Number,
     },
   },
-  data() {
-    return {
-      className: null,
-      classNameValid: true,
-    };
-  },
   computed: {
-    ...mapState(['dataObjects', 'classes', 'unlabeledMark']),
-    ...mapGetters(['unlabeledIndices']),
-    classNameRules() {
-      const { classes, unlabeledMark } = this;
-      const notEmpty = (v: unknown) => (
-        !!v
-        || 'Class name cannot be empty string'
-      );
-      const notRepetitive = (v: unknown) => (
-        (!(classes.findIndex((d: Label) => d === v) >= 0) && !(unlabeledMark === v))
-        || 'Class name exists'
-      );
-      return [
-        notEmpty,
-        notRepetitive,
-      ];
-    },
+    ...mapState('workflow', ['nodes', 'currentNode']),
+    ...mapGetters('workflow', ['taskWindows']),
   },
   methods: {
-    ...mapActions(['pushClasses']),
-    onClickAddClassOption(className: string): void {
-      // validate the input class option
-      (this.$refs.form as HTMLFormElement).validate();
-      if (this.classNameValid) {
-        this.pushClasses(className);
-        // reset the input class name and input validation state after submit
-        this.className = null;
-        (this.$refs.form as HTMLFormElement).resetValidation();
-      }
-    },
-    onClickClose(): void {
-      // reset the input class name and input validation state after closing the dialog
-      this.className = null;
-      (this.$refs.form as HTMLFormElement).resetValidation();
+    isNodeCurrent(node: WorkflowNode): boolean {
+      if (this.currentNode === null) return false;
+      return node.id === this.currentNode.id;
     },
   },
 });
 </script>
+
+<style scoped>
+.window-bar {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  user-select: none;
+  box-shadow: 0px -2px 0px 0px #76b9ed inset;
+}
+.window-bar:hover {
+  background: rgba(255,255,255,0.05);
+}
+</style>

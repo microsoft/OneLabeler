@@ -223,3 +223,8 @@ export type WorkflowGraph = {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
 }
+
+export type TaskWindow = {
+  node: WorkflowNode;
+  process: Process;
+}

@@ -210,7 +210,7 @@ const isSuperset = (set: string[], subset: string[]) => (
 );
 
 export default Vue.extend({
-  name: 'Flowchart',
+  name: 'VFlowchart',
   props: {
     nodes: {
       type: Array as PropType<FlowchartNode[]>,
