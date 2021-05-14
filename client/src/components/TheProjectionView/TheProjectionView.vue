@@ -4,6 +4,8 @@
       :n-rows="nRows"
       :n-columns="nColumns"
       @set:matrix-shape="onSetMatrixShape"
+      @window:minimize="onWindowMinimize"
+      @window:pin="onWindowPin"
     />
     <v-divider />
     <v-card-actions
@@ -66,9 +68,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ProjectionMethodType } from '@/commons/types';
+import { ProjectionMethodType, TaskWindow } from '@/commons/types';
 import { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
 import VConfigurableProjection from './VConfigurableProjection.vue';
@@ -110,6 +112,12 @@ export default Vue.extend({
     TheProjectionViewHeader,
     VConfigurableProjection,
   },
+  props: {
+    taskWindow: {
+      type: Object as PropType<TaskWindow>,
+      required: true,
+    },
+  },
   data() {
     return {
       resizeObserver: null as ResizeObserver | null,
@@ -129,9 +137,7 @@ export default Vue.extend({
       'uuidToIdx',
       'queryIndices',
     ]),
-    ...mapState('workflow', [
-      'currentNode',
-    ]),
+    ...mapState('workflow', ['currentNode']),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
     ...mapGetters('workflow', ['nextNodes']),
     nDataObjects(): number {
@@ -175,18 +181,35 @@ export default Vue.extend({
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
+    ...mapActions(['editTaskWindow']),
     ...mapActions('workflow', [
       'executeDataObjectSelectionManual',
       'executeWorkflow',
     ]),
+    onWindowMinimize() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isMinimized: true,
+      });
+    },
+    onWindowPin() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isPinned: true,
+      });
+    },
     async onSelectUuids(uuids: string[]): Promise<void> {
       if (uuids.length === 0) return;
-      const { uuidToIdx } = this;
+      const { taskWindow, uuidToIdx } = this;
       const indices = uuids
         .map((uuid) => uuidToIdx[uuid]);
       await this.executeDataObjectSelectionManual(indices);
       if (this.nextNodes === null || this.nextNodes.length !== 1) return;
-      await this.executeWorkflow(this.nextNodes[0]);
+
+      // await this.executeWorkflow(this.nextNodes[0]);
+      await this.executeWorkflow(taskWindow.node);
     },
     onSetMatrixShape(nRows: number, nColumns: number) {
       this.nRows = nRows;

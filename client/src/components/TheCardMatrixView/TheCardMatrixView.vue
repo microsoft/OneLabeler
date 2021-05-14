@@ -5,6 +5,8 @@
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       @click:batch-label="onClickBatchLabel"
+      @window:minimize="onWindowMinimize"
+      @window:pin="onWindowPin"
     />
     <v-divider />
     <v-card-actions
@@ -37,9 +39,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { IDataObject, Label, Status } from '@/commons/types';
+import {
+  IDataObject,
+  Label,
+  Status,
+  TaskWindow,
+} from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VCardMatrix from './VCardMatrix.vue';
@@ -52,6 +59,10 @@ export default Vue.extend({
     TheCardMatrixViewHeader,
   },
   props: {
+    taskWindow: {
+      type: Object as PropType<TaskWindow>,
+      required: true,
+    },
     itemsPerRow: {
       type: Number,
       required: true,
@@ -89,6 +100,7 @@ export default Vue.extend({
       'setStatusOf',
       'setStatusesOf',
       'pushCommandHistory',
+      'editTaskWindow',
     ]),
     getLabel(dataObject: IDataObject, inQueryIndices = false): Label {
       const { dataObjects, labels, queryIndices } = this;
@@ -156,6 +168,20 @@ export default Vue.extend({
       } else {
         this.selectedUuids = [...this.selectedUuids, uuid];
       }
+    },
+    onWindowMinimize() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isMinimized: true,
+      });
+    },
+    onWindowPin() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isPinned: true,
+      });
     },
   },
 });

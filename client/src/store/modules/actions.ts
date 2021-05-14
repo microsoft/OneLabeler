@@ -7,6 +7,7 @@ import {
   ILabelGeometricObject,
   Label,
   Status,
+  TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import { IState, createInitialState } from './state';
@@ -188,6 +189,27 @@ export const setMessage = (
   message: IMessage,
 ): void => {
   commit(types.SET_MESSAGE, message);
+};
+
+export const setTaskWindows = (
+  { commit }: ActionContext<IState, IState>,
+  taskWindows: TaskWindow[],
+): void => {
+  commit(types.SET_TASK_WINDOWS, taskWindows);
+};
+
+export const editTaskWindow = (
+  { commit, state }: ActionContext<IState, IState>,
+  newValue: TaskWindow,
+): void => {
+  const { taskWindows } = state;
+  const { node, process } = newValue;
+  const idx = taskWindows.findIndex((d) => (
+    d.node.id === node.id && d.process.id === process.id
+  ));
+  const taskWindowsUpdated = [...taskWindows];
+  taskWindowsUpdated[idx] = newValue;
+  commit(types.SET_TASK_WINDOWS, taskWindowsUpdated);
 };
 
 export const resetState = (

@@ -416,14 +416,16 @@ export const executeWorkflow = async (
   if (node.type === WorkflowNodeType.DataObjectSelection) {
     const algorithmicMethod = (node.value as Process[])
       .find((d) => d.isAlgorithmic);
-    const interactiveMethod = (node.value as Process[])
-      .find((d) => !d.isAlgorithmic);
     if (algorithmicMethod !== undefined) {
       await executeDataObjectSelectionAlgorithmic(store, algorithmicMethod);
     }
+    /*
+    const interactiveMethod = (node.value as Process[])
+      .find((d) => !d.isAlgorithmic);
     if (interactiveMethod !== undefined) {
       return;
     }
+    */
     [outputNode] = getOutputNodes(node, nodes, edges);
     commit(types.SET_CURRENT_NODE, outputNode);
   }

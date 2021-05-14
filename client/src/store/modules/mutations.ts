@@ -6,6 +6,7 @@ import {
   ILabelMask,
   Label,
   Status,
+  TaskWindow,
 } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
@@ -166,5 +167,8 @@ export default {
   },
   [types.SET_MESSAGE](state: IState, message: IMessage): void {
     state.message = message;
+  },
+  [types.SET_TASK_WINDOWS](state: IState, taskWindows: TaskWindow[]): void {
+    state.taskWindows = taskWindows;
   },
 };

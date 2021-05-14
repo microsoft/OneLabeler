@@ -14,6 +14,8 @@
       @set:stroke-shape="onSetStrokeShape"
       @set:stroke-width="onSetStrokeWidth"
       @set:mouse-operation="onSetMouseOperation"
+      @window:minimize="onWindowMinimize"
+      @window:pin="onWindowPin"
     />
     <v-divider />
     <v-card-actions
@@ -80,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import uploadFile from '@/services/upload-file';
 import {
@@ -90,6 +92,7 @@ import {
   ILabelMask,
   Label,
   Status,
+  TaskWindow,
 } from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
 import ThePaintViewHeader from './ThePaintViewHeader.vue';
@@ -100,6 +103,12 @@ export default Vue.extend({
   components: {
     ThePaintViewHeader,
     ThePaintViewCanvas,
+  },
+  props: {
+    taskWindow: {
+      type: Object as PropType<TaskWindow>,
+      required: true,
+    },
   },
   data(): {
     strokeLabel: Label | null,
@@ -174,6 +183,7 @@ export default Vue.extend({
       'setDataObjectLabelGeometricObjects',
       'setDataObjectLabelMask',
       'setStatusOf',
+      'editTaskWindow',
     ]),
     initializeStrokeLabel() {
       if (this.strokeLabel === null && this.classes.length !== 0) {
@@ -283,6 +293,20 @@ export default Vue.extend({
     },
     onSetMouseOperation(mouseOperation: MouseOperationType) {
       this.mouseOperation = mouseOperation;
+    },
+    onWindowMinimize() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isMinimized: true,
+      });
+    },
+    onWindowPin() {
+      const { taskWindow } = this;
+      this.editTaskWindow({
+        ...taskWindow,
+        isPinned: true,
+      });
     },
     setCanvasHeight() {
       // update canvas size according to whether pagination is needed

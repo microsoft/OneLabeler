@@ -6,6 +6,7 @@ import {
   ILabelGeometricObject,
   Label,
   Status,
+  TaskWindow,
 } from '@/commons/types';
 
 export interface IState {
@@ -38,6 +39,8 @@ export interface IState {
   commandHistory: ICommand[];
   /** The popup message to be shown in the interface. */
   message: IMessage | null;
+  /** The task windows in the interface. */
+  taskWindows: TaskWindow[];
 }
 
 export const createInitialState = (): IState => ({
@@ -54,6 +57,7 @@ export const createInitialState = (): IState => ({
   queryIndices: [],
   commandHistory: [],
   message: null,
+  taskWindows: [],
 });
 
 export default createInitialState();

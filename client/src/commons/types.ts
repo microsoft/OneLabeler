@@ -227,4 +227,6 @@ export type WorkflowGraph = {
 export type TaskWindow = {
   node: WorkflowNode;
   process: Process;
+  isPinned: boolean;
+  isMinimized: boolean;
 }

@@ -47,6 +47,8 @@ const icons = {
   dashboard: 'fas fa-tachometer-alt',
   verified: 'fas fa-user-check',
   superpixel: 'fas fa-puzzle-piece',
+  minimize: 'fas fa-minus',
+  pin: 'fas fa-thumbtack',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

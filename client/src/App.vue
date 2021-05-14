@@ -16,19 +16,21 @@
         class="pa-1"
         no-gutters
       >
-        <v-col
-          v-for="(taskWindow, i) in taskWindows"
-          :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
-          :cols="12/nWindows"
-          :class="(taskWindows.length !== 1 && i !== 0) ? 'pl-1' : ''"
-        >
-          <component
-            :is="getComponent(taskWindow)"
-            :items-per-row="getParamValue(taskWindow, 'nRows')"
-            :items-per-col="getParamValue(taskWindow, 'nColumns')"
-            style="height: 100%;"
-          />
-        </v-col>
+        <template v-for="(taskWindow, i) in taskWindowsDisplayed">
+          <v-col
+            :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
+            :cols="12/nWindows"
+            :class="(taskWindows.length !== 1 && i !== 0) ? 'pl-1' : ''"
+          >
+            <component
+              :is="getComponent(taskWindow)"
+              :task-window="taskWindow"
+              :items-per-row="getParamValue(taskWindow, 'nRows')"
+              :items-per-col="getParamValue(taskWindow, 'nColumns')"
+              style="height: 100%;"
+            />
+          </v-col>
+        </template>
       </v-row>
       <v-row
         class="pa-0"
@@ -44,7 +46,7 @@
 <script lang="ts">
 import { VueConstructor } from 'vue';
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters, mapState } from 'vuex';
+import { mapState } from 'vuex';
 import {
   TaskWindow,
   WorkflowNodeType,
@@ -67,10 +69,13 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
     TheMessageView,
   },
   computed: {
+    ...mapState(['taskWindows']),
     ...mapState('workflow', ['nodes']),
-    ...mapGetters('workflow', ['taskWindows']),
     nWindows(): number {
-      return this.taskWindows.length;
+      return this.taskWindowsDisplayed.length;
+    },
+    taskWindowsDisplayed(): TaskWindow[] {
+      return this.taskWindows.filter((d) => !d.isMinimized);
     },
   },
   methods: {

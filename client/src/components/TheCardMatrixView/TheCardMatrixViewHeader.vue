@@ -1,61 +1,68 @@
 <template>
-  <v-card-title class="view-header">
-    <v-icon
-      class="px-2"
-      aria-hidden="true"
-      small
-    >
-      $vuetify.icons.values.image
-    </v-icon>
-    Sampled Objects
-    <v-spacer />
-
-    <!-- The set batch labels menu. -->
-    <v-menu offset-y>
-      <template #activator="{ on }">
-        <v-btn
-          x-small
-          class="view-header-button subtitle-2"
-          v-on="on"
-        >
-          Set Batch Labels
-        </v-btn>
-      </template>
-      <v-list dense>
-        <v-list-item
-          v-for="(entry, i) in [...classes, unlabeledMark]"
-          :key="i"
-          style="min-height: 30px"
-          @click="onClickBatchLabel(entry)"
-        >
-          <v-list-item-title
-            height="20"
-            class="subtitle-2 pa-0 ma-0"
-            style="height: 20px"
+  <VToolbar
+    @window:minimize="onClickMinimize"
+    @window:pin="onClickPin"
+  >
+    <template #title>
+      <v-icon
+        class="px-2"
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.image
+      </v-icon>
+      Sampled Objects
+    </template>
+    <template #tools>
+      <!-- The set batch labels menu. -->
+      <v-menu offset-y>
+        <template #activator="{ on }">
+          <v-btn
+            x-small
+            class="view-header-button subtitle-2 ml-2"
+            v-on="on"
           >
-            {{ entry }}
-            <v-icon
-              class="pl-1"
-              style="float: right"
-              aria-hidden="true"
-              small
-              :style="`color: ${label2color(entry)}`"
+            Set Batch Labels
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            v-for="(entry, i) in [...classes, unlabeledMark]"
+            :key="i"
+            style="min-height: 30px"
+            @click="onClickBatchLabel(entry)"
+          >
+            <v-list-item-title
+              height="20"
+              class="subtitle-2 pa-0 ma-0"
+              style="height: 20px"
             >
-              $vuetify.icons.values.square
-            </v-icon>
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </v-card-title>
+              {{ entry }}
+              <v-icon
+                class="pl-1"
+                style="float: right"
+                aria-hidden="true"
+                small
+                :style="`color: ${label2color(entry)}`"
+              >
+                $vuetify.icons.values.square
+              </v-icon>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+  </VToolbar>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { Label } from '@/commons/types';
+import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default Vue.extend({
   name: 'TheCardMatrixViewHeader',
+  components: { VToolbar },
   props: {
     classes: {
       type: Array as PropType<Label[]>,
@@ -73,6 +80,12 @@ export default Vue.extend({
   methods: {
     onClickBatchLabel(label: Label): void {
       this.$emit('click:batch-label', label);
+    },
+    onClickMinimize() {
+      this.$emit('window:minimize');
+    },
+    onClickPin() {
+      this.$emit('window:pin');
     },
   },
 });

@@ -1,9 +1,12 @@
 import { Store } from 'vuex';
 import {
   LabelTaskType,
+  Process,
+  TaskWindow,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import { isNodeInteractive } from '@/commons/utils';
 import { IState } from './state';
 import * as types from './mutation-types';
 import * as workflowTypes from './workflow/mutation-types';
@@ -72,15 +75,49 @@ const updateLabels = (
   }
 };
 
+const getUpdatedTaskWindows = (
+  taskWindows: TaskWindow[],
+  nodes: WorkflowNode[],
+): TaskWindow[] => {
+  const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
+  const result: TaskWindow[] = [];
+  nodesWithInterface.forEach((node) => {
+    const processes = Array.isArray(node.value)
+      ? node.value as Process[]
+      : [node.value as Process];
+    processes.forEach((process) => {
+      const match = taskWindows.find((d) => (
+        d.node.id === node.id && d.process.id === process.id
+      ));
+      result.push(match !== undefined
+        ? match
+        : {
+          node,
+          process,
+          isPinned: false,
+          isMinimized: false,
+        });
+    });
+  });
+  return result;
+};
+
 const plugin = (store: Store<IState>) => {
   store.subscribe((mutation, state: IState) => {
     if (mutation.type === types.SET_DATA_OBJECTS) {
-      const labelTasks = getLabelTasks(state.workflow.nodes);
+      const nodes = state.workflow.nodes as WorkflowNode[];
+      const labelTasks = getLabelTasks(nodes);
       updateLabels({ commit: store.commit, state }, labelTasks);
     }
     if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
       const labelTasks = getLabelTasks(mutation.payload as WorkflowNode[]);
       updateLabels({ commit: store.commit, state }, labelTasks);
+    }
+    if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
+      const nodes = state.workflow.nodes as WorkflowNode[];
+      const { taskWindows } = state;
+      const taskWindowsUpdated = getUpdatedTaskWindows(taskWindows, nodes);
+      store.commit(types.SET_TASK_WINDOWS, taskWindowsUpdated);
     }
   });
 };
