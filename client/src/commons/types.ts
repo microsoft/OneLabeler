@@ -61,12 +61,12 @@ export enum ObjectShapeType {
 }
 
 /** The interface of a polygon annotation in an image data object. */
-export interface ILabelGeometricObject {
+export interface ILabelShape {
   label: Label;
   shape: ObjectShapeType;
   position: [number, number][] | [number, number];
   /** The uuid is for recognizing which shape in the canvas
-   * corresponds to which label geometric object. */
+   * corresponds to which label shape. */
   uuid?: string | null;
 }
 

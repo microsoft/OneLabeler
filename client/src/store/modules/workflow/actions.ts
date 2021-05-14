@@ -313,10 +313,10 @@ export const executeDefaultLabeling = async (
     classes,
     unlabeledMark,
   ));
-  commit(rootTypes.SET_DATA_OBJECT_LABELS, {
+  commit(rootTypes.SET_LABELS_OF, {
     uuids,
     labels,
-    inQueryIndices: true,
+    queried: true,
   }, { root: true });
 };
 

@@ -3,7 +3,7 @@ import {
   IDataObject,
   IMessage,
   ILabelMask,
-  ILabelGeometricObject,
+  ILabelShape,
   Label,
   Status,
   TaskWindow,
@@ -17,11 +17,11 @@ export interface IState {
   classes: Label[];
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
-  /** The data object labels. */
+  /** The labels. */
   labels: Label[] | null;
-  /** The data object geometric object annotations (one image can contain multiple objects). */
-  labelGeometricObjects: ILabelGeometricObject[][] | null;
-  /** The data object segmentation masks. */
+  /** The object shapes annotations. */
+  labelShapeLists: ILabelShape[][] | null;
+  /** The segmentation masks. */
   labelMasks: ILabelMask[] | null;
   /** The label statuses of the data objects. */
   statuses: Status[];
@@ -48,7 +48,7 @@ export const createInitialState = (): IState => ({
   classes: [],
   stop: false,
   labels: null,
-  labelGeometricObjects: null,
+  labelShapeLists: null,
   labelMasks: null,
   statuses: [],
   unlabeledMark: '-1',

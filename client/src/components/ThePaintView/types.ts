@@ -4,7 +4,7 @@ export enum MouseOperationType {
   PanAndZoom = 'PanAndZoom',
   PaintBrush = 'PaintBrush',
   PaintErase = 'PaintErase',
-  EditGeometricObject = 'EditGeometricObject',
+  EditShape = 'EditShape',
   ClickCreatePolygon = 'ClickCreatePolygon',
   ClickCreateRect = 'ClickCreateRect',
   ClickCreatePoint = 'ClickCreatePoint',

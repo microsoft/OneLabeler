@@ -45,7 +45,7 @@
         style="image-rendering: pixelated"
       />
       <v-layer
-        ref="layerGeometricObjects"
+        ref="layerShapes"
         :config="{ imageSmoothingEnabled: false }"
         style="image-rendering: pixelated"
       />
@@ -67,7 +67,7 @@ import {
   IImage,
   Label,
   ILabelMask,
-  ILabelGeometricObject,
+  ILabelShape,
   ObjectShapeType,
 } from '@/commons/types';
 import imageURLFormatter from '@/services/image-url';
@@ -88,8 +88,8 @@ export default Vue.extend({
       type: Object as PropType<IImage>,
       required: true,
     },
-    labelGeometricObjects: {
-      type: Array as PropType<ILabelGeometricObject[] | null>,
+    labelShapeList: {
+      type: Array as PropType<ILabelShape[] | null>,
       default: null,
     },
     labelMask: {
@@ -147,7 +147,7 @@ export default Vue.extend({
       return this.mouseOperation === MouseOperationType.PaintErase;
     },
     editable(): boolean {
-      return this.mouseOperation === MouseOperationType.EditGeometricObject;
+      return this.mouseOperation === MouseOperationType.EditShape;
     },
     polygonClickStageCreateable(): boolean {
       return this.mouseOperation === MouseOperationType.ClickCreatePolygon;
@@ -187,14 +187,14 @@ export default Vue.extend({
       this.drawEditableShapes();
     },
     editable() {
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
-      const shapes = layerGeometricObjects.find('.editable-shape');
+      const shapes = layerShapes.find('.editable-shape');
       shapes.each((shape) => {
         const editableShape = shape.getAttr('object') as IEditableShape;
         editableShape.editable(this.editable);
       });
-      layerGeometricObjects.batchDraw();
+      layerShapes.batchDraw();
     },
   },
   created(): void {
@@ -346,17 +346,17 @@ export default Vue.extend({
       };
       this.$emit('create:shape', labelPolygon);
 
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
-      layerGeometricObjects.find('#temp-prospective-polygon-edge')
+      layerShapes.find('#temp-prospective-polygon-edge')
         .each((shape) => shape.destroy());
-      layerGeometricObjects.find('#temp-prospective-polygon-closing-edge')
+      layerShapes.find('#temp-prospective-polygon-closing-edge')
         .each((shape) => shape.destroy());
-      layerGeometricObjects.find('#temp-polygon-path')
+      layerShapes.find('#temp-polygon-path')
         .each((shape) => shape.destroy());
 
       this.drawEditablePolygon(labelPolygon);
-      layerGeometricObjects.draw();
+      layerShapes.draw();
       this.points = [];
     },
     drawStroke(offsetX: number, offsetY: number): void {
@@ -486,14 +486,18 @@ export default Vue.extend({
       };
       image.src = imageURLFormatter(path as string);
     },
-    drawEditableCircle(labelCircle: ILabelGeometricObject): void {
+    drawEditableCircle(labelCircle: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const [x, y] = labelCircle.position as [number, number];
       const { label, uuid } = labelCircle;
 
-      const editableCircle = new EditableCircle({ x, y }, layerGeometricObjects, editable);
+      const editableCircle = new EditableCircle(
+        { x, y },
+        layerShapes,
+        editable,
+      );
       const circle = editableCircle.getNode()
         .stroke(label2color(label))
         .name('editable-shape')
@@ -511,16 +515,16 @@ export default Vue.extend({
       editableCircle.setOnClick(() => {
         circle.addName('clicked-shape');
       });
-      layerGeometricObjects.add(circle);
+      layerShapes.add(circle);
     },
-    drawEditableRect(labelRect: ILabelGeometricObject): void {
+    drawEditableRect(labelRect: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const points = labelRect.position as [number, number][];
       const { label, uuid } = labelRect;
 
-      const editableRect = new EditableRect(points, layerGeometricObjects, editable);
+      const editableRect = new EditableRect(points, layerShapes, editable);
       const group = editableRect.getNode()
         .name('editable-shape')
         .setAttr('object', editableRect)
@@ -538,16 +542,16 @@ export default Vue.extend({
       editableRect.setOnClick(() => {
         group.addName('clicked-shape');
       });
-      layerGeometricObjects.add(group);
+      layerShapes.add(group);
     },
-    drawEditablePolygon(labelPolygon: ILabelGeometricObject): void {
+    drawEditablePolygon(labelPolygon: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const points = labelPolygon.position as [number, number][];
       const { label, uuid } = labelPolygon;
 
-      const editablePolygon = new EditablePolygon(points, layerGeometricObjects, editable);
+      const editablePolygon = new EditablePolygon(points, layerShapes, editable);
       const group = editablePolygon.getNode()
         .name('editable-shape')
         .setAttr('object', editablePolygon)
@@ -565,17 +569,17 @@ export default Vue.extend({
       editablePolygon.setOnClick(() => {
         group.addName('clicked-shape');
       });
-      layerGeometricObjects.add(group);
+      layerShapes.add(group);
     },
     drawEditableShapes(): void {
-      const { labelGeometricObjects } = this;
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const { labelShapeList } = this;
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
 
-      // clean layerGeometricObjects
-      layerGeometricObjects.destroyChildren();
-      if (labelGeometricObjects !== null) {
-        labelGeometricObjects.forEach((d: ILabelGeometricObject) => {
+      // clean layerShapes
+      layerShapes.destroyChildren();
+      if (labelShapeList !== null) {
+        labelShapeList.forEach((d: ILabelShape) => {
           if (d.shape === ObjectShapeType.Point) {
             this.drawEditableCircle(d);
           } else if (d.shape === ObjectShapeType.Rect) {
@@ -585,7 +589,7 @@ export default Vue.extend({
           }
         });
       }
-      layerGeometricObjects.draw();
+      layerShapes.draw();
     },
     onKey(e: KeyboardEvent): void {
       const { key } = e;
@@ -595,9 +599,9 @@ export default Vue.extend({
         this.stopPolygonCreation(false);
       }
       if (key === 'Delete') {
-        const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+        const layerShapes = (this.$refs.layerShapes as any)
           .getNode() as Konva.Layer;
-        const shapes = layerGeometricObjects.find('.clicked-shape');
+        const shapes = layerShapes.find('.clicked-shape');
         shapes.each((shape) => {
           const uuid = shape.getAttr('uuid');
           this.$emit('delete:shape', {
@@ -605,7 +609,7 @@ export default Vue.extend({
           });
           shape.destroy();
         });
-        layerGeometricObjects.draw();
+        layerShapes.draw();
       }
     },
     onDragEndStage(): void {
@@ -728,10 +732,10 @@ export default Vue.extend({
         this.points = [...this.points, [x, y]];
         const color = label2color(strokeLabel);
 
-        const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+        const layerShapes = (this.$refs.layerShapes as any)
           .getNode() as Konva.Layer;
 
-        layerGeometricObjects.find('#temp-prospective-polygon-closing-edge')
+        layerShapes.find('#temp-prospective-polygon-closing-edge')
           .each((shape) => shape.destroy());
         if (this.points.length >= 2) {
           const firstPoint = this.points[0];
@@ -743,10 +747,10 @@ export default Vue.extend({
             opacity: 0.5,
             closed: false,
           });
-          layerGeometricObjects.add(prospectiveClosingEdge);
+          layerShapes.add(prospectiveClosingEdge);
         }
 
-        layerGeometricObjects.find('#temp-polygon-path')
+        layerShapes.find('#temp-polygon-path')
           .each((shape) => shape.destroy());
         const clickedPath = new Konva.Line({
           id: 'temp-polygon-path',
@@ -755,8 +759,8 @@ export default Vue.extend({
           strokeWidth: 0.25,
           closed: false,
         });
-        layerGeometricObjects.add(clickedPath);
-        layerGeometricObjects.batchDraw();
+        layerShapes.add(clickedPath);
+        layerShapes.batchDraw();
       }
       if (this.polygonClickStageCreateable) {
         if (this.points.length === 0) return;
@@ -765,11 +769,11 @@ export default Vue.extend({
         const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
         const color = label2color(strokeLabel);
 
-        const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+        const layerShapes = (this.$refs.layerShapes as any)
           .getNode() as Konva.Layer;
-        layerGeometricObjects.find('#temp-prospective-polygon-edge')
+        layerShapes.find('#temp-prospective-polygon-edge')
           .each((shape) => shape.destroy());
-        layerGeometricObjects.find('#temp-prospective-polygon-closing-edge')
+        layerShapes.find('#temp-prospective-polygon-closing-edge')
           .each((shape) => shape.destroy());
 
         const lastPoint = this.points[this.points.length - 1];
@@ -784,7 +788,7 @@ export default Vue.extend({
           opacity: 0.5,
           closed: false,
         });
-        layerGeometricObjects.add(prospectiveEdge);
+        layerShapes.add(prospectiveEdge);
         if (this.points.length >= 2) {
           const prospectiveClosingEdge = new Konva.Line({
             id: 'temp-prospective-polygon-closing-edge',
@@ -794,9 +798,9 @@ export default Vue.extend({
             opacity: 0.5,
             closed: false,
           });
-          layerGeometricObjects.add(prospectiveClosingEdge);
+          layerShapes.add(prospectiveClosingEdge);
         }
-        layerGeometricObjects.batchDraw();
+        layerShapes.batchDraw();
       }
       if (this.rectClickCreateable) {
         if (this.points.length !== 1) return;
@@ -805,9 +809,9 @@ export default Vue.extend({
         const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
         const color = label2color(strokeLabel);
 
-        const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+        const layerShapes = (this.$refs.layerShapes as any)
           .getNode() as Konva.Layer;
-        layerGeometricObjects.find('#temp-prospective-rect')
+        layerShapes.find('#temp-prospective-rect')
           .each((shape) => shape.destroy());
 
         const firstPoint = this.points[0];
@@ -829,8 +833,8 @@ export default Vue.extend({
           strokeWidth: 0.25,
           opacity: 0.5,
         });
-        layerGeometricObjects.add(prospectiveRect);
-        layerGeometricObjects.batchDraw();
+        layerShapes.add(prospectiveRect);
+        layerShapes.batchDraw();
       }
     },
     onMouseUpStage(): void {
@@ -857,17 +861,17 @@ export default Vue.extend({
       const { snapToPixel, strokeLabel, label2color } = this;
       const { offsetX, offsetY } = e.evt;
       const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
-      const layerGeometricObjects = (this.$refs.layerGeometricObjects as any)
+      const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       if (this.pointClickCreateable) {
-        const labelCircle: ILabelGeometricObject = {
+        const labelCircle: ILabelShape = {
           label: strokeLabel,
           shape: ObjectShapeType.Point,
           position: [x, y],
           uuid: uuidv4(),
         };
         this.drawEditableCircle(labelCircle);
-        layerGeometricObjects.draw();
+        layerShapes.draw();
         this.$emit('create:shape', labelCircle);
       } else if (this.polygonClickStageCreateable) {
         const color = label2color(strokeLabel);
@@ -879,7 +883,7 @@ export default Vue.extend({
         }
         this.points = [...this.points, [x, y]];
 
-        layerGeometricObjects.find('#temp-polygon-path')
+        layerShapes.find('#temp-polygon-path')
           .each((shape) => shape.destroy());
         const clickedPath = new Konva.Line({
           id: 'temp-polygon-path',
@@ -888,25 +892,25 @@ export default Vue.extend({
           strokeWidth: 0.25,
           closed: false,
         });
-        layerGeometricObjects.add(clickedPath);
-        layerGeometricObjects.batchDraw();
+        layerShapes.add(clickedPath);
+        layerShapes.batchDraw();
       } else if (this.rectClickCreateable) {
         if (this.points.length === 0) {
           this.points = [[x, y]];
         } else if (this.points.length === 1) {
           const { points } = this;
-          layerGeometricObjects.find('#temp-prospective-rect')
+          layerShapes.find('#temp-prospective-rect')
             .each((shape) => shape.destroy());
           this.points = [];
 
-          const labelRect: ILabelGeometricObject = {
+          const labelRect: ILabelShape = {
             label: strokeLabel,
             shape: ObjectShapeType.Rect,
             position: [...points, [x, y]],
             uuid: uuidv4(),
           };
           this.drawEditableRect(labelRect);
-          layerGeometricObjects.draw();
+          layerShapes.draw();
           this.$emit('create:shape', labelRect);
         }
       }
@@ -914,7 +918,7 @@ export default Vue.extend({
       // Deselect the previous selected objects.
       if (this.editable) {
         const { target } = e;
-        layerGeometricObjects.find('.clicked-shape').each((shape: Konva.Node) => {
+        layerShapes.find('.clicked-shape').each((shape: Konva.Node) => {
           // Keep the newly selected object selected.
           const editableShape = shape.getAttr('object') as IEditableShape;
           if (editableShape instanceof EditableCircle) {
@@ -927,7 +931,7 @@ export default Vue.extend({
           editableShape.endEdit();
           shape.removeName('clicked-shape');
         });
-        layerGeometricObjects.draw();
+        layerShapes.draw();
       }
     },
   },

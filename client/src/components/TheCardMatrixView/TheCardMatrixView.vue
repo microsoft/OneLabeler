@@ -18,8 +18,8 @@
         style="height: 100%"
         :data-type="dataType"
         :data-objects="sampledDataObjects"
-        :labels="sampledDataObjectLabels"
-        :statuses="sampledDataObjectStatuses"
+        :labels="sampledLabels"
+        :statuses="sampledStatuses"
         :classes="classes"
         :selected-uuids="selectedUuids"
         :items-per-row="itemsPerRow"
@@ -87,25 +87,25 @@ export default Vue.extend({
     ]),
     ...mapGetters([
       'sampledDataObjects',
-      'sampledDataObjectLabels',
-      'sampledDataObjectStatuses',
+      'sampledLabels',
+      'sampledStatuses',
       'label2color',
     ]),
     ...mapGetters('workflow', ['dataType']),
   },
   methods: {
     ...mapActions([
-      'setDataObjectLabel',
-      'setDataObjectLabels',
+      'setLabelOf',
+      'setLabelsOf',
       'setStatusOf',
       'setStatusesOf',
       'pushCommandHistory',
       'editTaskWindow',
     ]),
-    getLabel(dataObject: IDataObject, inQueryIndices = false): Label {
+    getLabel(dataObject: IDataObject, queried = false): Label {
       const { dataObjects, labels, queryIndices } = this;
       const { uuid } = dataObject;
-      const idx = inQueryIndices
+      const idx = queried
         ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
         : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
       console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
@@ -126,15 +126,15 @@ export default Vue.extend({
       ));
       const newLabels = Array(nBatch).fill(label);
       const editBatch = (ds: IDataObject[], ls: Label[]): void => {
-        this.setDataObjectLabels({
+        this.setLabelsOf({
           uuids: ds.map((d: IDataObject) => d.uuid),
           labels: ls,
-          inQueryIndices: true,
+          queried: true,
         });
         this.setStatusesOf({
           uuids: ds.map((d: IDataObject) => d.uuid),
           statuses: ds.map(() => Status.Labeled),
-          inQueryIndices: true,
+          queried: true,
         });
       };
       const editBatchCommand = new EditBatchCommand(dataObjects, oldLabels, newLabels, editBatch);
@@ -144,8 +144,8 @@ export default Vue.extend({
     onClickCardLabel(dataObject: IDataObject, label: Label): void {
       const oldLabel = this.getLabel(dataObject, true);
       const editSingle = (d: IDataObject, l: Label): void => {
-        this.setDataObjectLabel({ uuid: d.uuid, label: l, inQueryIndices: true });
-        this.setStatusOf({ uuid: d.uuid, status: Status.Labeled, inQueryIndices: true });
+        this.setLabelOf({ uuid: d.uuid, label: l, queried: true });
+        this.setStatusOf({ uuid: d.uuid, status: Status.Labeled, queried: true });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
       editSingleCommand.execute();

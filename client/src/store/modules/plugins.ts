@@ -41,20 +41,20 @@ const updateLabels = (
     commit(types.SET_LABELS, labels);
   }
 
-  // Clear labelGeometricObjects
+  // Clear labelShapeLists
   if (!containsObjectDetection) {
-    commit(types.SET_LABEL_GEOMETRIC_OBJECTS, null);
+    commit(types.SET_LABEL_SHAPE_LISTS, null);
   }
 
-  // Initialize labelGeometricObjects
+  // Initialize labelShapeLists
   if (
     containsObjectDetection
-    && (state.labelGeometricObjects === null
-      || (state.labelGeometricObjects.length !== state.dataObjects.length))
+    && (state.labelShapeLists === null
+      || (state.labelShapeLists.length !== state.dataObjects.length))
   ) {
-    const labelGeometricObjects = Array(state.dataObjects.length)
+    const labelShapeLists = Array(state.dataObjects.length)
       .fill(null).map(() => Array(0));
-    commit(types.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects);
+    commit(types.SET_LABEL_SHAPE_LISTS, labelShapeLists);
   }
 
   // Clear labelMasks

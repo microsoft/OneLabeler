@@ -243,7 +243,7 @@
         <template #activator="{ on }">
           <v-btn
             :disabled="mouseOperation === MouseOperationType.PanAndZoom
-              || mouseOperation === MouseOperationType.EditGeometricObject
+              || mouseOperation === MouseOperationType.EditShape
               || mouseOperation === MouseOperationType.PaintErase"
             width="85"
             class="view-header-button subtitle-2 pl-1 text-none"
@@ -368,9 +368,9 @@ export default Vue.extend({
           disabled: false,
         },
         {
-          title: 'edit geometric object',
+          title: 'edit shape',
           icon: this.$vuetify.icons.values.hand,
-          mouseOperation: MouseOperationType.EditGeometricObject,
+          mouseOperation: MouseOperationType.EditShape,
           disabled: !this.classesNotEmpty,
         },
         {

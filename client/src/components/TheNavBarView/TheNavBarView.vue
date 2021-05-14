@@ -164,7 +164,7 @@ import {
   IMessage,
   Label,
   ILabelMask,
-  ILabelGeometricObject,
+  ILabelShape,
   MessageType,
   Status,
 } from '@/commons/types';
@@ -179,7 +179,7 @@ type ProjectData = {
   classes: Label[],
   labels?: Label[],
   labelMasks?: ILabelMask[],
-  labelGeometricObjects?: ILabelGeometricObject[][],
+  labelShapeLists?: ILabelShape[][],
   statuses: Status[],
   unlabeledMark: Label,
   featureNames?: string[],
@@ -220,7 +220,7 @@ const schema: JSONSchemaType<ProjectData> = {
       type: 'array',
       items: { type: 'string' },
     },
-    labelGeometricObjects: {
+    labelShapeLists: {
       type: 'array',
       items: {
         type: 'array',
@@ -325,7 +325,7 @@ export default Vue.extend({
       'dataObjects',
       'classes',
       'labels',
-      'labelGeometricObjects',
+      'labelShapeLists',
       'labelMasks',
       'statuses',
       'unlabeledMark',
@@ -385,7 +385,7 @@ export default Vue.extend({
       'setDataObjects',
       'setClasses',
       'setLabels',
-      'setLabelGeometricObjects',
+      'setLabelShapeLists',
       'setLabelMasks',
       'setMessage',
       'setStatuses',
@@ -435,7 +435,7 @@ export default Vue.extend({
           dataObjects,
           classes,
           labels,
-          labelGeometricObjects,
+          labelShapeLists,
           labelMasks,
           statuses,
           unlabeledMark,
@@ -446,8 +446,8 @@ export default Vue.extend({
         if (labels !== undefined) {
           this.setLabels(labels);
         }
-        if (labelGeometricObjects !== undefined) {
-          this.setLabelGeometricObjects(labelGeometricObjects);
+        if (labelShapeLists !== undefined) {
+          this.setLabelShapeLists(labelShapeLists);
         }
         if (labelMasks !== undefined) {
           this.setLabelMasks(labelMasks);
@@ -472,7 +472,7 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
-        labelGeometricObjects,
+        labelShapeLists,
         labelMasks,
         statuses,
         unlabeledMark,
@@ -483,8 +483,8 @@ export default Vue.extend({
         classes,
         labels: labels === null
           ? undefined : labels,
-        labelGeometricObjects: labelGeometricObjects === null
-          ? undefined : labelGeometricObjects,
+        labelShapeLists: labelShapeLists === null
+          ? undefined : labelShapeLists,
         labelMasks: labelMasks === null
           ? undefined : labelMasks,
         statuses,
@@ -512,19 +512,19 @@ export default Vue.extend({
       const {
         dataObjects,
         labels,
-        labelGeometricObjects,
+        labelShapeLists,
         labelMasks,
       } = this;
       const labeledData = dataObjects.map((d: IImage, i: number) => {
         const pathSegments = (d.path as string).split('/');
         const filename = pathSegments[pathSegments.length - 1];
         const classification = labels === null ? undefined : labels[i];
-        const objects = labelGeometricObjects === null ? undefined : labelGeometricObjects[i];
+        const shapes = labelShapeLists === null ? undefined : labelShapeLists[i];
         const mask = labelMasks === null ? undefined : labelMasks[i];
         return {
           filename,
           classification,
-          objects,
+          shapes,
           mask,
         };
       });

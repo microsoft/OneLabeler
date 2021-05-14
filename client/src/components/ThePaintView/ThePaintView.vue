@@ -37,7 +37,7 @@
           <ThePaintViewCanvas
             ref="canvas"
             :data-object="dataObject"
-            :label-geometric-objects="labelGeometricObjects"
+            :label-shape-list="labelShapeList"
             :label-mask="labelMask"
             :unlabeled-mark="unlabeledMark"
             :stroke-shape="strokeShape"
@@ -45,9 +45,9 @@
             :stroke-label="strokeLabel"
             :label2color="label2color"
             :mouse-operation="mouseOperation"
-            @create:shape="onAddLabelGeometricObject"
-            @update:label-shape="onUpdateLabelGeometricObject"
-            @delete:shape="onRemoveLabelGeometricObject"
+            @create:shape="onAddLabelShape"
+            @update:label-shape="onUpdateLabelShape"
+            @delete:shape="onRemoveLabelShape"
             @update:label-mask="onSetLabelMask"
           />
         </v-row>
@@ -88,7 +88,7 @@ import uploadFile from '@/services/upload-file';
 import {
   IDataObject,
   IImage,
-  ILabelGeometricObject,
+  ILabelShape,
   ILabelMask,
   Label,
   Status,
@@ -133,8 +133,8 @@ export default Vue.extend({
     ...mapState(['classes', 'unlabeledMark']),
     ...mapGetters([
       'sampledDataObjects',
-      'sampledDataObjectLabelGeometricObjects',
-      'sampledDataObjectLabelMasks',
+      'sampledLabelShapeLists',
+      'sampledLabelMasks',
       'label2color',
     ]),
     ...mapGetters('workflow', ['labelTasks']),
@@ -146,15 +146,15 @@ export default Vue.extend({
       if (!this.showCanvas) return null;
       return this.sampledDataObjects[this.page - 1];
     },
-    labelGeometricObjects(): ILabelGeometricObject[] | null {
+    labelShapeList(): ILabelShape[] | null {
       if (!this.showCanvas) return null;
-      if (this.sampledDataObjectLabelGeometricObjects === null) return null;
-      return this.sampledDataObjectLabelGeometricObjects[this.page - 1];
+      if (this.sampledLabelShapeLists === null) return null;
+      return this.sampledLabelShapeLists[this.page - 1];
     },
     labelMask(): ILabelMask | null {
       if (!this.showCanvas) return null;
-      if (this.sampledDataObjectLabelMasks === null) return null;
-      return this.sampledDataObjectLabelMasks[this.page - 1];
+      if (this.sampledLabelMasks === null) return null;
+      return this.sampledLabelMasks[this.page - 1];
     },
     enablePagination(): boolean {
       if (!this.showCanvas) return false;
@@ -180,8 +180,8 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'setDataObjectLabelGeometricObjects',
-      'setDataObjectLabelMask',
+      'setLabelShapeListOf',
+      'setLabelMaskOf',
       'setStatusOf',
       'editTaskWindow',
     ]),
@@ -209,74 +209,74 @@ export default Vue.extend({
         const labelMask = {
           path: labelMaskPath,
         };
-        this.setDataObjectLabelMask({
+        this.setLabelMaskOf({
           uuid,
           labelMask,
-          inQueryIndices: true,
+          queried: true,
         });
         this.setStatusOf({
           uuid,
           status: Status.Labeled,
-          inQueryIndices: true,
+          queried: true,
         });
       });
     },
-    onAddLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
-      const { dataObject, labelGeometricObjects } = this;
+    onAddLabelShape(labelShape: ILabelShape) {
+      const { dataObject, labelShapeList } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject as IDataObject;
-      this.setDataObjectLabelGeometricObjects({
+      this.setLabelShapeListOf({
         uuid,
-        labelGeometricObjects: [...labelGeometricObjects, labelGeometricObject],
-        inQueryIndices: true,
+        labelShapeList: [...labelShapeList, labelShape],
+        queried: true,
       });
       this.setStatusOf({
         uuid,
         status: Status.Labeled,
-        inQueryIndices: true,
+        queried: true,
       });
     },
-    onUpdateLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
-      const { dataObject, labelGeometricObjects } = this;
-      const index = labelGeometricObjects.findIndex(
-        (d: ILabelGeometricObject) => d.uuid === labelGeometricObject.uuid,
+    onUpdateLabelShape(labelShape: ILabelShape) {
+      const { dataObject, labelShapeList } = this;
+      const index = labelShapeList.findIndex(
+        (d: ILabelShape) => d.uuid === labelShape.uuid,
       );
-      const updatedLabelGeometricObjects = [
-        ...labelGeometricObjects.slice(0, index),
-        labelGeometricObject,
-        ...labelGeometricObjects.slice(index + 1),
+      const labelShapeListUpdated = [
+        ...labelShapeList.slice(0, index),
+        labelShape,
+        ...labelShapeList.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setDataObjectLabelGeometricObjects({
+      this.setLabelShapeListOf({
         uuid,
-        labelGeometricObjects: updatedLabelGeometricObjects,
-        inQueryIndices: true,
+        labelShapeList: labelShapeListUpdated,
+        queried: true,
       });
       this.setStatusOf({
         uuid,
         status: Status.Labeled,
-        inQueryIndices: true,
+        queried: true,
       });
     },
-    onRemoveLabelGeometricObject(labelGeometricObject: ILabelGeometricObject) {
-      const { dataObject, labelGeometricObjects } = this;
-      const index = labelGeometricObjects.findIndex(
-        (d: ILabelGeometricObject) => d.uuid === labelGeometricObject.uuid,
+    onRemoveLabelShape(labelShape: ILabelShape) {
+      const { dataObject, labelShapeList } = this;
+      const index = labelShapeList.findIndex(
+        (d: ILabelShape) => d.uuid === labelShape.uuid,
       );
-      const updatedLabelGeometricObjects = [
-        ...labelGeometricObjects.slice(0, index),
-        ...labelGeometricObjects.slice(index + 1),
+      const labelShapeListUpdated = [
+        ...labelShapeList.slice(0, index),
+        ...labelShapeList.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setDataObjectLabelGeometricObjects({
+      this.setLabelShapeListOf({
         uuid,
-        labelGeometricObjects: updatedLabelGeometricObjects,
-        inQueryIndices: true,
+        labelShapeList: labelShapeListUpdated,
+        queried: true,
       });
       this.setStatusOf({
         uuid,
         status: Status.Labeled,
-        inQueryIndices: true,
+        queried: true,
       });
     },
     onResetImageSize() {

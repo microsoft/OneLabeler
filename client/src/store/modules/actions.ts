@@ -4,7 +4,7 @@ import {
   IDataObject,
   IMessage,
   ILabelMask,
-  ILabelGeometricObject,
+  ILabelShape,
   Label,
   Status,
   TaskWindow,
@@ -48,11 +48,11 @@ export const setLabels = (
   commit(types.SET_LABELS, labels);
 };
 
-export const setLabelGeometricObjects = (
+export const setLabelShapeLists = (
   { commit }: ActionContext<IState, IState>,
-  labelGeometricObjects: ILabelGeometricObject[],
+  labelShapeLists: ILabelShape[][],
 ): void => {
-  commit(types.SET_LABEL_GEOMETRIC_OBJECTS, labelGeometricObjects);
+  commit(types.SET_LABEL_SHAPE_LISTS, labelShapeLists);
 };
 
 export const setLabelMasks = (
@@ -62,54 +62,54 @@ export const setLabelMasks = (
   commit(types.SET_LABEL_MASKS, labelMasks);
 };
 
-export const setDataObjectLabel = (
+export const setLabelOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
     label,
-    inQueryIndices = false,
-  }: { uuid: string, label: Label, inQueryIndices: boolean },
+    queried = false,
+  }: { uuid: string, label: Label, queried: boolean },
 ): void => {
-  commit(types.SET_DATA_OBJECT_LABEL, { uuid, label, inQueryIndices });
+  commit(types.SET_LABEL_OF, { uuid, label, queried });
 };
 
-export const setDataObjectLabels = (
+export const setLabelsOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuids,
     labels,
-    inQueryIndices = false,
-  }: { uuids: string[], labels: Label[], inQueryIndices: boolean },
+    queried = false,
+  }: { uuids: string[], labels: Label[], queried: boolean },
 ): void => {
-  commit(types.SET_DATA_OBJECT_LABELS, { uuids, labels, inQueryIndices });
+  commit(types.SET_LABELS_OF, { uuids, labels, queried });
 };
 
-export const setDataObjectLabelMask = (
+export const setLabelMaskOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
     labelMask,
-    inQueryIndices = false,
-  }: { uuid: string, labelMask: ILabelMask, inQueryIndices: boolean },
+    queried = false,
+  }: { uuid: string, labelMask: ILabelMask, queried: boolean },
 ): void => {
-  commit(types.SET_DATA_OBJECT_LABEL_MASK, { uuid, labelMask, inQueryIndices });
+  commit(types.SET_LABEL_MASK_OF, { uuid, labelMask, queried });
 };
 
-export const setDataObjectLabelGeometricObjects = (
+export const setLabelShapeListOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
-    labelGeometricObjects,
-    inQueryIndices = false,
+    labelShapeList,
+    queried = false,
   }: {
     uuid: string,
-    labelGeometricObjects: ILabelGeometricObject[],
-    inQueryIndices: boolean,
+    labelShapeList: ILabelShape[],
+    queried: boolean,
   },
 ): void => {
   commit(
-    types.SET_DATA_OBJECT_LABEL_GEOMETRIC_OBJECTS,
-    { uuid, labelGeometricObjects, inQueryIndices },
+    types.SET_LABEL_SHAPE_LIST_OF,
+    { uuid, labelShapeList, queried },
   );
 };
 
@@ -125,10 +125,10 @@ export const setStatusOf = (
   {
     uuid,
     status,
-    inQueryIndices = false,
-  }: { uuid: string, status: Status, inQueryIndices: boolean },
+    queried = false,
+  }: { uuid: string, status: Status, queried: boolean },
 ): void => {
-  commit(types.SET_STATUS_OF, { uuid, status, inQueryIndices });
+  commit(types.SET_STATUS_OF, { uuid, status, queried });
 };
 
 export const setStatusesOf = (
@@ -136,10 +136,10 @@ export const setStatusesOf = (
   {
     uuids,
     statuses,
-    inQueryIndices = false,
-  }: { uuids: string[], statuses: Status[], inQueryIndices: boolean },
+    queried = false,
+  }: { uuids: string[], statuses: Status[], queried: boolean },
 ): void => {
-  commit(types.SET_STATUSES_OF, { uuids, statuses, inQueryIndices });
+  commit(types.SET_STATUSES_OF, { uuids, statuses, queried });
 };
 
 export const setUnlabeledMark = (
@@ -154,13 +154,6 @@ export const setFeatureNames = (
   featureNames: string[],
 ): void => {
   commit(types.SET_FEATURE_NAMES, featureNames);
-};
-
-export const setQueryIndices = (
-  { commit }: ActionContext<IState, IState>,
-  queryIndices: number[],
-): void => {
-  commit(types.SET_QUERY_INDICES, queryIndices);
 };
 
 export const pushCommandHistory = (

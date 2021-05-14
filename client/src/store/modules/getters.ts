@@ -1,7 +1,7 @@
 import { scaleOrdinal, schemeCategory10, ScaleOrdinal } from 'd3';
 import {
   IDataObject,
-  ILabelGeometricObject,
+  ILabelShape,
   ILabelMask,
   Label,
   Status,
@@ -28,26 +28,26 @@ export const sampledDataObjects = (state: IState): IDataObject[] => {
   return queryIndices.map((index: number) => dataObjects[index]);
 };
 
-export const sampledDataObjectStatuses = (state: IState): Status[] => {
+export const sampledStatuses = (state: IState): Status[] => {
   const { statuses, queryIndices } = state;
   return queryIndices.map((index: number) => statuses[index]);
 };
 
-export const sampledDataObjectLabels = (state: IState): Label[] | null => {
+export const sampledLabels = (state: IState): Label[] | null => {
   const { labels, queryIndices } = state;
   if (labels === null) return null;
   return queryIndices.map((index: number) => labels[index]);
 };
 
-export const sampledDataObjectLabelGeometricObjects = (
+export const sampledLabelShapeLists = (
   state: IState,
-): ILabelGeometricObject[][] | null => {
-  const { labelGeometricObjects, queryIndices } = state;
-  if (labelGeometricObjects === null) return null;
-  return queryIndices.map((index: number) => labelGeometricObjects[index]);
+): ILabelShape[][] | null => {
+  const { labelShapeLists, queryIndices } = state;
+  if (labelShapeLists === null) return null;
+  return queryIndices.map((index: number) => labelShapeLists[index]);
 };
 
-export const sampledDataObjectLabelMasks = (state: IState): ILabelMask[] | null => {
+export const sampledLabelMasks = (state: IState): ILabelMask[] | null => {
   const { labelMasks, queryIndices } = state;
   if (labelMasks === null) return null;
   return queryIndices.map((index: number) => labelMasks[index]);

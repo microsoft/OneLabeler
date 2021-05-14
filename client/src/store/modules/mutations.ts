@@ -2,7 +2,7 @@ import {
   ICommand,
   IDataObject,
   IMessage,
-  ILabelGeometricObject,
+  ILabelShape,
   ILabelMask,
   Label,
   Status,
@@ -29,89 +29,89 @@ export default {
   [types.SET_LABELS](state: IState, labels: Label[]): void {
     state.labels = labels;
   },
-  [types.SET_LABEL_GEOMETRIC_OBJECTS](
+  [types.SET_LABEL_SHAPE_LISTS](
     state: IState,
-    labelGeometricObjects: ILabelGeometricObject[][],
+    labelShapeLists: ILabelShape[][],
   ): void {
-    state.labelGeometricObjects = labelGeometricObjects;
+    state.labelShapeLists = labelShapeLists;
   },
   [types.SET_LABEL_MASKS](state: IState, labelMasks: ILabelMask[]): void {
     state.labelMasks = labelMasks;
   },
-  [types.SET_DATA_OBJECT_LABEL](
+  [types.SET_LABEL_OF](
     state: IState,
     {
       uuid,
       label,
-      inQueryIndices,
-    }: { uuid: string, label: Label, inQueryIndices: boolean },
+      queried,
+    }: { uuid: string, label: Label, queried: boolean },
   ): void {
     if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabels = [...state.labels];
-    const idx = inQueryIndices
+    const idx = queried
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
     newLabels[idx as number] = label;
     state.labels = newLabels;
   },
-  [types.SET_DATA_OBJECT_LABELS](
+  [types.SET_LABELS_OF](
     state: IState,
     {
       uuids,
       labels,
-      inQueryIndices,
-    }: { uuids: string[], labels: Label[], inQueryIndices: boolean },
+      queried,
+    }: { uuids: string[], labels: Label[], queried: boolean },
   ): void {
     if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabels = [...state.labels];
     uuids.forEach((uuid: string, i: number) => {
       const label = labels[i];
-      const idx = inQueryIndices
+      const idx = queried
         ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
         : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
       newLabels[idx as number] = label;
     });
     state.labels = newLabels;
   },
-  [types.SET_DATA_OBJECT_LABEL_MASK](
+  [types.SET_LABEL_MASK_OF](
     state: IState,
     {
       uuid,
       labelMask,
-      inQueryIndices,
-    }: { uuid: string, labelMask: ILabelMask, inQueryIndices: boolean },
+      queried,
+    }: { uuid: string, labelMask: ILabelMask, queried: boolean },
   ): void {
     if (state.labelMasks === null) return;
     const { dataObjects, queryIndices } = state;
     const newLabelMasks = [...state.labelMasks];
-    const idx = inQueryIndices
+    const idx = queried
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
     newLabelMasks[idx as number] = labelMask;
     state.labelMasks = newLabelMasks;
   },
-  [types.SET_DATA_OBJECT_LABEL_GEOMETRIC_OBJECTS](
+  [types.SET_LABEL_SHAPE_LIST_OF](
     state: IState,
     {
       uuid,
-      labelGeometricObjects,
-      inQueryIndices,
+      labelShapeList,
+      queried,
     }: {
         uuid: string,
-        labelGeometricObjects: ILabelGeometricObject[],
-        inQueryIndices: boolean,
+        labelShapeList: ILabelShape[],
+        queried: boolean,
     },
   ): void {
-    if (state.labelGeometricObjects === null) return;
+    if (state.labelShapeLists === null) return;
     const { dataObjects, queryIndices } = state;
-    const newLabelGeometricObjects = [...state.labelGeometricObjects];
-    const idx = inQueryIndices
+    const newLabelShapeLists = [...state.labelShapeLists];
+    const idx = queried
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabelGeometricObjects[idx as number] = labelGeometricObjects;
-    state.labelGeometricObjects = newLabelGeometricObjects;
+    newLabelShapeLists[idx as number] = labelShapeList;
+    state.labelShapeLists = newLabelShapeLists;
   },
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;
@@ -121,13 +121,13 @@ export default {
     {
       uuid,
       status,
-      inQueryIndices,
-    }: { uuid: string, status: Status, inQueryIndices: boolean },
+      queried,
+    }: { uuid: string, status: Status, queried: boolean },
   ): void {
     if (state.statuses === null) return;
     const { dataObjects, queryIndices } = state;
     const newStatuses = [...state.statuses];
-    const idx = inQueryIndices
+    const idx = queried
       ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
       : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
     newStatuses[idx as number] = status;
@@ -138,15 +138,15 @@ export default {
     {
       uuids,
       statuses,
-      inQueryIndices,
-    }: { uuids: string[], statuses: Status[], inQueryIndices: boolean },
+      queried,
+    }: { uuids: string[], statuses: Status[], queried: boolean },
   ): void {
     if (state.statuses === null) return;
     const { dataObjects, queryIndices } = state;
     const newStatuses = [...state.statuses];
     uuids.forEach((uuid: string, i: number) => {
       const status = statuses[i];
-      const idx = inQueryIndices
+      const idx = queried
         ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
         : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
       newStatuses[idx as number] = status;
