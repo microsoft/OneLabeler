@@ -1,10 +1,11 @@
 import {
+  Category,
   ICommand,
   IDataObject,
   IMessage,
   ILabelMask,
   ILabelShape,
-  Label,
+  ILabelCategory,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -14,11 +15,11 @@ export interface IState {
   /** The data objects to be labeled */
   dataObjects: IDataObject[];
   /** The label category options. */
-  classes: Label[];
+  classes: Category[];
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
   /** The labels. */
-  labels: Label[] | null;
+  labels: ILabelCategory[] | null;
   /** The object shapes annotations. */
   labelShapeLists: ILabelShape[][] | null;
   /** The segmentation masks. */
@@ -26,7 +27,7 @@ export interface IState {
   /** The label statuses of the data objects. */
   statuses: Status[];
   /** The label mark of unlabeled data objects. */
-  unlabeledMark: Label;
+  unlabeledMark: Category;
   /** The names of data object features. */
   featureNames: string[];
 

@@ -10,7 +10,7 @@ import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
 import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
 import Scatterplot from '@/plugins/d3.scatterplot';
-import { Label, Status } from '@/commons/types';
+import { ILabelCategory, Status } from '@/commons/types';
 
 type Datum = { x: number, y: number, uuid: string };
 type Axis = { label: string, tickNum: number | null };
@@ -28,7 +28,7 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[] | null>,
+      type: Array as PropType<ILabelCategory[] | null>,
       default: null,
     },
     statuses: {
@@ -173,7 +173,7 @@ export default Vue.extend({
     async renderScatterplot(
       points: [number, number][],
       uuids: string[],
-      labels: Label[] | null,
+      labels: ILabelCategory[] | null,
       svg: SVGSVGElement,
       xAxis: Axis | null,
       yAxis: Axis | null,

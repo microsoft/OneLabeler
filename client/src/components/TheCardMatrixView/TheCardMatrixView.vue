@@ -43,7 +43,7 @@ import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   IDataObject,
-  Label,
+  ILabelCategory,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -102,7 +102,7 @@ export default Vue.extend({
       'pushCommandHistory',
       'editTaskWindow',
     ]),
-    getLabel(dataObject: IDataObject, queried = false): Label {
+    getLabel(dataObject: IDataObject, queried = false): ILabelCategory {
       const { dataObjects, labels, queryIndices } = this;
       const { uuid } = dataObject;
       const idx = queried
@@ -111,7 +111,7 @@ export default Vue.extend({
       console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
       return labels[idx];
     },
-    onClickBatchLabel(label: Label): void {
+    onClickBatchLabel(label: ILabelCategory): void {
       const { selectedUuids } = this;
       let dataObjects = this.sampledDataObjects as IDataObject[];
 
@@ -125,7 +125,7 @@ export default Vue.extend({
         this.getLabel(dataObject, true)
       ));
       const newLabels = Array(nBatch).fill(label);
-      const editBatch = (ds: IDataObject[], ls: Label[]): void => {
+      const editBatch = (ds: IDataObject[], ls: ILabelCategory[]): void => {
         this.setLabelsOf({
           uuids: ds.map((d: IDataObject) => d.uuid),
           labels: ls,
@@ -141,9 +141,9 @@ export default Vue.extend({
       editBatchCommand.execute();
       this.pushCommandHistory(editBatchCommand);
     },
-    onClickCardLabel(dataObject: IDataObject, label: Label): void {
+    onClickCardLabel(dataObject: IDataObject, label: ILabelCategory): void {
       const oldLabel = this.getLabel(dataObject, true);
-      const editSingle = (d: IDataObject, l: Label): void => {
+      const editSingle = (d: IDataObject, l: ILabelCategory): void => {
         this.setLabelOf({ uuid: d.uuid, label: l, queried: true });
         this.setStatusOf({ uuid: d.uuid, status: Status.Labeled, queried: true });
       };

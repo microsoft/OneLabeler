@@ -157,12 +157,13 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
 import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import {
+  Category,
   DataType,
   ICommand,
   IDataObject,
   IImage,
   IMessage,
-  Label,
+  ILabelCategory,
   ILabelMask,
   ILabelShape,
   MessageType,
@@ -176,12 +177,12 @@ import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButt
 
 type ProjectData = {
   dataObjects: IDataObject[],
-  classes: Label[],
-  labels?: Label[],
+  classes: Category[],
+  labels?: ILabelCategory[],
   labelMasks?: ILabelMask[],
   labelShapeLists?: ILabelShape[][],
   statuses: Status[],
-  unlabeledMark: Label,
+  unlabeledMark: Category,
   featureNames?: string[],
 }
 

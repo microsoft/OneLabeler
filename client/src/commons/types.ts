@@ -41,8 +41,11 @@ export interface IText extends IDataObject {
   content: string;
 }
 
-/** The type of data labels. */
-export type Label = string;
+/** The label category. */
+export type Category = string;
+
+/** The type of data category labels. */
+export type ILabelCategory = Category;
 
 /** The interface of the segmentation label of an image data object. */
 export interface ILabelMask {
@@ -65,12 +68,21 @@ export enum ObjectShapeType {
 
 /** The interface of a polygon annotation in an image data object. */
 export interface ILabelShape {
-  label: Label;
+  category: Category;
   shape: ObjectShapeType;
   position: [number, number][] | [number, number];
   /** The uuid is for recognizing which shape in the canvas
    * corresponds to which label shape. */
   uuid?: string | null;
+}
+
+export interface ILabel {
+  /** The uuid of the data object that owns the label. */
+  uuid: string;
+  /** Different modalities of label. */
+  category?: ILabelCategory;
+  mask?: ILabelMask;
+  shapes?: ILabelShape[];
 }
 
 /** The enum of label status types. */

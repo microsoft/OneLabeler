@@ -57,7 +57,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Label } from '@/commons/types';
+import { Category } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default Vue.extend({
@@ -65,11 +65,11 @@ export default Vue.extend({
   components: { VToolbar },
   props: {
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       default: () => [],
     },
     unlabeledMark: {
-      type: String as PropType<Label>,
+      type: String as PropType<Category>,
       required: true,
     },
     label2color: {
@@ -78,7 +78,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickBatchLabel(label: Label): void {
+    onClickBatchLabel(label: Category): void {
       this.$emit('click:batch-label', label);
     },
     onClickMinimize() {

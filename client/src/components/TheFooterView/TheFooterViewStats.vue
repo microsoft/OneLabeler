@@ -68,7 +68,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { Label } from '@/commons/types';
+import { Category } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({
@@ -98,7 +98,7 @@ export default Vue.extend({
         || 'Class name cannot be empty string'
       );
       const notRepetitive = (v: unknown) => (
-        (!(classes.findIndex((d: Label) => d === v) >= 0) && !(unlabeledMark === v))
+        (!(classes.findIndex((d: Category) => d === v) >= 0) && !(unlabeledMark === v))
         || 'Class name exists'
       );
       return [

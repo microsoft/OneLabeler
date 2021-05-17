@@ -3,7 +3,7 @@ import {
   IDataObject,
   ILabelShape,
   ILabelMask,
-  Label,
+  ILabelCategory,
   Status,
 } from '@/commons/types';
 import { IState } from './state';
@@ -33,7 +33,7 @@ export const sampledStatuses = (state: IState): Status[] => {
   return queryIndices.map((index: number) => statuses[index]);
 };
 
-export const sampledLabels = (state: IState): Label[] | null => {
+export const sampledLabels = (state: IState): ILabelCategory[] | null => {
   const { labels, queryIndices } = state;
   if (labels === null) return null;
   return queryIndices.map((index: number) => labels[index]);

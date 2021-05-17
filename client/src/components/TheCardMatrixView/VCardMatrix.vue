@@ -64,9 +64,10 @@
 
 import Vue, { PropType } from 'vue';
 import {
+  Category,
   DataType,
   IDataObject,
-  Label,
+  ILabelCategory,
   Status,
 } from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
@@ -86,7 +87,7 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<ILabelCategory[]>,
       required: true,
     },
     statuses: {
@@ -94,7 +95,7 @@ export default Vue.extend({
       required: true,
     },
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       required: true,
     },
     selectedUuids: {
@@ -164,7 +165,7 @@ export default Vue.extend({
     onClickCard(dataObject: IDataObject, e: MouseEvent) {
       this.$emit('click:card', dataObject, e);
     },
-    onClickCardLabel(dataObject: IDataObject, label: Label) {
+    onClickCardLabel(dataObject: IDataObject, label: ILabelCategory) {
       this.$emit('click:card-label', dataObject, label);
     },
     updateCardSize() {

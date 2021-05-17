@@ -1,10 +1,11 @@
 import {
+  Category,
   ICommand,
   IDataObject,
   IMessage,
   ILabelShape,
   ILabelMask,
-  Label,
+  ILabelCategory,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -20,13 +21,13 @@ export default {
     });
     state.uuidToIdx = uuidToIdx;
   },
-  [types.SET_CLASSES](state: IState, classes: Label[]): void {
+  [types.SET_CLASSES](state: IState, classes: Category[]): void {
     state.classes = classes;
   },
   [types.SET_STOP](state: IState, stop: boolean): void {
     state.stop = stop;
   },
-  [types.SET_LABELS](state: IState, labels: Label[]): void {
+  [types.SET_LABELS](state: IState, labels: ILabelCategory[]): void {
     state.labels = labels;
   },
   [types.SET_LABEL_SHAPE_LISTS](
@@ -44,7 +45,7 @@ export default {
       uuid,
       label,
       queried,
-    }: { uuid: string, label: Label, queried: boolean },
+    }: { uuid: string, label: ILabelCategory, queried: boolean },
   ): void {
     if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
@@ -61,7 +62,7 @@ export default {
       uuids,
       labels,
       queried,
-    }: { uuids: string[], labels: Label[], queried: boolean },
+    }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
   ): void {
     if (state.labels === null) return;
     const { dataObjects, queryIndices } = state;
@@ -153,7 +154,7 @@ export default {
     });
     state.statuses = newStatuses;
   },
-  [types.SET_UNLABELED_MARK](state: IState, unlabeledMark: Label): void {
+  [types.SET_UNLABELED_MARK](state: IState, unlabeledMark: Category): void {
     state.unlabeledMark = unlabeledMark;
   },
   [types.SET_FEATURE_NAMES](state: IState, featureNames: string[]): void {

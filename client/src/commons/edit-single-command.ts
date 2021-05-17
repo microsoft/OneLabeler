@@ -1,23 +1,23 @@
-import { IDataObject, Label, ICommand } from '@/commons/types';
+import { IDataObject, ILabelCategory, ICommand } from '@/commons/types';
 
 export default class EditSingleCommand implements ICommand {
   // The data object to be edited.
   #dataObject: IDataObject;
 
   // The edited data object' label before edit batch.
-  #oldLabel: Label;
+  #oldLabel: ILabelCategory;
 
   // The edited data object' label after edit batch.
-  #newLabel: Label;
+  #newLabel: ILabelCategory;
 
   // The function executing the single label editing.
-  #editSingle: (dataObject: IDataObject, label: Label) => void;
+  #editSingle: (dataObject: IDataObject, label: ILabelCategory) => void;
 
   constructor(
     dataObject: IDataObject,
-    oldLabel: Label,
-    newLabel: Label,
-    editSingle: (dataObject: IDataObject, label: Label) => void,
+    oldLabel: ILabelCategory,
+    newLabel: ILabelCategory,
+    editSingle: (dataObject: IDataObject, label: ILabelCategory) => void,
   ) {
     this.#dataObject = dataObject;
     this.#oldLabel = oldLabel;

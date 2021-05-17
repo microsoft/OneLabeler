@@ -47,9 +47,10 @@
 
 import Vue, { PropType, VueConstructor } from 'vue';
 import {
+  Category,
   DataType,
   IDataObject,
-  Label,
+  ILabelCategory,
   Status,
 } from '@/commons/types';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
@@ -73,7 +74,7 @@ export default Vue.extend({
       required: true,
     },
     label: {
-      type: [String, Number, Boolean] as PropType<Label>,
+      type: String as PropType<ILabelCategory>,
       required: true,
     },
     status: {
@@ -81,7 +82,7 @@ export default Vue.extend({
       required: true,
     },
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       required: true,
     },
     title: {
@@ -131,7 +132,7 @@ export default Vue.extend({
       const { dataObject } = this;
       this.$emit('click:card', dataObject, e);
     },
-    onClickCardLabel(label: Label): void {
+    onClickCardLabel(label: ILabelCategory): void {
       const { dataObject } = this;
       this.$emit('click:card-label', dataObject, label);
     },

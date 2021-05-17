@@ -1,23 +1,23 @@
-import { IDataObject, Label, ICommand } from '@/commons/types';
+import { IDataObject, ILabelCategory, ICommand } from '@/commons/types';
 
 export default class EditBatchCommand implements ICommand {
   // The data objects to be edited.
   #dataObjects: IDataObject[];
 
   // The edited data objects' labels before edit batch.
-  #oldLabels: Label[];
+  #oldLabels: ILabelCategory[];
 
   // The edited data objects' labels after edit batch.
-  #newLabels: Label[];
+  #newLabels: ILabelCategory[];
 
   // The function executing the batch label editing.
-  #editBatch: (dataObjects: IDataObject[], labels: Label[]) => void;
+  #editBatch: (dataObjects: IDataObject[], labels: ILabelCategory[]) => void;
 
   constructor(
     dataObjects: IDataObject[],
-    oldLabels: Label[],
-    newLabels: Label[],
-    editBatch: (dataObjects: IDataObject[], labels: Label[]) => void,
+    oldLabels: ILabelCategory[],
+    newLabels: ILabelCategory[],
+    editBatch: (dataObjects: IDataObject[], labels: ILabelCategory[]) => void,
   ) {
     this.#dataObjects = dataObjects;
     this.#oldLabels = oldLabels;

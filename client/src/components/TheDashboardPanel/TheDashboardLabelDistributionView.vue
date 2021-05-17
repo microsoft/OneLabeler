@@ -64,7 +64,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { Label, Status } from '@/commons/types';
+import {
+  Category,
+  Status,
+} from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheDashboardLabelDistributionView',
@@ -76,15 +79,15 @@ export default Vue.extend({
     },
   },
   methods: {
-    getNumberOfLabel(className: Label): number {
+    getNumberOfLabel(className: Category): number {
       if (this.labels === null) return 0;
-      return this.labels.filter((d: Label) => d === className)
+      return this.labels.filter((d: Category) => d === className)
         .length;
     },
-    getRateOfLabel(className: Label): number {
+    getRateOfLabel(className: Category): number {
       if (this.labels === null) return 0;
       if (this.nLabeled === 0) return 0;
-      return this.labels.filter((d: Label) => d === className)
+      return this.labels.filter((d: Category) => d === className)
         .length / this.nLabeled;
     },
   },

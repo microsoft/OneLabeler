@@ -10,12 +10,13 @@ import showProgressBar from '@/plugins/nprogress-interceptor';
 import { loadJsonFile } from '@/plugins/json-utils';
 import { randomChoice } from '@/plugins/random';
 import {
+  Category,
   DataType,
   IDataObject,
   IText,
   IImage,
   // IDataObjectsStorage,
-  Label,
+  ILabelCategory,
   Status,
   ModelService,
   Process,
@@ -133,7 +134,7 @@ export const dataObjectExtraction = showProgressBar(async (
 export const featureExtraction = showProgressBar(async (
   method: Process,
   dataObjects: IImage[],
-  labels: Label[] | null = null,
+  labels: ILabelCategory[] | null = null,
   statuses: Status[] | null = null,
 ): Promise<{ dataObjects: IImage[], featureNames: string[] }> => {
   let response = null;
@@ -186,18 +187,18 @@ export const defaultLabeling = showProgressBar(async (
   method: Process,
   dataObjects: IDataObject[],
   model: ModelService,
-  classes: Label[] | null = null,
-  unlabeledMark: Label | null = null,
-): Promise<Label[]> => {
+  classes: Category[] | null = null,
+  unlabeledMark: Category | null = null,
+): Promise<ILabelCategory[]> => {
   let labels = null;
   if (method.isServerless && (method.api === 'Null')) {
     labels = dataObjects.map(() => unlabeledMark);
   } else if (method.isServerless && (method.api === 'Random')) {
     const SEED = '20';
     const random = xor4096(SEED);
-    const nClasses = (classes as Label[]).length;
+    const nClasses = (classes as Category[]).length;
     labels = dataObjects.map(() => (
-      (classes as Label[])[Math.floor(random() * nClasses)]
+      (classes as Category[])[Math.floor(random() * nClasses)]
     ));
   } else {
     labels = (
@@ -212,7 +213,7 @@ export const defaultLabeling = showProgressBar(async (
       )
     ).data.labels;
   }
-  return labels as Label[];
+  return labels as ILabelCategory[];
 });
 
 /**
@@ -279,7 +280,7 @@ export const interimModelTraining = showProgressBar(async (
   method: Process,
   model: ModelService,
   dataObjects: IDataObject[] | null = null,
-  labels: Label[] | null = null,
+  labels: ILabelCategory[] | null = null,
   statuses: Status[] | null = null,
 ): Promise<ModelService> => {
   let modelUpdated = null;

@@ -1,11 +1,12 @@
 import { ActionContext } from 'vuex';
 import {
+  Category,
   ICommand,
   IDataObject,
   IMessage,
   ILabelMask,
   ILabelShape,
-  Label,
+  ILabelCategory,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -21,7 +22,7 @@ export const setDataObjects = (
 
 export const setClasses = (
   { commit }: ActionContext<IState, IState>,
-  classes: Label[],
+  classes: Category[],
 ): void => {
   commit(types.SET_CLASSES, classes);
 };
@@ -43,7 +44,7 @@ export const setStop = (
 
 export const setLabels = (
   { commit }: ActionContext<IState, IState>,
-  labels: Label[],
+  labels: ILabelCategory[],
 ): void => {
   commit(types.SET_LABELS, labels);
 };
@@ -68,7 +69,7 @@ export const setLabelOf = (
     uuid,
     label,
     queried = false,
-  }: { uuid: string, label: Label, queried: boolean },
+  }: { uuid: string, label: ILabelCategory, queried: boolean },
 ): void => {
   commit(types.SET_LABEL_OF, { uuid, label, queried });
 };
@@ -79,7 +80,7 @@ export const setLabelsOf = (
     uuids,
     labels,
     queried = false,
-  }: { uuids: string[], labels: Label[], queried: boolean },
+  }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
 ): void => {
   commit(types.SET_LABELS_OF, { uuids, labels, queried });
 };
@@ -144,7 +145,7 @@ export const setStatusesOf = (
 
 export const setUnlabeledMark = (
   { commit }: ActionContext<IState, IState>,
-  unlabeledMark: Label,
+  unlabeledMark: Category,
 ): void => {
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
 };

@@ -55,7 +55,12 @@
 import { xor4096 } from 'seedrandom';
 import Vue, { PropType } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
-import { Label, ProjectionMethodType, Status } from '@/commons/types';
+import {
+  Category,
+  ILabelCategory,
+  ProjectionMethodType,
+  Status,
+} from '@/commons/types';
 import { randomShuffle } from '@/plugins/random';
 import { Binning, Subsampling } from './types';
 import VScatterplot from './VScatterplot.vue';
@@ -107,7 +112,7 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[] | null>,
+      type: Array as PropType<ILabelCategory[] | null>,
       default: null,
     },
     statuses: {
@@ -115,11 +120,11 @@ export default Vue.extend({
       required: true,
     },
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       required: true,
     },
     unlabeledMark: {
-      type: [String, Number, Boolean] as PropType<Label>,
+      type: String as PropType<Category>,
       required: true,
     },
     queryIndices: {
@@ -227,7 +232,7 @@ export default Vue.extend({
       }
       return sampledDataObjectIndices.map((d: number) => uuids[d]);
     },
-    labelsSampled(): Label[] | null {
+    labelsSampled(): ILabelCategory[] | null {
       const { labels, sampledDataObjectIndices } = this;
       if (labels === null) return null;
       if (sampledDataObjectIndices === null) return labels;

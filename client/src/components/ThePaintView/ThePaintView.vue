@@ -86,11 +86,11 @@ import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import uploadFile from '@/services/upload-file';
 import {
+  Category,
   IDataObject,
   IImage,
   ILabelShape,
   ILabelMask,
-  Label,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -111,7 +111,7 @@ export default Vue.extend({
     },
   },
   data(): {
-    strokeLabel: Label | null,
+    strokeLabel: Category | null,
     strokeShape: StrokeShapeType,
     strokeWidth: number,
     paginationHeight: number,
@@ -282,7 +282,7 @@ export default Vue.extend({
     onResetImageSize() {
       this.$refs.canvas.resetZoom();
     },
-    onSetStrokeLabel(strokeLabel: Label) {
+    onSetStrokeLabel(strokeLabel: Category) {
       this.strokeLabel = strokeLabel;
     },
     onSetStrokeShape(strokeShape: StrokeShapeType) {

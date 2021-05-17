@@ -252,7 +252,7 @@
             v-on="on"
           >
             {{ `${strokeLabelMenu.length !== 0
-              ? strokeLabelMenu[strokeLabelIndex].label : ''}` }}
+              ? strokeLabelMenu[strokeLabelIndex].category : ''}` }}
             <v-spacer />
             <v-icon
               v-if="strokeLabelMenu.length !== 0"
@@ -267,14 +267,14 @@
         <v-list dense>
           <v-list-item
             v-for="option in strokeLabelMenu"
-            :key="option.label"
-            @click="onSetStrokeLabel(option.label)"
+            :key="option.category"
+            @click="onSetStrokeLabel(option.category)"
           >
             <v-list-item-title
               class="subtitle-2"
               style="height: 20px"
             >
-              {{ `${option.label}` }}
+              {{ `${option.category}` }}
               <v-icon
                 class="pl-1"
                 style="float: right"
@@ -303,7 +303,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Label, LabelTaskType } from '@/commons/types';
+import { Category, LabelTaskType } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import { MouseOperationType, StrokeShapeType } from './types';
 
@@ -316,7 +316,7 @@ export default Vue.extend({
       required: true,
     },
     strokeLabel: {
-      type: String as PropType<Label | null>,
+      type: String as PropType<Category | null>,
       default: null,
     },
     strokeShape: {
@@ -332,15 +332,15 @@ export default Vue.extend({
       required: true,
     },
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       required: true,
     },
     unlabeledMark: {
-      type: String as PropType<Label>,
+      type: String as PropType<Category>,
       required: true,
     },
     label2color: {
-      type: Function as PropType<(label: string) => string>,
+      type: Function as PropType<(category: string) => string>,
       required: true,
     },
   },
@@ -449,13 +449,13 @@ export default Vue.extend({
     },
     strokeLabelIndex(): number {
       const { strokeLabel, strokeLabelMenu } = this;
-      const index = strokeLabelMenu.findIndex((d) => d.label === strokeLabel);
+      const index = strokeLabelMenu.findIndex((d) => d.category === strokeLabel);
       return index;
     },
     strokeLabelMenu() {
       const { classes, label2color } = this;
-      return classes.map((d: Label) => ({
-        label: d,
+      return classes.map((d: Category) => ({
+        category: d,
         color: label2color(d),
       }));
     },
@@ -473,7 +473,7 @@ export default Vue.extend({
     onSetStrokeWidth(strokeWidth: number) {
       this.$emit('set:stroke-width', strokeWidth);
     },
-    onSetStrokeLabel(strokeLabel: Label) {
+    onSetStrokeLabel(strokeLabel: Category) {
       this.$emit('set:stroke-label', strokeLabel);
     },
     onClickMinimize() {

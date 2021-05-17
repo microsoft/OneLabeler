@@ -50,13 +50,17 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Label, Status } from '@/commons/types';
+import {
+  Category,
+  ILabelCategory,
+  Status,
+} from '@/commons/types';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',
   props: {
     label: {
-      type: [String, Number, Boolean] as PropType<Label>,
+      type: String as PropType<ILabelCategory>,
       required: true,
     },
     status: {
@@ -64,7 +68,7 @@ export default Vue.extend({
       required: true,
     },
     classes: {
-      type: Array as PropType<Label[]>,
+      type: Array as PropType<Category[]>,
       required: true,
     },
     title: {
@@ -82,7 +86,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickLabel(entry: Label, e: Event): void {
+    onClickLabel(entry: ILabelCategory, e: Event): void {
       this.$emit('click:label', entry, e);
     },
   },

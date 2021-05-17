@@ -64,8 +64,8 @@ import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
 import simplify from '@/plugins/simplify';
 import {
+  Category,
   IImage,
-  Label,
   ILabelMask,
   ILabelShape,
   ObjectShapeType,
@@ -97,12 +97,12 @@ export default Vue.extend({
       default: null,
     },
     unlabeledMark: {
-      type: String as PropType<Label>,
+      type: String as PropType<Category>,
       required: true,
     },
     /** @param {Number} strokeLabel currently selected category for stroke */
     strokeLabel: {
-      type: String as PropType<Label>,
+      type: String as PropType<Category>,
       default: null,
     },
     /** @param {Number} strokeShape currently selected shape for stroke */
@@ -339,7 +339,7 @@ export default Vue.extend({
       const { strokeLabel } = this;
       const points = enableSimplify ? simplify(this.points, 0, false) : this.points;
       const labelPolygon = {
-        label: strokeLabel,
+        category: strokeLabel,
         shape: ObjectShapeType.Polygon,
         position: points,
         uuid: uuidv4(),
@@ -491,7 +491,7 @@ export default Vue.extend({
       const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const [x, y] = labelCircle.position as [number, number];
-      const { label, uuid } = labelCircle;
+      const { category, uuid } = labelCircle;
 
       const editableCircle = new EditableCircle(
         { x, y },
@@ -499,14 +499,14 @@ export default Vue.extend({
         editable,
       );
       const circle = editableCircle.getNode()
-        .stroke(label2color(label))
+        .stroke(label2color(category))
         .name('editable-shape')
         .setAttr('object', editableCircle)
         .setAttr('uuid', uuid);
       editableCircle.setOnUpdatePosition((d: EditableCircle) => {
         const point = d.point();
         this.$emit('update:label-shape', {
-          label,
+          category,
           shape: ObjectShapeType.Point,
           position: [point.x, point.y],
           uuid,
@@ -522,7 +522,7 @@ export default Vue.extend({
       const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const points = labelRect.position as [number, number][];
-      const { label, uuid } = labelRect;
+      const { category, uuid } = labelRect;
 
       const editableRect = new EditableRect(points, layerShapes, editable);
       const group = editableRect.getNode()
@@ -530,10 +530,10 @@ export default Vue.extend({
         .setAttr('object', editableRect)
         .setAttr('uuid', uuid);
       editableRect.getRect()
-        .stroke(label2color(label));
+        .stroke(label2color(category));
       editableRect.setOnUpdatePosition((d: EditableRect) => {
         this.$emit('update:label-shape', {
-          label,
+          category,
           shape: ObjectShapeType.Rect,
           position: d.points(),
           uuid,
@@ -549,7 +549,7 @@ export default Vue.extend({
       const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
       const points = labelPolygon.position as [number, number][];
-      const { label, uuid } = labelPolygon;
+      const { category, uuid } = labelPolygon;
 
       const editablePolygon = new EditablePolygon(points, layerShapes, editable);
       const group = editablePolygon.getNode()
@@ -557,10 +557,10 @@ export default Vue.extend({
         .setAttr('object', editablePolygon)
         .setAttr('uuid', uuid);
       editablePolygon.getPolygon()
-        .stroke(label2color(label));
+        .stroke(label2color(category));
       editablePolygon.setOnUpdatePosition((d: EditablePolygon) => {
         this.$emit('update:label-shape', {
-          label,
+          category,
           shape: ObjectShapeType.Polygon,
           position: d.points(),
           uuid,
@@ -865,7 +865,7 @@ export default Vue.extend({
         .getNode() as Konva.Layer;
       if (this.pointClickCreateable) {
         const labelCircle: ILabelShape = {
-          label: strokeLabel,
+          category: strokeLabel,
           shape: ObjectShapeType.Point,
           position: [x, y],
           uuid: uuidv4(),
@@ -904,7 +904,7 @@ export default Vue.extend({
           this.points = [];
 
           const labelRect: ILabelShape = {
-            label: strokeLabel,
+            category: strokeLabel,
             shape: ObjectShapeType.Rect,
             position: [...points, [x, y]],
             uuid: uuidv4(),

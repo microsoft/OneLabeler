@@ -10,7 +10,7 @@ import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
 import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
 import Heatmap from '@/plugins/d3.heatmap';
-import { Label, Status } from '@/commons/types';
+import { ILabelCategory, Status } from '@/commons/types';
 
 type Datum = { x: number, y: number, uuid: string };
 type DatumBinned = { points: Datum[], row: number, column: number };
@@ -37,7 +37,7 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<Label[] | null>,
+      type: Array as PropType<ILabelCategory[] | null>,
       default: null,
     },
     statuses: {
