@@ -86,6 +86,7 @@ const getUpdatedTaskWindows = (
       ? node.value as Process[]
       : [node.value as Process];
     processes.forEach((process) => {
+      if (process.isAlgorithmic) return;
       const match = taskWindows.find((d) => (
         d.node.id === node.id && d.process.id === process.id
       ));

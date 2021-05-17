@@ -24,3 +24,12 @@ export const isNodeInteractive = (node: WorkflowNode): boolean => {
   }
   return !(node.value as Process).isAlgorithmic;
 };
+
+export const isNodeServerless = (node: WorkflowNode): boolean => {
+  if (!isNodeProcess(node)) return true;
+  if (node.value === null) return true;
+  if (Array.isArray(node.value)) {
+    return (node.value as Process[]).find((d) => !d.isServerless) === undefined;
+  }
+  return (node.value as Process).isServerless;
+};

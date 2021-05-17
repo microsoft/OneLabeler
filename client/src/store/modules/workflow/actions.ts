@@ -181,40 +181,6 @@ export const executeDataObjectExtraction = async (
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
-export const executeInterimModelTraining = (
-  { state, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
-) => {
-  const isProcessNode = (node: WorkflowNode): boolean => (
-    node.type !== WorkflowNodeType.Initialization
-    && node.type !== WorkflowNodeType.Decision
-    && node.type !== WorkflowNodeType.Terminal
-  );
-  const {
-    dataObjects,
-    labels,
-    statuses,
-  } = rootState;
-  const { nodes } = state;
-  nodes.filter((d) => isProcessNode(d))
-    .forEach((d) => {
-      const nodeMethods = Array.isArray(d.value)
-        ? d.value as Process[]
-        : [d.value as Process];
-      nodeMethods.forEach(async (nodeMethod) => {
-        if (!nodeMethod.isModelBased) return;
-        const model = nodeMethod.model as ModelService;
-        (await API.interimModelTraining(
-          method,
-          model,
-          dataObjects,
-          labels,
-          statuses,
-        ));
-      });
-    });
-};
-
 export const executeDataObjectSelectionAlgorithmic = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
@@ -339,6 +305,40 @@ export const executeFeatureExtraction = async (
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+};
+
+export const executeInterimModelTraining = (
+  { state, rootState }: ActionContext<IState, IRootState>,
+  method: Process,
+) => {
+  const isProcessNode = (node: WorkflowNode): boolean => (
+    node.type !== WorkflowNodeType.Initialization
+    && node.type !== WorkflowNodeType.Decision
+    && node.type !== WorkflowNodeType.Terminal
+  );
+  const {
+    dataObjects,
+    labels,
+    statuses,
+  } = rootState;
+  const { nodes } = state;
+  nodes.filter((d) => isProcessNode(d))
+    .forEach((d) => {
+      const nodeMethods = Array.isArray(d.value)
+        ? d.value as Process[]
+        : [d.value as Process];
+      nodeMethods.forEach(async (nodeMethod) => {
+        if (!nodeMethod.isModelBased) return;
+        const model = nodeMethod.model as ModelService;
+        (await API.interimModelTraining(
+          method,
+          model,
+          dataObjects,
+          labels,
+          statuses,
+        ));
+      });
+    });
 };
 
 export const executeStoppageAnalysis = async (

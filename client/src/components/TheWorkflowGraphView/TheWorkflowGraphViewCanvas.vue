@@ -23,26 +23,53 @@
           <template v-if="isNodeInitialization(props.node) || isNodeProcess(props.node)">
             <template v-if="isNodeInteractive(props.node)">
               <!-- icon denoting the node is interactive -->
-              <rect
-                width="20"
-                height="20"
-                y="-20"
-                fill="white"
-                stroke="#bbb"
-                stroke-width="1"
-              />
-              <text
-                x="10"
-                y="-5"
-                style="
-                  text-anchor: middle;
-                  user-select: none;
-                  font-family: Font Awesome\ 5 Free;
-                  font-weight: 900;
-                "
-              >
-                &#xf007;
-              </text>
+              <g :transform="`translate(${0},${-20})`">
+                <rect
+                  width="20"
+                  height="20"
+                  fill="white"
+                  stroke="#bbb"
+                  stroke-width="1"
+                />
+                <text
+                  x="10"
+                  y="15"
+                  style="
+                    text-anchor: middle;
+                    user-select: none;
+                    font-family: Font Awesome\ 5 Free;
+                    font-weight: 900;
+                  "
+                >
+                  &#xf007;
+                </text>
+              </g>
+            </template>
+            <template v-if="!isNodeServerless(props.node)">
+              <!-- icon denoting the node is not serverless -->
+              <g :transform="`translate(
+                ${isNodeInteractive(props.node) ? 20 : 0},${-20})
+              `">
+                <rect
+                  width="20"
+                  height="20"
+                  fill="white"
+                  stroke="#bbb"
+                  stroke-width="1"
+                />
+                <text
+                  x="10"
+                  y="15"
+                  style="
+                    text-anchor: middle;
+                    user-select: none;
+                    font-family: Font Awesome\ 5 Free;
+                    font-weight: 900;
+                  "
+                >
+                  &#xf233;
+                </text>
+              </g>
             </template>
             <rect
               :width="props.node.width"
@@ -220,6 +247,7 @@ import {
 import {
   isNodeProcess,
   isNodeInteractive,
+  isNodeServerless,
 } from '@/commons/utils';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
@@ -408,6 +436,11 @@ export default Vue.extend({
       const match = this.graph.nodes.find((d) => d.id === node.id);
       if (match === undefined) return false;
       return isNodeInteractive(match);
+    },
+    isNodeServerless(node: FlowchartNode): boolean {
+      const match = this.graph.nodes.find((d) => d.id === node.id);
+      if (match === undefined) return true;
+      return isNodeServerless(match);
     },
     isNodeCurrent(node: WorkflowNode): boolean {
       if (this.currentNode === null) return false;
