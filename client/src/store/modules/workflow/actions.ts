@@ -6,11 +6,13 @@ import {
   WorkflowGraph,
   WorkflowNode,
   IImage,
+  ILabel,
   Status,
   MessageType,
   ModelService,
   Process,
   WorkflowNodeType,
+  Category,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -188,15 +190,16 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const {
     labels,
     statuses,
-    queryIndices,
+    queryUuids,
     unlabeledMark,
   } = rootState;
 
   // Set the labels of samples in the last batch confirmed
   const newStatuses = [...statuses];
-  queryIndices.forEach((index: number) => {
+  queryUuids.forEach((uuid: string) => {
+    const index = labels?.findIndex((d) => d.uuid === uuid) as number;
     let newStatus = Status.Labeled;
-    if (labels !== null && labels[index] === unlabeledMark) {
+    if (labels !== null && labels[index].category === unlabeledMark) {
       newStatus = Status.Skipped;
     }
     newStatuses[index] = newStatus;
@@ -213,7 +216,8 @@ export const executeDataObjectSelectionAlgorithmic = async (
     model,
     dataObjects,
   ));
-  commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
+  const newQueryUuids = newQueryIndices.map((d) => dataObjects[d].uuid);
+  commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
 
   // Set the labels status of samples in the current batch.
   // If the samples had been labeled, keep it unchanged.
@@ -230,24 +234,27 @@ export const executeDataObjectSelectionManual = async (
   newQueryIndices: number[],
 ): Promise<void> => {
   const {
+    dataObjects,
     labels,
     statuses,
-    queryIndices,
+    queryUuids,
     unlabeledMark,
   } = rootState;
 
   // Set the label status of samples in the last batch labeled.
   const newStatuses = [...statuses];
-  queryIndices.forEach((index: number) => {
+  queryUuids.forEach((uuid: string) => {
+    const index = labels?.findIndex((d) => d.uuid === uuid) as number;
     let newStatus = Status.Labeled;
-    if (labels !== null && labels[index] === unlabeledMark) {
+    if (labels !== null && labels[index].category === unlabeledMark) {
       newStatus = Status.Skipped;
     }
     newStatuses[index] = newStatus;
   });
 
   // Sample data objects.
-  commit(rootTypes.SET_QUERY_INDICES, newQueryIndices, { root: true });
+  const newQueryUuids = newQueryIndices.map((d) => dataObjects[d].uuid);
+  commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
 
   // Set the labels status of samples in the current batch.
   // If the samples had been labeled, keep it unchanged.
@@ -265,11 +272,11 @@ export const executeDefaultLabeling = async (
 ): Promise<void> => {
   const {
     dataObjects,
-    queryIndices,
+    queryUuids,
     classes,
     unlabeledMark,
   } = rootState;
-  const sampledDataObjects = queryIndices.map((d) => dataObjects[d]);
+  const sampledDataObjects = dataObjects.filter((d) => queryUuids.includes(d.uuid));
   const uuids = sampledDataObjects.map((d) => d.uuid);
   const model = method.model as ModelService;
   const labels = (await API.defaultLabeling(
@@ -279,7 +286,7 @@ export const executeDefaultLabeling = async (
     classes,
     unlabeledMark,
   ));
-  commit(rootTypes.SET_LABELS_OF, {
+  commit(rootTypes.SET_LABEL_CATEGORIES_OF, {
     uuids,
     labels,
     queried: true,
@@ -299,8 +306,9 @@ export const executeFeatureExtraction = async (
 
   if (requireLabels && (labels === null || labels.length === 0)) return;
 
+  const labelCategories = (labels as ILabel[]).map((d) => d.category as Category);
   const response = requireLabels
-    ? (await API.featureExtraction(method, dataObjects as IImage[], labels, statuses))
+    ? (await API.featureExtraction(method, dataObjects as IImage[], labelCategories, statuses))
     : (await API.featureExtraction(method, dataObjects as IImage[]));
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
@@ -321,6 +329,7 @@ export const executeInterimModelTraining = (
     labels,
     statuses,
   } = rootState;
+  const labelCategories = (labels as ILabel[]).map((d) => d.category as Category);
   const { nodes } = state;
   nodes.filter((d) => isProcessNode(d))
     .forEach((d) => {
@@ -334,7 +343,7 @@ export const executeInterimModelTraining = (
           method,
           model,
           dataObjects,
-          labels,
+          labelCategories,
           statuses,
         ));
       });

@@ -56,10 +56,10 @@ export class DataObjectSelectionCommand implements ICommand {
   #uuids: string[];
 
   // The edited data object' label before execution.
-  #oldQueryIndices: number[];
+  #oldQueryUuids: string[];
 
   // The edited data object' label after execution.
-  #newQueryIndices: number[];
+  #newQueryUuids: string[];
 
   // The status data object' label before execution.
   #oldStatuses: Status[];
@@ -67,18 +67,18 @@ export class DataObjectSelectionCommand implements ICommand {
   // The status data object' label after execution.
   #newStatuses: Status[];
 
-  outputs = ['queryIndices'];
+  outputs = ['queryUuids'];
 
   constructor(
     uuids: string[],
-    oldQueryIndices: number[],
-    newQueryIndices: number[],
+    oldQueryUuids: string[],
+    newQueryUuids: string[],
     oldStatuses: Status[],
     newStatuses: Status[],
   ) {
     this.#uuids = uuids;
-    this.#oldQueryIndices = oldQueryIndices;
-    this.#newQueryIndices = newQueryIndices;
+    this.#oldQueryUuids = oldQueryUuids;
+    this.#newQueryUuids = newQueryUuids;
     this.#oldStatuses = oldStatuses;
     this.#newStatuses = newStatuses;
   }
@@ -86,9 +86,9 @@ export class DataObjectSelectionCommand implements ICommand {
   execute(): void {
     /*
     const uuids = this.#uuids;
-    const queryIndices = this.#newQueryIndices;
+    const queryUuids = this.#newQueryUuids;
     const statuses = this.#newStatuses;
-    commit(types.SET_QUERY_INDICES, queryIndices);
+    commit(types.SET_QUERY_UUIDS, queryUuids);
     commit(types.SET_STATUSES_OF, { uuids, statuses });
     */
   }
@@ -96,9 +96,9 @@ export class DataObjectSelectionCommand implements ICommand {
   undo(): void {
     /*
     const uuids = this.#uuids;
-    const queryIndices = this.#oldQueryIndices;
+    const queryUuids = this.#oldQueryUuids;
     const statuses = this.#oldStatuses;
-    commit(types.SET_QUERY_INDICES, queryIndices);
+    commit(types.SET_QUERY_UUIDS, queryUuids);
     commit(types.SET_STATUSES_OF, { uuids, statuses });
     */
   }
@@ -130,7 +130,7 @@ export class DefaultLabelingCommand implements ICommand {
     /*
     const uuids = this.#uuids;
     const labels = this.#newLabels;
-    commit(types.SET_LABELS_OF, { uuids, labels });
+    commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     */
   }
 
@@ -138,7 +138,7 @@ export class DefaultLabelingCommand implements ICommand {
     /*
     const uuids = this.#uuids;
     const labels = this.#oldLabels;
-    commit(types.SET_LABELS_OF, { uuids, labels });
+    commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     */
   }
 }
@@ -182,7 +182,7 @@ export class EditSingleCommand implements IInteractiveLabelingCommand {
     const uuid = this.#uuid;
     const label = this.#newLabel;
     const status = this.#newStatus;
-    commit(types.SET_LABEL_OF, { uuid, label });
+    commit(types.SET_LABEL_CATEGORY_OF, { uuid, label });
     commit(types.SET_STATUS_OF, { uuid, status });
     */
   }
@@ -192,7 +192,7 @@ export class EditSingleCommand implements IInteractiveLabelingCommand {
     const uuid = this.#uuid;
     const label = this.#oldLabel;
     const status = this.#oldStatus;
-    commit(types.SET_LABEL_OF, { uuid, label });
+    commit(types.SET_LABEL_CATEGORY_OF, { uuid, label });
     commit(types.SET_STATUS_OF, { uuid, status });
     */
   }
@@ -235,7 +235,7 @@ export class EditBatchCommand implements IInteractiveLabelingCommand {
     const uuids = this.#uuids;
     const labels = this.#newLabels;
     const statuses = this.#newStatuses;
-    commit(types.SET_LABELS_OF, { uuids, labels });
+    commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     commit(types.SET_STATUSES_OF, { uuids, statuses });
     */
   }
@@ -245,7 +245,7 @@ export class EditBatchCommand implements IInteractiveLabelingCommand {
     const uuids = this.#uuids;
     const labels = this.#oldLabels;
     const statuses = this.#oldStatuses;
-    commit(types.SET_LABELS_OF, { uuids, labels });
+    commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     commit(types.SET_STATUSES_OF, { uuids, statuses });
     */
   }

@@ -6,6 +6,7 @@ import {
   ILabelShape,
   ILabelMask,
   ILabelCategory,
+  ILabel,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -27,19 +28,10 @@ export default {
   [types.SET_STOP](state: IState, stop: boolean): void {
     state.stop = stop;
   },
-  [types.SET_LABELS](state: IState, labels: ILabelCategory[]): void {
+  [types.SET_LABELS](state: IState, labels: ILabel[]): void {
     state.labels = labels;
   },
-  [types.SET_LABEL_SHAPE_LISTS](
-    state: IState,
-    labelShapeLists: ILabelShape[][],
-  ): void {
-    state.labelShapeLists = labelShapeLists;
-  },
-  [types.SET_LABEL_MASKS](state: IState, labelMasks: ILabelMask[]): void {
-    state.labelMasks = labelMasks;
-  },
-  [types.SET_LABEL_OF](
+  [types.SET_LABEL_CATEGORY_OF](
     state: IState,
     {
       uuid,
@@ -48,15 +40,16 @@ export default {
     }: { uuid: string, label: ILabelCategory, queried: boolean },
   ): void {
     if (state.labels === null) return;
-    const { dataObjects, queryIndices } = state;
+    const { dataObjects } = state;
     const newLabels = [...state.labels];
-    const idx = queried
-      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabels[idx as number] = label;
+    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newLabels[idx] = {
+      ...newLabels[idx],
+      category: label,
+    };
     state.labels = newLabels;
   },
-  [types.SET_LABELS_OF](
+  [types.SET_LABEL_CATEGORIES_OF](
     state: IState,
     {
       uuids,
@@ -65,14 +58,15 @@ export default {
     }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
   ): void {
     if (state.labels === null) return;
-    const { dataObjects, queryIndices } = state;
+    const { dataObjects } = state;
     const newLabels = [...state.labels];
     uuids.forEach((uuid: string, i: number) => {
       const label = labels[i];
-      const idx = queried
-        ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-        : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-      newLabels[idx as number] = label;
+      const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+      newLabels[idx] = {
+        ...newLabels[idx],
+        category: label,
+      };
     });
     state.labels = newLabels;
   },
@@ -80,39 +74,41 @@ export default {
     state: IState,
     {
       uuid,
-      labelMask,
+      mask,
       queried,
-    }: { uuid: string, labelMask: ILabelMask, queried: boolean },
+    }: { uuid: string, mask: ILabelMask, queried: boolean },
   ): void {
-    if (state.labelMasks === null) return;
-    const { dataObjects, queryIndices } = state;
-    const newLabelMasks = [...state.labelMasks];
-    const idx = queried
-      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabelMasks[idx as number] = labelMask;
-    state.labelMasks = newLabelMasks;
+    if (state.labels === null) return;
+    const { dataObjects } = state;
+    const newLabels = [...state.labels];
+    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newLabels[idx] = {
+      ...newLabels[idx],
+      mask,
+    };
+    state.labels = newLabels;
   },
-  [types.SET_LABEL_SHAPE_LIST_OF](
+  [types.SET_LABEL_SHAPES_OF](
     state: IState,
     {
       uuid,
-      labelShapeList,
+      shapes,
       queried,
     }: {
         uuid: string,
-        labelShapeList: ILabelShape[],
+        shapes: ILabelShape[],
         queried: boolean,
     },
   ): void {
-    if (state.labelShapeLists === null) return;
-    const { dataObjects, queryIndices } = state;
-    const newLabelShapeLists = [...state.labelShapeLists];
-    const idx = queried
-      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabelShapeLists[idx as number] = labelShapeList;
-    state.labelShapeLists = newLabelShapeLists;
+    if (state.labels === null) return;
+    const { dataObjects } = state;
+    const newLabels = [...state.labels];
+    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    newLabels[idx] = {
+      ...newLabels[idx],
+      shapes,
+    };
+    state.labels = newLabels;
   },
   [types.SET_STATUSES](state: IState, statuses: Status[]): void {
     state.statuses = statuses;
@@ -126,11 +122,9 @@ export default {
     }: { uuid: string, status: Status, queried: boolean },
   ): void {
     if (state.statuses === null) return;
-    const { dataObjects, queryIndices } = state;
+    const { dataObjects } = state;
     const newStatuses = [...state.statuses];
-    const idx = queried
-      ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-      : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
     newStatuses[idx as number] = status;
     state.statuses = newStatuses;
   },
@@ -143,14 +137,12 @@ export default {
     }: { uuids: string[], statuses: Status[], queried: boolean },
   ): void {
     if (state.statuses === null) return;
-    const { dataObjects, queryIndices } = state;
+    const { dataObjects } = state;
     const newStatuses = [...state.statuses];
     uuids.forEach((uuid: string, i: number) => {
       const status = statuses[i];
-      const idx = queried
-        ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-        : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-      newStatuses[idx as number] = status;
+      const idx = dataObjects.findIndex((d) => d.uuid === uuid);
+      newStatuses[idx] = status;
     });
     state.statuses = newStatuses;
   },
@@ -160,8 +152,8 @@ export default {
   [types.SET_FEATURE_NAMES](state: IState, featureNames: string[]): void {
     state.featureNames = featureNames;
   },
-  [types.SET_QUERY_INDICES](state: IState, queryIndices: number[]): void {
-    state.queryIndices = queryIndices;
+  [types.SET_QUERY_UUIDS](state: IState, queryUuids: string[]): void {
+    state.queryUuids = queryUuids;
   },
   [types.SET_COMMAND_HISTORY](state: IState, commandHistory: ICommand[]): void {
     state.commandHistory = commandHistory;

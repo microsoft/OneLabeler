@@ -21,8 +21,8 @@
         dense
       >
         <v-list-item
-          v-for="className in classes"
-          :key="className"
+          v-for="category in classes"
+          :key="category"
           class="pa-0"
         >
           <div
@@ -31,10 +31,10 @@
           >
             <div style="display: flex">
               <span style="font-weight: 700">
-                {{ className }}
+                {{ category }}
               </span>
               <v-spacer />
-              {{ `${getNumberOfLabel(className)} / ${nLabeled}` }}
+              {{ `${getNumberOfLabel(category)} / ${nLabeled}` }}
             </div>
             <div style="position: relative;">
               <div
@@ -50,7 +50,7 @@
                   'position': 'absolute',
                   'background-color': '#0078d4',
                   'height': '13px',
-                  'width': `${getRateOfLabel(className) * 100}%`,
+                  'width': `${getRateOfLabel(category) * 100}%`,
                 }"
               />
             </div>
@@ -66,6 +66,7 @@ import Vue from 'vue';
 import { mapState } from 'vuex';
 import {
   Category,
+  ILabel,
   Status,
 } from '@/commons/types';
 
@@ -79,15 +80,17 @@ export default Vue.extend({
     },
   },
   methods: {
-    getNumberOfLabel(className: Category): number {
-      if (this.labels === null) return 0;
-      return this.labels.filter((d: Category) => d === className)
+    getNumberOfLabel(category: Category): number {
+      const labels = this.labels as ILabel[];
+      if (labels === null) return 0;
+      return labels.filter((d: ILabel) => d.category === category)
         .length;
     },
-    getRateOfLabel(className: Category): number {
-      if (this.labels === null) return 0;
+    getRateOfLabel(category: Category): number {
+      const labels = this.labels as ILabel[];
+      if (labels === null) return 0;
       if (this.nLabeled === 0) return 0;
-      return this.labels.filter((d: Category) => d === className)
+      return labels.filter((d: ILabel) => d.category === category)
         .length / this.nLabeled;
     },
   },

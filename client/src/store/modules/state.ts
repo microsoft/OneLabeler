@@ -6,6 +6,7 @@ import {
   ILabelMask,
   ILabelShape,
   ILabelCategory,
+  ILabel,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -19,11 +20,7 @@ export interface IState {
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
   /** The labels. */
-  labels: ILabelCategory[] | null;
-  /** The object shapes annotations. */
-  labelShapeLists: ILabelShape[][] | null;
-  /** The segmentation masks. */
-  labelMasks: ILabelMask[] | null;
+  labels: ILabel[] | null;
   /** The label statuses of the data objects. */
   statuses: Status[];
   /** The label mark of unlabeled data objects. */
@@ -34,8 +31,8 @@ export interface IState {
   /** The data labeling system status attributes. */
   /** The cache storing mapping from uuids to data object index. */
   uuidToIdx: { [key: string]: number };
-  /** The indices of sampled data objects. */
-  queryIndices: number[];
+  /** The uuids of sampled data objects. */
+  queryUuids: string[];
   /** The history of label editing commands (used for undo command). */
   commandHistory: ICommand[];
   /** The popup message to be shown in the interface. */
@@ -49,13 +46,11 @@ export const createInitialState = (): IState => ({
   classes: [],
   stop: false,
   labels: null,
-  labelShapeLists: null,
-  labelMasks: null,
   statuses: [],
   unlabeledMark: '-1',
   featureNames: [],
   uuidToIdx: {},
-  queryIndices: [],
+  queryUuids: [],
   commandHistory: [],
   message: null,
   taskWindows: [],

@@ -1,5 +1,6 @@
 import { Store } from 'vuex';
 import {
+  ILabel,
   LabelTaskType,
   Process,
   TaskWindow,
@@ -27,51 +28,20 @@ const updateLabels = (
   const containsSegmentation = labelTasks.includes(LabelTaskType.Segmentation);
 
   // Clear labels
-  if (!containsClassification) {
+  if (!containsClassification && !containsObjectDetection && !containsSegmentation) {
     commit(types.SET_LABELS, null);
+    return;
   }
 
-  // Initialize labels
-  if (
-    containsClassification
-    && (state.labels === null
-      || (state.labels.length !== state.dataObjects.length))
-  ) {
-    const labels = Array(state.dataObjects.length).fill(state.unlabeledMark);
+  if ((state.labels === null) || (state.labels.length !== state.dataObjects.length)) {
+    const labels: ILabel[] = Array(state.dataObjects.length)
+      .fill(null).map((d, i) => ({
+        uuid: state.dataObjects[i].uuid,
+        category: containsClassification ? state.unlabeledMark : undefined,
+        shapes: containsObjectDetection ? Array(0) : undefined,
+        mask: containsSegmentation ? { path: null } : undefined,
+      }));
     commit(types.SET_LABELS, labels);
-  }
-
-  // Clear labelShapeLists
-  if (!containsObjectDetection) {
-    commit(types.SET_LABEL_SHAPE_LISTS, null);
-  }
-
-  // Initialize labelShapeLists
-  if (
-    containsObjectDetection
-    && (state.labelShapeLists === null
-      || (state.labelShapeLists.length !== state.dataObjects.length))
-  ) {
-    const labelShapeLists = Array(state.dataObjects.length)
-      .fill(null).map(() => Array(0));
-    commit(types.SET_LABEL_SHAPE_LISTS, labelShapeLists);
-  }
-
-  // Clear labelMasks
-  if (!containsSegmentation) {
-    commit(types.SET_LABEL_MASKS, null);
-  }
-
-  // Initialize labelMasks
-  if (
-    containsSegmentation
-    && (state.labelMasks === null
-      || (state.labelMasks.length !== state.dataObjects.length))
-  ) {
-    const labelMasks = Array(state.dataObjects.length).fill(null).map(() => ({
-      path: null,
-    }));
-    commit(types.SET_LABEL_MASKS, labelMasks);
   }
 };
 

@@ -163,9 +163,7 @@ import {
   IDataObject,
   IImage,
   IMessage,
-  ILabelCategory,
-  ILabelMask,
-  ILabelShape,
+  ILabel,
   MessageType,
   Status,
 } from '@/commons/types';
@@ -178,9 +176,7 @@ import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButt
 type ProjectData = {
   dataObjects: IDataObject[],
   classes: Category[],
-  labels?: ILabelCategory[],
-  labelMasks?: ILabelMask[],
-  labelShapeLists?: ILabelShape[][],
+  labels?: ILabel[],
   statuses: Status[],
   unlabeledMark: Category,
   featureNames?: string[],
@@ -219,37 +215,41 @@ const schema: JSONSchemaType<ProjectData> = {
     },
     labels: {
       type: 'array',
-      items: { type: 'string' },
-    },
-    labelShapeLists: {
-      type: 'array',
-      items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          required: [
-            'label',
-            'shape',
-            'position',
-          ],
-          properties: {
-            label: { type: 'string' },
-            shape: { type: 'string' },
-            position: { type: 'array' },
-          },
-          additionalProperties: true,
-        },
-      },
-    },
-    labelMasks: {
-      type: 'array',
       items: {
         type: 'object',
         required: [
-          'path',
+          'uuid',
         ],
         properties: {
-          path: { type: ['string', 'null'] },
+          uuid: { type: 'string' },
+          category: { type: 'string' },
+          shapes: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: [
+                'category',
+                'shape',
+                'position',
+              ],
+              properties: {
+                label: { type: 'string' },
+                shape: { type: 'string' },
+                position: { type: 'array' },
+              },
+              additionalProperties: true,
+            },
+          },
+          mask: {
+            type: 'object',
+            required: [
+              'path',
+            ],
+            properties: {
+              path: { type: ['string', 'null'] },
+            },
+            additionalProperties: true,
+          },
         },
         additionalProperties: true,
       },
@@ -326,12 +326,9 @@ export default Vue.extend({
       'dataObjects',
       'classes',
       'labels',
-      'labelShapeLists',
-      'labelMasks',
       'statuses',
       'unlabeledMark',
       'featureNames',
-      'queryIndices',
       'commandHistory',
     ]),
     disableSaveButton(): boolean {
@@ -386,8 +383,6 @@ export default Vue.extend({
       'setDataObjects',
       'setClasses',
       'setLabels',
-      'setLabelShapeLists',
-      'setLabelMasks',
       'setMessage',
       'setStatuses',
       'setUnlabeledMark',
@@ -436,8 +431,6 @@ export default Vue.extend({
           dataObjects,
           classes,
           labels,
-          labelShapeLists,
-          labelMasks,
           statuses,
           unlabeledMark,
           featureNames,
@@ -446,12 +439,6 @@ export default Vue.extend({
         this.setClasses(classes);
         if (labels !== undefined) {
           this.setLabels(labels);
-        }
-        if (labelShapeLists !== undefined) {
-          this.setLabelShapeLists(labelShapeLists);
-        }
-        if (labelMasks !== undefined) {
-          this.setLabelMasks(labelMasks);
         }
         this.setStatuses(statuses);
         this.setUnlabeledMark(unlabeledMark);
@@ -473,8 +460,6 @@ export default Vue.extend({
         dataObjects,
         classes,
         labels,
-        labelShapeLists,
-        labelMasks,
         statuses,
         unlabeledMark,
         featureNames,
@@ -484,10 +469,6 @@ export default Vue.extend({
         classes,
         labels: labels === null
           ? undefined : labels,
-        labelShapeLists: labelShapeLists === null
-          ? undefined : labelShapeLists,
-        labelMasks: labelMasks === null
-          ? undefined : labelMasks,
         statuses,
         unlabeledMark,
         featureNames: featureNames.length === 0
@@ -510,23 +491,15 @@ export default Vue.extend({
       }
     },
     onClickExport(): void {
-      const {
-        dataObjects,
-        labels,
-        labelShapeLists,
-        labelMasks,
-      } = this;
+      const { dataObjects, labels } = this;
       const labeledData = dataObjects.map((d: IImage, i: number) => {
         const pathSegments = (d.path as string).split('/');
         const filename = pathSegments[pathSegments.length - 1];
-        const classification = labels === null ? undefined : labels[i];
-        const shapes = labelShapeLists === null ? undefined : labelShapeLists[i];
-        const mask = labelMasks === null ? undefined : labelMasks[i];
         return {
           filename,
-          classification,
-          shapes,
-          mask,
+          category: labels === null ? undefined : labels[i].category,
+          shapes: labels === null ? undefined : labels[i].shapes,
+          mask: labels === null ? undefined : labels[i].mask,
         };
       });
       saveJsonFile(labeledData, 'labels.json');

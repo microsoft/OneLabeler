@@ -14,11 +14,11 @@
       style="height: calc(100% - 30px)"
     >
       <VCardMatrix
-        v-if="queryIndices !== null && queryIndices.length !== 0"
+        v-if="sampledDataObjects !== null && sampledDataObjects.length !== 0"
         style="height: 100%"
         :data-type="dataType"
         :data-objects="sampledDataObjects"
-        :labels="sampledLabels"
+        :labels="sampledLabelCategories"
         :statuses="sampledStatuses"
         :classes="classes"
         :selected-uuids="selectedUuids"
@@ -44,6 +44,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   IDataObject,
   ILabelCategory,
+  ILabel,
   Status,
   TaskWindow,
 } from '@/commons/types';
@@ -82,7 +83,6 @@ export default Vue.extend({
       'dataObjects',
       'classes',
       'labels',
-      'queryIndices',
       'unlabeledMark',
     ]),
     ...mapGetters([
@@ -92,24 +92,25 @@ export default Vue.extend({
       'label2color',
     ]),
     ...mapGetters('workflow', ['dataType']),
+    sampledLabelCategories() {
+      return this.sampledLabels.map((d) => d.category);
+    },
   },
   methods: {
     ...mapActions([
-      'setLabelOf',
-      'setLabelsOf',
+      'setLabelCategoryOf',
+      'setLabelCategoriesOf',
       'setStatusOf',
       'setStatusesOf',
       'pushCommandHistory',
       'editTaskWindow',
     ]),
-    getLabel(dataObject: IDataObject, queried = false): ILabelCategory {
-      const { dataObjects, labels, queryIndices } = this;
+    getLabel(dataObject: IDataObject): ILabelCategory {
+      const labels = this.labels as ILabel[];
       const { uuid } = dataObject;
-      const idx = queried
-        ? queryIndices.find((d: number) => dataObjects[d].uuid === uuid)
-        : dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-      console.assert(idx !== undefined && idx >= 0, `Data object not found: uuid = ${uuid}`);
-      return labels[idx];
+      const label = labels.find((d) => d.uuid === uuid);
+      if (label === undefined) return this.unlabeledMark;
+      return label.category as ILabelCategory;
     },
     onClickBatchLabel(label: ILabelCategory): void {
       const { selectedUuids } = this;
@@ -122,11 +123,11 @@ export default Vue.extend({
 
       const nBatch = dataObjects.length;
       const oldLabels = dataObjects.map((dataObject: IDataObject) => (
-        this.getLabel(dataObject, true)
+        this.getLabel(dataObject)
       ));
       const newLabels = Array(nBatch).fill(label);
       const editBatch = (ds: IDataObject[], ls: ILabelCategory[]): void => {
-        this.setLabelsOf({
+        this.setLabelCategoriesOf({
           uuids: ds.map((d: IDataObject) => d.uuid),
           labels: ls,
           queried: true,
@@ -142,9 +143,9 @@ export default Vue.extend({
       this.pushCommandHistory(editBatchCommand);
     },
     onClickCardLabel(dataObject: IDataObject, label: ILabelCategory): void {
-      const oldLabel = this.getLabel(dataObject, true);
+      const oldLabel = this.getLabel(dataObject);
       const editSingle = (d: IDataObject, l: ILabelCategory): void => {
-        this.setLabelOf({ uuid: d.uuid, label: l, queried: true });
+        this.setLabelCategoryOf({ uuid: d.uuid, label: l, queried: true });
         this.setStatusOf({ uuid: d.uuid, status: Status.Labeled, queried: true });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);

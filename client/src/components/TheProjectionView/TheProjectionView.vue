@@ -135,7 +135,7 @@ export default Vue.extend({
       'unlabeledMark',
       'featureNames',
       'uuidToIdx',
-      'queryIndices',
+      'queryUuids',
     ]),
     ...mapState('workflow', ['currentNode']),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
@@ -147,6 +147,11 @@ export default Vue.extend({
       const { featureValues } = this;
       return Array.isArray(featureValues)
         && featureValues.every((d) => Array.isArray(d));
+    },
+    queryIndices(): number[] {
+      return this.queryUuids.map((uuid: string) => (
+        this.dataObjects.findIndex((d) => d.uuid === uuid)
+      ));
     },
   },
   watch: {

@@ -133,8 +133,7 @@ export default Vue.extend({
     ...mapState(['classes', 'unlabeledMark']),
     ...mapGetters([
       'sampledDataObjects',
-      'sampledLabelShapeLists',
-      'sampledLabelMasks',
+      'sampledLabels',
       'label2color',
     ]),
     ...mapGetters('workflow', ['labelTasks']),
@@ -148,13 +147,17 @@ export default Vue.extend({
     },
     labelShapeList(): ILabelShape[] | null {
       if (!this.showCanvas) return null;
-      if (this.sampledLabelShapeLists === null) return null;
-      return this.sampledLabelShapeLists[this.page - 1];
+      if (this.sampledLabels === null) return null;
+      const label = this.sampledLabels[this.page - 1];
+      if (label.shapes === null || label.shapes === undefined) return null;
+      return label.shapes;
     },
     labelMask(): ILabelMask | null {
       if (!this.showCanvas) return null;
-      if (this.sampledLabelMasks === null) return null;
-      return this.sampledLabelMasks[this.page - 1];
+      if (this.sampledLabels === null) return null;
+      const label = this.sampledLabels[this.page - 1];
+      if (label.mask === null || label.mask === undefined) return null;
+      return label.mask;
     },
     enablePagination(): boolean {
       if (!this.showCanvas) return false;
@@ -180,7 +183,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'setLabelShapeListOf',
+      'setLabelShapesOf',
       'setLabelMaskOf',
       'setStatusOf',
       'editTaskWindow',
@@ -205,13 +208,12 @@ export default Vue.extend({
           `${filename}-mask.png`,
           { type: blob.type },
         );
-        const labelMaskPath = (await uploadFile(file)).data.path;
-        const labelMask = {
-          path: labelMaskPath,
+        const mask = {
+          path: (await uploadFile(file)).data.path,
         };
         this.setLabelMaskOf({
           uuid,
-          labelMask,
+          mask,
           queried: true,
         });
         this.setStatusOf({
@@ -225,9 +227,9 @@ export default Vue.extend({
       const { dataObject, labelShapeList } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject as IDataObject;
-      this.setLabelShapeListOf({
+      this.setLabelShapesOf({
         uuid,
-        labelShapeList: [...labelShapeList, labelShape],
+        shapes: [...labelShapeList, labelShape],
         queried: true,
       });
       this.setStatusOf({
@@ -247,9 +249,9 @@ export default Vue.extend({
         ...labelShapeList.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setLabelShapeListOf({
+      this.setLabelShapesOf({
         uuid,
-        labelShapeList: labelShapeListUpdated,
+        shapes: labelShapeListUpdated,
         queried: true,
       });
       this.setStatusOf({
@@ -268,9 +270,9 @@ export default Vue.extend({
         ...labelShapeList.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setLabelShapeListOf({
+      this.setLabelShapesOf({
         uuid,
-        labelShapeList: labelShapeListUpdated,
+        shapes: labelShapeListUpdated,
         queried: true,
       });
       this.setStatusOf({

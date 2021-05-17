@@ -29,10 +29,10 @@ export const setClasses = (
 
 export const pushClasses = (
   { commit, state }: ActionContext<IState, IState>,
-  className: Label,
+  category: Category,
 ): void => {
   const { classes } = state;
-  commit(types.SET_CLASSES, [...classes, className]);
+  commit(types.SET_CLASSES, [...classes, category]);
 };
 
 export const setStop = (
@@ -49,21 +49,7 @@ export const setLabels = (
   commit(types.SET_LABELS, labels);
 };
 
-export const setLabelShapeLists = (
-  { commit }: ActionContext<IState, IState>,
-  labelShapeLists: ILabelShape[][],
-): void => {
-  commit(types.SET_LABEL_SHAPE_LISTS, labelShapeLists);
-};
-
-export const setLabelMasks = (
-  { commit }: ActionContext<IState, IState>,
-  labelMasks: ILabelMask[],
-): void => {
-  commit(types.SET_LABEL_MASKS, labelMasks);
-};
-
-export const setLabelOf = (
+export const setLabelCategoryOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
@@ -71,10 +57,10 @@ export const setLabelOf = (
     queried = false,
   }: { uuid: string, label: ILabelCategory, queried: boolean },
 ): void => {
-  commit(types.SET_LABEL_OF, { uuid, label, queried });
+  commit(types.SET_LABEL_CATEGORY_OF, { uuid, label, queried });
 };
 
-export const setLabelsOf = (
+export const setLabelCategoriesOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuids,
@@ -82,35 +68,35 @@ export const setLabelsOf = (
     queried = false,
   }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
 ): void => {
-  commit(types.SET_LABELS_OF, { uuids, labels, queried });
+  commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels, queried });
 };
 
 export const setLabelMaskOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
-    labelMask,
+    mask,
     queried = false,
-  }: { uuid: string, labelMask: ILabelMask, queried: boolean },
+  }: { uuid: string, mask: ILabelMask, queried: boolean },
 ): void => {
-  commit(types.SET_LABEL_MASK_OF, { uuid, labelMask, queried });
+  commit(types.SET_LABEL_MASK_OF, { uuid, mask, queried });
 };
 
-export const setLabelShapeListOf = (
+export const setLabelShapesOf = (
   { commit }: ActionContext<IState, IState>,
   {
     uuid,
-    labelShapeList,
+    shapes,
     queried = false,
   }: {
     uuid: string,
-    labelShapeList: ILabelShape[],
+    shapes: ILabelShape[],
     queried: boolean,
   },
 ): void => {
   commit(
-    types.SET_LABEL_SHAPE_LIST_OF,
-    { uuid, labelShapeList, queried },
+    types.SET_LABEL_SHAPES_OF,
+    { uuid, shapes, queried },
   );
 };
 
@@ -216,7 +202,7 @@ export const resetState = (
     statuses,
     unlabeledMark,
     featureNames,
-    queryIndices,
+    queryUuids,
     commandHistory,
     message,
   } = createInitialState();
@@ -226,7 +212,7 @@ export const resetState = (
   commit(types.SET_STATUSES, statuses);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES, featureNames);
-  commit(types.SET_QUERY_INDICES, queryIndices);
+  commit(types.SET_QUERY_UUIDS, queryUuids);
   commit(types.SET_COMMAND_HISTORY, commandHistory);
   commit(types.SET_MESSAGE, message);
 };
