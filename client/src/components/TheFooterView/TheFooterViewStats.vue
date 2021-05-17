@@ -8,7 +8,7 @@
       class="mx-2 subtitle-2 grey--text text--lighten-2"
       style="display: inline-flex; align-items: center; height: 100%;"
     >
-      {{ `${dataObjects.length} data objects` }}
+      {{ `${nDataObjects} data objects` }}
     </span>
     <v-divider
       style="position: fixed"
@@ -18,7 +18,7 @@
       class="mx-2 subtitle-2 grey--text text--lighten-2"
       style="display: inline-flex; align-items: center; height: 100%;"
     >
-      {{ `${dataObjects.length - unlabeledIndices.length} / ${dataObjects.length} labeled` }}
+      {{ `${nDataObjects - unlabeledIndices.length} / ${nDataObjects} labeled` }}
     </span>
     <v-divider
       style="position: fixed"
@@ -105,6 +105,9 @@ export default Vue.extend({
         notEmpty,
         notRepetitive,
       ];
+    },
+    nDataObjects(): number {
+      return this.dataObjects.length;
     },
   },
   methods: {

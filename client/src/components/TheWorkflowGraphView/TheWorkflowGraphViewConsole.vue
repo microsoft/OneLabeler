@@ -98,7 +98,7 @@ export default Vue.extend({
       if (notifications.length === 0) {
         return [{
           subject: null,
-          message: '👍 The workflow is valid',
+          message: '🚀 The workflow is valid',
           type: 'Success',
         }];
       }

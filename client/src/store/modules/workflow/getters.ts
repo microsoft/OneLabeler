@@ -2,11 +2,9 @@ import {
   DataType,
   LabelTaskType,
   Process,
-  TaskWindow,
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
-import { isNodeInteractive } from '@/commons/utils';
 import { IState } from './state';
 
 export const startNode = (state: IState): WorkflowNode | null => {

@@ -24,7 +24,10 @@ export interface IDataObject {
 
 /** The interface of an image data object. */
 export interface IImage extends IDataObject {
+  /** The image content. */
+  // content?: string | null;
   /** The storage path of the image on the server. */
+  // path?: string | null;
   path: string | null;
   /** The width of the image. */
   width?: number | null;
@@ -97,6 +100,17 @@ export enum MessageType {
 export interface IMessage {
   content: string;
   type: MessageType;
+}
+
+/** The interface of storage service. */
+export interface IDataObjectsStorage {
+  addDataObject(dataObject: IDataObject): Promise<unknown>;
+  allDataObjects(): Promise<IDataObject[]>;
+  countDataObjects(): Promise<number>;
+  deleteDataObjects(): Promise<unknown>;
+  getDataObjectByUuid(uuid: string): Promise<IDataObject | undefined>;
+  getDataObjectByUuids(uuids: string[]): Promise<(IDataObject | undefined)[]>;
+  setDataObjects(dataObjects: IDataObject[]): Promise<unknown>;
 }
 
 /** The enum of projection method types. */

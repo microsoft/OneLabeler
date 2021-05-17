@@ -14,11 +14,13 @@ import {
   IDataObject,
   IText,
   IImage,
+  // IDataObjectsStorage,
   Label,
   Status,
   ModelService,
   Process,
 } from '@/commons/types';
+// import { dataObjectsDB } from '@/services/database';
 import {
   PROTOCOL,
   IP,
@@ -33,6 +35,7 @@ import {
  * @Note The extraction implementation is dependent
  * on the data source type and data object type.
  */
+
 export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
@@ -60,15 +63,64 @@ export const dataObjectExtraction = showProgressBar(async (
   }
   if (dataType === DataType.Text) {
     const file = input as File;
-    const dataObjects = (await loadJsonFile(file) as string[]).map((doc) => ({
+    const dataObjects = (await loadJsonFile(file) as string[]).map((content) => ({
       uuid: uuidv4(),
-      content: doc,
+      content,
     })) as IText[];
     return dataObjects;
   }
   console.warn(`Invalid Data Type: ${dataType}`);
   return [];
 });
+
+/*
+const getBase64 = (file: File) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result as string);
+  reader.onerror = (error) => reject(error);
+}) as Promise<string>;
+
+const getImgSize = (content: string) => new Promise((resolve, reject) => {
+  const img = new Image();
+  img.onload = () => resolve({ width: img.width, height: img.height });
+  img.onerror = (error) => reject(error);
+  img.src = content;
+}) as Promise<{ width: number, height: number }>;
+
+export const dataObjectExtraction = showProgressBar(async (
+  input: File | FileList,
+  dataType: DataType,
+): Promise<IDataObjectsStorage> => {
+  if (dataType === DataType.Image) {
+    const files = input as FileList;
+    await Promise.all([...files].map(async (file, i) => {
+      const content = await getBase64(file);
+      const { width, height } = await getImgSize(content);
+      const dataObject = {
+        i,
+        uuid: uuidv4(),
+        content,
+        width,
+        height,
+      } as IImage;
+      dataObjectsDB.addDataObject(dataObject);
+    }));
+  }
+  if (dataType === DataType.Text) {
+    const file = input as File;
+    (await loadJsonFile(file) as string[]).forEach((content, i) => {
+      const dataObject = {
+        i,
+        uuid: uuidv4(),
+        content,
+      } as IText;
+      dataObjectsDB.addDataObject(dataObject);
+    });
+  }
+  return dataObjectsDB;
+});
+*/
 
 /**
  * Workflow Component - Feature Extraction

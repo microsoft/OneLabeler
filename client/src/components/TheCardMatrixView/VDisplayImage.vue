@@ -105,6 +105,12 @@ export default Vue.extend({
       const { path } = this.dataObject;
       return path === null ? '' : imageURLFormatter(path);
     },
+    /*
+    src(): string {
+      const { content } = this.dataObject;
+      return content === null ? '' : content as string;
+    },
+    */
     transform(): string {
       // Compute the scaling of the image to fit the svg.
       const { dataObject, svgWidth, svgHeight } = this;

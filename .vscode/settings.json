@@ -18,6 +18,7 @@
         "configurability",
         "cytoscape",
         "devtools",
+        "dexie",
         "dragmove",
         "dtype",
         "durstenfeld",
