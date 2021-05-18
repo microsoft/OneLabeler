@@ -165,7 +165,7 @@ import {
   IMessage,
   ILabel,
   MessageType,
-  Status,
+  StatusType,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -177,7 +177,7 @@ type ProjectData = {
   dataObjects: IDataObject[],
   classes: Category[],
   labels?: ILabel[],
-  statuses: Status[],
+  statuses: StatusType[],
   unlabeledMark: Category,
   featureNames?: string[],
 }
@@ -331,21 +331,24 @@ export default Vue.extend({
       'featureNames',
       'commandHistory',
     ]),
+    nDataObjects(): number {
+      return this.dataObjects.length;
+    },
     disableSaveButton(): boolean {
-      return this.dataObjects.length === 0;
+      return this.nDataObjects === 0;
     },
     disableResetButton(): boolean {
-      return this.dataObjects.length === 0;
+      return this.nDataObjects === 0;
     },
     disableExecutionButton(): boolean {
       return this.currentNode === null
-        || this.dataObjects.length === 0;
+        || this.nDataObjects === 0;
     },
     disableUndoButton(): boolean {
       return this.commandHistory.length === 0;
     },
     disableExportButton(): boolean {
-      return this.dataObjects.length === 0;
+      return this.nDataObjects === 0;
     },
     showExecutionButton(): boolean {
       return this.currentNode !== null;

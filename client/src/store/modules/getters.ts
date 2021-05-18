@@ -2,7 +2,7 @@ import { scaleOrdinal, schemeCategory10, ScaleOrdinal } from 'd3';
 import {
   IDataObject,
   ILabel,
-  Status,
+  StatusType,
 } from '@/commons/types';
 import { IState } from './state';
 
@@ -23,10 +23,10 @@ export const uuids = (state: IState): string[] => {
 
 export const sampledDataObjects = (state: IState): IDataObject[] => {
   const { dataObjects, queryUuids } = state;
-  return dataObjects.filter((d) => queryUuids.includes(d.uuid));
+  return queryUuids.map((uuid: string) => dataObjects.find((d) => d.uuid === uuid) as IDataObject);
 };
 
-export const sampledStatuses = (state: IState): Status[] => {
+export const sampledStatuses = (state: IState): StatusType[] => {
   const { statuses, dataObjects, queryUuids } = state;
   const queryIndices = queryUuids.map((uuid) => (
     dataObjects.findIndex((d) => d.uuid === uuid)
@@ -35,22 +35,9 @@ export const sampledStatuses = (state: IState): Status[] => {
 };
 
 export const sampledLabels = (state: IState): ILabel[] | null => {
-  const { labels, dataObjects, queryUuids } = state;
+  const { labels, queryUuids } = state;
   if (labels === null) return null;
-  const queryIndices = queryUuids.map((uuid) => (
-    dataObjects.findIndex((d) => d.uuid === uuid)
-  ));
-  return queryIndices.map((index: number) => labels[index]);
-};
-
-export const unlabeledIndices = (state: IState): number[] => {
-  const { statuses } = state;
-  return statuses.reduce((arr: number[], d: Status, i: number) => {
-    if (d !== Status.Labeled) {
-      arr.push(i);
-    }
-    return arr;
-  }, []);
+  return queryUuids.map((uuid: string) => labels.find((d) => d.uuid === uuid) as ILabel);
 };
 
 /** The color scale for labels used in the system.  */

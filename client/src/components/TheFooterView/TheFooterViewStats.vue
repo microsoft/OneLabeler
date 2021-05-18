@@ -8,7 +8,7 @@
       class="mx-2 subtitle-2 grey--text text--lighten-2"
       style="display: inline-flex; align-items: center; height: 100%;"
     >
-      {{ `${nDataObjects} data objects` }}
+      {{ `${nTotal} data objects` }}
     </span>
     <v-divider
       style="position: fixed"
@@ -18,7 +18,7 @@
       class="mx-2 subtitle-2 grey--text text--lighten-2"
       style="display: inline-flex; align-items: center; height: 100%;"
     >
-      {{ `${nDataObjects - unlabeledIndices.length} / ${nDataObjects} labeled` }}
+      {{ `${nLabeled} / ${nTotal} labeled` }}
     </span>
     <v-divider
       style="position: fixed"
@@ -67,8 +67,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions, mapGetters, mapState } from 'vuex';
-import { Category } from '@/commons/types';
+import { mapActions, mapState } from 'vuex';
+import { Category, StatusType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({
@@ -89,8 +89,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['dataObjects', 'classes', 'unlabeledMark']),
-    ...mapGetters(['unlabeledIndices']),
+    ...mapState(['statuses', 'classes', 'unlabeledMark']),
     classNameRules() {
       const { classes, unlabeledMark } = this;
       const notEmpty = (v: unknown) => (
@@ -106,8 +105,12 @@ export default Vue.extend({
         notRepetitive,
       ];
     },
-    nDataObjects(): number {
-      return this.dataObjects.length;
+    nTotal(): number {
+      return this.statuses.length;
+    },
+    nLabeled(): number {
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.Labeled).length;
     },
   },
   methods: {

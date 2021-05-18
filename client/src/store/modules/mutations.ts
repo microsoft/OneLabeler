@@ -3,11 +3,8 @@ import {
   ICommand,
   IDataObject,
   IMessage,
-  ILabelShape,
-  ILabelMask,
-  ILabelCategory,
   ILabel,
-  Status,
+  StatusType,
   TaskWindow,
 } from '@/commons/types';
 import { IState } from './state';
@@ -16,11 +13,6 @@ import * as types from './mutation-types';
 export default {
   [types.SET_DATA_OBJECTS](state: IState, dataObjects: IDataObject[]): void {
     state.dataObjects = dataObjects;
-    const uuidToIdx: { [key: string]: number} = {};
-    dataObjects.forEach((dataObject, i) => {
-      uuidToIdx[dataObject.uuid] = i;
-    });
-    state.uuidToIdx = uuidToIdx;
   },
   [types.SET_CLASSES](state: IState, classes: Category[]): void {
     state.classes = classes;
@@ -31,97 +23,35 @@ export default {
   [types.SET_LABELS](state: IState, labels: ILabel[]): void {
     state.labels = labels;
   },
-  [types.SET_LABEL_CATEGORY_OF](
+  [types.SET_LABEL_OF](
     state: IState,
-    {
-      uuid,
-      label,
-      queried,
-    }: { uuid: string, label: ILabelCategory, queried: boolean },
+    { uuid, label }: { uuid: string, label: ILabel },
   ): void {
-    if (state.labels === null) return;
-    const { dataObjects } = state;
-    const newLabels = [...state.labels];
-    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabels[idx] = {
-      ...newLabels[idx],
-      category: label,
-    };
+    const { labels } = state;
+    const newLabels = [...labels];
+    const idx = labels.findIndex((d) => d.uuid === uuid);
+    newLabels[idx] = label;
     state.labels = newLabels;
   },
-  [types.SET_LABEL_CATEGORIES_OF](
+  [types.SET_LABELS_OF](
     state: IState,
-    {
-      uuids,
-      labels,
-      queried,
-    }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
+    { uuids, labels }: { uuids: string[], labels: ILabel[] },
   ): void {
-    if (state.labels === null) return;
-    const { dataObjects } = state;
     const newLabels = [...state.labels];
     uuids.forEach((uuid: string, i: number) => {
       const label = labels[i];
-      const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-      newLabels[idx] = {
-        ...newLabels[idx],
-        category: label,
-      };
+      const idx = state.labels.findIndex((d) => d.uuid === uuid);
+      newLabels[idx] = label;
     });
     state.labels = newLabels;
   },
-  [types.SET_LABEL_MASK_OF](
-    state: IState,
-    {
-      uuid,
-      mask,
-      queried,
-    }: { uuid: string, mask: ILabelMask, queried: boolean },
-  ): void {
-    if (state.labels === null) return;
-    const { dataObjects } = state;
-    const newLabels = [...state.labels];
-    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabels[idx] = {
-      ...newLabels[idx],
-      mask,
-    };
-    state.labels = newLabels;
-  },
-  [types.SET_LABEL_SHAPES_OF](
-    state: IState,
-    {
-      uuid,
-      shapes,
-      queried,
-    }: {
-        uuid: string,
-        shapes: ILabelShape[],
-        queried: boolean,
-    },
-  ): void {
-    if (state.labels === null) return;
-    const { dataObjects } = state;
-    const newLabels = [...state.labels];
-    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
-    newLabels[idx] = {
-      ...newLabels[idx],
-      shapes,
-    };
-    state.labels = newLabels;
-  },
-  [types.SET_STATUSES](state: IState, statuses: Status[]): void {
+  [types.SET_STATUSES](state: IState, statuses: StatusType[]): void {
     state.statuses = statuses;
   },
   [types.SET_STATUS_OF](
     state: IState,
-    {
-      uuid,
-      status,
-      queried,
-    }: { uuid: string, status: Status, queried: boolean },
+    { uuid, status }: { uuid: string, status: StatusType },
   ): void {
-    if (state.statuses === null) return;
     const { dataObjects } = state;
     const newStatuses = [...state.statuses];
     const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
@@ -130,11 +60,7 @@ export default {
   },
   [types.SET_STATUSES_OF](
     state: IState,
-    {
-      uuids,
-      statuses,
-      queried,
-    }: { uuids: string[], statuses: Status[], queried: boolean },
+    { uuids, statuses }: { uuids: string[], statuses: StatusType[] },
   ): void {
     if (state.statuses === null) return;
     const { dataObjects } = state;

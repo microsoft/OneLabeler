@@ -24,8 +24,7 @@
       :points="pointsSampled"
       :uuids="uuidsSampled"
       :labels="labelsSampled"
-      :statuses="statusesSampled"
-      :query-indices="queryIndices"
+      :query-uuids="queryUuids"
       :x-axis="xAxis"
       :y-axis="yAxis"
       :x-extent="xExtent"
@@ -38,8 +37,7 @@
       :points="pointsSampled"
       :uuids="uuidsSampled"
       :labels="labelsSampled"
-      :statuses="statusesSampled"
-      :query-indices="queryIndices"
+      :query-uuids="queryUuids"
       :x-axis="xAxis"
       :y-axis="yAxis"
       :x-extent="xExtent"
@@ -56,10 +54,8 @@ import { xor4096 } from 'seedrandom';
 import Vue, { PropType } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
 import {
-  Category,
   ILabelCategory,
   ProjectionMethodType,
-  Status,
 } from '@/commons/types';
 import { randomShuffle } from '@/plugins/random';
 import { Binning, Subsampling } from './types';
@@ -115,20 +111,8 @@ export default Vue.extend({
       type: Array as PropType<ILabelCategory[] | null>,
       default: null,
     },
-    statuses: {
-      type: Array as PropType<Status[]>,
-      required: true,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
-    unlabeledMark: {
-      type: String as PropType<Category>,
-      required: true,
-    },
-    queryIndices: {
-      type: Array as PropType<number[]>,
+    queryUuids: {
+      type: Array as PropType<string[]>,
       required: true,
     },
     featureNames: {
@@ -200,7 +184,7 @@ export default Vue.extend({
         selectedFeatureIndices.map((i: number) => d[i])
       ));
     },
-    sampledDataObjectIndices(): null | number[] {
+    subsampleIndices(): null | number[] {
       const { points, enableSubsampling, subsamplingNSamples } = this;
       if (points === null
         || enableSubsampling === false
@@ -216,34 +200,27 @@ export default Vue.extend({
       return indices;
     },
     pointsSampled(): number[][] | null {
-      const { points, sampledDataObjectIndices } = this;
+      const { points, subsampleIndices } = this;
       if (points === null) {
         return null;
       }
-      if (sampledDataObjectIndices === null) {
+      if (subsampleIndices === null) {
         return points;
       }
-      return sampledDataObjectIndices.map((d: number) => (points as number[][])[d]);
+      return subsampleIndices.map((d: number) => (points as number[][])[d]);
     },
     uuidsSampled(): string[] {
-      const { uuids, sampledDataObjectIndices } = this;
-      if (sampledDataObjectIndices === null) {
+      const { uuids, subsampleIndices } = this;
+      if (subsampleIndices === null) {
         return uuids;
       }
-      return sampledDataObjectIndices.map((d: number) => uuids[d]);
+      return subsampleIndices.map((d: number) => uuids[d]);
     },
     labelsSampled(): ILabelCategory[] | null {
-      const { labels, sampledDataObjectIndices } = this;
+      const { labels, subsampleIndices } = this;
       if (labels === null) return null;
-      if (sampledDataObjectIndices === null) return labels;
-      return sampledDataObjectIndices.map((d: number) => labels[d]);
-    },
-    statusesSampled(): Status[] {
-      const { statuses, sampledDataObjectIndices } = this;
-      if (sampledDataObjectIndices === null) {
-        return statuses;
-      }
-      return sampledDataObjectIndices.map((d: number) => statuses[d]);
+      if (subsampleIndices === null) return labels;
+      return subsampleIndices.map((d: number) => labels[d]);
     },
   },
   watch: {

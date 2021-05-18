@@ -86,7 +86,7 @@ export interface ILabel {
 }
 
 /** The enum of label status types. */
-export enum Status {
+export enum StatusType {
   /** The data object is not viewed and not labeled. */
   New = 'New',
   /** The data object is viewed but not yet labeled. */

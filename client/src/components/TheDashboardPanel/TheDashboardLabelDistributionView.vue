@@ -67,7 +67,7 @@ import { mapState } from 'vuex';
 import {
   Category,
   ILabel,
-  Status,
+  StatusType,
 } from '@/commons/types';
 
 export default Vue.extend({
@@ -75,8 +75,8 @@ export default Vue.extend({
   computed: {
     ...mapState(['classes', 'labels', 'statuses']),
     nLabeled(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Labeled).length;
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.Labeled).length;
     },
   },
   methods: {

@@ -29,11 +29,11 @@ const updateLabels = (
 
   // Clear labels
   if (!containsClassification && !containsObjectDetection && !containsSegmentation) {
-    commit(types.SET_LABELS, null);
+    commit(types.SET_LABELS, []);
     return;
   }
 
-  if ((state.labels === null) || (state.labels.length !== state.dataObjects.length)) {
+  if (state.labels.length !== state.dataObjects.length) {
     const labels: ILabel[] = Array(state.dataObjects.length)
       .fill(null).map((d, i) => ({
         uuid: state.dataObjects[i].uuid,
@@ -60,14 +60,12 @@ const getUpdatedTaskWindows = (
       const match = taskWindows.find((d) => (
         d.node.id === node.id && d.process.id === process.id
       ));
-      result.push(match !== undefined
-        ? match
-        : {
-          node,
-          process,
-          isPinned: false,
-          isMinimized: false,
-        });
+      result.push({
+        node,
+        process,
+        isPinned: match !== undefined ? match.isPinned : false,
+        isMinimized: match !== undefined ? match.isMinimized : false,
+      });
     });
   });
   return result;

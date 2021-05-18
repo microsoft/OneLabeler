@@ -7,12 +7,13 @@ import {
   WorkflowNode,
   IImage,
   ILabel,
-  Status,
+  StatusType,
   MessageType,
   ModelService,
   Process,
   WorkflowNodeType,
   Category,
+  ILabelCategory,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -179,7 +180,7 @@ export const executeDataObjectExtraction = async (
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize label statuses.
-  const statuses = Array(dataObjects.length).fill(Status.New);
+  const statuses = Array(dataObjects.length).fill(StatusType.New);
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
@@ -198,9 +199,9 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const newStatuses = [...statuses];
   queryUuids.forEach((uuid: string) => {
     const index = labels?.findIndex((d) => d.uuid === uuid) as number;
-    let newStatus = Status.Labeled;
+    let newStatus = StatusType.Labeled;
     if (labels !== null && labels[index].category === unlabeledMark) {
-      newStatus = Status.Skipped;
+      newStatus = StatusType.Skipped;
     }
     newStatuses[index] = newStatus;
   });
@@ -223,18 +224,17 @@ export const executeDataObjectSelectionAlgorithmic = async (
   // If the samples had been labeled, keep it unchanged.
   // Else, set it to be viewed.
   newQueryIndices.forEach((index: number) => {
-    if (newStatuses[index] === Status.Labeled) return;
-    newStatuses[index] = Status.Viewed;
+    if (newStatuses[index] === StatusType.Labeled) return;
+    newStatuses[index] = StatusType.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
 
 export const executeDataObjectSelectionManual = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  newQueryIndices: number[],
+  newQueryUuids: string[],
 ): Promise<void> => {
   const {
-    dataObjects,
     labels,
     statuses,
     queryUuids,
@@ -245,23 +245,23 @@ export const executeDataObjectSelectionManual = async (
   const newStatuses = [...statuses];
   queryUuids.forEach((uuid: string) => {
     const index = labels?.findIndex((d) => d.uuid === uuid) as number;
-    let newStatus = Status.Labeled;
+    let newStatus = StatusType.Labeled;
     if (labels !== null && labels[index].category === unlabeledMark) {
-      newStatus = Status.Skipped;
+      newStatus = StatusType.Skipped;
     }
     newStatuses[index] = newStatus;
   });
 
   // Sample data objects.
-  const newQueryUuids = newQueryIndices.map((d) => dataObjects[d].uuid);
   commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
 
   // Set the labels status of samples in the current batch.
   // If the samples had been labeled, keep it unchanged.
   // Else, set it to be viewed.
-  newQueryIndices.forEach((index: number) => {
-    if (newStatuses[index] === Status.Labeled) return;
-    newStatuses[index] = Status.Viewed;
+  newQueryUuids.forEach((uuid: string) => {
+    const index = labels?.findIndex((d) => d.uuid === uuid) as number;
+    if (newStatuses[index] === StatusType.Labeled) return;
+    newStatuses[index] = StatusType.Viewed;
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
@@ -271,6 +271,7 @@ export const executeDefaultLabeling = async (
   method: Process,
 ): Promise<void> => {
   const {
+    labels,
     dataObjects,
     queryUuids,
     classes,
@@ -279,17 +280,20 @@ export const executeDefaultLabeling = async (
   const sampledDataObjects = dataObjects.filter((d) => queryUuids.includes(d.uuid));
   const uuids = sampledDataObjects.map((d) => d.uuid);
   const model = method.model as ModelService;
-  const labels = (await API.defaultLabeling(
+  const labelCategories: ILabelCategory[] = (await API.defaultLabeling(
     method,
     sampledDataObjects,
     model,
     classes,
     unlabeledMark,
   ));
-  commit(rootTypes.SET_LABEL_CATEGORIES_OF, {
+  const updatedLabels = uuids.map((uuid, i) => {
+    const label = labels.find((d) => d.uuid === uuid);
+    return { ...label, category: labelCategories[i] };
+  }) as ILabel[];
+  commit(rootTypes.SET_LABELS_OF, {
     uuids,
-    labels,
-    queried: true,
+    labels: updatedLabels,
   }, { root: true });
 };
 
@@ -304,9 +308,9 @@ export const executeFeatureExtraction = async (
   const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
 
-  if (requireLabels && (labels === null || labels.length === 0)) return;
+  if (requireLabels && (labels.length === 0)) return;
 
-  const labelCategories = (labels as ILabel[]).map((d) => d.category as Category);
+  const labelCategories = labels.map((d) => d.category as Category);
   const response = requireLabels
     ? (await API.featureExtraction(method, dataObjects as IImage[], labelCategories, statuses))
     : (await API.featureExtraction(method, dataObjects as IImage[]));
@@ -329,7 +333,7 @@ export const executeInterimModelTraining = (
     labels,
     statuses,
   } = rootState;
-  const labelCategories = (labels as ILabel[]).map((d) => d.category as Category);
+  const labelCategories = labels.map((d) => d.category as Category);
   const { nodes } = state;
   nodes.filter((d) => isProcessNode(d))
     .forEach((d) => {
@@ -354,11 +358,11 @@ export const executeStoppageAnalysis = async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
-  const { statuses, unlabeledMark } = rootState;
+  const { statuses } = rootState;
   const stop = !(statuses.findIndex((d) => (
-    d === Status.New
-    || d === Status.Viewed
-    || d === Status.Skipped
+    d === StatusType.New
+    || d === StatusType.Viewed
+    || d === StatusType.Skipped
   )) >= 0);
   if (stop) {
     commit(rootTypes.SET_MESSAGE, {

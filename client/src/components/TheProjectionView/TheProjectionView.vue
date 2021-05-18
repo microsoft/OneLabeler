@@ -14,7 +14,7 @@
       style="height: calc(100% - 30px)"
     >
       <v-container
-        v-if="nDataObjects >= 2 && isFeatureValuesValid"
+        v-if="nTotal >= 2 && isFeatureValuesValid"
         :style="{
           height: '100%',
           display: 'grid',
@@ -36,11 +36,8 @@
           :subsampling-n-samples="view.subsampling.nSamples"
           :feature-values="featureValues"
           :uuids="uuids"
-          :labels="labels"
-          :statuses="statuses"
-          :classes="classes"
-          :unlabeled-mark="unlabeledMark"
-          :query-indices="queryIndices"
+          :labels="labelCategories"
+          :query-uuids="queryUuids"
           :feature-names="featureNames"
           :label2color="label2color"
           style="margin: 1px"
@@ -52,7 +49,7 @@
         />
       </v-container>
       <p
-        v-else-if="nDataObjects <= 1"
+        v-else-if="nTotal <= 1"
         class="mx-auto subtitle-1"
       >
         Less Than 2 Data Objects Loaded
@@ -70,7 +67,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ProjectionMethodType, TaskWindow } from '@/commons/types';
+import { ILabelCategory, ProjectionMethodType, TaskWindow } from '@/commons/types';
 import { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
 import VConfigurableProjection from './VConfigurableProjection.vue';
@@ -128,30 +125,23 @@ export default Vue.extend({
   },
   computed: {
     ...mapState([
-      'dataObjects',
-      'classes',
       'labels',
-      'statuses',
-      'unlabeledMark',
       'featureNames',
-      'uuidToIdx',
       'queryUuids',
     ]),
     ...mapState('workflow', ['currentNode']),
     ...mapGetters(['featureValues', 'uuids', 'label2color']),
     ...mapGetters('workflow', ['nextNodes']),
-    nDataObjects(): number {
-      return this.dataObjects.length;
+    nTotal(): number {
+      return this.featureValues.length;
     },
     isFeatureValuesValid(): boolean {
       const { featureValues } = this;
       return Array.isArray(featureValues)
         && featureValues.every((d) => Array.isArray(d));
     },
-    queryIndices(): number[] {
-      return this.queryUuids.map((uuid: string) => (
-        this.dataObjects.findIndex((d) => d.uuid === uuid)
-      ));
+    labelCategories(): ILabelCategory[] {
+      return this.labels.map((d) => d.category);
     },
   },
   watch: {
@@ -207,10 +197,8 @@ export default Vue.extend({
     },
     async onSelectUuids(uuids: string[]): Promise<void> {
       if (uuids.length === 0) return;
-      const { taskWindow, uuidToIdx } = this;
-      const indices = uuids
-        .map((uuid) => uuidToIdx[uuid]);
-      await this.executeDataObjectSelectionManual(indices);
+      const { taskWindow } = this;
+      await this.executeDataObjectSelectionManual(uuids);
       if (this.nextNodes === null || this.nextNodes.length !== 1) return;
 
       // await this.executeWorkflow(this.nextNodes[0]);

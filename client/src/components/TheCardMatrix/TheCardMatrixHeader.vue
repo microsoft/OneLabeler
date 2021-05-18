@@ -61,7 +61,7 @@ import { Category } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default Vue.extend({
-  name: 'TheCardMatrixViewHeader',
+  name: 'TheCardMatrixHeader',
   components: { VToolbar },
   props: {
     classes: {

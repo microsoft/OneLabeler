@@ -308,7 +308,7 @@ import VToolbar from '@/components/VWindow/VToolbar.vue';
 import { MouseOperationType, StrokeShapeType } from './types';
 
 export default Vue.extend({
-  name: 'ThePaintViewHeader',
+  name: 'ThePaintBoardHeader',
   components: { VToolbar },
   props: {
     labelTasks: {

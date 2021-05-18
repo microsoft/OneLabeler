@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <ThePaintViewHeader
+    <ThePaintBoardHeader
       :label-tasks="labelTasks"
       :stroke-label="strokeLabel"
       :stroke-shape="strokeShape"
@@ -34,10 +34,10 @@
           class="pa-0"
           no-gutters
         >
-          <ThePaintViewCanvas
+          <ThePaintBoardCanvas
             ref="canvas"
             :data-object="dataObject"
-            :label-shape-list="labelShapeList"
+            :label-shapes="labelShapes"
             :label-mask="labelMask"
             :unlabeled-mark="unlabeledMark"
             :stroke-shape="strokeShape"
@@ -83,31 +83,55 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { mapActions, mapGetters, mapState } from 'vuex';
 import uploadFile from '@/services/upload-file';
 import {
   Category,
   IDataObject,
   IImage,
+  ILabel,
   ILabelShape,
   ILabelMask,
-  Status,
+  LabelTaskType,
   TaskWindow,
 } from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
-import ThePaintViewHeader from './ThePaintViewHeader.vue';
-import ThePaintViewCanvas from './ThePaintViewCanvas.vue';
+import ThePaintBoardHeader from './ThePaintBoardHeader.vue';
+import ThePaintBoardCanvas from './ThePaintBoardCanvas.vue';
 
 export default Vue.extend({
-  name: 'ThePaintView',
+  name: 'ThePaintBoard',
   components: {
-    ThePaintViewHeader,
-    ThePaintViewCanvas,
+    ThePaintBoardHeader,
+    ThePaintBoardCanvas,
   },
   props: {
+    dataObjects: {
+      type: Array as PropType<IDataObject[]>,
+      required: true,
+    },
+    labels: {
+      type: Array as PropType<ILabel[]>,
+      required: true,
+    },
     taskWindow: {
       type: Object as PropType<TaskWindow>,
       required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
+    classes: {
+      type: Array as PropType<Category[]>,
+      required: true,
+    },
+    unlabeledMark: {
+      type: String as PropType<Category>,
+      required: true,
+    },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
     },
   },
   data(): {
@@ -130,46 +154,42 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['classes', 'unlabeledMark']),
-    ...mapGetters([
-      'sampledDataObjects',
-      'sampledLabels',
-      'label2color',
-    ]),
-    ...mapGetters('workflow', ['labelTasks']),
     showCanvas() {
-      const { sampledDataObjects } = this;
-      return sampledDataObjects !== null && sampledDataObjects.length !== 0;
+      const { dataObjects } = this;
+      return dataObjects !== null && dataObjects.length !== 0;
     },
     dataObject(): IDataObject | null {
       if (!this.showCanvas) return null;
-      return this.sampledDataObjects[this.page - 1];
+      return this.dataObjects[this.page - 1];
     },
-    labelShapeList(): ILabelShape[] | null {
+    label(): ILabel | null {
       if (!this.showCanvas) return null;
-      if (this.sampledLabels === null) return null;
-      const label = this.sampledLabels[this.page - 1];
+      if (this.labels === null) return null;
+      return this.labels[this.page - 1];
+    },
+    labelShapes(): ILabelShape[] | null {
+      const { label } = this;
+      if (label === null) return null;
       if (label.shapes === null || label.shapes === undefined) return null;
       return label.shapes;
     },
     labelMask(): ILabelMask | null {
-      if (!this.showCanvas) return null;
-      if (this.sampledLabels === null) return null;
-      const label = this.sampledLabels[this.page - 1];
+      const { label } = this;
+      if (label === null) return null;
       if (label.mask === null || label.mask === undefined) return null;
       return label.mask;
     },
     enablePagination(): boolean {
       if (!this.showCanvas) return false;
-      return this.sampledDataObjects.length >= 2;
+      return this.dataObjects.length >= 2;
     },
     nPages(): number {
       if (!this.showCanvas) return 0;
-      return this.sampledDataObjects.length;
+      return this.dataObjects.length;
     },
   },
   watch: {
-    sampledDataObjects() {
+    dataObjects() {
       // reset page number
       this.page = 1;
       this.setCanvasHeight();
@@ -182,12 +202,6 @@ export default Vue.extend({
     this.initializeStrokeLabel();
   },
   methods: {
-    ...mapActions([
-      'setLabelShapesOf',
-      'setLabelMaskOf',
-      'setStatusOf',
-      'editTaskWindow',
-    ]),
     initializeStrokeLabel() {
       if (this.strokeLabel === null && this.classes.length !== 0) {
         [this.strokeLabel] = this.classes;
@@ -208,78 +222,44 @@ export default Vue.extend({
           `${filename}-mask.png`,
           { type: blob.type },
         );
-        const mask = {
-          path: (await uploadFile(file)).data.path,
-        };
-        this.setLabelMaskOf({
-          uuid,
-          mask,
-          queried: true,
-        });
-        this.setStatusOf({
-          uuid,
-          status: Status.Labeled,
-          queried: true,
-        });
+        const mask = { path: (await uploadFile(file)).data.path };
+        const newValue: Partial<ILabel> = { mask };
+        this.$emit('user-edit-label', uuid, newValue);
       });
     },
     onAddLabelShape(labelShape: ILabelShape) {
-      const { dataObject, labelShapeList } = this;
+      const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
-      const { uuid } = dataObject as IDataObject;
-      this.setLabelShapesOf({
-        uuid,
-        shapes: [...labelShapeList, labelShape],
-        queried: true,
-      });
-      this.setStatusOf({
-        uuid,
-        status: Status.Labeled,
-        queried: true,
-      });
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { shapes: [...labelShapes, labelShape] };
+      this.$emit('user-edit-label', uuid, newValue);
     },
     onUpdateLabelShape(labelShape: ILabelShape) {
-      const { dataObject, labelShapeList } = this;
-      const index = labelShapeList.findIndex(
+      const { dataObject, labelShapes } = this;
+      const index = labelShapes.findIndex(
         (d: ILabelShape) => d.uuid === labelShape.uuid,
       );
-      const labelShapeListUpdated = [
-        ...labelShapeList.slice(0, index),
+      const labelShapesUpdated = [
+        ...labelShapes.slice(0, index),
         labelShape,
-        ...labelShapeList.slice(index + 1),
+        ...labelShapes.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setLabelShapesOf({
-        uuid,
-        shapes: labelShapeListUpdated,
-        queried: true,
-      });
-      this.setStatusOf({
-        uuid,
-        status: Status.Labeled,
-        queried: true,
-      });
+      const newValue: Partial<ILabel> = { shapes: labelShapesUpdated };
+      this.$emit('user-edit-label', uuid, newValue);
     },
     onRemoveLabelShape(labelShape: ILabelShape) {
-      const { dataObject, labelShapeList } = this;
-      const index = labelShapeList.findIndex(
+      const { dataObject, labelShapes } = this;
+      const index = labelShapes.findIndex(
         (d: ILabelShape) => d.uuid === labelShape.uuid,
       );
-      const labelShapeListUpdated = [
-        ...labelShapeList.slice(0, index),
-        ...labelShapeList.slice(index + 1),
+      const labelShapesUpdated = [
+        ...labelShapes.slice(0, index),
+        ...labelShapes.slice(index + 1),
       ];
       const { uuid } = dataObject as IDataObject;
-      this.setLabelShapesOf({
-        uuid,
-        shapes: labelShapeListUpdated,
-        queried: true,
-      });
-      this.setStatusOf({
-        uuid,
-        status: Status.Labeled,
-        queried: true,
-      });
+      const newValue: Partial<ILabel> = { shapes: labelShapesUpdated };
+      this.$emit('user-edit-label', uuid, newValue);
     },
     onResetImageSize() {
       this.$refs.canvas.resetZoom();
@@ -297,18 +277,12 @@ export default Vue.extend({
       this.mouseOperation = mouseOperation;
     },
     onWindowMinimize() {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        isMinimized: true,
-      });
+      const newValue: Partial<TaskWindow> = { isMinimized: true };
+      this.$emit('edit-task-window', newValue);
     },
     onWindowPin() {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        isPinned: true,
-      });
+      const newValue: Partial<TaskWindow> = { isPinned: true };
+      this.$emit('edit-task-window', newValue);
     },
     setCanvasHeight() {
       // update canvas size according to whether pagination is needed

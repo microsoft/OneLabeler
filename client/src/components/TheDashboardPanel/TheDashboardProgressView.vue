@@ -52,30 +52,30 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { Status } from '@/commons/types';
+import { StatusType } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheDashboardProgressView',
   computed: {
     ...mapState(['statuses']),
     nLabeled(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Labeled).length;
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.Labeled).length;
     },
     nSkipped(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Skipped).length;
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.Skipped).length;
     },
     nTotal(): number {
       return this.statuses.length;
     },
     nUnseen(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.New).length;
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.New).length;
     },
     nViewing(): number {
-      const { statuses } = this as { statuses: Status[] };
-      return statuses.filter((d) => d === Status.Viewed).length;
+      const { statuses } = this as { statuses: StatusType[] };
+      return statuses.filter((d) => d === StatusType.Viewed).length;
     },
     statusList() {
       const {

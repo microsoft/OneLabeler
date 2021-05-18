@@ -4,10 +4,8 @@ import {
   ICommand,
   IDataObject,
   IMessage,
-  ILabelMask,
-  ILabelShape,
-  ILabelCategory,
-  Status,
+  ILabel,
+  StatusType,
   TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
@@ -44,89 +42,44 @@ export const setStop = (
 
 export const setLabels = (
   { commit }: ActionContext<IState, IState>,
-  labels: ILabelCategory[],
+  labels: ILabel[],
 ): void => {
   commit(types.SET_LABELS, labels);
 };
 
-export const setLabelCategoryOf = (
+export const setLabelOf = (
   { commit }: ActionContext<IState, IState>,
-  {
-    uuid,
-    label,
-    queried = false,
-  }: { uuid: string, label: ILabelCategory, queried: boolean },
+  { uuid, label }: { uuid: string, label: ILabel },
 ): void => {
-  commit(types.SET_LABEL_CATEGORY_OF, { uuid, label, queried });
+  commit(types.SET_LABEL_OF, { uuid, label });
 };
 
-export const setLabelCategoriesOf = (
+export const setLabelsOf = (
   { commit }: ActionContext<IState, IState>,
-  {
-    uuids,
-    labels,
-    queried = false,
-  }: { uuids: string[], labels: ILabelCategory[], queried: boolean },
+  { uuids, labels }: { uuids: string[], labels: ILabel[] },
 ): void => {
-  commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels, queried });
-};
-
-export const setLabelMaskOf = (
-  { commit }: ActionContext<IState, IState>,
-  {
-    uuid,
-    mask,
-    queried = false,
-  }: { uuid: string, mask: ILabelMask, queried: boolean },
-): void => {
-  commit(types.SET_LABEL_MASK_OF, { uuid, mask, queried });
-};
-
-export const setLabelShapesOf = (
-  { commit }: ActionContext<IState, IState>,
-  {
-    uuid,
-    shapes,
-    queried = false,
-  }: {
-    uuid: string,
-    shapes: ILabelShape[],
-    queried: boolean,
-  },
-): void => {
-  commit(
-    types.SET_LABEL_SHAPES_OF,
-    { uuid, shapes, queried },
-  );
+  commit(types.SET_LABELS_OF, { uuids, labels });
 };
 
 export const setStatuses = (
   { commit }: ActionContext<IState, IState>,
-  statuses: Status[],
+  statuses: StatusType[],
 ): void => {
   commit(types.SET_STATUSES, statuses);
 };
 
 export const setStatusOf = (
   { commit }: ActionContext<IState, IState>,
-  {
-    uuid,
-    status,
-    queried = false,
-  }: { uuid: string, status: Status, queried: boolean },
+  { uuid, status }: { uuid: string, status: StatusType },
 ): void => {
-  commit(types.SET_STATUS_OF, { uuid, status, queried });
+  commit(types.SET_STATUS_OF, { uuid, status });
 };
 
 export const setStatusesOf = (
   { commit }: ActionContext<IState, IState>,
-  {
-    uuids,
-    statuses,
-    queried = false,
-  }: { uuids: string[], statuses: Status[], queried: boolean },
+  { uuids, statuses }: { uuids: string[], statuses: StatusType[] },
 ): void => {
-  commit(types.SET_STATUSES_OF, { uuids, statuses, queried });
+  commit(types.SET_STATUSES_OF, { uuids, statuses });
 };
 
 export const setUnlabeledMark = (

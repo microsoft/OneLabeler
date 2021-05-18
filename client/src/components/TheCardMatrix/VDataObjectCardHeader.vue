@@ -53,7 +53,7 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   ILabelCategory,
-  Status,
+  StatusType,
 } from '@/commons/types';
 
 export default Vue.extend({
@@ -64,7 +64,7 @@ export default Vue.extend({
       required: true,
     },
     status: {
-      type: String as PropType<Status>,
+      type: String as PropType<StatusType>,
       required: true,
     },
     classes: {
@@ -82,7 +82,7 @@ export default Vue.extend({
   },
   computed: {
     isLabeled(): boolean {
-      return this.status === Status.Labeled;
+      return this.status === StatusType.Labeled;
     },
   },
   methods: {

@@ -2,7 +2,7 @@ import {
   ICommand,
   IDataObject,
   ILabelCategory,
-  Status,
+  StatusType,
 } from '@/commons/types';
 
 export class FeatureExtractionCommand implements ICommand {
@@ -62,10 +62,10 @@ export class DataObjectSelectionCommand implements ICommand {
   #newQueryUuids: string[];
 
   // The status data object' label before execution.
-  #oldStatuses: Status[];
+  #oldStatuses: StatusType[];
 
   // The status data object' label after execution.
-  #newStatuses: Status[];
+  #newStatuses: StatusType[];
 
   outputs = ['queryUuids'];
 
@@ -73,8 +73,8 @@ export class DataObjectSelectionCommand implements ICommand {
     uuids: string[],
     oldQueryUuids: string[],
     newQueryUuids: string[],
-    oldStatuses: Status[],
-    newStatuses: Status[],
+    oldStatuses: StatusType[],
+    newStatuses: StatusType[],
   ) {
     this.#uuids = uuids;
     this.#oldQueryUuids = oldQueryUuids;
@@ -156,10 +156,10 @@ export class EditSingleCommand implements IInteractiveLabelingCommand {
   #newLabel: ILabelCategory;
 
   // The status data object' label before execution.
-  #oldStatus: Status;
+  #oldStatus: StatusType;
 
   // The status data object' label after execution.
-  #newStatus: Status;
+  #newStatus: StatusType;
 
   outputs = ['labels', 'statuses'];
 
@@ -167,8 +167,8 @@ export class EditSingleCommand implements IInteractiveLabelingCommand {
     uuid: string,
     oldLabel: ILabelCategory,
     newLabel: ILabelCategory,
-    oldStatus: Status,
-    newStatus: Status,
+    oldStatus: StatusType,
+    newStatus: StatusType,
   ) {
     this.#uuid = uuid;
     this.#oldLabel = oldLabel;
@@ -209,10 +209,10 @@ export class EditBatchCommand implements IInteractiveLabelingCommand {
   #newLabels: ILabelCategory[];
 
   // The status data object' label before execution.
-  #oldStatuses: Status[];
+  #oldStatuses: StatusType[];
 
   // The status data object' label after execution.
-  #newStatuses: Status[];
+  #newStatuses: StatusType[];
 
   outputs = ['labels', 'statuses'];
 
@@ -220,8 +220,8 @@ export class EditBatchCommand implements IInteractiveLabelingCommand {
     uuids: string[],
     oldLabels: ILabelCategory[],
     newLabels: ILabelCategory[],
-    oldStatuses: Status[],
-    newStatuses: Status[],
+    oldStatuses: StatusType[],
+    newStatuses: StatusType[],
   ) {
     this.#uuids = uuids;
     this.#oldLabels = oldLabels;

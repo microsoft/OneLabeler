@@ -10,7 +10,7 @@ import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
 import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
 import Scatterplot from '@/plugins/d3.scatterplot';
-import { ILabelCategory, Status } from '@/commons/types';
+import { ILabelCategory } from '@/commons/types';
 
 type Datum = { x: number, y: number, uuid: string };
 type Axis = { label: string, tickNum: number | null };
@@ -31,12 +31,8 @@ export default Vue.extend({
       type: Array as PropType<ILabelCategory[] | null>,
       default: null,
     },
-    statuses: {
-      type: Array as PropType<Status[]>,
-      required: true,
-    },
-    queryIndices: {
-      type: Array as PropType<number[]>,
+    queryUuids: {
+      type: Array as PropType<string[]>,
       required: true,
     },
     xAxis: {
@@ -85,9 +81,9 @@ export default Vue.extend({
     label2color() {
       this.rerender();
     },
-    queryIndices(queryIndices: number[]) {
+    queryUuids(queryUuids: string[]) {
       // TODO: check if this function significantly slow down the frontend.
-      this.highlightScatterplot(queryIndices);
+      this.highlightScatterplot(queryUuids);
     },
   },
   mounted() {
@@ -127,7 +123,7 @@ export default Vue.extend({
         points,
         uuids,
         labels,
-        queryIndices,
+        queryUuids,
         xAxis,
         yAxis,
         xExtent,
@@ -156,17 +152,16 @@ export default Vue.extend({
         });
       this.lassoInstance.render(svg);
 
-      this.highlightScatterplot(queryIndices);
+      this.highlightScatterplot(queryUuids);
     },
-    highlightScatterplot(queryIndices: number[]): void {
+    highlightScatterplot(queryUuids: string[]): void {
       const { svg } = this.$refs as { svg: SVGSVGElement};
-      const { uuids, dotRadius } = this;
-      const queryUuids: Set<string> = new Set(queryIndices.map((d) => uuids[d]));
+      const { dotRadius } = this;
       d3.select(svg)
         .selectAll<SVGCircleElement, Datum>('circle')
         .each(function _(d: Datum) {
           const { uuid } = d;
-          const highlight = (queryUuids.size === 0) || queryUuids.has(uuid);
+          const highlight = (queryUuids.length === 0) || queryUuids.includes(uuid);
           this.setAttribute('r', String(highlight ? dotRadius : dotRadius / 2));
         });
     },

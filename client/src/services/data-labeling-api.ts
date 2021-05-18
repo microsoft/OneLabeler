@@ -17,7 +17,7 @@ import {
   IImage,
   // IDataObjectsStorage,
   ILabelCategory,
-  Status,
+  StatusType,
   ModelService,
   Process,
 } from '@/commons/types';
@@ -135,7 +135,7 @@ export const featureExtraction = showProgressBar(async (
   method: Process,
   dataObjects: IImage[],
   labels: ILabelCategory[] | null = null,
-  statuses: Status[] | null = null,
+  statuses: StatusType[] | null = null,
 ): Promise<{ dataObjects: IImage[], featureNames: string[] }> => {
   let response = null;
   if (method.isServerless && (method.api === 'Random3D')) {
@@ -225,7 +225,7 @@ export const defaultLabeling = showProgressBar(async (
  */
 export const dataObjectSelection = showProgressBar(async (
   method: Process,
-  statuses: Status[],
+  statuses: StatusType[],
   nBatch: number,
   model?: ModelService,
   dataObjects?: IDataObject[],
@@ -235,7 +235,7 @@ export const dataObjectSelection = showProgressBar(async (
     const SEED = '20';
     const random = xor4096(SEED);
     const indicesNew = statuses
-      .map((d, i) => (d === Status.New ? i : -1))
+      .map((d, i) => (d === StatusType.New ? i : -1))
       .filter((d) => d !== -1);
     if (indicesNew.length >= nBatch) {
       queryIndices = randomChoice(indicesNew, nBatch, random);
@@ -243,7 +243,7 @@ export const dataObjectSelection = showProgressBar(async (
       queryIndices = indicesNew;
       const nResidue = nBatch - queryIndices.length;
       const indicesSkipped = statuses
-        .map((d, i) => (d === Status.Skipped ? i : -1))
+        .map((d, i) => (d === StatusType.Skipped ? i : -1))
         .filter((d) => d !== -1);
       const queryIndicesSkipped = indicesSkipped.length <= nResidue
         ? indicesSkipped
@@ -281,7 +281,7 @@ export const interimModelTraining = showProgressBar(async (
   model: ModelService,
   dataObjects: IDataObject[] | null = null,
   labels: ILabelCategory[] | null = null,
-  statuses: Status[] | null = null,
+  statuses: StatusType[] | null = null,
 ): Promise<ModelService> => {
   let modelUpdated = null;
   if (method.isBuiltIn && (method.api === 'Static')) {

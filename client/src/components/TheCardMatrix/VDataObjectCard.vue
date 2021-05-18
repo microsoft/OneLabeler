@@ -51,7 +51,7 @@ import {
   DataType,
   IDataObject,
   ILabelCategory,
-  Status,
+  StatusType,
 } from '@/commons/types';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
 import VDisplayImage from './VDisplayImage.vue';
@@ -78,7 +78,7 @@ export default Vue.extend({
       required: true,
     },
     status: {
-      type: String as PropType<Status>,
+      type: String as PropType<StatusType>,
       required: true,
     },
     classes: {

@@ -82,13 +82,13 @@ import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
 
 export default Vue.extend({
-  name: 'ThePaintViewCanvas',
+  name: 'ThePaintBoardCanvas',
   props: {
     dataObject: {
       type: Object as PropType<IImage>,
       required: true,
     },
-    labelShapeList: {
+    labelShapes: {
       type: Array as PropType<ILabelShape[] | null>,
       default: null,
     },
@@ -572,14 +572,14 @@ export default Vue.extend({
       layerShapes.add(group);
     },
     drawEditableShapes(): void {
-      const { labelShapeList } = this;
+      const { labelShapes } = this;
       const layerShapes = (this.$refs.layerShapes as any)
         .getNode() as Konva.Layer;
 
       // clean layerShapes
       layerShapes.destroyChildren();
-      if (labelShapeList !== null) {
-        labelShapeList.forEach((d: ILabelShape) => {
+      if (labelShapes !== null) {
+        labelShapes.forEach((d: ILabelShape) => {
           if (d.shape === ObjectShapeType.Point) {
             this.drawEditableCircle(d);
           } else if (d.shape === ObjectShapeType.Rect) {

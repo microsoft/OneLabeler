@@ -25,8 +25,6 @@
             <component
               :is="getComponent(taskWindow)"
               :task-window="taskWindow"
-              :items-per-row="getParamValue(taskWindow, 'nRows')"
-              :items-per-col="getParamValue(taskWindow, 'nColumns')"
               style="height: 100%;"
             />
           </v-col>
@@ -52,8 +50,7 @@ import {
   WorkflowNodeType,
 } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
-import TheCardMatrixView from '@/components/TheCardMatrixView/TheCardMatrixView.vue';
-import ThePaintView from '@/components/ThePaintView/ThePaintView.vue';
+import TheLabelView from '@/components/TheLabelView/TheLabelView.vue';
 import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
@@ -62,9 +59,6 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
   name: 'App',
   components: {
     TheNavBarView,
-    TheCardMatrixView,
-    ThePaintView,
-    TheProjectionView,
     TheFooterView,
     TheMessageView,
   },
@@ -88,24 +82,9 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
         return null;
       }
       if (node.type === WorkflowNodeType.InteractiveLabeling) {
-        if (process.api === 'SingleObjectDisplay') {
-          return ThePaintView;
-        }
-        if (process.api === 'GridMatrix') {
-          return TheCardMatrixView;
-        }
-        return null;
+        return TheLabelView;
       }
       return null;
-    },
-    getParamValue(
-      taskWindow: TaskWindow,
-      paramName: string,
-    ): unknown | null {
-      const { params } = taskWindow.process;
-      if (params === undefined) return null;
-      if (params[paramName] === undefined) return null;
-      return params[paramName].value;
     },
   },
 })

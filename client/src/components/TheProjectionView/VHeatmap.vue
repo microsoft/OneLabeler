@@ -10,14 +10,13 @@ import Vue, { PropType } from 'vue';
 import * as d3 from 'd3';
 import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
 import Heatmap from '@/plugins/d3.heatmap';
-import { ILabelCategory, Status } from '@/commons/types';
 
 type Datum = { x: number, y: number, uuid: string };
 type DatumBinned = { points: Datum[], row: number, column: number };
 type Axis = { label: string, tickNum: number | null };
 
 export default Vue.extend({
-  name: 'VScatterplot',
+  name: 'VHeatmap',
   props: {
     points: {
       type: Array as PropType<[number, number][] | null>,
@@ -36,16 +35,8 @@ export default Vue.extend({
       type: Array as PropType<string[]>,
       required: true,
     },
-    labels: {
-      type: Array as PropType<ILabelCategory[] | null>,
-      default: null,
-    },
-    statuses: {
-      type: Array as PropType<Status[]>,
-      required: true,
-    },
-    queryIndices: {
-      type: Array as PropType<number[]>,
+    queryUuids: {
+      type: Array as PropType<string[]>,
       required: true,
     },
     xAxis: {
@@ -84,18 +75,15 @@ export default Vue.extend({
     points() {
       this.rerender();
     },
-    labels() {
-      this.rerender();
-    },
     nRows() {
       this.rerender();
     },
     nColumns() {
       this.rerender();
     },
-    queryIndices(queryIndices: number[]) {
+    queryUuids(queryUuids: string[]) {
       // TODO: check if this function significantly slow down the frontend.
-      this.highlightHeatmap(queryIndices);
+      this.highlightHeatmap(queryUuids);
     },
   },
   mounted() {
@@ -134,7 +122,7 @@ export default Vue.extend({
       const {
         points,
         uuids,
-        queryIndices,
+        queryUuids,
         xAxis,
         yAxis,
         xExtent,
@@ -159,19 +147,17 @@ export default Vue.extend({
           this.$emit('select:uuids', selectedUuids);
         });
       this.lassoInstance.render(svg);
-      this.highlightHeatmap(queryIndices);
+      this.highlightHeatmap(queryUuids);
     },
-    highlightHeatmap(queryIndices: number[]): void {
+    highlightHeatmap(queryUuids: string[]): void {
       const { svg } = this.$refs as { svg: SVGSVGElement};
-      const { uuids } = this;
-      const queryUuids: Set<string> = new Set(queryIndices.map((d) => uuids[d]));
       d3.select(svg)
         .selectAll<SVGRectElement, DatumBinned>('rect.grid')
         .each(function _(d: DatumBinned) {
           const binUuids = d.points.map((pt) => pt.uuid);
           let highlight = true;
-          if (queryUuids.size !== 0) {
-            const union = new Set([...binUuids].filter((uuid) => queryUuids.has(uuid)));
+          if (queryUuids.length !== 0) {
+            const union = new Set([...binUuids].filter((uuid) => queryUuids.includes(uuid)));
             highlight = union.size > 0;
           }
           this.setAttribute('opacity', String(highlight ? 1 : 0.4));

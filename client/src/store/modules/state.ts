@@ -3,11 +3,8 @@ import {
   ICommand,
   IDataObject,
   IMessage,
-  ILabelMask,
-  ILabelShape,
-  ILabelCategory,
   ILabel,
-  Status,
+  StatusType,
   TaskWindow,
 } from '@/commons/types';
 
@@ -20,17 +17,15 @@ export interface IState {
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
   /** The labels. */
-  labels: ILabel[] | null;
+  labels: ILabel[];
   /** The label statuses of the data objects. */
-  statuses: Status[];
+  statuses: StatusType[];
   /** The label mark of unlabeled data objects. */
   unlabeledMark: Category;
   /** The names of data object features. */
   featureNames: string[];
 
   /** The data labeling system status attributes. */
-  /** The cache storing mapping from uuids to data object index. */
-  uuidToIdx: { [key: string]: number };
   /** The uuids of sampled data objects. */
   queryUuids: string[];
   /** The history of label editing commands (used for undo command). */
@@ -45,11 +40,10 @@ export const createInitialState = (): IState => ({
   dataObjects: [],
   classes: [],
   stop: false,
-  labels: null,
+  labels: [],
   statuses: [],
   unlabeledMark: '-1',
   featureNames: [],
-  uuidToIdx: {},
   queryUuids: [],
   commandHistory: [],
   message: null,

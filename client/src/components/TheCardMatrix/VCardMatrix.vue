@@ -68,7 +68,7 @@ import {
   DataType,
   IDataObject,
   ILabelCategory,
-  Status,
+  StatusType,
 } from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
 
@@ -91,7 +91,7 @@ export default Vue.extend({
       required: true,
     },
     statuses: {
-      type: Array as PropType<Status[]>,
+      type: Array as PropType<StatusType[]>,
       required: true,
     },
     classes: {
