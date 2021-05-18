@@ -34,13 +34,12 @@ const updateLabels = (
   }
 
   if (state.labels.length !== state.dataObjects.length) {
-    const labels: ILabel[] = Array(state.dataObjects.length)
-      .fill(null).map((d, i) => ({
-        uuid: state.dataObjects[i].uuid,
-        category: containsClassification ? state.unlabeledMark : undefined,
-        shapes: containsObjectDetection ? Array(0) : undefined,
-        mask: containsSegmentation ? { path: null } : undefined,
-      }));
+    const labels: ILabel[] = state.dataObjects.map((d) => ({
+      uuid: d.uuid,
+      category: containsClassification ? state.unlabeledMark : undefined,
+      shapes: containsObjectDetection ? Array(0) : undefined,
+      mask: containsSegmentation ? { path: null } : undefined,
+    }));
     commit(types.SET_LABELS, labels);
   }
 };

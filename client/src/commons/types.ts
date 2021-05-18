@@ -24,11 +24,10 @@ export interface IDataObject {
 
 /** The interface of an image data object. */
 export interface IImage extends IDataObject {
-  /** The image content. */
-  // content?: string | null;
+  /** The image content as base64 string. */
+  content?: string | null;
   /** The storage path of the image on the server. */
-  // path?: string | null;
-  path: string | null;
+  path?: string | null;
   /** The width of the image. */
   width?: number | null;
   /** The height of the image. */
@@ -121,15 +120,24 @@ export interface IMessage {
   type: MessageType;
 }
 
-/** The interface of storage service. */
-export interface IDataObjectsStorage {
-  addDataObject(dataObject: IDataObject): Promise<unknown>;
-  allDataObjects(): Promise<IDataObject[]>;
-  countDataObjects(): Promise<number>;
-  deleteDataObjects(): Promise<unknown>;
-  getDataObjectByUuid(uuid: string): Promise<IDataObject | undefined>;
-  getDataObjectByUuids(uuids: string[]): Promise<(IDataObject | undefined)[]>;
-  setDataObjects(dataObjects: IDataObject[]): Promise<unknown>;
+/** The interface of data object storage. */
+export interface IDataObjectStorage {
+  add(dataObject: IDataObject): Promise<void>;
+  count(): Promise<number>;
+  deleteAll(): Promise<void>;
+  get(uuid: string): Promise<IDataObject | undefined>;
+  getAll(): Promise<IDataObject[]>;
+  getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]>;
+  setBulk(dataObjects: IDataObject[]): Promise<void>;
+  slice(begin?: number, end?: number): Promise<IDataObject[]>;
+}
+
+/** The interface of label storage. */
+export interface ILabelStorage {
+  count(): Promise<number>;
+  get(uuid: string): Promise<ILabel | undefined>;
+  getAll(): Promise<ILabel[]>;
+  setBulk(labels: ILabel[]): Promise<void>;
 }
 
 /** The enum of projection method types. */

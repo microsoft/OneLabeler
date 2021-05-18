@@ -15,13 +15,13 @@ import {
   IDataObject,
   IText,
   IImage,
-  // IDataObjectsStorage,
+  // IDataObjectStorage,
   ILabelCategory,
   StatusType,
   ModelService,
   Process,
 } from '@/commons/types';
-// import { dataObjectsDB } from '@/services/database';
+// import { dataObjectDB as dataObjectStorage } from '@/services/database';
 import {
   PROTOCOL,
   IP,
@@ -92,34 +92,32 @@ const getImgSize = (content: string) => new Promise((resolve, reject) => {
 export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
-): Promise<IDataObjectsStorage> => {
+): Promise<IDataObjectStorage> => {
   if (dataType === DataType.Image) {
     const files = input as FileList;
-    await Promise.all([...files].map(async (file, i) => {
+    await Promise.all([...files].map(async (file) => {
       const content = await getBase64(file);
       const { width, height } = await getImgSize(content);
-      const dataObject = {
-        i,
+      const dataObject: IImage = {
         uuid: uuidv4(),
         content,
         width,
         height,
-      } as IImage;
-      dataObjectsDB.addDataObject(dataObject);
+      };
+      dataObjectStorage.add(dataObject);
     }));
   }
   if (dataType === DataType.Text) {
     const file = input as File;
-    (await loadJsonFile(file) as string[]).forEach((content, i) => {
-      const dataObject = {
-        i,
+    (await loadJsonFile(file) as string[]).forEach((content) => {
+      const dataObject: IText = {
         uuid: uuidv4(),
         content,
-      } as IText;
-      dataObjectsDB.addDataObject(dataObject);
+      };
+      dataObjectStorage.add(dataObject);
     });
   }
-  return dataObjectsDB;
+  return dataObjectStorage;
 });
 */
 

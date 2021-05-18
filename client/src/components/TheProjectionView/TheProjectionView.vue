@@ -67,7 +67,12 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { ILabelCategory, ProjectionMethodType, TaskWindow } from '@/commons/types';
+import {
+  ILabel,
+  ILabelCategory,
+  ProjectionMethodType,
+  TaskWindow,
+} from '@/commons/types';
 import { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
 import VConfigurableProjection from './VConfigurableProjection.vue';
@@ -130,8 +135,11 @@ export default Vue.extend({
       'queryUuids',
     ]),
     ...mapState('workflow', ['currentNode']),
-    ...mapGetters(['featureValues', 'uuids', 'label2color']),
+    ...mapGetters(['featureValues', 'label2color']),
     ...mapGetters('workflow', ['nextNodes']),
+    uuids(): string[] {
+      return (this.labels as ILabel[]).map((d) => d.uuid);
+    },
     nTotal(): number {
       return this.featureValues.length;
     },
@@ -141,7 +149,7 @@ export default Vue.extend({
         && featureValues.every((d) => Array.isArray(d));
     },
     labelCategories(): ILabelCategory[] {
-      return this.labels.map((d) => d.category);
+      return (this.labels as ILabel[]).map((d) => d.category as string);
     },
   },
   watch: {
