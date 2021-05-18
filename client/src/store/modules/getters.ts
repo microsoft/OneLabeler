@@ -2,7 +2,7 @@ import { scaleOrdinal, schemeCategory10, ScaleOrdinal } from 'd3';
 import {
   IDataObject,
   ILabel,
-  StatusType,
+  IStatus,
 } from '@/commons/types';
 import { IState } from './state';
 
@@ -26,17 +26,13 @@ export const sampledDataObjects = (state: IState): IDataObject[] => {
   return queryUuids.map((uuid: string) => dataObjects.find((d) => d.uuid === uuid) as IDataObject);
 };
 
-export const sampledStatuses = (state: IState): StatusType[] => {
-  const { statuses, dataObjects, queryUuids } = state;
-  const queryIndices = queryUuids.map((uuid) => (
-    dataObjects.findIndex((d) => d.uuid === uuid)
-  ));
-  return queryIndices.map((index: number) => statuses[index]);
+export const sampledStatuses = (state: IState): IStatus[] => {
+  const { statuses, queryUuids } = state;
+  return queryUuids.map((uuid) => statuses.find((d) => d.uuid === uuid) as IStatus);
 };
 
-export const sampledLabels = (state: IState): ILabel[] | null => {
+export const sampledLabels = (state: IState): ILabel[] => {
   const { labels, queryUuids } = state;
-  if (labels === null) return null;
   return queryUuids.map((uuid: string) => labels.find((d) => d.uuid === uuid) as ILabel);
 };
 

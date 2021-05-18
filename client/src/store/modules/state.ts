@@ -4,7 +4,7 @@ import {
   IDataObject,
   IMessage,
   ILabel,
-  StatusType,
+  IStatus,
   TaskWindow,
 } from '@/commons/types';
 
@@ -19,7 +19,7 @@ export interface IState {
   /** The labels. */
   labels: ILabel[];
   /** The label statuses of the data objects. */
-  statuses: StatusType[];
+  statuses: IStatus[];
   /** The label mark of unlabeled data objects. */
   unlabeledMark: Category;
   /** The names of data object features. */

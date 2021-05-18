@@ -97,6 +97,13 @@ export enum StatusType {
   Labeled = 'Labeled',
 }
 
+export interface IStatus {
+  /** The uuid of the data object that owns the label status. */
+  uuid: string;
+  /** The label status value. */
+  value: StatusType;
+}
+
 export interface ICommand {
   execute: () => void;
   undo: () => void;

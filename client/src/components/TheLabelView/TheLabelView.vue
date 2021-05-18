@@ -21,7 +21,9 @@
 import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
+  IDataObject,
   ILabel,
+  IStatus,
   StatusType,
   TaskWindow,
   WorkflowNodeType,
@@ -52,14 +54,14 @@ export default Vue.extend({
       'dataType',
       'labelTasks',
     ]),
-    dataObjects() {
+    dataObjects(): IDataObject[] {
       return this.sampledDataObjects;
     },
-    labels() {
+    labels(): ILabel[] {
       return this.sampledLabels;
     },
-    statuses() {
-      return this.sampledStatuses;
+    statuses(): StatusType[] {
+      return (this.sampledStatuses as IStatus[]).map((d) => d.value);
     },
   },
   methods: {
@@ -84,7 +86,8 @@ export default Vue.extend({
       if (label === undefined) return;
       const updatedLabel: ILabel = { ...label, ...newValue };
       this.setLabelOf({ uuid, label: updatedLabel });
-      this.setStatusOf({ uuid, status: StatusType.Labeled });
+      const updatedStatus: IStatus = { uuid, value: StatusType.Labeled };
+      this.setStatusOf({ uuid, status: updatedStatus });
 
       /*
       const oldLabel = this.getLabel(dataObject.uuid);
@@ -104,9 +107,11 @@ export default Vue.extend({
         const newValue = newValues[i];
         return { ...label, ...newValue } as ILabel;
       });
-      const statuses = new Array(uuids.length).fill(StatusType.Labeled);
+      const updatedStatuses: IStatus[] = uuids.map((uuid) => (
+        { uuid, value: StatusType.Labeled }
+      ));
       this.setLabelsOf({ uuids, labels: updatedLabels });
-      this.setStatusesOf({ uuids, statuses });
+      this.setStatusesOf({ uuids, statuses: updatedStatuses });
 
       /*
       const nBatch = dataObjects.length;

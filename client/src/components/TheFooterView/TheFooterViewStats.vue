@@ -68,7 +68,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import { Category, StatusType } from '@/commons/types';
+import { Category, IStatus, StatusType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({
@@ -109,8 +109,8 @@ export default Vue.extend({
       return this.statuses.length;
     },
     nLabeled(): number {
-      const { statuses } = this as { statuses: StatusType[] };
-      return statuses.filter((d) => d === StatusType.Labeled).length;
+      const { statuses } = this as { statuses: IStatus[] };
+      return statuses.filter((d) => d.value === StatusType.Labeled).length;
     },
   },
   methods: {

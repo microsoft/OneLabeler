@@ -4,6 +4,7 @@ import {
   IDataObject,
   IMessage,
   ILabel,
+  IStatus,
   StatusType,
   TaskWindow,
 } from '@/commons/types';
@@ -45,29 +46,27 @@ export default {
     });
     state.labels = newLabels;
   },
-  [types.SET_STATUSES](state: IState, statuses: StatusType[]): void {
+  [types.SET_STATUSES](state: IState, statuses: IStatus[]): void {
     state.statuses = statuses;
   },
   [types.SET_STATUS_OF](
     state: IState,
-    { uuid, status }: { uuid: string, status: StatusType },
+    { uuid, status }: { uuid: string, status: IStatus },
   ): void {
-    const { dataObjects } = state;
+    const { statuses } = state;
     const newStatuses = [...state.statuses];
-    const idx = dataObjects.findIndex((d: IDataObject) => d.uuid === uuid);
+    const idx = statuses.findIndex((d) => d.uuid === uuid);
     newStatuses[idx as number] = status;
     state.statuses = newStatuses;
   },
   [types.SET_STATUSES_OF](
     state: IState,
-    { uuids, statuses }: { uuids: string[], statuses: StatusType[] },
+    { uuids, statuses }: { uuids: string[], statuses: IStatus[] },
   ): void {
-    if (state.statuses === null) return;
-    const { dataObjects } = state;
     const newStatuses = [...state.statuses];
     uuids.forEach((uuid: string, i: number) => {
       const status = statuses[i];
-      const idx = dataObjects.findIndex((d) => d.uuid === uuid);
+      const idx = state.statuses.findIndex((d) => d.uuid === uuid);
       newStatuses[idx] = status;
     });
     state.statuses = newStatuses;

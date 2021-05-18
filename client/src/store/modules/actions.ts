@@ -5,7 +5,7 @@ import {
   IDataObject,
   IMessage,
   ILabel,
-  StatusType,
+  IStatus,
   TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
@@ -63,21 +63,21 @@ export const setLabelsOf = (
 
 export const setStatuses = (
   { commit }: ActionContext<IState, IState>,
-  statuses: StatusType[],
+  statuses: IStatus[],
 ): void => {
   commit(types.SET_STATUSES, statuses);
 };
 
 export const setStatusOf = (
   { commit }: ActionContext<IState, IState>,
-  { uuid, status }: { uuid: string, status: StatusType },
+  { uuid, status }: { uuid: string, status: IStatus },
 ): void => {
   commit(types.SET_STATUS_OF, { uuid, status });
 };
 
 export const setStatusesOf = (
   { commit }: ActionContext<IState, IState>,
-  { uuids, statuses }: { uuids: string[], statuses: StatusType[] },
+  { uuids, statuses }: { uuids: string[], statuses: IStatus[] },
 ): void => {
   commit(types.SET_STATUSES_OF, { uuids, statuses });
 };

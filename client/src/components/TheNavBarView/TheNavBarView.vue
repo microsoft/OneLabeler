@@ -165,7 +165,7 @@ import {
   IMessage,
   ILabel,
   MessageType,
-  StatusType,
+  IStatus,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -177,7 +177,7 @@ type ProjectData = {
   dataObjects: IDataObject[],
   classes: Category[],
   labels?: ILabel[],
-  statuses: StatusType[],
+  statuses: IStatus[],
   unlabeledMark: Category,
   featureNames?: string[],
 }
@@ -256,7 +256,14 @@ const schema: JSONSchemaType<ProjectData> = {
     },
     statuses: {
       type: 'array',
-      items: { type: 'string' },
+      items: {
+        type: 'object',
+        required: ['uuid', 'value'],
+        properties: {
+          uuid: { type: ['string'] },
+          value: { type: ['string'] },
+        },
+      },
     },
     unlabeledMark: { type: 'string' },
     featureNames: {

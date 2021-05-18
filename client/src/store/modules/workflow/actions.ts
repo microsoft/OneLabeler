@@ -7,6 +7,7 @@ import {
   WorkflowNode,
   IImage,
   ILabel,
+  IStatus,
   StatusType,
   MessageType,
   ModelService,
@@ -14,6 +15,7 @@ import {
   WorkflowNodeType,
   Category,
   ILabelCategory,
+  IDataObject,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -176,11 +178,11 @@ export const executeDataObjectExtraction = async (
   if (type === null) return;
 
   // Extract data objects.
-  const dataObjects = (await API.dataObjectExtraction(input, type));
+  const dataObjects: IDataObject[] = (await API.dataObjectExtraction(input, type));
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize label statuses.
-  const statuses = Array(dataObjects.length).fill(StatusType.New);
+  const statuses: IStatus[] = dataObjects.map((d) => ({ uuid: d.uuid, value: StatusType.New }));
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
@@ -199,10 +201,12 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const newStatuses = [...statuses];
   queryUuids.forEach((uuid: string) => {
     const index = labels?.findIndex((d) => d.uuid === uuid) as number;
-    let newStatus = StatusType.Labeled;
-    if (labels !== null && labels[index].category === unlabeledMark) {
-      newStatus = StatusType.Skipped;
-    }
+    const newStatus: IStatus = {
+      uuid,
+      value: (labels !== null && labels[index].category === unlabeledMark)
+        ? StatusType.Skipped
+        : StatusType.Labeled,
+    };
     newStatuses[index] = newStatus;
   });
 
@@ -212,7 +216,7 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const nBatch = (method.params as MethodParams).nBatch.value as number;
   const newQueryIndices = (await API.dataObjectSelection(
     method,
-    statuses,
+    statuses.map((d) => d.value),
     nBatch,
     model,
     dataObjects,
@@ -224,8 +228,8 @@ export const executeDataObjectSelectionAlgorithmic = async (
   // If the samples had been labeled, keep it unchanged.
   // Else, set it to be viewed.
   newQueryIndices.forEach((index: number) => {
-    if (newStatuses[index] === StatusType.Labeled) return;
-    newStatuses[index] = StatusType.Viewed;
+    if (newStatuses[index].value === StatusType.Labeled) return;
+    newStatuses[index] = { ...newStatuses[index], value: StatusType.Viewed };
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
@@ -245,10 +249,12 @@ export const executeDataObjectSelectionManual = async (
   const newStatuses = [...statuses];
   queryUuids.forEach((uuid: string) => {
     const index = labels?.findIndex((d) => d.uuid === uuid) as number;
-    let newStatus = StatusType.Labeled;
-    if (labels !== null && labels[index].category === unlabeledMark) {
-      newStatus = StatusType.Skipped;
-    }
+    const newStatus: IStatus = {
+      uuid,
+      value: (labels !== null && labels[index].category === unlabeledMark)
+        ? StatusType.Skipped
+        : StatusType.Labeled,
+    };
     newStatuses[index] = newStatus;
   });
 
@@ -260,8 +266,8 @@ export const executeDataObjectSelectionManual = async (
   // Else, set it to be viewed.
   newQueryUuids.forEach((uuid: string) => {
     const index = labels?.findIndex((d) => d.uuid === uuid) as number;
-    if (newStatuses[index] === StatusType.Labeled) return;
-    newStatuses[index] = StatusType.Viewed;
+    if (newStatuses[index].value === StatusType.Labeled) return;
+    newStatuses[index] = { ...newStatuses[index], value: StatusType.Viewed };
   });
   commit(rootTypes.SET_STATUSES, newStatuses, { root: true });
 };
@@ -312,8 +318,12 @@ export const executeFeatureExtraction = async (
 
   const labelCategories = labels.map((d) => d.category as Category);
   const response = requireLabels
-    ? (await API.featureExtraction(method, dataObjects as IImage[], labelCategories, statuses))
-    : (await API.featureExtraction(method, dataObjects as IImage[]));
+    ? (await API.featureExtraction(
+      method,
+      dataObjects as IImage[],
+      labelCategories,
+      statuses.map((d) => d.value),
+    )) : (await API.featureExtraction(method, dataObjects as IImage[]));
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
@@ -322,7 +332,7 @@ export const executeFeatureExtraction = async (
 export const executeInterimModelTraining = (
   { state, rootState }: ActionContext<IState, IRootState>,
   method: Process,
-) => {
+): void => {
   const isProcessNode = (node: WorkflowNode): boolean => (
     node.type !== WorkflowNodeType.Initialization
     && node.type !== WorkflowNodeType.Decision
@@ -348,7 +358,7 @@ export const executeInterimModelTraining = (
           model,
           dataObjects,
           labelCategories,
-          statuses,
+          statuses.map((status) => status.value),
         ));
       });
     });
@@ -360,9 +370,9 @@ export const executeStoppageAnalysis = async (
 ): Promise<void> => {
   const { statuses } = rootState;
   const stop = !(statuses.findIndex((d) => (
-    d === StatusType.New
-    || d === StatusType.Viewed
-    || d === StatusType.Skipped
+    d.value === StatusType.New
+    || d.value === StatusType.Viewed
+    || d.value === StatusType.Skipped
   )) >= 0);
   if (stop) {
     commit(rootTypes.SET_MESSAGE, {
