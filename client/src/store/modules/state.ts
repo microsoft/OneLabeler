@@ -1,33 +1,35 @@
 import {
   Category,
   ICommand,
-  IDataObject,
+  IDataObjectStorage,
+  ILabelStorage,
   IMessage,
-  ILabel,
-  IStatus,
+  IStatusStorage,
   TaskWindow,
 } from '@/commons/types';
 
 export interface IState {
   /** The data labeling project record attributes. */
   /** The data objects to be labeled */
-  dataObjects: IDataObject[];
-  /** The label category options. */
-  classes: Category[];
+  dataObjects: IDataObjectStorage | null;
+  /** The labels. */
+  labels: ILabelStorage | null;
+  /** The label statuses of the data objects. */
+  statuses: IStatusStorage | null;
+  /** The uuids of sampled data objects. */
+  queryUuids: string[];
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
-  /** The labels. */
-  labels: ILabel[];
-  /** The label statuses of the data objects. */
-  statuses: IStatus[];
+  /** The label category options. */
+  classes: Category[];
   /** The label mark of unlabeled data objects. */
   unlabeledMark: Category;
   /** The names of data object features. */
   featureNames: string[];
 
   /** The data labeling system status attributes. */
-  /** The uuids of sampled data objects. */
-  queryUuids: string[];
+  /** The uuids of data objects visible in the interface. */
+  scopeUuids: string[] | null;
   /** The history of label editing commands (used for undo command). */
   commandHistory: ICommand[];
   /** The popup message to be shown in the interface. */
@@ -37,14 +39,15 @@ export interface IState {
 }
 
 export const createInitialState = (): IState => ({
-  dataObjects: [],
-  classes: [],
+  dataObjects: null,
+  labels: null,
+  statuses: null,
+  queryUuids: [],
   stop: false,
-  labels: [],
-  statuses: [],
+  classes: [],
   unlabeledMark: '-1',
   featureNames: [],
-  queryUuids: [],
+  scopeUuids: null,
   commandHistory: [],
   message: null,
   taskWindows: [],

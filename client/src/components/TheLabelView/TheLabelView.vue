@@ -1,9 +1,10 @@
 <template>
   <component
-    :is="getComponent(taskWindow)"
-    :data-objects="dataObjects"
-    :labels="labels"
-    :statuses="statuses"
+    v-if="ready"
+    :is="component"
+    :data-objects="queriedDataObjects"
+    :labels="queriedLabels"
+    :statuses="queriedStatuses.map((d) => d.value)"
     :task-window="taskWindow"
     :data-type="dataType"
     :label-tasks="labelTasks"
@@ -22,8 +23,11 @@ import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   IDataObject,
+  IDataObjectStorage,
   ILabel,
+  ILabelStorage,
   IStatus,
+  IStatusStorage,
   StatusType,
   TaskWindow,
   WorkflowNodeType,
@@ -39,29 +43,59 @@ export default Vue.extend({
       required: true,
     },
   },
+  data() {
+    return {
+      queriedDataObjects: [] as IDataObject[],
+      queriedLabels: [] as ILabel[],
+      queriedStatuses: [] as IStatus[],
+    };
+  },
   computed: {
     ...mapState([
+      'dataObjects',
+      'labels',
+      'statuses',
+      'queryUuids',
       'classes',
       'unlabeledMark',
     ]),
-    ...mapGetters([
-      'sampledDataObjects',
-      'sampledLabels',
-      'sampledStatuses',
-      'label2color',
-    ]),
+    ...mapGetters(['label2color']),
     ...mapGetters('workflow', [
       'dataType',
       'labelTasks',
     ]),
-    dataObjects(): IDataObject[] {
-      return this.sampledDataObjects;
+    component(): VueConstructor | null {
+      const { node, process } = this.taskWindow;
+      if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
+      if (process.api === 'SingleObjectDisplay') return ThePaintBoard;
+      if (process.api === 'GridMatrix') return TheCardMatrix;
+      return null;
     },
-    labels(): ILabel[] {
-      return this.sampledLabels;
+    ready(): boolean {
+      return (this.queriedDataObjects.length === this.queriedLabels.length)
+       && (this.queriedDataObjects.length === this.queriedStatuses.length);
     },
-    statuses(): StatusType[] {
-      return (this.sampledStatuses as IStatus[]).map((d) => d.value);
+  },
+  watch: {
+    async dataObjects() {
+      this.queriedDataObjects = await this.getQueriedDataObjects();
+    },
+    async labels() {
+      this.queriedLabels = await this.getQueriedLabels();
+    },
+    async statuses() {
+      this.queriedStatuses = await this.getQueriedStatuses();
+    },
+    async queryUuids() {
+      // Note: await the computation then set the values together
+      // to ensure [dataObjects, labels, statuses] almost always
+      // have the same length.
+      const queriedDataObjects = await this.getQueriedDataObjects();
+      const queriedLabels = await this.getQueriedLabels();
+      const queriedStatuses = await this.getQueriedStatuses();
+      this.queriedDataObjects = queriedDataObjects;
+      this.queriedLabels = queriedLabels;
+      this.queriedStatuses = queriedStatuses;
     },
   },
   methods: {
@@ -73,45 +107,36 @@ export default Vue.extend({
       'setStatusOf',
       'setStatusesOf',
     ]),
-    getComponent(taskWindow: TaskWindow): VueConstructor | null {
-      const { node, process } = taskWindow;
-      if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
-      if (process.api === 'SingleObjectDisplay') return ThePaintBoard;
-      if (process.api === 'GridMatrix') return TheCardMatrix;
-      return null;
-    },
-    onUserEditLabel(uuid: string, newValue: Partial<ILabel>) {
-      const { labels } = this as { labels: ILabel[] };
-      const label = labels.find((d) => d.uuid === uuid);
-      if (label === undefined) return;
-      const updatedLabel: ILabel = { ...label, ...newValue };
-      this.setLabelOf({ uuid, label: updatedLabel });
-      const updatedStatus: IStatus = { uuid, value: StatusType.Labeled };
-      this.setStatusOf({ uuid, status: updatedStatus });
+    async onUserEditLabel(uuid: string, newValue: Partial<ILabel>) {
+      const { labels } = this as { labels: ILabelStorage };
+      const label = await labels.get(uuid);
+      if (label !== undefined) {
+        await this.setLabelOf({ ...label, ...newValue } as ILabel);
+      }
+      await this.setStatusOf({ uuid, value: StatusType.Labeled } as IStatus);
 
       /*
       const oldLabel = this.getLabel(dataObject.uuid);
       const editSingle = (d: IDataObject, l: ILabelCategory): void => {
         this.setLabelCategoryOf({ uuid: d.uuid, label: l });
-        this.setStatusOf({ uuid: d.uuid, status: StatusType.Labeled });
+        this.setStatusOf({ uuid: d.uuid, value: StatusType.Labeled });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
       editSingleCommand.execute();
       this.pushCommandHistory(editSingleCommand);
       */
     },
-    onUserEditLabels(uuids: string[], newValues: Partial<ILabel>[]) {
-      const { labels } = this as { labels: ILabel[] };
-      const updatedLabels = uuids.map((uuid, i) => {
-        const label = labels.find((d) => d.uuid === uuid);
-        const newValue = newValues[i];
-        return { ...label, ...newValue } as ILabel;
-      });
+    async onUserEditLabels(uuids: string[], newValues: Partial<ILabel>[]) {
+      const { labels } = this as { labels: ILabelStorage };
+      const updatedLabels = (await labels.getBulk(uuids)).map((label, i) => ({
+        ...label,
+        ...newValues[i],
+      })) as ILabel[];
       const updatedStatuses: IStatus[] = uuids.map((uuid) => (
         { uuid, value: StatusType.Labeled }
       ));
-      this.setLabelsOf({ uuids, labels: updatedLabels });
-      this.setStatusesOf({ uuids, statuses: updatedStatuses });
+      await this.setLabelsOf(updatedLabels);
+      await this.setStatusesOf(updatedStatuses);
 
       /*
       const nBatch = dataObjects.length;
@@ -124,10 +149,7 @@ export default Vue.extend({
           uuids: ds.map((d: IDataObject) => d.uuid),
           labels: ls,
         });
-        this.setStatusesOf({
-          uuids: ds.map((d: IDataObject) => d.uuid),
-          statuses: ds.map(() => StatusType.Labeled),
-        });
+        this.setStatusesOf(ds.map(() => StatusType.Labeled));
       };
       const editBatchCommand = new EditBatchCommand(dataObjects, oldLabels, newLabels, editBatch);
       editBatchCommand.execute();
@@ -140,6 +162,27 @@ export default Vue.extend({
         ...taskWindow,
         ...newValue,
       });
+    },
+    async getQueriedDataObjects(): Promise<IDataObject[]> {
+      const queryUuids = this.queryUuids as string[];
+      const dataObjects = this.dataObjects as IDataObjectStorage | null;
+      return dataObjects === null
+        ? []
+        : (await dataObjects.getBulk(queryUuids)) as IDataObject[];
+    },
+    async getQueriedLabels(): Promise<ILabel[]> {
+      const queryUuids = this.queryUuids as string[];
+      const labels = this.labels as ILabelStorage | null;
+      return labels === null
+        ? []
+        : (await labels.getBulk(queryUuids)) as ILabel[];
+    },
+    async getQueriedStatuses(): Promise<IStatus[]> {
+      const queryUuids = this.queryUuids as string[];
+      const statuses = this.statuses as IStatusStorage | null;
+      return statuses === null
+        ? []
+        : (await statuses.getBulk(queryUuids)) as IStatus[];
     },
   },
 });

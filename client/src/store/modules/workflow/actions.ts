@@ -16,6 +16,7 @@ import {
   Category,
   ILabelCategory,
   IDataObject,
+  IDataObjectStorage,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -178,11 +179,12 @@ export const executeDataObjectExtraction = async (
   if (type === null) return;
 
   // Extract data objects.
-  const dataObjects: IDataObject[] = (await API.dataObjectExtraction(input, type));
+  const dataObjects: IDataObjectStorage = (await API.dataObjectExtraction(input, type));
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
 
   // Initialize label statuses.
-  const statuses: IStatus[] = dataObjects.map((d) => ({ uuid: d.uuid, value: StatusType.New }));
+  const statuses: IStatus[] = (await dataObjects.getAll())
+    .map((d) => ({ uuid: d.uuid, value: StatusType.New }));
   commit(rootTypes.SET_STATUSES, statuses, { root: true });
 };
 
@@ -211,7 +213,7 @@ export const executeDataObjectSelectionAlgorithmic = async (
   });
 
   // Sample data objects.
-  const { dataObjects } = rootState;
+  const { dataObjects } = rootState as { dataObjects: IDataObjectStorage };
   const model = method.model as ModelService;
   const nBatch = (method.params as MethodParams).nBatch.value as number;
   const newQueryIndices = (await API.dataObjectSelection(
@@ -219,9 +221,10 @@ export const executeDataObjectSelectionAlgorithmic = async (
     statuses.map((d) => d.value),
     nBatch,
     model,
-    dataObjects,
+    await dataObjects.getAll(),
   ));
-  const newQueryUuids = newQueryIndices.map((d) => dataObjects[d].uuid);
+  const dataObjectsAll = await dataObjects.getAll();
+  const newQueryUuids = newQueryIndices.map((d) => dataObjectsAll[d].uuid);
   commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
 
   // Set the labels status of samples in the current batch.
@@ -283,22 +286,22 @@ export const executeDefaultLabeling = async (
     classes,
     unlabeledMark,
   } = rootState;
-  const sampledDataObjects = dataObjects.filter((d) => queryUuids.includes(d.uuid));
-  const uuids = sampledDataObjects.map((d) => d.uuid);
+  const queriedDataObjects = (await (dataObjects as IDataObjectStorage)
+    .getBulk(queryUuids)) as IDataObject[];
   const model = method.model as ModelService;
   const labelCategories: ILabelCategory[] = (await API.defaultLabeling(
     method,
-    sampledDataObjects,
+    queriedDataObjects,
     model,
     classes,
     unlabeledMark,
   ));
-  const updatedLabels = uuids.map((uuid, i) => {
+  const updatedLabels = queryUuids.map((uuid, i) => {
     const label = labels.find((d) => d.uuid === uuid);
     return { ...label, category: labelCategories[i] };
   }) as ILabel[];
   commit(rootTypes.SET_LABELS_OF, {
-    uuids,
+    queryUuids,
     labels: updatedLabels,
   }, { root: true });
 };
@@ -320,10 +323,10 @@ export const executeFeatureExtraction = async (
   const response = requireLabels
     ? (await API.featureExtraction(
       method,
-      dataObjects as IImage[],
+      await dataObjects.getAll() as IImage[],
       labelCategories,
       statuses.map((d) => d.value),
-    )) : (await API.featureExtraction(method, dataObjects as IImage[]));
+    )) : (await API.featureExtraction(method, await dataObjects.getAll() as IImage[]));
 
   commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
@@ -356,7 +359,7 @@ export const executeInterimModelTraining = (
         (await API.interimModelTraining(
           method,
           model,
-          dataObjects,
+          await dataObjects?.getAll(),
           labelCategories,
           statuses.map((status) => status.value),
         ));

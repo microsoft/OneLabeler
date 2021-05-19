@@ -14,7 +14,7 @@
       style="height: calc(100% - 30px)"
     >
       <VCardMatrix
-        v-if="dataObjects !== null && dataObjects.length !== 0"
+        v-if="dataObjects.length !== 0"
         style="height: 100%"
         :data-type="dataType"
         :data-objects="dataObjects"

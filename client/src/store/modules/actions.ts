@@ -3,34 +3,48 @@ import {
   Category,
   ICommand,
   IDataObject,
-  IMessage,
   ILabel,
+  IMessage,
   IStatus,
   TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import { IState, createInitialState } from './state';
 
-export const setDataObjects = (
-  { commit }: ActionContext<IState, IState>,
-  dataObjects: IDataObject[],
-): void => {
-  commit(types.SET_DATA_OBJECTS, dataObjects);
-};
-
-export const setClasses = (
-  { commit }: ActionContext<IState, IState>,
-  classes: Category[],
-): void => {
-  commit(types.SET_CLASSES, classes);
-};
-
-export const pushClasses = (
+export const setLabelOf = async (
   { commit, state }: ActionContext<IState, IState>,
-  category: Category,
-): void => {
-  const { classes } = state;
-  commit(types.SET_CLASSES, [...classes, category]);
+  label: ILabel,
+): Promise<void> => {
+  if (state.labels === null) return;
+  await state.labels.set(label);
+  commit(types.SET_LABELS, state.labels.shallowCopy());
+};
+
+export const setLabelsOf = async (
+  { commit, state }: ActionContext<IState, IState>,
+  labels: ILabel[],
+): Promise<void> => {
+  if (state.labels === null) return;
+  await state.labels.setBulk(labels);
+  commit(types.SET_LABELS, state.labels.shallowCopy());
+};
+
+export const setStatusOf = async (
+  { commit, state }: ActionContext<IState, IState>,
+  status: IStatus,
+): Promise<void> => {
+  if (state.statuses === null) return;
+  await state.statuses.set(status);
+  commit(types.SET_STATUSES, state.statuses.shallowCopy());
+};
+
+export const setStatusesOf = async (
+  { commit, state }: ActionContext<IState, IState>,
+  statuses: IStatus[],
+): Promise<void> => {
+  if (state.statuses === null) return;
+  await state.statuses.setBulk(statuses);
+  commit(types.SET_STATUSES, state.statuses.shallowCopy());
 };
 
 export const setStop = (
@@ -40,60 +54,12 @@ export const setStop = (
   commit(types.SET_STOP, stop);
 };
 
-export const setLabels = (
-  { commit }: ActionContext<IState, IState>,
-  labels: ILabel[],
+export const pushClasses = (
+  { commit, state }: ActionContext<IState, IState>,
+  category: Category,
 ): void => {
-  commit(types.SET_LABELS, labels);
-};
-
-export const setLabelOf = (
-  { commit }: ActionContext<IState, IState>,
-  { uuid, label }: { uuid: string, label: ILabel },
-): void => {
-  commit(types.SET_LABEL_OF, { uuid, label });
-};
-
-export const setLabelsOf = (
-  { commit }: ActionContext<IState, IState>,
-  { uuids, labels }: { uuids: string[], labels: ILabel[] },
-): void => {
-  commit(types.SET_LABELS_OF, { uuids, labels });
-};
-
-export const setStatuses = (
-  { commit }: ActionContext<IState, IState>,
-  statuses: IStatus[],
-): void => {
-  commit(types.SET_STATUSES, statuses);
-};
-
-export const setStatusOf = (
-  { commit }: ActionContext<IState, IState>,
-  { uuid, status }: { uuid: string, status: IStatus },
-): void => {
-  commit(types.SET_STATUS_OF, { uuid, status });
-};
-
-export const setStatusesOf = (
-  { commit }: ActionContext<IState, IState>,
-  { uuids, statuses }: { uuids: string[], statuses: IStatus[] },
-): void => {
-  commit(types.SET_STATUSES_OF, { uuids, statuses });
-};
-
-export const setUnlabeledMark = (
-  { commit }: ActionContext<IState, IState>,
-  unlabeledMark: Category,
-): void => {
-  commit(types.SET_UNLABELED_MARK, unlabeledMark);
-};
-
-export const setFeatureNames = (
-  { commit }: ActionContext<IState, IState>,
-  featureNames: string[],
-): void => {
-  commit(types.SET_FEATURE_NAMES, featureNames);
+  const { classes } = state;
+  commit(types.SET_CLASSES, [...classes, category]);
 };
 
 export const pushCommandHistory = (
@@ -168,4 +134,34 @@ export const resetState = (
   commit(types.SET_QUERY_UUIDS, queryUuids);
   commit(types.SET_COMMAND_HISTORY, commandHistory);
   commit(types.SET_MESSAGE, message);
+};
+
+type ProjectData = {
+  dataObjects: IDataObject[];
+  labels: ILabel[];
+  statuses: IStatus[];
+  classes: Category[];
+  unlabeledMark: Category;
+  featureNames?: string[];
+}
+
+export const setProject = (
+  { commit }: ActionContext<IState, IState>,
+  projectData: ProjectData,
+): void => {
+  const {
+    dataObjects,
+    classes,
+    labels,
+    statuses,
+    unlabeledMark,
+    featureNames,
+  } = projectData;
+  commit(types.SET_DATA_OBJECTS, dataObjects);
+  commit(types.SET_CLASSES, classes);
+  commit(types.SET_LABELS, labels);
+  commit(types.SET_STATUSES, statuses);
+  commit(types.SET_UNLABELED_MARK, unlabeledMark);
+  commit(types.SET_FEATURE_NAMES,
+    featureNames === undefined ? [] : featureNames);
 };

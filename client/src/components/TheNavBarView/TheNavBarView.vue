@@ -154,126 +154,21 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import Ajv, { JSONSchemaType, DefinedError } from 'ajv';
+import { DefinedError } from 'ajv';
 import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import {
-  Category,
   DataType,
   ICommand,
-  IDataObject,
   IImage,
   IMessage,
-  ILabel,
   MessageType,
-  IStatus,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
 import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
-
-type ProjectData = {
-  dataObjects: IDataObject[],
-  classes: Category[],
-  labels?: ILabel[],
-  statuses: IStatus[],
-  unlabeledMark: Category,
-  featureNames?: string[],
-}
-
-const ajv = new Ajv();
-const schema: JSONSchemaType<ProjectData> = {
-  type: 'object',
-  required: [
-    'dataObjects',
-    'statuses',
-    'classes',
-    'unlabeledMark',
-  ],
-  properties: {
-    dataObjects: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: [
-          'uuid',
-        ],
-        properties: {
-          uuid: { type: 'string' },
-          features: {
-            type: 'array',
-            items: { type: 'number' },
-          },
-        },
-        additionalProperties: true,
-      },
-    },
-    classes: {
-      type: 'array',
-      items: { type: 'string' },
-    },
-    labels: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: [
-          'uuid',
-        ],
-        properties: {
-          uuid: { type: 'string' },
-          category: { type: 'string' },
-          shapes: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [
-                'category',
-                'shape',
-                'position',
-              ],
-              properties: {
-                label: { type: 'string' },
-                shape: { type: 'string' },
-                position: { type: 'array' },
-              },
-              additionalProperties: true,
-            },
-          },
-          mask: {
-            type: 'object',
-            required: [
-              'path',
-            ],
-            properties: {
-              path: { type: ['string', 'null'] },
-            },
-            additionalProperties: true,
-          },
-        },
-        additionalProperties: true,
-      },
-    },
-    statuses: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['uuid', 'value'],
-        properties: {
-          uuid: { type: ['string'] },
-          value: { type: ['string'] },
-        },
-      },
-    },
-    unlabeledMark: { type: 'string' },
-    featureNames: {
-      type: 'array',
-      items: { type: 'string' },
-    },
-  },
-  additionalProperties: false,
-};
-const validate = ajv.compile(schema);
+import { ProjectData, validate } from './load-project';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -313,12 +208,21 @@ export default Vue.extend({
   },
   data() {
     return {
+      nDataObjects: 0,
       DataType,
       // Ctrl + N: create new project
       keyboardTriggerNewProject: (e: KeyboardEvent) => (e.key === 'n' && e.ctrlKey),
       // Ctrl + O: load existing project
       keyboardTriggerLoadProject: (e: KeyboardEvent) => (e.key === 'o' && e.ctrlKey),
     };
+  },
+  watch: {
+    async dataObjects() {
+      const { dataObjects } = this;
+      this.nDataObjects = dataObjects === null
+        ? 0
+        : await dataObjects.count();
+    },
   },
   computed: {
     ...mapGetters('workflow', [
@@ -331,16 +235,13 @@ export default Vue.extend({
     ]),
     ...mapState([
       'dataObjects',
-      'classes',
       'labels',
       'statuses',
+      'classes',
       'unlabeledMark',
       'featureNames',
       'commandHistory',
     ]),
-    nDataObjects(): number {
-      return this.dataObjects.length;
-    },
     disableSaveButton(): boolean {
       return this.nDataObjects === 0;
     },
@@ -390,15 +291,10 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'setDataObjects',
-      'setClasses',
-      'setLabels',
-      'setMessage',
-      'setStatuses',
-      'setUnlabeledMark',
-      'setFeatureNames',
-      'resetState',
       'popCommandHistory',
+      'resetState',
+      'setMessage',
+      'setProject',
     ]),
     ...mapActions('workflow', [
       'executeDataObjectExtraction',
@@ -437,24 +333,7 @@ export default Vue.extend({
     async onLoadProject(file: File): Promise<void> {
       const data = await loadJsonFile(file);
       if (validate(data)) {
-        const {
-          dataObjects,
-          classes,
-          labels,
-          statuses,
-          unlabeledMark,
-          featureNames,
-        } = data as ProjectData;
-        this.setDataObjects(dataObjects);
-        this.setClasses(classes);
-        if (labels !== undefined) {
-          this.setLabels(labels);
-        }
-        this.setStatuses(statuses);
-        this.setUnlabeledMark(unlabeledMark);
-        if (featureNames !== undefined) {
-          this.setFeatureNames(featureNames);
-        }
+        this.setProject(data as ProjectData);
         this.setMessage({
           content: 'Project Progress Uploaded.',
           type: MessageType.Success,
@@ -465,7 +344,7 @@ export default Vue.extend({
         this.setMessage(message);
       }
     },
-    onClickSave(): void {
+    async onClickSave(): Promise<void> {
       const {
         dataObjects,
         classes,
@@ -475,11 +354,10 @@ export default Vue.extend({
         featureNames,
       } = this;
       const projectData: ProjectData = {
-        dataObjects,
+        dataObjects: await dataObjects.getAll(),
         classes,
-        labels: labels === null
-          ? undefined : labels,
-        statuses,
+        labels: await labels.getAll(),
+        statuses: await statuses.getAll(),
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
@@ -500,8 +378,9 @@ export default Vue.extend({
         this.popCommandHistory();
       }
     },
-    onClickExport(): void {
-      const { dataObjects, labels } = this;
+    async onClickExport(): Promise<void> {
+      const dataObjects = await this.dataObjects.getAll();
+      const labels = await this.labels.getAll();
       const labeledData = dataObjects.map((d: IImage, i: number) => {
         const pathSegments = (d.path as string).split('/');
         const filename = pathSegments[pathSegments.length - 1];

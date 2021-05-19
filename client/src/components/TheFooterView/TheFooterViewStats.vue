@@ -68,7 +68,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import { Category, IStatus, StatusType } from '@/commons/types';
+import { Category, IStatusStorage, StatusType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({
@@ -86,6 +86,8 @@ export default Vue.extend({
     return {
       className: null,
       classNameValid: true,
+      nTotal: 0,
+      nLabeled: 0,
     };
   },
   computed: {
@@ -105,13 +107,14 @@ export default Vue.extend({
         notRepetitive,
       ];
     },
-    nTotal(): number {
-      return this.statuses.length;
+  },
+  watch: {
+    async statuses() {
+      await this.setData();
     },
-    nLabeled(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.Labeled).length;
-    },
+  },
+  async mounted() {
+    await this.setData();
   },
   methods: {
     ...mapActions(['pushClasses']),
@@ -129,6 +132,20 @@ export default Vue.extend({
       // reset the input class name and input validation state after closing the dialog
       this.className = null;
       (this.$refs.form as HTMLFormElement).resetValidation();
+    },
+    async setData(): Promise<void> {
+      this.nLabeled = await this.getNLabeled();
+      this.nTotal = await this.getNTotal();
+    },
+    async getNLabeled(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.Labeled);
+    },
+    async getNTotal(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count();
     },
   },
 });

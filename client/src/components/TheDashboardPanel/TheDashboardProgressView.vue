@@ -52,31 +52,21 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { IStatus, StatusType } from '@/commons/types';
+import { IStatusStorage, StatusType } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheDashboardProgressView',
+  data() {
+    return {
+      nLabeled: 0,
+      nSkipped: 0,
+      nTotal: 0,
+      nUnseen: 0,
+      nViewing: 0,
+    };
+  },
   computed: {
     ...mapState(['statuses']),
-    nLabeled(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.Labeled).length;
-    },
-    nSkipped(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.Skipped).length;
-    },
-    nTotal(): number {
-      return this.statuses.length;
-    },
-    nUnseen(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.New).length;
-    },
-    nViewing(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.Viewed).length;
-    },
     statusList() {
       const {
         nLabeled,
@@ -112,6 +102,48 @@ export default Vue.extend({
         { height: `${(nUnseen / nTotal) * 100}%`, color: '#d9d9d9' },
         { height: `${(nViewing / nTotal) * 100}%`, color: '#ea8d18' },
       ];
+    },
+  },
+  watch: {
+    async statuses() {
+      await this.setData();
+    },
+  },
+  async mounted() {
+    await this.setData();
+  },
+  methods: {
+    async setData(): Promise<void> {
+      this.nLabeled = await this.getNLabeled();
+      this.nSkipped = await this.getNSkipped();
+      this.nTotal = await this.getNTotal();
+      this.nUnseen = await this.getNUnseen();
+      this.nViewing = await this.getNViewing();
+    },
+    async getNLabeled(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.Labeled);
+    },
+    async getNSkipped(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null};
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.Skipped);
+    },
+    async getNTotal(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count();
+    },
+    async getNUnseen(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.New);
+    },
+    async getNViewing(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.Viewed);
     },
   },
 });

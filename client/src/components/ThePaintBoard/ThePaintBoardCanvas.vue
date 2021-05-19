@@ -241,14 +241,17 @@ export default Vue.extend({
       stage.height(container.clientHeight);
     },
     setImage(): void {
-      const { path } = this.dataObject;
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
         this.image = img;
         this.setImageBlur();
       };
+      /*
+      const { path } = this.dataObject;
       img.src = imageURLFormatter(path as string);
+      */
+      img.src = this.dataObject.content as string;
     },
     setImageBlur(): void {
       const stage = (this.$refs.stage as unknown as Konva.Stage).getStage();

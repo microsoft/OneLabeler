@@ -68,6 +68,7 @@
 import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
+  IDataObjectStorage,
   ILabel,
   ILabelCategory,
   ProjectionMethodType,
@@ -122,6 +123,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      featureValues: [] as number[][],
       resizeObserver: null as ResizeObserver | null,
       nRows: 1,
       nColumns: 1,
@@ -130,12 +132,14 @@ export default Vue.extend({
   },
   computed: {
     ...mapState([
+      'dataObjects',
       'labels',
       'featureNames',
       'queryUuids',
+      'scopeUuids',
     ]),
     ...mapState('workflow', ['currentNode']),
-    ...mapGetters(['featureValues', 'label2color']),
+    ...mapGetters(['label2color']),
     ...mapGetters('workflow', ['nextNodes']),
     uuids(): string[] {
       return (this.labels as ILabel[]).map((d) => d.uuid);
@@ -153,6 +157,16 @@ export default Vue.extend({
     },
   },
   watch: {
+    async scopeUuids() {
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
+      if (this.scopeUuids === null) {
+        this.featureValues = (await dataObjects.getAll())
+          .map((d) => d?.features) as number[][];
+      } else {
+        this.featureValues = (await dataObjects.getBulk(this.scopeUuids))
+          .map((d) => d?.features) as number[][];
+      }
+    },
     featureValues() {
       this.forceViewsUpdate();
     },

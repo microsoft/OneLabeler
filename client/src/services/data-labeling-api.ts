@@ -15,13 +15,13 @@ import {
   IDataObject,
   IText,
   IImage,
-  // IDataObjectStorage,
+  IDataObjectStorage,
   ILabelCategory,
   StatusType,
   ModelService,
   Process,
 } from '@/commons/types';
-// import { dataObjectDB as dataObjectStorage } from '@/services/database';
+import { dataObjectDB as dataObjectStorage } from '@/services/database';
 import {
   PROTOCOL,
   IP,
@@ -36,7 +36,7 @@ import {
  * @Note The extraction implementation is dependent
  * on the data source type and data object type.
  */
-
+/*
 export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
@@ -73,8 +73,8 @@ export const dataObjectExtraction = showProgressBar(async (
   console.warn(`Invalid Data Type: ${dataType}`);
   return [];
 });
+*/
 
-/*
 const getBase64 = (file: File) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
@@ -119,7 +119,6 @@ export const dataObjectExtraction = showProgressBar(async (
   }
   return dataObjectStorage;
 });
-*/
 
 /**
  * Workflow Component - Feature Extraction

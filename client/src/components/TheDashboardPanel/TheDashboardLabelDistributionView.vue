@@ -34,7 +34,10 @@
                 {{ category }}
               </span>
               <v-spacer />
-              {{ `${getNumberOfLabel(category)} / ${nLabeled}` }}
+              {{
+                `${ category in nLabeledByCategory ? nLabeledByCategory[category] : 0 }
+                / ${nLabeled}`
+              }}
             </div>
             <div style="position: relative;">
               <div
@@ -50,7 +53,10 @@
                   'position': 'absolute',
                   'background-color': '#0078d4',
                   'height': '13px',
-                  'width': `${getRateOfLabel(category) * 100}%`,
+                  'width': `${
+                    (category in nLabeledByCategory ? nLabeledByCategory[category] : 0)
+                    / nLabeled * 100
+                  }%`,
                 }"
               />
             </div>
@@ -67,32 +73,56 @@ import { mapState } from 'vuex';
 import {
   Category,
   ILabel,
-  IStatus,
+  ILabelStorage,
+  IStatusStorage,
   StatusType,
 } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheDashboardLabelDistributionView',
+  data() {
+    return {
+      nLabeled: 0,
+      nLabeledByCategory: {} as Record<Category, number>,
+    };
+  },
   computed: {
     ...mapState(['classes', 'labels', 'statuses']),
-    nLabeled(): number {
-      const { statuses } = this as { statuses: IStatus[] };
-      return statuses.filter((d) => d.value === StatusType.Labeled).length;
+  },
+  watch: {
+    async classes() {
+      this.nLabeledByCategory = await this.getNLabeledByCategory();
+    },
+    async labels() {
+      this.nLabeledByCategory = await this.getNLabeledByCategory();
+    },
+    async statuses() {
+      this.nLabeled = await this.getNLabeled();
     },
   },
+  async mounted() {
+    this.nLabeled = await this.getNLabeled();
+    this.nLabeledByCategory = await this.getNLabeledByCategory();
+  },
   methods: {
-    getNumberOfLabel(category: Category): number {
-      const labels = this.labels as ILabel[];
-      if (labels === null) return 0;
-      return labels.filter((d: ILabel) => d.category === category)
-        .length;
+    async getNLabeled(): Promise<number> {
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (statuses === null) return 0;
+      return statuses.count((d) => d.value === StatusType.Labeled);
     },
-    getRateOfLabel(category: Category): number {
-      const labels = this.labels as ILabel[];
+    async getNLabeledOf(category: Category): Promise<number> {
+      const { labels } = this as { labels: ILabelStorage | null };
       if (labels === null) return 0;
-      if (this.nLabeled === 0) return 0;
-      return labels.filter((d: ILabel) => d.category === category)
-        .length / this.nLabeled;
+      const n = await labels.count((d: ILabel) => d.category === category);
+      return n;
+    },
+    async getNLabeledByCategory(): Promise<Record<Category, number>> {
+      const nLabeledByCategory: Record<Category, number> = {};
+      await Promise.all(this.classes.map(async (category: Category) => {
+        const n = await this.getNLabeledOf(category);
+        nLabeledByCategory[category] = n;
+      }));
+      return nLabeledByCategory;
     },
   },
 });

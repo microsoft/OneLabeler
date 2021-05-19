@@ -19,10 +19,10 @@ const getLabelTasks = (nodes: WorkflowNode[]): LabelTaskType[] => {
   return (node.value as { labelTasks: LabelTaskType[] }).labelTasks;
 };
 
-const updateLabels = (
+const updateLabels = async (
   { commit, state }: { commit: Store<IState>['commit'], state: IState },
   labelTasks: LabelTaskType[],
-): void => {
+): Promise<void> => {
   const containsClassification = labelTasks.includes(LabelTaskType.Classification);
   const containsObjectDetection = labelTasks.includes(LabelTaskType.ObjectDetection);
   const containsSegmentation = labelTasks.includes(LabelTaskType.Segmentation);
@@ -33,8 +33,11 @@ const updateLabels = (
     return;
   }
 
-  if (state.labels.length !== state.dataObjects.length) {
-    const labels: ILabel[] = state.dataObjects.map((d) => ({
+  if (state.dataObjects === null) return;
+  const nDataObjects = await state.dataObjects.count();
+  if (state.labels.length !== nDataObjects) {
+    const dataObjects = await state.dataObjects.getAll();
+    const labels: ILabel[] = dataObjects.map((d) => ({
       uuid: d.uuid,
       category: containsClassification ? state.unlabeledMark : undefined,
       shapes: containsObjectDetection ? Array(0) : undefined,
@@ -71,15 +74,29 @@ const getUpdatedTaskWindows = (
 };
 
 const plugin = (store: Store<IState>) => {
-  store.subscribe((mutation, state: IState) => {
+  store.subscribe(async (mutation, state: IState) => {
     if (mutation.type === types.SET_DATA_OBJECTS) {
       const nodes = state.workflow.nodes as WorkflowNode[];
       const labelTasks = getLabelTasks(nodes);
-      updateLabels({ commit: store.commit, state }, labelTasks);
+      await updateLabels({ commit: store.commit, state }, labelTasks);
+    }
+    if (mutation.type === types.SET_DATA_OBJECTS) {
+      const { dataObjects } = state;
+      if (dataObjects !== null) {
+        const THRESHOLD = 2000;
+        const nDataObjects = await dataObjects.count();
+        if (nDataObjects >= THRESHOLD) {
+          const collection = await dataObjects.slice(undefined, THRESHOLD);
+          const uuids = collection.map((d) => d.uuid);
+          store.commit(types.SET_SCOPE_UUIDS, uuids);
+        } else {
+          store.commit(types.SET_SCOPE_UUIDS, null);
+        }
+      }
     }
     if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
       const labelTasks = getLabelTasks(mutation.payload as WorkflowNode[]);
-      updateLabels({ commit: store.commit, state }, labelTasks);
+      await updateLabels({ commit: store.commit, state }, labelTasks);
     }
     if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
       const nodes = state.workflow.nodes as WorkflowNode[];

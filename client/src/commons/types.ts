@@ -129,15 +129,33 @@ export interface IDataObjectStorage {
   getAll(): Promise<IDataObject[]>;
   getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]>;
   setBulk(dataObjects: IDataObject[]): Promise<void>;
+  shallowCopy(): IDataObjectStorage;
   slice(begin?: number, end?: number): Promise<IDataObject[]>;
+  uuids(): Promise<string[]>;
 }
 
 /** The interface of label storage. */
 export interface ILabelStorage {
-  count(): Promise<number>;
+  count(condition?: (value: ILabel) => boolean): Promise<number>;
+  deleteAll(): Promise<void>;
   get(uuid: string): Promise<ILabel | undefined>;
+  getBulk(uuids: string[]): Promise<(ILabel | undefined)[]>;
   getAll(): Promise<ILabel[]>;
+  set(label: ILabel): Promise<void>;
   setBulk(labels: ILabel[]): Promise<void>;
+  shallowCopy(): ILabelStorage;
+}
+
+/** The interface of status storage. */
+export interface IStatusStorage {
+  count(condition?: (value: IStatus) => boolean): Promise<number>;
+  deleteAll(): Promise<void>;
+  get(uuid: string): Promise<IStatus | undefined>;
+  getBulk(uuids: string[]): Promise<(IStatus | undefined)[]>;
+  getAll(): Promise<IStatus[]>;
+  set(status: IStatus): Promise<void>;
+  setBulk(statuses: IStatus[]): Promise<void>;
+  shallowCopy(): IStatusStorage;
 }
 
 /** The enum of projection method types. */
