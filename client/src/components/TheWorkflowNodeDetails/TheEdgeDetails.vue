@@ -21,7 +21,6 @@
         dense
         subheader
       >
-
         <!-- The source node. -->
         <v-list-item class="pt-2">
           <v-card
@@ -30,7 +29,10 @@
             style="width: 100%"
           >
             <v-card-title class="view-header px-2">
-              <span class="subtitle-2" style="padding-bottom: 7.4px; padding-top: 7px">
+              <span
+                class="subtitle-2"
+                style="padding-bottom: 7.4px; padding-top: 7px"
+              >
                 Source Node
               </span>
             </v-card-title>
@@ -66,7 +68,10 @@
             style="width: 100%"
           >
             <v-card-title class="view-header px-2">
-              <span class="subtitle-2" style="padding-bottom: 7.4px; padding-top: 7px">
+              <span
+                class="subtitle-2"
+                style="padding-bottom: 7.4px; padding-top: 7px"
+              >
                 Target Node
               </span>
             </v-card-title>

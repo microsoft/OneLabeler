@@ -14,11 +14,8 @@ import {
 } from '@/commons/types';
 import { processes } from '@/commons/builtins';
 
-type JsonMethodParams = Record<string, unknown | {
-  value: unknown,
-  label: string,
-  options: { value: unknown, text: string }[],
-}>;
+type MethodParam = MethodParams[keyof MethodParams];
+type JsonMethodParams = Record<string, MethodParam | MethodParam['value']>;
 
 type JsonProcess = {
   label: string;
@@ -195,16 +192,20 @@ const parseProcess = (
 
     let params: MethodParams | undefined;
     if (builtinMatch.params !== undefined) {
-      params = JSON.parse(JSON.stringify(builtinMatch.params)) as MethodParams;
-      Object.keys(builtinMatch.params).forEach((paramName) => {
-        if (process.params === undefined) return;
-        const isObject = (process.params as JsonMethodParams)[paramName].value !== undefined;
-        if (!isObject) {
-          (params as MethodParams)[paramName].value = process.params[paramName];
-        } else {
-          (params as MethodParams)[paramName] = (process.params as MethodParams)[paramName];
-        }
-      });
+      params = JSON.parse(JSON.stringify(builtinMatch.params));
+      if (process.params !== undefined) {
+        Object.keys(builtinMatch.params).forEach((paramName) => {
+          const param = (process.params as JsonMethodParams)[paramName];
+          const isObject = typeof param === 'object'
+            && param !== null
+            && 'value' in param;
+          if (!isObject) {
+            (params as MethodParams)[paramName].value = param;
+          } else {
+            (params as MethodParams)[paramName] = param as MethodParam;
+          }
+        });
+      }
     }
 
     return {
@@ -230,20 +231,22 @@ const parseProcess = (
 
   let params: MethodParams | undefined;
   if (process.params !== undefined) {
-    params = {} as MethodParams;
-    Object.entries(process.params).forEach(([paramName, paramEntry]) => {
-      const isObject = paramEntry.value !== undefined;
+    params = {};
+    Object.entries(process.params).forEach(([paramName, param]) => {
+      const isObject = typeof param === 'object'
+        && param !== null
+        && 'value' in param;
       if (!isObject) {
         (params as MethodParams)[paramName] = {
-          value: paramEntry,
+          value: param,
           label: paramName,
           options: [{
-            value: paramEntry,
+            value: param,
             label: paramName,
           }],
         };
       } else {
-        (params as MethodParams)[paramName] = paramEntry;
+        (params as MethodParams)[paramName] = param as MethodParam;
       }
     });
   }

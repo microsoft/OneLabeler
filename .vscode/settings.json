@@ -16,6 +16,7 @@
         "builtins",
         "clusterer",
         "configurability",
+        "congruential",
         "cytoscape",
         "devtools",
         "dexie",

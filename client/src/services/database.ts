@@ -7,6 +7,7 @@ import {
   IStatus,
   IStatusStorage,
 } from '@/commons/types';
+import { randomChoice } from '@/plugins/random';
 
 /* eslint max-classes-per-file: ["error", 4] */
 
@@ -67,6 +68,22 @@ class DataObjectDB implements IDataObjectStorage {
   // Retrieve all the data objects.
   getAll(): Promise<IDataObject[]> {
     return this.#storage.toArray();
+  }
+
+  async randomChoice(
+    size: number,
+    random: () => number = Math.random,
+  ): Promise<IDataObject[]> {
+    // TODO: replace the random selection algorithm to improve time/space complexity
+    // The current implementation has space complexity O(nDataObjects)
+    // and time complexity O(nDataObjects).
+    const n = await this.count();
+    const range = [...Array(n).keys()];
+    const selection = randomChoice(range, size, random);
+    const samples = await Promise.all(selection.map(
+      (idx) => this.#storage.offset(idx).first(),
+    )) as IDataObject[];
+    return samples;
   }
 
   // Set the data objects.
@@ -130,6 +147,11 @@ class LabelDB implements ILabelStorage {
   // Retrieve all the labels.
   getAll(): Promise<ILabel[]> {
     return this.#storage.toArray();
+  }
+
+  // Retrieve a list of labels by condition.
+  getFiltered(condition: (value: ILabel) => boolean): Promise<ILabel[]> {
+    return this.#storage.filter(condition).toArray();
   }
 
   // Set the label.

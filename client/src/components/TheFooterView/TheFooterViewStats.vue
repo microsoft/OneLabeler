@@ -6,7 +6,7 @@
     />
     <span
       class="mx-2 subtitle-2 grey--text text--lighten-2"
-      style="display: inline-flex; align-items: center; height: 100%;"
+      style="vertical-align: text-top"
     >
       {{ `${nTotal} data objects` }}
     </span>
@@ -16,7 +16,7 @@
     />
     <span
       class="mx-2 subtitle-2 grey--text text--lighten-2"
-      style="display: inline-flex; align-items: center; height: 100%;"
+      style="vertical-align: text-top"
     >
       {{ `${nLabeled} / ${nTotal} labeled` }}
     </span>
@@ -26,7 +26,7 @@
     />
     <span
       class="ml-2 mr-1 subtitle-2 grey--text text--lighten-2"
-      style="display: inline-flex; align-items: center; height: 100%;"
+      style="vertical-align: text-top"
     >
       {{ `${classes.length} classes` }}
     </span>
@@ -68,7 +68,12 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import { Category, IStatusStorage, StatusType } from '@/commons/types';
+import {
+  Category,
+  IDataObjectStorage,
+  IStatusStorage,
+  StatusType,
+} from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 
 export default Vue.extend({
@@ -91,7 +96,12 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['statuses', 'classes', 'unlabeledMark']),
+    ...mapState([
+      'dataObjects',
+      'statuses',
+      'classes',
+      'unlabeledMark',
+    ]),
     classNameRules() {
       const { classes, unlabeledMark } = this;
       const notEmpty = (v: unknown) => (
@@ -109,11 +119,11 @@ export default Vue.extend({
     },
   },
   watch: {
-    async statuses() {
+    async statuses(): Promise<void> {
       await this.setData();
     },
   },
-  async mounted() {
+  async mounted(): Promise<void> {
     await this.setData();
   },
   methods: {
@@ -143,9 +153,9 @@ export default Vue.extend({
       return statuses.count((d) => d.value === StatusType.Labeled);
     },
     async getNTotal(): Promise<number> {
-      const { statuses } = this as { statuses: IStatusStorage | null };
-      if (statuses === null) return 0;
-      return statuses.count();
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
+      if (dataObjects === null) return 0;
+      return dataObjects.count();
     },
   },
 });

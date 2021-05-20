@@ -12,16 +12,23 @@ import { randomChoice } from '@/plugins/random';
 import {
   Category,
   DataType,
-  IDataObject,
   IText,
   IImage,
+  IDataObject,
   IDataObjectStorage,
+  IStatus,
+  IStatusStorage,
+  ILabelStorage,
   ILabelCategory,
   StatusType,
   ModelService,
   Process,
 } from '@/commons/types';
-import { dataObjectDB as dataObjectStorage } from '@/services/database';
+import {
+  dataObjectDB as dataObjectStorage,
+  labelDB as labelStorage,
+  statusDB as statusStorage,
+} from '@/services/database';
 import {
   PROTOCOL,
   IP,
@@ -93,6 +100,7 @@ export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
 ): Promise<IDataObjectStorage> => {
+  await dataObjectStorage.deleteAll();
   if (dataType === DataType.Image) {
     const files = input as FileList;
     await Promise.all([...files].map(async (file) => {
@@ -118,6 +126,16 @@ export const dataObjectExtraction = showProgressBar(async (
     });
   }
   return dataObjectStorage;
+});
+
+export const labelInitialization = showProgressBar(async (): Promise<ILabelStorage> => {
+  await labelStorage.deleteAll();
+  return labelStorage;
+});
+
+export const statusInitialization = showProgressBar(async (): Promise<IStatusStorage> => {
+  await statusStorage.deleteAll();
+  return statusStorage;
 });
 
 /**
@@ -218,49 +236,59 @@ export const defaultLabeling = showProgressBar(async (
  * Sample a batch of data objects from the pool of data objects.
  * @param dataObjects The data objects to be sampled from.
  * @param nBatch The number of data objects to sample.
- * @returns queryIndices - the indices of sampled data objects.
+ * @returns queryUuids - the uuids of sampled data objects.
  */
 export const dataObjectSelection = showProgressBar(async (
   method: Process,
-  statuses: StatusType[],
+  dataObjects: IDataObjectStorage,
+  statuses: IStatusStorage,
   nBatch: number,
   model?: ModelService,
-  dataObjects?: IDataObject[],
-): Promise<number[]> => {
-  let queryIndices = null;
+): Promise<string[]> => {
+  let queryUuids = null;
+  const uuids = await dataObjects.uuids();
+  const statusValues: IStatus[] = (await statuses.getBulk(uuids)).map((d, i) => (
+    d !== undefined ? d : { uuid: uuids[i], value: StatusType.New }
+  ));
   if (method.isServerless && (method.api === 'Random')) {
     const SEED = '20';
     const random = xor4096(SEED);
-    const indicesNew = statuses
-      .map((d, i) => (d === StatusType.New ? i : -1))
-      .filter((d) => d !== -1);
-    if (indicesNew.length >= nBatch) {
-      queryIndices = randomChoice(indicesNew, nBatch, random);
+    const uuidsNew = statusValues
+      .filter((d) => d.value === StatusType.New)
+      .map((d) => d.uuid);
+    if (uuidsNew.length >= nBatch) {
+      queryUuids = randomChoice(uuidsNew, nBatch, random);
     } else {
-      queryIndices = indicesNew;
-      const nResidue = nBatch - queryIndices.length;
-      const indicesSkipped = statuses
-        .map((d, i) => (d === StatusType.Skipped ? i : -1))
-        .filter((d) => d !== -1);
-      const queryIndicesSkipped = indicesSkipped.length <= nResidue
-        ? indicesSkipped
-        : randomChoice(indicesSkipped, nResidue, random);
-      queryIndices = [...queryIndices, ...queryIndicesSkipped];
+      const nResidue = nBatch - uuidsNew.length;
+      const uuidsSkipped = statusValues
+        .filter((d) => d.value === StatusType.Skipped)
+        .map((d) => d.uuid);
+      const queryUuidsSkipped = uuidsSkipped.length <= nResidue
+        ? uuidsSkipped
+        : randomChoice(uuidsSkipped, nResidue, random);
+      queryUuids = [...uuidsNew, ...queryUuidsSkipped];
     }
   } else {
-    queryIndices = (
+    const dataObjectValues: IDataObject[] = (await (dataObjects as IDataObjectStorage)
+      .getAll())
+      .map((d) => {
+        const compressed = { ...d, content: undefined };
+        return compressed;
+      });
+    const { queryIndices } = (
       await axios.post(
         method.api as string,
         JSON.stringify({
-          statuses,
+          statuses: statusValues.map((d) => d.value),
           nBatch,
-          dataObjects,
+          dataObjectValues,
           model,
         }),
       )
-    ).data.queryIndices;
+    ).data as { queryIndices: number[] };
+    queryUuids = queryIndices.map((d) => uuids[d]);
   }
-  return queryIndices;
+  return queryUuids;
 });
 
 /**

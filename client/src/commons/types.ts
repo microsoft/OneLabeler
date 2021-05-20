@@ -141,6 +141,7 @@ export interface ILabelStorage {
   get(uuid: string): Promise<ILabel | undefined>;
   getBulk(uuids: string[]): Promise<(ILabel | undefined)[]>;
   getAll(): Promise<ILabel[]>;
+  getFiltered(condition: (value: ILabel) => boolean): Promise<ILabel[]>;
   set(label: ILabel): Promise<void>;
   setBulk(labels: ILabel[]): Promise<void>;
   shallowCopy(): ILabelStorage;

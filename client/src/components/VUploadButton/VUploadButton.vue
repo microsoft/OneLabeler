@@ -2,6 +2,7 @@
   <v-btn
     :title="title"
     :color="color"
+    :disabled="disabled"
     icon
     tile
     small
@@ -47,6 +48,10 @@ export default Vue.extend({
       default: false,
     },
     small: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
       type: Boolean,
       default: false,
     },

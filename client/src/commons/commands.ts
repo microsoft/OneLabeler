@@ -1,3 +1,4 @@
+/*
 import {
   ICommand,
   IDataObject,
@@ -33,21 +34,17 @@ export class FeatureExtractionCommand implements ICommand {
   }
 
   execute(): void {
-    /*
     const dataObjects = this.#newDataObjects;
     const featureNames = this.#newFeatureNames;
     commit(types.SET_DATA_OBJECTS, dataObjects);
     commit(types.SET_FEATURE_NAMES, featureNames);
-    */
   }
 
   undo(): void {
-    /*
     const dataObjects = this.#oldDataObjects;
     const featureNames = this.#oldFeatureNames;
     commit(types.SET_DATA_OBJECTS, dataObjects);
     commit(types.SET_FEATURE_NAMES, featureNames);
-    */
   }
 }
 
@@ -84,23 +81,19 @@ export class DataObjectSelectionCommand implements ICommand {
   }
 
   execute(): void {
-    /*
     const uuids = this.#uuids;
     const queryUuids = this.#newQueryUuids;
     const statuses = this.#newStatuses;
     commit(types.SET_QUERY_UUIDS, queryUuids);
     commit(types.SET_STATUSES_OF, { uuids, statuses });
-    */
   }
 
   undo(): void {
-    /*
     const uuids = this.#uuids;
     const queryUuids = this.#oldQueryUuids;
     const statuses = this.#oldStatuses;
     commit(types.SET_QUERY_UUIDS, queryUuids);
     commit(types.SET_STATUSES_OF, { uuids, statuses });
-    */
   }
 }
 
@@ -127,23 +120,19 @@ export class DefaultLabelingCommand implements ICommand {
   }
 
   execute(): void {
-    /*
     const uuids = this.#uuids;
     const labels = this.#newLabels;
     commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
-    */
   }
 
   undo(): void {
-    /*
     const uuids = this.#uuids;
     const labels = this.#oldLabels;
     commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
-    */
   }
 }
 
-export interface IInteractiveLabelingCommand extends ICommand { }
+export type IInteractiveLabelingCommand = ICommand
 
 export class EditSingleCommand implements IInteractiveLabelingCommand {
   // The uuid of data object to be edited.
@@ -178,23 +167,19 @@ export class EditSingleCommand implements IInteractiveLabelingCommand {
   }
 
   execute(): void {
-    /*
     const uuid = this.#uuid;
     const label = this.#newLabel;
     const status = this.#newStatus;
     commit(types.SET_LABEL_CATEGORY_OF, { uuid, label });
     commit(types.SET_STATUS_OF, { uuid, status });
-    */
   }
 
   undo(): void {
-    /*
     const uuid = this.#uuid;
     const label = this.#oldLabel;
     const status = this.#oldStatus;
     commit(types.SET_LABEL_CATEGORY_OF, { uuid, label });
     commit(types.SET_STATUS_OF, { uuid, status });
-    */
   }
 }
 
@@ -231,23 +216,19 @@ export class EditBatchCommand implements IInteractiveLabelingCommand {
   }
 
   execute(): void {
-    /*
     const uuids = this.#uuids;
     const labels = this.#newLabels;
     const statuses = this.#newStatuses;
     commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     commit(types.SET_STATUSES_OF, { uuids, statuses });
-    */
   }
 
   undo(): void {
-    /*
     const uuids = this.#uuids;
     const labels = this.#oldLabels;
     const statuses = this.#oldStatuses;
     commit(types.SET_LABEL_CATEGORIES_OF, { uuids, labels });
     commit(types.SET_STATUSES_OF, { uuids, statuses });
-    */
   }
 }
 
@@ -269,16 +250,13 @@ export class StoppageAnalysisCommand implements ICommand {
   }
 
   execute(): void {
-    /*
     const stop = this.#newStop;
     commit(types.SET_STOP, stop);
-    */
   }
 
   undo(): void {
-    /*
     const stop = this.#oldStop;
     commit(types.SET_STOP, stop);
-    */
   }
 }
+*/

@@ -47,9 +47,7 @@
             </template>
             <template v-if="!isNodeServerless(props.node)">
               <!-- icon denoting the node is not serverless -->
-              <g :transform="`translate(
-                ${isNodeInteractive(props.node) ? 20 : 0},${-20})
-              `">
+              <g :transform="`translate(${isNodeInteractive(props.node) ? 20 : 0},${-20})`">
                 <rect
                   width="20"
                   height="20"

@@ -42,7 +42,6 @@
         <v-divider />
 
         <template v-if="method !== null">
-
           <!-- The label of the feature extraction method. -->
           <v-list-item class="pt-2">
             <VNodeEditableMethodLabel
@@ -148,7 +147,6 @@
               </v-list-item>
             </template>
           </v-card>
-
         </template>
       </v-list>
     </v-card-actions>

@@ -81,6 +81,9 @@ import EditableCircle from './editable-circle';
 import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
 
+type VueKonvaImage = Vue & { getNode: () => Konva.Image };
+type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
+
 export default Vue.extend({
   name: 'ThePaintBoardCanvas',
   props: {
@@ -176,19 +179,18 @@ export default Vue.extend({
     },
   },
   watch: {
-    dataObject() {
+    async dataObject() {
       this.setStageSize();
       // Loading image from url is asynchronous,
       // thus first set the image to null to avoid bumping effect.
       this.image = null;
-      this.setImage();
+      await this.setImage();
       this.resetZoom();
       this.drawLabelMask();
       this.drawEditableShapes();
     },
     editable() {
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       const shapes = layerShapes.find('.editable-shape');
       shapes.each((shape) => {
         const editableShape = shape.getAttr('object') as IEditableShape;
@@ -208,7 +210,7 @@ export default Vue.extend({
 
     (this.resizeObserver as ResizeObserver).disconnect();
   },
-  mounted() {
+  async mounted() {
     this.resizeObserver = new ResizeObserver(this.onResize);
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
 
@@ -217,17 +219,16 @@ export default Vue.extend({
     // Note: set canvas style opacity instead of in configuration
     // if set opacity in configuration,
     // each object would be transparent but not the whole canvas
-    const layerPaint = (this.$refs.layerPaint as any).getNode() as Konva.Layer;
+    const layerPaint = (this.$refs.layerPaint as VueKonvaLayer).getNode();
     // eslint-disable-next-line no-underscore-dangle
     const canvas = layerPaint.getCanvas()._canvas;
     canvas.style.opacity = '0.5';
 
     // render the image if it is given
-    this.setImage();
+    await this.setImage();
+    this.resetZoom();
     this.drawLabelMask();
     this.drawEditableShapes();
-
-    this.resetZoom();
   },
   methods: {
     onResize(): void {
@@ -240,26 +241,29 @@ export default Vue.extend({
       stage.width(container.clientWidth);
       stage.height(container.clientHeight);
     },
-    setImage(): void {
-      const img = new Image();
-      img.crossOrigin = 'Anonymous';
-      img.onload = () => {
-        this.image = img;
-        this.setImageBlur();
-      };
-      /*
-      const { path } = this.dataObject;
-      img.src = imageURLFormatter(path as string);
-      */
-      img.src = this.dataObject.content as string;
+    async setImage(): Promise<void> {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+          this.image = img;
+          this.setImageBlur();
+          resolve();
+        };
+        // const { path } = this.dataObject;
+        // img.src = imageURLFormatter(path as string);
+        img.src = this.dataObject.content as string;
+      });
     },
     setImageBlur(): void {
       const stage = (this.$refs.stage as unknown as Konva.Stage).getStage();
-      const image = (this.$refs.image as any).getNode() as Konva.Image;
+      const image = (this.$refs.image as VueKonvaImage).getNode();
 
       // Set the shadow size inverse proportional to the scale
       // to make it appear invariant to scaling.
       const scale = stage.scaleX();
+      if (scale === 0) return;
+
       image.shadowBlur(3 / scale);
       image.shadowOffset({ x: 3 / scale, y: 3 / scale });
     },
@@ -291,7 +295,7 @@ export default Vue.extend({
       // Note: this funtion get the label mask (2d array of integers)
       // instead of a color mask (3d array of {0, 1, ..., 255})
 
-      const layerPaint = (this.$refs.layerPaint as any).getNode() as Konva.Layer;
+      const layerPaint = (this.$refs.layerPaint as VueKonvaLayer).getNode();
       const stage = (this.$refs.stage as any).getNode() as Konva.Stage;
       const imgWidth = this.imgWidth as number;
       const imgHeight = this.imgHeight as number;
@@ -349,8 +353,7 @@ export default Vue.extend({
       };
       this.$emit('create:shape', labelPolygon);
 
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       layerShapes.find('#temp-prospective-polygon-edge')
         .each((shape) => shape.destroy());
       layerShapes.find('#temp-prospective-polygon-closing-edge')
@@ -395,7 +398,7 @@ export default Vue.extend({
           .globalCompositeOperation(globalCompositeOperation);
       }
 
-      const layerPaint = (this.$refs.layerPaint as any).getNode() as Konva.Layer;
+      const layerPaint = (this.$refs.layerPaint as VueKonvaLayer).getNode();
       layerPaint.add(stroke as Konva.Shape);
       layerPaint.batchDraw();
     },
@@ -414,8 +417,7 @@ export default Vue.extend({
       const color = erasable ? label2color(unlabeledMark) : label2color(strokeLabel);
 
       // remove the old cursor
-      const layerInteraction = (this.$refs.layerInteraction as any)
-        .getNode() as Konva.Layer;
+      const layerInteraction = (this.$refs.layerInteraction as VueKonvaLayer).getNode();
       layerInteraction.find('#cursor').each((shape) => shape.destroy());
       let cursor = null;
       if (strokeShape === StrokeShapeType.Square) {
@@ -453,7 +455,7 @@ export default Vue.extend({
       const color = label2color(strokeLabel);
 
       // remove the old cursor
-      const layerInteraction = (this.$refs.layerInteraction as any).getNode() as Konva.Layer;
+      const layerInteraction = (this.$refs.layerInteraction as VueKonvaLayer).getNode();
       layerInteraction.find('#cursor').each((shape) => shape.destroy());
       const cursor = new Konva.Circle({
         x,
@@ -469,7 +471,7 @@ export default Vue.extend({
     },
     drawLabelMask(): void {
       const { labelMask } = this;
-      const layerPaint = (this.$refs.layerPaint as any).getNode() as Konva.Layer;
+      const layerPaint = (this.$refs.layerPaint as VueKonvaLayer).getNode();
 
       // clean layerPaint
       layerPaint.destroyChildren();
@@ -491,8 +493,7 @@ export default Vue.extend({
     },
     drawEditableCircle(labelCircle: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       const [x, y] = labelCircle.position as [number, number];
       const { category, uuid } = labelCircle;
 
@@ -522,8 +523,7 @@ export default Vue.extend({
     },
     drawEditableRect(labelRect: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       const points = labelRect.position as [number, number][];
       const { category, uuid } = labelRect;
 
@@ -549,8 +549,7 @@ export default Vue.extend({
     },
     drawEditablePolygon(labelPolygon: ILabelShape): void {
       const { label2color, editable } = this;
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       const points = labelPolygon.position as [number, number][];
       const { category, uuid } = labelPolygon;
 
@@ -576,8 +575,7 @@ export default Vue.extend({
     },
     drawEditableShapes(): void {
       const { labelShapes } = this;
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
 
       // clean layerShapes
       layerShapes.destroyChildren();
@@ -602,8 +600,7 @@ export default Vue.extend({
         this.stopPolygonCreation(false);
       }
       if (key === 'Delete') {
-        const layerShapes = (this.$refs.layerShapes as any)
-          .getNode() as Konva.Layer;
+        const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
         const shapes = layerShapes.find('.clicked-shape');
         shapes.each((shape) => {
           const uuid = shape.getAttr('uuid');
@@ -735,8 +732,7 @@ export default Vue.extend({
         this.points = [...this.points, [x, y]];
         const color = label2color(strokeLabel);
 
-        const layerShapes = (this.$refs.layerShapes as any)
-          .getNode() as Konva.Layer;
+        const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
 
         layerShapes.find('#temp-prospective-polygon-closing-edge')
           .each((shape) => shape.destroy());
@@ -772,8 +768,7 @@ export default Vue.extend({
         const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
         const color = label2color(strokeLabel);
 
-        const layerShapes = (this.$refs.layerShapes as any)
-          .getNode() as Konva.Layer;
+        const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
         layerShapes.find('#temp-prospective-polygon-edge')
           .each((shape) => shape.destroy());
         layerShapes.find('#temp-prospective-polygon-closing-edge')
@@ -812,8 +807,7 @@ export default Vue.extend({
         const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
         const color = label2color(strokeLabel);
 
-        const layerShapes = (this.$refs.layerShapes as any)
-          .getNode() as Konva.Layer;
+        const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
         layerShapes.find('#temp-prospective-rect')
           .each((shape) => shape.destroy());
 
@@ -856,7 +850,7 @@ export default Vue.extend({
       this.isMouseDown = false;
 
       // clear the paint brush drawn in the interaction layer
-      const layerInteraction = (this.$refs.layerInteraction as any).getNode() as Konva.Layer;
+      const layerInteraction = (this.$refs.layerInteraction as VueKonvaLayer).getNode();
       layerInteraction.destroyChildren();
       layerInteraction.draw();
     },
@@ -864,8 +858,7 @@ export default Vue.extend({
       const { snapToPixel, strokeLabel, label2color } = this;
       const { offsetX, offsetY } = e.evt;
       const { x, y } = this.xyWindowToCanvas(offsetX, offsetY, snapToPixel);
-      const layerShapes = (this.$refs.layerShapes as any)
-        .getNode() as Konva.Layer;
+      const layerShapes = (this.$refs.layerShapes as VueKonvaLayer).getNode();
       if (this.pointClickCreateable) {
         const labelCircle: ILabelShape = {
           category: strokeLabel,

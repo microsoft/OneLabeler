@@ -74,8 +74,9 @@ export default Vue.extend({
       required: true,
     },
     label: {
-      type: String as PropType<ILabelCategory>,
-      required: true,
+      type: String as PropType<ILabelCategory | undefined>,
+      default: undefined,
+      required: false,
     },
     status: {
       type: String as PropType<StatusType>,
@@ -117,8 +118,9 @@ export default Vue.extend({
         [DataType.Image]: VDisplayImage,
         [DataType.Text]: VDisplayText,
       } as Partial<Record<DataType, VueConstructor>>;
-      if (dataType !== null && dataType in mapper) return mapper[dataType];
-      return null;
+      if (dataType === null) return null;
+      const value = mapper[dataType];
+      return value === undefined ? null : value;
     },
     bodyHeight(): number {
       return Math.max(this.height - this.headerHeight, 0);

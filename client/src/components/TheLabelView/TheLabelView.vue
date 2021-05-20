@@ -1,13 +1,13 @@
 <template>
   <component
-    v-if="ready"
     :is="component"
+    v-if="ready"
     :data-objects="queriedDataObjects"
     :labels="queriedLabels"
     :statuses="queriedStatuses.map((d) => d.value)"
     :task-window="taskWindow"
-    :data-type="dataType"
     :label-tasks="labelTasks"
+    :data-type="dataType"
     :classes="classes"
     :unlabeled-mark="unlabeledMark"
     :label2color="label2color"
@@ -22,18 +22,24 @@
 import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
+  Category,
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   IStatus,
   IStatusStorage,
+  LabelTaskType,
   StatusType,
   TaskWindow,
   WorkflowNodeType,
 } from '@/commons/types';
 import TheCardMatrix from '@/components/TheCardMatrix/TheCardMatrix.vue';
 import ThePaintBoard from '@/components/ThePaintBoard/ThePaintBoard.vue';
+
+const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
+  Object.entries(d).filter(([_, v]) => v != null),
+) as (typeof d);
 
 export default Vue.extend({
   name: 'TheLabelView',
@@ -98,6 +104,14 @@ export default Vue.extend({
       this.queriedStatuses = queriedStatuses;
     },
   },
+  async mounted() {
+    const queriedDataObjects = await this.getQueriedDataObjects();
+    const queriedLabels = await this.getQueriedLabels();
+    const queriedStatuses = await this.getQueriedStatuses();
+    this.queriedDataObjects = queriedDataObjects;
+    this.queriedLabels = queriedLabels;
+    this.queriedStatuses = queriedStatuses;
+  },
   methods: {
     ...mapActions([
       'editTaskWindow',
@@ -109,10 +123,11 @@ export default Vue.extend({
     ]),
     async onUserEditLabel(uuid: string, newValue: Partial<ILabel>) {
       const { labels } = this as { labels: ILabelStorage };
-      const label = await labels.get(uuid);
-      if (label !== undefined) {
-        await this.setLabelOf({ ...label, ...newValue } as ILabel);
-      }
+      const label: ILabel | undefined = await labels.get(uuid);
+      const labelUpdated = label === undefined
+        ? { uuid, ...newValue }
+        : { ...label, ...newValue };
+      await this.setLabelOf(labelUpdated);
       await this.setStatusOf({ uuid, value: StatusType.Labeled } as IStatus);
 
       /*
@@ -128,10 +143,11 @@ export default Vue.extend({
     },
     async onUserEditLabels(uuids: string[], newValues: Partial<ILabel>[]) {
       const { labels } = this as { labels: ILabelStorage };
-      const updatedLabels = (await labels.getBulk(uuids)).map((label, i) => ({
-        ...label,
-        ...newValues[i],
-      })) as ILabel[];
+      const updatedLabels: ILabel[] = (await labels.getBulk(uuids)).map((label, i) => (
+        label === undefined
+          ? { uuid: uuids[i], ...newValues[i] }
+          : { ...label, ...newValues[i] }
+      ));
       const updatedStatuses: IStatus[] = uuids.map((uuid) => (
         { uuid, value: StatusType.Labeled }
       ));
@@ -163,26 +179,47 @@ export default Vue.extend({
         ...newValue,
       });
     },
+    getDefaultLabel(): Omit<ILabel, 'uuid'> {
+      const unlabeledMark = this.unlabeledMark as Category;
+      const labelTasks = this.labelTasks as LabelTaskType[];
+      return {
+        category: labelTasks.includes(LabelTaskType.Classification)
+          ? unlabeledMark
+          : undefined,
+        shapes: labelTasks.includes(LabelTaskType.ObjectDetection)
+          ? []
+          : undefined,
+        mask: labelTasks.includes(LabelTaskType.Segmentation)
+          ? { path: null }
+          : undefined,
+      };
+    },
     async getQueriedDataObjects(): Promise<IDataObject[]> {
       const queryUuids = this.queryUuids as string[];
       const dataObjects = this.dataObjects as IDataObjectStorage | null;
-      return dataObjects === null
-        ? []
-        : (await dataObjects.getBulk(queryUuids)) as IDataObject[];
+      if (dataObjects === null) return [];
+      return (await dataObjects.getBulk(queryUuids)) as IDataObject[];
     },
     async getQueriedLabels(): Promise<ILabel[]> {
       const queryUuids = this.queryUuids as string[];
       const labels = this.labels as ILabelStorage | null;
-      return labels === null
-        ? []
-        : (await labels.getBulk(queryUuids)) as ILabel[];
+      if (labels === null) return [];
+
+      const queriedLabels: ILabel[] = (await labels.getBulk(queryUuids))
+        .map((d, i) => {
+          const defaultLabel = this.getDefaultLabel();
+          if (d === undefined) return { uuid: queryUuids[i], ...defaultLabel };
+          return { ...clean(defaultLabel), ...clean(d) };
+        });
+      return queriedLabels;
     },
     async getQueriedStatuses(): Promise<IStatus[]> {
       const queryUuids = this.queryUuids as string[];
       const statuses = this.statuses as IStatusStorage | null;
-      return statuses === null
-        ? []
-        : (await statuses.getBulk(queryUuids)) as IStatus[];
+      if (statuses === null) return [];
+      const queriedStatuses: IStatus[] = (await statuses.getBulk(queryUuids))
+        .map((d, i) => (d !== undefined ? d : { uuid: queryUuids[i], value: StatusType.New }));
+      return queriedStatuses;
     },
   },
 });

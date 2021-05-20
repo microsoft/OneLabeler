@@ -43,7 +43,6 @@
         <v-divider />
 
         <template v-if="method !== null">
-
           <!-- The label of the method. -->
           <v-list-item class="pt-2">
             <VNodeEditableMethodLabel
@@ -99,7 +98,6 @@
               />
             </v-card>
           </v-list-item>
-
         </template>
       </v-list>
     </v-card-actions>

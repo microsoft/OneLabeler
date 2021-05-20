@@ -1,51 +1,16 @@
 import { Store } from 'vuex';
 import {
-  ILabel,
-  LabelTaskType,
   Process,
   TaskWindow,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
 import { isNodeInteractive } from '@/commons/utils';
-import { IState } from './state';
+import { IState as IRootState } from './state';
+import { IState as IWorkflowState } from './workflow/state';
 import * as types from './mutation-types';
 import * as workflowTypes from './workflow/mutation-types';
 
-const getLabelTasks = (nodes: WorkflowNode[]): LabelTaskType[] => {
-  const type = WorkflowNodeType.Initialization;
-  const node = nodes.find((d) => d.type === type);
-  if (node === undefined) return [];
-  return (node.value as { labelTasks: LabelTaskType[] }).labelTasks;
-};
-
-const updateLabels = async (
-  { commit, state }: { commit: Store<IState>['commit'], state: IState },
-  labelTasks: LabelTaskType[],
-): Promise<void> => {
-  const containsClassification = labelTasks.includes(LabelTaskType.Classification);
-  const containsObjectDetection = labelTasks.includes(LabelTaskType.ObjectDetection);
-  const containsSegmentation = labelTasks.includes(LabelTaskType.Segmentation);
-
-  // Clear labels
-  if (!containsClassification && !containsObjectDetection && !containsSegmentation) {
-    commit(types.SET_LABELS, []);
-    return;
-  }
-
-  if (state.dataObjects === null) return;
-  const nDataObjects = await state.dataObjects.count();
-  if (state.labels.length !== nDataObjects) {
-    const dataObjects = await state.dataObjects.getAll();
-    const labels: ILabel[] = dataObjects.map((d) => ({
-      uuid: d.uuid,
-      category: containsClassification ? state.unlabeledMark : undefined,
-      shapes: containsObjectDetection ? Array(0) : undefined,
-      mask: containsSegmentation ? { path: null } : undefined,
-    }));
-    commit(types.SET_LABELS, labels);
-  }
-};
+type IState = IRootState & { workflow: IWorkflowState };
 
 const getUpdatedTaskWindows = (
   taskWindows: TaskWindow[],
@@ -73,13 +38,8 @@ const getUpdatedTaskWindows = (
   return result;
 };
 
-const plugin = (store: Store<IState>) => {
+const plugin = (store: Store<IState>): void => {
   store.subscribe(async (mutation, state: IState) => {
-    if (mutation.type === types.SET_DATA_OBJECTS) {
-      const nodes = state.workflow.nodes as WorkflowNode[];
-      const labelTasks = getLabelTasks(nodes);
-      await updateLabels({ commit: store.commit, state }, labelTasks);
-    }
     if (mutation.type === types.SET_DATA_OBJECTS) {
       const { dataObjects } = state;
       if (dataObjects !== null) {
@@ -95,8 +55,12 @@ const plugin = (store: Store<IState>) => {
       }
     }
     if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
-      const labelTasks = getLabelTasks(mutation.payload as WorkflowNode[]);
-      await updateLabels({ commit: store.commit, state }, labelTasks);
+      // Setting the nodes may change the label tasks
+      // and thus changing the default labels.
+      const { labels } = state;
+      if (labels !== null) {
+        store.commit(types.SET_LABELS, labels.shallowCopy());
+      }
     }
     if (mutation.type === `workflow/${workflowTypes.SET_NODES}`) {
       const nodes = state.workflow.nodes as WorkflowNode[];

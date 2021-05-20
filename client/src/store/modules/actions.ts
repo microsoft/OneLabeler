@@ -90,13 +90,6 @@ export const setMessage = (
   commit(types.SET_MESSAGE, message);
 };
 
-export const setTaskWindows = (
-  { commit }: ActionContext<IState, IState>,
-  taskWindows: TaskWindow[],
-): void => {
-  commit(types.SET_TASK_WINDOWS, taskWindows);
-};
-
 export const editTaskWindow = (
   { commit, state }: ActionContext<IState, IState>,
   newValue: TaskWindow,

@@ -12,9 +12,9 @@ export interface IState {
   /** The data labeling project record attributes. */
   /** The data objects to be labeled */
   dataObjects: IDataObjectStorage | null;
-  /** The labels. */
+  /** The labels (unlabeled data objects' labels not stored). */
   labels: ILabelStorage | null;
-  /** The label statuses of the data objects. */
+  /** The label statuses (unlabeled data objects' statuses not stored). */
   statuses: IStatusStorage | null;
   /** The uuids of sampled data objects. */
   queryUuids: string[];

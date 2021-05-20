@@ -4,7 +4,7 @@
     class="app-footer"
     :style="{
       flex: '1 1 auto',
-      display: 'inherit',
+      display: 'flex',
       height: `${height}px`,
     }"
   >

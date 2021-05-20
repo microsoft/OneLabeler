@@ -52,7 +52,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { IStatusStorage, StatusType } from '@/commons/types';
+import { IDataObjectStorage, IStatusStorage, StatusType } from '@/commons/types';
 
 export default Vue.extend({
   name: 'TheDashboardProgressView',
@@ -66,7 +66,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['statuses']),
+    ...mapState(['dataObjects', 'statuses']),
     statusList() {
       const {
         nLabeled,
@@ -108,6 +108,9 @@ export default Vue.extend({
     async statuses() {
       await this.setData();
     },
+    async dataObjects() {
+      await this.setData();
+    },
   },
   async mounted() {
     await this.setData();
@@ -131,14 +134,18 @@ export default Vue.extend({
       return statuses.count((d) => d.value === StatusType.Skipped);
     },
     async getNTotal(): Promise<number> {
-      const { statuses } = this as { statuses: IStatusStorage | null };
-      if (statuses === null) return 0;
-      return statuses.count();
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
+      if (dataObjects === null) return 0;
+      return dataObjects.count();
     },
     async getNUnseen(): Promise<number> {
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
       const { statuses } = this as { statuses: IStatusStorage | null };
-      if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.New);
+      if (dataObjects === null || statuses === null) return 0;
+      const nTotalDataObjects = await dataObjects.count();
+      const nTotalStatuses = await statuses.count();
+      const nUnseen = await statuses.count((d) => d.value === StatusType.New);
+      return nUnseen + nTotalDataObjects - nTotalStatuses;
     },
     async getNViewing(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };

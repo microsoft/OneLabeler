@@ -47,6 +47,8 @@ export interface FlowchartNode {
   width: number;
   height: number;
   ports?: FlowchartPort[];
+  /** Allow additional properties. */
+  [x: string]: unknown;
 }
 
 export interface FlowchartEdge {

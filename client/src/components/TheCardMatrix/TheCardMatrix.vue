@@ -4,6 +4,7 @@
       :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
+      :label-tasks="labelTasks"
       @click:batch-label="onClickBatchLabel"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
@@ -45,6 +46,7 @@ import {
   IDataObject,
   ILabelCategory,
   ILabel,
+  LabelTaskType,
   StatusType,
   TaskWindow,
   Category,
@@ -75,6 +77,10 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataType: {
       type: String as PropType<DataType>,
       required: true,
@@ -98,7 +104,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    labelCategories() {
+    labelCategories(): (Category | undefined)[] {
       return this.labels.map((d) => d.category);
     },
     itemsPerRow(): number {

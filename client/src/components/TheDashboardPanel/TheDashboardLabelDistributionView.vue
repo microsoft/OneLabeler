@@ -1,5 +1,8 @@
 <template>
-  <v-card width="250" height="250">
+  <v-card
+    width="250"
+    height="250"
+  >
     <v-card-title class="view-header">
       <v-icon
         class="px-2"
@@ -112,8 +115,14 @@ export default Vue.extend({
     },
     async getNLabeledOf(category: Category): Promise<number> {
       const { labels } = this as { labels: ILabelStorage | null };
-      if (labels === null) return 0;
-      const n = await labels.count((d: ILabel) => d.category === category);
+      const { statuses } = this as { statuses: IStatusStorage | null };
+      if (labels === null || statuses === null) return 0;
+      const labelValues = await labels
+        .getFiltered((d: ILabel) => d.category === category);
+      const uuids = labelValues.map((d) => d.uuid);
+      const n = (await statuses.getBulk(uuids)).filter((d) => (
+        (d !== undefined) && (d.value === StatusType.Labeled)
+      )).length;
       return n;
     },
     async getNLabeledByCategory(): Promise<Record<Category, number>> {

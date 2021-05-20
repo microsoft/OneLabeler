@@ -7,7 +7,10 @@
       class="view-header px-2"
     >
       <template v-if="!isLabelEditable">
-        <span class="subtitle-2" style="padding-bottom: 7.4px; padding-top: 7px">
+        <span
+          class="subtitle-2"
+          style="padding-bottom: 7.4px; padding-top: 7px"
+        >
           {{ label }}
         </span>
         <v-spacer />

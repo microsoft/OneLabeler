@@ -17,7 +17,10 @@
     <v-spacer />
 
     <!-- The data object label menu. -->
-    <v-menu offset-y>
+    <v-menu
+      v-if="label !== undefined"
+      offset-y
+    >
       <template #activator="{ on }">
         <v-btn
           :color="buttonColor === null ? '' : buttonColor "
@@ -60,8 +63,9 @@ export default Vue.extend({
   name: 'VDataObjectCardHeader',
   props: {
     label: {
-      type: String as PropType<ILabelCategory>,
-      required: true,
+      type: String as PropType<ILabelCategory | undefined>,
+      default: undefined,
+      required: false,
     },
     status: {
       type: String as PropType<StatusType>,

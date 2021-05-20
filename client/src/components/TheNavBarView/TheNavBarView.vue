@@ -14,24 +14,25 @@
 
     <!-- The new project button. -->
     <VUploadButton
-      title="New Label Project (Ctrl + N)"
       :type="dataType === DataType.Image ? 'folder' : 'file'"
-      color="white"
-      small
+      :disabled="disableNewProjectButton"
       :icon="$vuetify.icons.values.new"
       :keyboard-trigger="keyboardTriggerNewProject"
+      title="New Label Project (Ctrl + N)"
+      color="white"
+      small
       @upload:file="onNewProject"
       @upload:files="onNewProject"
     />
 
     <!-- The load project button. -->
     <VUploadButton
+      :icon="$vuetify.icons.values.open"
+      :keyboard-trigger="keyboardTriggerLoadProject"
       title="Load Label Project (Ctrl + O)"
       type="file"
       color="white"
       small
-      :icon="$vuetify.icons.values.open"
-      :keyboard-trigger="keyboardTriggerLoadProject"
       @upload:file="onLoadProject"
     />
 
@@ -216,14 +217,6 @@ export default Vue.extend({
       keyboardTriggerLoadProject: (e: KeyboardEvent) => (e.key === 'o' && e.ctrlKey),
     };
   },
-  watch: {
-    async dataObjects() {
-      const { dataObjects } = this;
-      this.nDataObjects = dataObjects === null
-        ? 0
-        : await dataObjects.count();
-    },
-  },
   computed: {
     ...mapGetters('workflow', [
       'dataType',
@@ -242,6 +235,10 @@ export default Vue.extend({
       'featureNames',
       'commandHistory',
     ]),
+    disableNewProjectButton(): boolean {
+      const dataType = this.dataType as DataType | null;
+      return dataType === null;
+    },
     disableSaveButton(): boolean {
       return this.nDataObjects === 0;
     },
@@ -278,6 +275,14 @@ export default Vue.extend({
         return 'Edit Single';
       }
       return '';
+    },
+  },
+  watch: {
+    async dataObjects() {
+      const { dataObjects } = this;
+      this.nDataObjects = dataObjects === null
+        ? 0
+        : await dataObjects.count();
     },
   },
   created(): void {

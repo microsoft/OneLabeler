@@ -253,7 +253,7 @@ export const validateInstantiations = (graph: {
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
 }): Notification[] => {
-  const { nodes, edges } = graph;
+  const { nodes } = graph;
   const notifications = [] as Notification[];
 
   // Strict constraints:

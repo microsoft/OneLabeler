@@ -28,7 +28,7 @@
           :classes="classes"
           :title="''"
           :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
-          :button-color="label2color === null ? null : label2color(labels[i])"
+          :button-color="getColor(labels[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
           @click:card="onClickCard"
@@ -87,7 +87,9 @@ export default Vue.extend({
       required: true,
     },
     labels: {
-      type: Array as PropType<ILabelCategory[]>,
+      // When grid matrix is activate while the label task does not include classification,
+      // the passed labels can be undefined
+      type: Array as PropType<(ILabelCategory | undefined)[]>,
       required: true,
     },
     statuses: {
@@ -184,6 +186,11 @@ export default Vue.extend({
       labelCards.style.height = `${height - paginationHeight}px`;
       this.cardHeight = (height - paginationHeight) / this.itemsPerCol;
       this.cardWidth = width / this.itemsPerRow;
+    },
+    getColor(label: ILabelCategory | undefined): string | null {
+      const { label2color } = this;
+      if (label === undefined || label2color === null) return null;
+      return label2color(label);
     },
   },
 });

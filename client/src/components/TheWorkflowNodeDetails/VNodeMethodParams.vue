@@ -3,7 +3,10 @@
     :outlined="outlined"
     flat
   >
-    <v-list dense class="py-0">
+    <v-list
+      dense
+      class="py-0"
+    >
       <!-- The parameters of the method. -->
       <v-list-item
         v-for="(param, paramKey) in params"
@@ -54,6 +57,7 @@ export default Vue.extend({
   props: {
     params: {
       type: Object as PropType<MethodParams>,
+      required: true,
     },
     outlined: {
       type: Boolean,

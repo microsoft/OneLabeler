@@ -16,7 +16,7 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'error',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'linebreak-style': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'linebreak-style': process.env.NODE_ENV === 'production' ? ['error', 'windows'] : 'off',
     'no-param-reassign': ['error', {
       props: true,
       ignorePropertyModificationsFor: [

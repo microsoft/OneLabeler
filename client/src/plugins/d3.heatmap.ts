@@ -378,7 +378,7 @@ export default class Heatmap implements IHeatmap {
     dataBinned.forEach((d) => {
       maxDots = Math.max(d.points.length, maxDots);
     });
-    const color = d3.scaleLinear()
+    const color = d3.scaleLinear<string>()
       .domain([0, maxDots])
       .range(['#ffffff', '#67000d'])
       .interpolate(d3.interpolateLab);

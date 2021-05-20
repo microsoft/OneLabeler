@@ -15,7 +15,10 @@
     </template>
     <template #tools>
       <!-- The set batch labels menu. -->
-      <v-menu offset-y>
+      <v-menu
+        v-if="enableClassification"
+        offset-y
+      >
         <template #activator="{ on }">
           <v-btn
             x-small
@@ -57,13 +60,17 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
+import { Category, LabelTaskType } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default Vue.extend({
   name: 'TheCardMatrixHeader',
   components: { VToolbar },
   props: {
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     classes: {
       type: Array as PropType<Category[]>,
       default: () => [],
@@ -75,6 +82,13 @@ export default Vue.extend({
     label2color: {
       type: Function as PropType<(label: string) => string>,
       required: true,
+    },
+  },
+  computed: {
+    enableClassification(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.Classification,
+      ) >= 0;
     },
   },
   methods: {

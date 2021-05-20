@@ -199,6 +199,8 @@ export default Vue.extend({
     },
   },
   mounted() {
+    this.page = 1;
+    this.setCanvasHeight();
     this.initializeStrokeLabel();
   },
   methods: {
@@ -233,39 +235,43 @@ export default Vue.extend({
     onAddLabelShape(labelShape: ILabelShape) {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { shapes: [...labelShapes, labelShape] };
-      this.$emit('user-edit-label', uuid, newValue);
+      const shapes = labelShapes === null ? [labelShape] : [...labelShapes, labelShape];
+      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
     onUpdateLabelShape(labelShape: ILabelShape) {
       const { dataObject, labelShapes } = this;
-      const index = labelShapes.findIndex(
-        (d: ILabelShape) => d.uuid === labelShape.uuid,
-      );
-      const labelShapesUpdated = [
-        ...labelShapes.slice(0, index),
-        labelShape,
-        ...labelShapes.slice(index + 1),
-      ];
-      const { uuid } = dataObject as IDataObject;
-      const newValue: Partial<ILabel> = { shapes: labelShapesUpdated };
-      this.$emit('user-edit-label', uuid, newValue);
+      if (dataObject === null) return;
+      let shapes: ILabelShape[];
+      if (labelShapes === null) {
+        shapes = [labelShape];
+      } else {
+        const index = labelShapes.findIndex(
+          (d: ILabelShape) => d.uuid === labelShape.uuid,
+        );
+        shapes = [...labelShapes];
+        shapes[index] = labelShape;
+      }
+      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
     onRemoveLabelShape(labelShape: ILabelShape) {
       const { dataObject, labelShapes } = this;
-      const index = labelShapes.findIndex(
-        (d: ILabelShape) => d.uuid === labelShape.uuid,
-      );
-      const labelShapesUpdated = [
-        ...labelShapes.slice(0, index),
-        ...labelShapes.slice(index + 1),
-      ];
-      const { uuid } = dataObject as IDataObject;
-      const newValue: Partial<ILabel> = { shapes: labelShapesUpdated };
-      this.$emit('user-edit-label', uuid, newValue);
+      if (dataObject === null) return;
+      let shapes: ILabelShape[];
+      if (labelShapes === null) {
+        shapes = [labelShape];
+      } else {
+        const index = labelShapes.findIndex(
+          (d: ILabelShape) => d.uuid === labelShape.uuid,
+        );
+        shapes = [
+          ...labelShapes.slice(0, index),
+          ...labelShapes.slice(index + 1),
+        ];
+      }
+      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
     onResetImageSize() {
-      this.$refs.canvas.resetZoom();
+      (this.$refs.canvas as Vue & { resetZoom: () => void }).resetZoom();
     },
     onSetStrokeLabel(strokeLabel: Category) {
       this.strokeLabel = strokeLabel;
