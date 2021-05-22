@@ -4,12 +4,12 @@
  */
 
 import {
-  PROTOCOL,
-  IP,
-  PORT,
+  PROTOCOL_ALGO,
+  IP_ALGO,
+  PORT_ALGO,
 } from './http-params';
 
 // image url formatter
 export default (filePath: string): string => (
-  `${PROTOCOL}://${IP}:${PORT}/img/${filePath}`
+  `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/img/${filePath}`
 );

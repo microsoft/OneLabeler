@@ -1,3 +1,5 @@
+import { FilterQuery } from 'mongoose';
+
 /** The types of data objects. */
 export enum DataType {
   Image = 'Image',
@@ -46,18 +48,6 @@ export type Category = string;
 /** The type of data category labels. */
 export type ILabelCategory = Category;
 
-/** The interface of the segmentation label of an image data object. */
-export interface ILabelMask {
-  /** The storage path of the mask on the server. */
-  path: string | null;
-  /** The color encoding of the stored mask image. */
-  colorEncoding?: { [key: string]: number | [number, number, number] } | null;
-  /** The width of the mask. */
-  width?: number | null;
-  /** The height of the mask. */
-  height?: number | null;
-}
-
 /** The type of data shapes in polygon annotation. */
 export enum ObjectShapeType {
   Polygon = 'Polygon',
@@ -65,14 +55,28 @@ export enum ObjectShapeType {
   Point = 'Point',
 }
 
+type Point = [number, number];
+
 /** The interface of a polygon annotation in an image data object. */
 export interface ILabelShape {
   category: Category;
   shape: ObjectShapeType;
-  position: [number, number][] | [number, number];
+  position: Point[] | Point;
   /** The uuid is for recognizing which shape in the canvas
    * corresponds to which label shape. */
   uuid?: string | null;
+}
+
+/** The interface of the segmentation label of an image data object. */
+export interface ILabelMask {
+  /** The storage path of the mask on the server. */
+  path: string | null;
+  /** The color encoding of the stored mask image. */
+  label2color?: { [key: string]: number | [number, number, number] } | null;
+  /** The width of the mask. */
+  width?: number | null;
+  /** The height of the mask. */
+  height?: number | null;
 }
 
 export interface ILabel {
@@ -80,8 +84,8 @@ export interface ILabel {
   uuid: string;
   /** Different modalities of label. */
   category?: ILabelCategory;
-  mask?: ILabelMask;
   shapes?: ILabelShape[];
+  mask?: ILabelMask;
 }
 
 /** The enum of label status types. */
@@ -128,6 +132,7 @@ export interface IDataObjectStorage {
   get(uuid: string): Promise<IDataObject | undefined>;
   getAll(): Promise<IDataObject[]>;
   getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]>;
+  set(dataObject: IDataObject): Promise<void>;
   setBulk(dataObjects: IDataObject[]): Promise<void>;
   shallowCopy(): IDataObjectStorage;
   slice(begin?: number, end?: number): Promise<IDataObject[]>;
@@ -136,12 +141,12 @@ export interface IDataObjectStorage {
 
 /** The interface of label storage. */
 export interface ILabelStorage {
-  count(condition?: (value: ILabel) => boolean): Promise<number>;
+  count(query?: FilterQuery<unknown>): Promise<number>;
   deleteAll(): Promise<void>;
   get(uuid: string): Promise<ILabel | undefined>;
   getBulk(uuids: string[]): Promise<(ILabel | undefined)[]>;
   getAll(): Promise<ILabel[]>;
-  getFiltered(condition: (value: ILabel) => boolean): Promise<ILabel[]>;
+  getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]>;
   set(label: ILabel): Promise<void>;
   setBulk(labels: ILabel[]): Promise<void>;
   shallowCopy(): ILabelStorage;
@@ -149,7 +154,7 @@ export interface ILabelStorage {
 
 /** The interface of status storage. */
 export interface IStatusStorage {
-  count(condition?: (value: IStatus) => boolean): Promise<number>;
+  count(query?: FilterQuery<unknown>): Promise<number>;
   deleteAll(): Promise<void>;
   get(uuid: string): Promise<IStatus | undefined>;
   getBulk(uuids: string[]): Promise<(IStatus | undefined)[]>;
@@ -214,6 +219,31 @@ export interface Process {
   dataTypes?: DataType[];
   model?: ModelService;
   params?: MethodParams;
+}
+
+export enum SourceType {
+  FileUpload = 'FileUpload',
+  ServerDB = 'ServerDB',
+}
+
+export interface SourceService {
+  type: SourceType;
+  api: string;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+}
+
+export enum StorageType {
+  ClientMemory = 'ClientMemory',
+  ClientDB = 'ClientDB',
+  ServerDB = 'ServerDB',
+}
+
+export interface StorageService {
+  type: StorageType;
+  api: string;
+  isBuiltIn: boolean;
+  isServerless: boolean;
 }
 
 export enum WorkflowNodeType {

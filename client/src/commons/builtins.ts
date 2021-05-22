@@ -4,8 +4,19 @@ import {
   ModelService,
   Process,
   ProcessType,
+  SourceType,
+  SourceService,
+  StorageType,
+  StorageService,
 } from '@/commons/types';
-import { PROTOCOL, IP, PORT } from '@/services/http-params';
+import {
+  PROTOCOL_ALGO,
+  PROTOCOL_DB,
+  IP_ALGO,
+  IP_DB,
+  PORT_ALGO,
+  PORT_DB,
+} from '@/services/http-params';
 
 export const modelServices: ModelService[] = [{
   type: 'DecisionTree',
@@ -15,7 +26,7 @@ export const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'DecisionTree-95912701',
-  // api: `${PROTOCOL}://${IP}:${PORT}/model/DecisionTree`,
+  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/DecisionTree`,
   // isLocal: true,
 }, {
   type: 'SVM',
@@ -25,7 +36,7 @@ export const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'SVM-99885399',
-  // api: `${PROTOCOL}://${IP}:${PORT}/model/SVM`,
+  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/SVM`,
   // isLocal: true,
 }, {
   type: 'LogisticRegression',
@@ -35,7 +46,7 @@ export const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: true,
   // id: 'LogisticRegression-75095119',
-  // api: `${PROTOCOL}://${IP}:${PORT}/model/LogisticRegression`,
+  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LogisticRegression`,
   // isLocal: true,
 }, {
   type: 'RestrictedBoltzmannMachine',
@@ -45,7 +56,7 @@ export const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'RestrictedBoltzmannMachine-73157581',
-  // api: `${PROTOCOL}://${IP}:${PORT}/model/RestrictedBoltzmannMachine`,
+  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/RestrictedBoltzmannMachine`,
   // isLocal: true,
 }, {
   type: 'LabelSpreading',
@@ -55,8 +66,37 @@ export const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: true,
   // id: 'LabelSpreading-81419641',
-  // api: `${PROTOCOL}://${IP}:${PORT}/model/LabelSpreading`,
+  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LabelSpreading`,
   // isLocal: true,
+}];
+
+export const sourceService: SourceService[] = [{
+  type: SourceType.FileUpload,
+  api: 'FileUpload',
+  isBuiltIn: true,
+  isServerless: true,
+}, {
+  type: SourceType.ServerDB,
+  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}/database`,
+  isBuiltIn: true,
+  isServerless: true,
+}];
+
+export const storageServices: StorageService[] = [{
+  type: StorageType.ClientMemory,
+  api: 'ClientMemory',
+  isBuiltIn: true,
+  isServerless: true,
+}, {
+  type: StorageType.ClientDB,
+  api: 'ClientDB',
+  isBuiltIn: true,
+  isServerless: true,
+}, {
+  type: StorageType.ServerDB,
+  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}/database`,
+  isBuiltIn: true,
+  isServerless: false,
 }];
 
 const dataObjectSelectionMethods: Process[] = [{
@@ -103,7 +143,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/Cluster`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/Cluster`,
   params: {
     nBatch: {
       value: 48,
@@ -128,7 +168,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/DenseAreas`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/DenseAreas`,
   params: {
     nBatch: {
       value: 48,
@@ -153,7 +193,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/ClusterCentroids`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/ClusterCentroids`,
   params: {
     nBatch: {
       value: 48,
@@ -178,7 +218,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/Entropy`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/Entropy`,
   model: undefined,
   params: {
     nBatch: {
@@ -204,7 +244,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/LeastConfident`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/LeastConfident`,
   model: undefined,
   params: {
     nBatch: {
@@ -230,7 +270,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/SmallestMargin`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/SmallestMargin`,
   model: undefined,
   params: {
     nBatch: {
@@ -256,7 +296,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/EntropyDiversity`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/EntropyDiversity`,
   model: undefined,
   params: {
     nBatch: {
@@ -282,7 +322,7 @@ const dataObjectSelectionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: true,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/selection/EntropyDiversityDensity`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/EntropyDiversityDensity`,
   model: undefined,
   params: {
     nBatch: {
@@ -311,7 +351,7 @@ const defaultLabelingMethods: Process[] = [{
   isModelBased: true,
   isServerless: false,
   model: undefined,
-  api: `${PROTOCOL}://${IP}:${PORT}/defaultLabels/ModelPrediction`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/ModelPrediction`,
 }, {
   type: ProcessType.DefaultLabeling,
   label: 'Null (Dummy)',
@@ -343,7 +383,7 @@ const featureExtractionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/features/image/SVD`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/SVD`,
   dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
@@ -354,7 +394,7 @@ const featureExtractionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/features/image/BoW`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/BoW`,
   dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
@@ -365,7 +405,7 @@ const featureExtractionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/features/image/LDA`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/LDA`,
   dataTypes: [DataType.Image],
 }, {
   type: ProcessType.FeatureExtraction,
@@ -376,7 +416,7 @@ const featureExtractionMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/features/text/NMF`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/text/NMF`,
   dataTypes: [DataType.Text],
 }, {
   type: ProcessType.FeatureExtraction,
@@ -444,7 +484,7 @@ const interimModelTrainingMethods: Process[] = [{
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL}://${IP}:${PORT}/modelUpdated/Retrain`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/modelUpdated/Retrain`,
 }, {
   type: ProcessType.InterimModelTraining,
   label: 'Static',

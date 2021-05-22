@@ -66,7 +66,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['dataObjects', 'statuses']),
+    ...mapState(['dataObjects', 'labels', 'statuses']),
     statusList() {
       const {
         nLabeled,
@@ -105,10 +105,13 @@ export default Vue.extend({
     },
   },
   watch: {
-    async statuses() {
+    async dataObjects() {
       await this.setData();
     },
-    async dataObjects() {
+    async labels() {
+      await this.setData();
+    },
+    async statuses() {
       await this.setData();
     },
   },
@@ -126,12 +129,12 @@ export default Vue.extend({
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.Labeled);
+      return statuses.count({ value: StatusType.Labeled });
     },
     async getNSkipped(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null};
       if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.Skipped);
+      return statuses.count({ value: StatusType.Skipped });
     },
     async getNTotal(): Promise<number> {
       const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
@@ -144,13 +147,13 @@ export default Vue.extend({
       if (dataObjects === null || statuses === null) return 0;
       const nTotalDataObjects = await dataObjects.count();
       const nTotalStatuses = await statuses.count();
-      const nUnseen = await statuses.count((d) => d.value === StatusType.New);
+      const nUnseen = await statuses.count({ value: StatusType.New });
       return nUnseen + nTotalDataObjects - nTotalStatuses;
     },
     async getNViewing(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.Viewed);
+      return statuses.count({ value: StatusType.Viewed });
     },
   },
 });

@@ -29,58 +29,6 @@ import {
   labelDB as labelStorage,
   statusDB as statusStorage,
 } from '@/services/database';
-import {
-  PROTOCOL,
-  IP,
-  PORT,
-} from './http-params';
-
-/**
- * Workflow Component - Data Object Extraction
- * Extract data objects from the data source.
- * @param files the uploaded (image) files.
- * @returns queryIndices - the indices of sampled data objects.
- * @Note The extraction implementation is dependent
- * on the data source type and data object type.
- */
-/*
-export const dataObjectExtraction = showProgressBar(async (
-  input: File | FileList,
-  dataType: DataType,
-): Promise<IImage[] | IText[]> => {
-  if (dataType === DataType.Image) {
-    const files = input as FileList;
-    const dataObjects = await Promise.all([...files].map(async (file) => {
-      const { name } = file;
-      const formData = new FormData();
-      formData.append('fileToUpload', file);
-      formData.append('fileName', name);
-      formData.append('key', name);
-      const { path, width, height } = (await axios.post(
-        `${PROTOCOL}://${IP}:${PORT}/dataObject/image`,
-        formData,
-      )).data;
-      return {
-        path,
-        width,
-        height,
-        uuid: uuidv4(),
-      };
-    })) as IImage[];
-    return dataObjects;
-  }
-  if (dataType === DataType.Text) {
-    const file = input as File;
-    const dataObjects = (await loadJsonFile(file) as string[]).map((content) => ({
-      uuid: uuidv4(),
-      content,
-    })) as IText[];
-    return dataObjects;
-  }
-  console.warn(`Invalid Data Type: ${dataType}`);
-  return [];
-});
-*/
 
 const getBase64 = (file: File) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -96,6 +44,14 @@ const getImgSize = (content: string) => new Promise((resolve, reject) => {
   img.src = content;
 }) as Promise<{ width: number, height: number }>;
 
+/**
+ * Workflow Component - Data Object Extraction
+ * Extract data objects from the data source.
+ * @param input the uploaded file(s).
+ * @returns queryIndices - the indices of sampled data objects.
+ * @Note The extraction implementation is dependent
+ * on the data source type and data object type.
+ */
 export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
@@ -104,6 +60,23 @@ export const dataObjectExtraction = showProgressBar(async (
   if (dataType === DataType.Image) {
     const files = input as FileList;
     await Promise.all([...files].map(async (file) => {
+      /*
+      const { name } = file;
+      const formData = new FormData();
+      formData.append('fileToUpload', file);
+      formData.append('fileName', name);
+      formData.append('key', name);
+      const { path, width, height } = (await axios.post(
+        `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/dataObject/image`,
+        formData,
+      )).data;
+      const dataObject: IImage = {
+        uuid: uuidv4(),
+        path,
+        width,
+        height,
+      };
+      */
       const content = await getBase64(file);
       const { width, height } = await getImgSize(content);
       const dataObject: IImage = {
@@ -114,8 +87,7 @@ export const dataObjectExtraction = showProgressBar(async (
       };
       dataObjectStorage.add(dataObject);
     }));
-  }
-  if (dataType === DataType.Text) {
+  } else if (dataType === DataType.Text) {
     const file = input as File;
     (await loadJsonFile(file) as string[]).forEach((content) => {
       const dataObject: IText = {
@@ -124,6 +96,8 @@ export const dataObjectExtraction = showProgressBar(async (
       };
       dataObjectStorage.add(dataObject);
     });
+  } else {
+    console.warn(`Invalid Data Type: ${dataType}`);
   }
   return dataObjectStorage;
 });
@@ -148,46 +122,49 @@ export const statusInitialization = showProgressBar(async (): Promise<IStatusSto
  */
 export const featureExtraction = showProgressBar(async (
   method: Process,
-  dataObjects: IImage[],
-  labels: ILabelCategory[] | null = null,
-  statuses: StatusType[] | null = null,
-): Promise<{ dataObjects: IImage[], featureNames: string[] }> => {
-  let response = null;
+  dataObjects: IDataObjectStorage,
+  labels: ILabelStorage | null = null,
+  statuses: IStatusStorage | null = null,
+): Promise<{ dataObjects: IDataObjectStorage, featureNames: string[] }> => {
+  console.log('feature extraction method', method);
   if (method.isServerless && (method.api === 'Random3D')) {
     const SEED = '20';
     const random = xor4096(SEED);
-
-    // create a new copy
-    const updatedDataObjects = (JSON.parse(JSON.stringify(dataObjects)) as IImage[])
-      .map((dataObject) => ({
-        ...dataObject,
-        // create three random feature values
-        features: [random(), random(), random()],
-      }));
+    const uuids = await dataObjects.uuids();
+    await Promise.all(uuids.map(async (uuid) => {
+      const features = [random(), random(), random()];
+      const dataObject = await dataObjects.get(uuid);
+      if (dataObject === undefined) return;
+      await dataObjects.set({ ...dataObject, features });
+    }));
     const featureNames = [
       'Random[0]',
       'Random[1]',
       'Random[2]',
     ];
-    response = {
-      dataObjects: updatedDataObjects,
-      featureNames,
-    };
-  } else {
-    response = (
-      await axios.post(
-        method.api as string,
-        JSON.stringify({
-          dataObjects,
-          labels,
-          statuses,
-        }),
-      )
-    ).data;
+    return { dataObjects, featureNames };
   }
+  const dataObjectValues = await dataObjects.getAll() as IImage[];
+  const labelValues = labels !== null
+    ? (await labels.getAll()).map((d) => d.category as Category)
+    : null;
+  const statusValues = statuses !== null
+    ? (await statuses.getAll()).map((d) => d.value)
+    : null;
+  const response = (
+    await axios.post(
+      method.api as string,
+      JSON.stringify({
+        dataObjects: dataObjectValues,
+        labels: labelValues,
+        statuses: statusValues,
+      }),
+    )
+  ).data as { dataObjects: IDataObject[], featureNames: string[] };
+  dataObjects.setBulk(response.dataObjects);
   return {
-    dataObjects: response.dataObjects as IImage[],
-    featureNames: response.featureNames as string[],
+    dataObjects,
+    featureNames: response.featureNames,
   };
 });
 
@@ -281,7 +258,7 @@ export const dataObjectSelection = showProgressBar(async (
         JSON.stringify({
           statuses: statusValues.map((d) => d.value),
           nBatch,
-          dataObjectValues,
+          dataObjects: dataObjectValues,
           model,
         }),
       )
@@ -304,25 +281,29 @@ export const dataObjectSelection = showProgressBar(async (
 export const interimModelTraining = showProgressBar(async (
   method: Process,
   model: ModelService,
-  dataObjects: IDataObject[] | null = null,
-  labels: ILabelCategory[] | null = null,
-  statuses: StatusType[] | null = null,
+  dataObjects: IDataObjectStorage | null = null,
+  labels: ILabelStorage | null = null,
+  statuses: IStatusStorage | null = null,
 ): Promise<ModelService> => {
-  let modelUpdated = null;
   if (method.isBuiltIn && (method.api === 'Static')) {
-    modelUpdated = model;
-  } else {
-    modelUpdated = (
-      await axios.post(
-        method.api as string,
-        JSON.stringify({
-          model,
-          dataObjects,
-          labels,
-          statuses,
-        }),
-      )
-    ).data.model;
+    return model;
   }
+  if (dataObjects === null || labels === null || statuses === null) {
+    return model;
+  }
+  const dataObjectValues = await dataObjects.getAll();
+  const labelValues = (await labels.getAll()).map((d) => d.category as Category);
+  const statusValues = (await statuses.getAll()).map((status) => status.value);
+  const modelUpdated = (
+    await axios.post(
+      method.api as string,
+      JSON.stringify({
+        model,
+        dataObjects: dataObjectValues,
+        labels: labelValues,
+        statuses: statusValues,
+      }),
+    )
+  ).data.model;
   return modelUpdated;
 });

@@ -1,4 +1,7 @@
 {
+    "code-eol.newlineCharacter": "¬",
+    "code-eol.returnCharacter" : "¤",
+    "code-eol.crlfCharacter"   : "¤¬",
     "git.ignoreLimitWarning": true,
     "eslint.validate": [
         "javascript",
@@ -10,6 +13,7 @@
     ],
     "cSpell.words": [
         "agafonkin",
+        "algo",
         "astype",
         "bbox",
         "bson",
@@ -77,6 +81,7 @@
         "timeit",
         "tolist",
         "tsne",
+        "upsert",
         "uuidv",
         "vectorizer",
         "vetur",

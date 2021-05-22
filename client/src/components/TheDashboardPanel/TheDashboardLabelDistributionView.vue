@@ -111,14 +111,13 @@ export default Vue.extend({
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.Labeled);
+      return statuses.count({ value: StatusType.Labeled });
     },
     async getNLabeledOf(category: Category): Promise<number> {
       const { labels } = this as { labels: ILabelStorage | null };
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (labels === null || statuses === null) return 0;
-      const labelValues = await labels
-        .getFiltered((d: ILabel) => d.category === category);
+      const labelValues = await labels.getFiltered({ category });
       const uuids = labelValues.map((d) => d.uuid);
       const n = (await statuses.getBulk(uuids)).filter((d) => (
         (d !== undefined) && (d.value === StatusType.Labeled)

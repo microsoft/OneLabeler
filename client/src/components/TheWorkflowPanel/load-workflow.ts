@@ -55,32 +55,77 @@ export type JsonGraph = {
 const ajv = new Ajv({
   allowUnionTypes: true,
 });
-const schema: JSONSchemaType<Partial<JsonGraph>> = {
+const schema: JSONSchemaType<JsonGraph> = {
+  definitions: {
+    node: {
+      type: 'object',
+      required: ['label', 'type'],
+      properties: {
+        label: { type: 'string' },
+        type: { type: 'string' },
+        id: { type: 'string', nullable: true },
+        value: {
+          type: ['object', 'array'],
+          nullable: true,
+        },
+        layout: {
+          type: 'object',
+          nullable: true,
+          required: ['x', 'y', 'width', 'height'],
+          properties: {
+            x: { type: 'number' },
+            y: { type: 'number' },
+            width: { type: 'number' },
+            height: { type: 'number' },
+          },
+        },
+      },
+    },
+    edge: {
+      type: 'object',
+      required: ['source', 'target'],
+      properties: {
+        source: { type: 'string' },
+        target: { type: 'string' },
+        id: { type: 'string', nullable: true },
+        condition: { type: 'boolean', nullable: true },
+        layout: {
+          type: 'object',
+          nullable: true,
+          required: ['source', 'target'],
+          properties: {
+            source: {
+              type: 'object',
+              required: ['direction', 'dx', 'dy'],
+              properties: {
+                direction: { type: 'string' },
+                dx: { type: 'number' },
+                dy: { type: 'number' },
+              },
+            },
+            target: {
+              type: 'object',
+              required: ['direction', 'dx', 'dy'],
+              properties: {
+                direction: { type: 'string' },
+                dx: { type: 'number' },
+                dy: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   type: 'object',
+  required: ['nodes', 'edges'],
   properties: {
     nodes: {
       type: 'array',
       items: {
         type: 'object',
         required: ['label', 'type'],
-        properties: {
-          label: { type: 'string' },
-          type: { type: 'string' },
-          id: { type: 'string' },
-          value: {
-            type: ['object', 'array', 'null'],
-          },
-          layout: {
-            type: 'object',
-            required: ['x', 'y', 'width', 'height'],
-            properties: {
-              x: { type: 'number' },
-              y: { type: 'number' },
-              width: { type: 'number' },
-              height: { type: 'number' },
-            },
-          },
-        },
+        $ref: '#/definitions/node',
       },
     },
     edges: {
@@ -88,36 +133,7 @@ const schema: JSONSchemaType<Partial<JsonGraph>> = {
       items: {
         type: 'object',
         required: ['source', 'target'],
-        properties: {
-          source: { type: 'string' },
-          target: { type: 'string' },
-          id: { type: 'string' },
-          condition: { type: 'boolean' },
-          layout: {
-            type: 'object',
-            required: ['source', 'target'],
-            properties: {
-              source: {
-                type: 'object',
-                required: ['direction', 'dx', 'dy'],
-                properties: {
-                  direction: { type: 'string' },
-                  dx: { type: 'number' },
-                  dy: { type: 'number' },
-                },
-              },
-              target: {
-                type: 'object',
-                required: ['direction', 'dx', 'dy'],
-                properties: {
-                  direction: { type: 'string' },
-                  dx: { type: 'number' },
-                  dy: { type: 'number' },
-                },
-              },
-            },
-          },
-        },
+        $ref: '#/definitions/edge',
       },
     },
   },

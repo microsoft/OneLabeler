@@ -332,20 +332,11 @@ export const executeFeatureExtraction = async (
 
   const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
-  const nLabels = await labels.count();
-
-  if (requireLabels && nLabels) return;
-
-  const labelCategories = (await labels.getAll()).map((d) => d.category as Category);
   const response = requireLabels
-    ? (await API.featureExtraction(
-      method,
-      await dataObjects.getAll() as IImage[],
-      labelCategories,
-      (await statuses.getAll()).map((d) => d.value),
-    )) : (await API.featureExtraction(method, await dataObjects.getAll() as IImage[]));
+    ? (await API.featureExtraction(method, dataObjects, labels, statuses))
+    : (await API.featureExtraction(method, dataObjects));
 
-  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects, { root: true });
+  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects.shallowCopy(), { root: true });
   commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
 };
 
@@ -365,7 +356,6 @@ export const executeInterimModelTraining = async (
   } = rootState;
   if (labels === null || statuses === null) return;
 
-  const labelCategories = (await labels.getAll()).map((d) => d.category as Category);
   const { nodes } = state;
   nodes.filter((d) => isProcessNode(d))
     .forEach((d) => {
@@ -378,9 +368,9 @@ export const executeInterimModelTraining = async (
         (await API.interimModelTraining(
           method,
           model,
-          await dataObjects?.getAll(),
-          labelCategories,
-          (await statuses.getAll()).map((status) => status.value),
+          dataObjects,
+          labels,
+          statuses,
         ));
       });
     });
@@ -393,7 +383,7 @@ export const executeStoppageAnalysis = async (
   const { dataObjects, statuses } = rootState;
   if (dataObjects === null || statuses === null) return;
   const nDataObjects = await dataObjects.count();
-  const nLabeled = await statuses.count((d) => d.value === StatusType.Labeled);
+  const nLabeled = await statuses.count({ value: StatusType.Labeled });
   const stop = nDataObjects === nLabeled;
   if (stop) {
     commit(rootTypes.SET_MESSAGE, {

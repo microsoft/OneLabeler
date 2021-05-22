@@ -34,12 +34,15 @@ export interface IEditablePolygon extends IEditableShape {
   setOnClick(value: (d: IEditablePolygon) => void): this;
 }
 
-const toMatrix = (arr, width: number) => arr.reduce(
-  (rows, key, index: number) => (
-    index % width === 0
-      ? rows.push([key])
-      : rows[rows.length - 1].push(key)) && rows,
-  [],
+const toMatrix = <T>(arr: T[], width: number) => arr.reduce(
+  (rows: T[][], entry: T, index: number) => {
+    if (index % width === 0) {
+      rows.push([entry]);
+    } else {
+      rows[rows.length - 1].push(entry);
+    }
+    return rows;
+  }, [],
 );
 
 export default class EditablePolygon implements IEditablePolygon {
@@ -191,7 +194,7 @@ export default class EditablePolygon implements IEditablePolygon {
   points(value?: [number, number][]): [number, number][] | this {
     const polygon = this.#polygon;
     if (value === undefined) {
-      return toMatrix(polygon.points(), 2);
+      return toMatrix(polygon.points(), 2) as [number, number][];
     }
     polygon.points(value.flat());
     return this;

@@ -150,7 +150,7 @@ export default Vue.extend({
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count((d) => d.value === StatusType.Labeled);
+      return statuses.count({ value: StatusType.Labeled });
     },
     async getNTotal(): Promise<number> {
       const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
