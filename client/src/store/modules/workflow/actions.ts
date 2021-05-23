@@ -1,11 +1,11 @@
 import { ActionContext } from 'vuex';
 import * as API from '@/services/data-labeling-api';
+import createStorage from '@/services/storage';
 import {
   MethodParams,
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
-  IImage,
   ILabel,
   IStatus,
   StatusType,
@@ -13,12 +13,9 @@ import {
   ModelService,
   Process,
   WorkflowNodeType,
-  Category,
   ILabelCategory,
   IDataObject,
   IDataObjectStorage,
-  IStatusStorage,
-  ILabelStorage,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -174,24 +171,30 @@ export const editProcess = (
 };
 
 export const executeDataObjectExtraction = async (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
   input: File | FileList,
 ): Promise<void> => {
   const type = dataType(state);
   if (type === null) return;
 
+  // Initialize the storage.
+  const { storageService } = rootState;
+  const storage = createStorage(storageService);
+  if (storage === null) return;
+  await storage.dataObjects.deleteAll();
+  await storage.labels.deleteAll();
+  await storage.statuses.deleteAll();
+
   // Extract data objects.
-  const dataObjects: IDataObjectStorage = await API.dataObjectExtraction(input, type);
-
-  // Initialize labels.
-  const labels: ILabelStorage = await API.labelInitialization();
-
-  // Initialize label statuses.
-  const statuses: IStatusStorage = await API.statusInitialization();
+  const dataObjects: IDataObjectStorage = await API.dataObjectExtraction(
+    input,
+    type,
+    storage.dataObjects,
+  );
 
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
-  commit(rootTypes.SET_LABELS, labels, { root: true });
-  commit(rootTypes.SET_STATUSES, statuses, { root: true });
+  commit(rootTypes.SET_LABELS, storage.labels, { root: true });
+  commit(rootTypes.SET_STATUSES, storage.statuses, { root: true });
 };
 
 export const executeDataObjectSelectionAlgorithmic = async (

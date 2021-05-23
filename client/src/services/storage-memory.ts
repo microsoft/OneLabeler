@@ -7,12 +7,13 @@ import {
   ILabelStorage,
   IStatus,
   IStatusStorage,
+  IStorageStore,
 } from '@/commons/types';
 import { randomChoice } from '@/plugins/random';
 
-/* eslint max-classes-per-file: ["error", 4] */
+/* eslint max-classes-per-file: ["error", 5] */
 
-class DataLabelingDB {
+class DataLabelingMemory {
   dataObjects: Record<string, IDataObject>;
 
   labels: Record<string, ILabel>;
@@ -26,7 +27,7 @@ class DataLabelingDB {
   }
 }
 
-class DataObjectDB implements IDataObjectStorage {
+class DataObjectStorage implements IDataObjectStorage {
   #storage: Record<string, IDataObject>;
 
   constructor(storage: Record<string, IDataObject>) {
@@ -92,7 +93,7 @@ class DataObjectDB implements IDataObjectStorage {
   }
 
   shallowCopy(): IDataObjectStorage {
-    return new DataObjectDB(this.#storage);
+    return new DataObjectStorage(this.#storage);
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
@@ -114,7 +115,7 @@ class DataObjectDB implements IDataObjectStorage {
   }
 }
 
-class LabelDB implements ILabelStorage {
+class LabelStorage implements ILabelStorage {
   #storage: Record<string, ILabel>;
 
   constructor(storage: Record<string, ILabel>) {
@@ -169,11 +170,11 @@ class LabelDB implements ILabelStorage {
   }
 
   shallowCopy(): ILabelStorage {
-    return new LabelDB(this.#storage);
+    return new LabelStorage(this.#storage);
   }
 }
 
-class StatusDB implements IStatusStorage {
+class StatusStorage implements IStatusStorage {
   #storage: Record<string, IStatus>;
 
   constructor(storage: Record<string, IStatus>) {
@@ -222,11 +223,23 @@ class StatusDB implements IStatusStorage {
   }
 
   shallowCopy(): IStatusStorage {
-    return new StatusDB(this.#storage);
+    return new StatusStorage(this.#storage);
   }
 }
 
-const DB = new DataLabelingDB();
-export const dataObjectDB = new DataObjectDB(DB.dataObjects);
-export const labelDB = new LabelDB(DB.labels);
-export const statusDB = new StatusDB(DB.statuses);
+class StorageStore implements IStorageStore {
+  dataObjects: IDataObjectStorage;
+
+  labels: ILabelStorage;
+
+  statuses: IStatusStorage;
+
+  constructor() {
+    const memory = new DataLabelingMemory();
+    this.dataObjects = new DataObjectStorage(memory.dataObjects);
+    this.labels = new LabelStorage(memory.labels);
+    this.statuses = new StatusStorage(memory.statuses);
+  }
+}
+
+export default StorageStore;

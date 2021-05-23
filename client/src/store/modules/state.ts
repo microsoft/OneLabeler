@@ -5,6 +5,8 @@ import {
   ILabelStorage,
   IMessage,
   IStatusStorage,
+  StorageService,
+  StorageType,
   TaskWindow,
 } from '@/commons/types';
 
@@ -36,6 +38,8 @@ export interface IState {
   message: IMessage | null;
   /** The task windows in the interface. */
   taskWindows: TaskWindow[];
+
+  storageService: StorageService;
 }
 
 export const createInitialState = (): IState => ({
@@ -51,6 +55,12 @@ export const createInitialState = (): IState => ({
   commandHistory: [],
   message: null,
   taskWindows: [],
+  storageService: {
+    type: StorageType.ClientMemory,
+    api: 'ClientMemory',
+    isBuiltIn: true,
+    isServerless: true,
+  },
 });
 
 export default createInitialState();

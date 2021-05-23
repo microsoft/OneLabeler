@@ -164,6 +164,13 @@ export interface IStatusStorage {
   shallowCopy(): IStatusStorage;
 }
 
+/** The interface of merged storage of data object, label, status. */
+export interface IStorageStore {
+  dataObjects: IDataObjectStorage;
+  labels: ILabelStorage;
+  statuses: IStatusStorage;
+}
+
 /** The enum of projection method types. */
 export enum ProjectionMethodType {
   PCA = 'PCA',

@@ -8,10 +8,11 @@ import {
   ILabelStorage,
   IStatus,
   IStatusStorage,
+  IStorageStore,
 } from '@/commons/types';
 import { randomChoice } from '@/plugins/random';
 
-/* eslint max-classes-per-file: ["error", 4] */
+/* eslint max-classes-per-file: ["error", 5] */
 
 const DB_NAME = 'DataLabelingStorage';
 
@@ -35,7 +36,7 @@ class DataLabelingDB extends Dexie {
   }
 }
 
-class DataObjectDB implements IDataObjectStorage {
+class DataObjectStorage implements IDataObjectStorage {
   #storage: Dexie.Table<IDataObject, string>;
 
   constructor(storage: Dexie.Table<IDataObject, string>) {
@@ -98,7 +99,7 @@ class DataObjectDB implements IDataObjectStorage {
   }
 
   shallowCopy(): IDataObjectStorage {
-    return new DataObjectDB(this.#storage);
+    return new DataObjectStorage(this.#storage);
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
@@ -120,7 +121,7 @@ class DataObjectDB implements IDataObjectStorage {
   }
 }
 
-class LabelDB implements ILabelStorage {
+class LabelStorage implements ILabelStorage {
   #storage: Dexie.Table<ILabel, string>;
 
   constructor(storage: Dexie.Table<ILabel, string>) {
@@ -173,11 +174,11 @@ class LabelDB implements ILabelStorage {
   }
 
   shallowCopy(): ILabelStorage {
-    return new LabelDB(this.#storage);
+    return new LabelStorage(this.#storage);
   }
 }
 
-class StatusDB implements IStatusStorage {
+class StatusStorage implements IStatusStorage {
   #storage: Dexie.Table<IStatus, string>;
 
   constructor(storage: Dexie.Table<IStatus, string>) {
@@ -224,11 +225,23 @@ class StatusDB implements IStatusStorage {
   }
 
   shallowCopy(): IStatusStorage {
-    return new StatusDB(this.#storage);
+    return new StatusStorage(this.#storage);
   }
 }
 
-const DB = new DataLabelingDB();
-export const dataObjectDB = new DataObjectDB(DB.dataObjects);
-export const labelDB = new LabelDB(DB.labels);
-export const statusDB = new StatusDB(DB.statuses);
+class StorageStore implements IStorageStore {
+  dataObjects: IDataObjectStorage;
+
+  labels: ILabelStorage;
+
+  statuses: IStatusStorage;
+
+  constructor() {
+    const db = new DataLabelingDB();
+    this.dataObjects = new DataObjectStorage(db.dataObjects);
+    this.labels = new LabelStorage(db.labels);
+    this.statuses = new StatusStorage(db.statuses);
+  }
+}
+
+export default StorageStore;

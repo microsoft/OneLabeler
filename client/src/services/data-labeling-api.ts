@@ -24,11 +24,6 @@ import {
   ModelService,
   Process,
 } from '@/commons/types';
-import {
-  dataObjectDB as dataObjectStorage,
-  labelDB as labelStorage,
-  statusDB as statusStorage,
-} from '@/services/database';
 
 const getBase64 = (file: File) => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -55,8 +50,8 @@ const getImgSize = (content: string) => new Promise((resolve, reject) => {
 export const dataObjectExtraction = showProgressBar(async (
   input: File | FileList,
   dataType: DataType,
+  storage: IDataObjectStorage,
 ): Promise<IDataObjectStorage> => {
-  await dataObjectStorage.deleteAll();
   if (dataType === DataType.Image) {
     const files = input as FileList;
     await Promise.all([...files].map(async (file) => {
@@ -85,7 +80,7 @@ export const dataObjectExtraction = showProgressBar(async (
         width,
         height,
       };
-      dataObjectStorage.add(dataObject);
+      storage.add(dataObject);
     }));
   } else if (dataType === DataType.Text) {
     const file = input as File;
@@ -94,22 +89,12 @@ export const dataObjectExtraction = showProgressBar(async (
         uuid: uuidv4(),
         content,
       };
-      dataObjectStorage.add(dataObject);
+      storage.add(dataObject);
     });
   } else {
     console.warn(`Invalid Data Type: ${dataType}`);
   }
-  return dataObjectStorage;
-});
-
-export const labelInitialization = showProgressBar(async (): Promise<ILabelStorage> => {
-  await labelStorage.deleteAll();
-  return labelStorage;
-});
-
-export const statusInitialization = showProgressBar(async (): Promise<IStatusStorage> => {
-  await statusStorage.deleteAll();
-  return statusStorage;
+  return storage;
 });
 
 /**
