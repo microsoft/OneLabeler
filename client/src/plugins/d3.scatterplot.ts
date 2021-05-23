@@ -187,7 +187,7 @@ export default class Scatterplot implements IScatterplot {
   xAxis(value?: Partial<Axis> | null): (Partial<Axis> | null) | this {
     if (value === undefined) return this.#xAxis;
     if (value === null) {
-      this.#xAxis = value;
+      this.#xAxis = value as null;
     } else {
       if (this.#xAxis === null) {
         this.#xAxis = { label: 'x', tickNum: null };
@@ -209,7 +209,7 @@ export default class Scatterplot implements IScatterplot {
   yAxis(value?: Partial<Axis> | null): (Partial<Axis> | null) | this {
     if (value === undefined) return this.#yAxis;
     if (value === null) {
-      this.#yAxis = value;
+      this.#yAxis = value as null;
     } else {
       if (this.#yAxis === null) {
         this.#yAxis = { label: 'x', tickNum: null };

@@ -4,6 +4,8 @@
       'width': `${width}px`,
       'height': `${height}px`,
       'overflow-y': 'scroll',
+      'font-size': '24px',
+      'line-height': 'initial',
     }"
   >
     {{ dataObject.content }}

@@ -13,7 +13,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "main": "background.ts",
+  "main": "background.js",
   "dependencies": {
     "ajv": "^7.0.3",
     "axios": "^0.21.1",

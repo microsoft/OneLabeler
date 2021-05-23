@@ -1,5 +1,5 @@
 <template>
-  <v-card width="250">
+  <v-card width="300">
     <v-card-title class="view-header">
       <v-icon
         class="px-2"

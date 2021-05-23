@@ -1,6 +1,6 @@
 <template>
   <v-card
-    width="250"
+    width="300"
     height="250"
   >
     <v-card-title class="view-header">
@@ -30,7 +30,7 @@
         >
           <div
             class="mx-4"
-            style="width: 250px;"
+            style="width: 300px;"
           >
             <div style="display: flex">
               <span style="font-weight: 700">
