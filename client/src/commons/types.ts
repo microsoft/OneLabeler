@@ -235,7 +235,9 @@ export enum SourceType {
 
 export interface SourceService {
   type: SourceType;
+  label: string;
   api: string;
+  id: string;
   isBuiltIn: boolean;
   isServerless: boolean;
 }
@@ -248,7 +250,9 @@ export enum StorageType {
 
 export interface StorageService {
   type: StorageType;
+  label: string;
   api: string;
+  id: string;
   isBuiltIn: boolean;
   isServerless: boolean;
 }

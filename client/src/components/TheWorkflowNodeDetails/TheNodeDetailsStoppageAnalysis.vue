@@ -40,7 +40,7 @@
           />
         </v-list-item>
 
-        <v-divider />
+        <v-divider class="mt-2" />
 
         <template v-if="method !== null">
           <!-- The label of the feature extraction method. -->
@@ -129,7 +129,7 @@ export default Vue.extend({
     },
     menuOfMethods() {
       return {
-        label: 'Method',
+        label: 'Selected Method',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,

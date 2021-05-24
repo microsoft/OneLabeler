@@ -14,11 +14,14 @@
 
     <!-- The new project button. -->
     <VUploadButton
+      v-if="showFileUploadButton"
       :type="dataType === DataType.Image ? 'folder' : 'file'"
       :disabled="disableNewProjectButton"
       :icon="$vuetify.icons.values.new"
-      :keyboard-trigger="keyboardTriggerNewProject"
-      title="New Label Project (Ctrl + N)"
+      :keyboard-trigger="(showFileUploadButton && !disableNewProjectButton)
+        ? keyboardTriggerNewProject
+        : null"
+      title="New Label Project (Ctrl + P)"
       color="white"
       small
       @upload:file="onNewProject"
@@ -166,6 +169,7 @@ import {
   IText,
   IMessage,
   MessageType,
+  SourceType,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -214,8 +218,8 @@ export default Vue.extend({
     return {
       nDataObjects: 0,
       DataType,
-      // Ctrl + N: create new project
-      keyboardTriggerNewProject: (e: KeyboardEvent) => (e.key === 'n' && e.ctrlKey),
+      // Ctrl + P: create new project
+      keyboardTriggerNewProject: (e: KeyboardEvent) => (e.key === 'p' && e.ctrlKey),
       // Ctrl + O: load existing project
       keyboardTriggerLoadProject: (e: KeyboardEvent) => (e.key === 'o' && e.ctrlKey),
     };
@@ -237,6 +241,7 @@ export default Vue.extend({
       'unlabeledMark',
       'featureNames',
       'commandHistory',
+      'sourceService',
     ]),
     disableNewProjectButton(): boolean {
       const dataType = this.dataType as DataType | null;
@@ -249,8 +254,8 @@ export default Vue.extend({
       return this.nDataObjects === 0;
     },
     disableExecutionButton(): boolean {
-      return this.currentNode === null
-        || this.nDataObjects === 0;
+      return (this.currentNode === null || this.nDataObjects === 0)
+        && (this.sourceService.type !== SourceType.ServerDB);
     },
     disableUndoButton(): boolean {
       return this.commandHistory.length === 0;
@@ -258,8 +263,12 @@ export default Vue.extend({
     disableExportButton(): boolean {
       return this.nDataObjects === 0;
     },
+    showFileUploadButton(): boolean {
+      return this.sourceService.type === SourceType.FileUpload;
+    },
     showExecutionButton(): boolean {
-      return this.currentNode !== null;
+      return this.currentNode !== null
+        || this.sourceService.type === SourceType.ServerDB;
     },
     lastCommand(): ICommand | null {
       if (this.commandHistory.length === 0) {
@@ -305,6 +314,7 @@ export default Vue.extend({
       'setProject',
     ]),
     ...mapActions('workflow', [
+      'executeRegisterStorage',
       'executeDataObjectExtraction',
       'executeWorkflow',
     ]),
@@ -330,6 +340,7 @@ export default Vue.extend({
     },
     async onNewProject(input: File | FileList): Promise<void> {
       if (input === null || input === undefined) return;
+      await this.executeRegisterStorage();
       await this.executeDataObjectExtraction(input);
       this.setMessage({
         content: 'Project Data Uploaded.',
@@ -377,7 +388,16 @@ export default Vue.extend({
       this.resetState();
     },
     async onClickExecution(): Promise<void> {
-      if (this.nextNodes === null || this.nextNodes.length !== 1) return;
+      if (this.nextNodes === null) {
+        await this.executeRegisterStorage();
+        this.setMessage({
+          content: 'Project Data Uploaded.',
+          type: MessageType.Success,
+        });
+        await this.executeWorkflow(this.startNode);
+        return;
+      }
+      if (this.nextNodes.length !== 1) return;
       await this.executeWorkflow(this.nextNodes[0]);
     },
     onClickUndo(): void {

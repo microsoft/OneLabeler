@@ -21,95 +21,92 @@
         subheader
       >
         <!-- The data type selection. -->
-        <v-list-item>
-          <div style="display: flex; flex: 1 1 100%;">
-            <span
-              class="subtitle-2"
-              style="user-select: none; flex: 1 1 100%; align-self: center;"
-            >
-              Data Type
-            </span>
-            <v-menu offset-y>
-              <template #activator="{ on }">
-                <v-btn
-                  class="subtitle-2 text-none"
-                  style="border-color: #e0e0e0"
-                  small
-                  outlined
-                  v-on="on"
-                >
-                  {{ selectedDataType }}
-                </v-btn>
-              </template>
-              <v-list dense>
-                <v-list-item
-                  v-for="(option, i) in menuOfDataType.options"
-                  :key="i"
-                  @click="onUpdateDataTypeOption(option.value)"
-                >
-                  <v-list-item-title class="subtitle-2">
-                    {{ option.label }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </v-list-item>
+        <div
+          class="px-4"
+          style="display: flex; flex: 1 1 100%; min-height: 40px; align-items: center;"
+        >
+          <span
+            class="subtitle-2"
+            style="user-select: none; flex: 1 1 100%; align-self: center;"
+          >
+            Data Type
+          </span>
+          <v-menu offset-y>
+            <template #activator="{ on }">
+              <v-btn
+                class="subtitle-2 text-none"
+                style="border-color: #e0e0e0"
+                small
+                outlined
+                v-on="on"
+              >
+                {{ selectedDataType }}
+              </v-btn>
+            </template>
+            <v-list dense>
+              <v-list-item
+                v-for="(option, i) in menuOfDataType.options"
+                :key="i"
+                @click="onUpdateDataTypeOption(option.value)"
+              >
+                <v-list-item-title class="subtitle-2">
+                  {{ option.label }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
 
         <!-- The label task selection. -->
-        <v-list-item>
-          <div style="display: flex; flex: 1 1 100%;">
-            <v-row>
-              <v-col
-                class="py-2 pl-3"
-                style="width: 18%; max-width: 18%; flex-basis: 18%; height: 40px"
-              >
-                <span>Label Tasks</span>
-              </v-col>
-              <v-col
-                class="py-0 pl-0 pr-3"
-                style="width: 82%; max-width: 82%; flex-basis: 82%"
-              >
-                <v-autocomplete
-                  :value="selectedLabelTasks"
-                  :items="menuOfLabelTask.options"
-                  outlined
-                  dense
-                  multiple
-                  full-width
-                  hide-details
-                  @input="onUpdateLabelTaskOptions"
-                >
-                  <template #selection="data">
-                    <v-chip
-                      v-bind="data.attrs"
-                      :input-value="data.selected"
-                      small
-                      label
-                      outlined
-                    >
-                      {{ data.item.label }}
-                    </v-chip>
-                  </template>
-                  <template #item="data">
-                    <v-list-item-title>
-                      <v-checkbox
-                        :label="data.item.label"
-                        :value="selectedLabelTasks
-                          .findIndex((d) => d === data.item.value) >= 0"
-                        :input-value="selectedLabelTasks
-                          .findIndex((d) => d === data.item.value) >= 0"
-                        class="py-0 ma-0 parameter-panel-checkbox"
-                        dense
-                        hide-details
-                      />
-                    </v-list-item-title>
-                  </template>
-                </v-autocomplete>
-              </v-col>
-            </v-row>
+        <div
+          class="px-4"
+          style="display: flex; flex: 1 1 100%;"
+        >
+          <div
+            class="py-2"
+            style="width: 16%; height: 40px"
+          >
+            <span>Label Tasks</span>
           </div>
-        </v-list-item>
+          <div style="width: 84%;">
+            <v-autocomplete
+              :value="selectedLabelTasks"
+              :items="menuOfLabelTask.options"
+              outlined
+              dense
+              multiple
+              full-width
+              hide-details
+              @input="onUpdateLabelTaskOptions"
+            >
+              <template #selection="data">
+                <v-chip
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  small
+                  label
+                  outlined
+                >
+                  {{ data.item.label }}
+                </v-chip>
+              </template>
+              <template #item="data">
+                <v-list-item-title>
+                  <v-checkbox
+                    :label="data.item.label"
+                    :value="selectedLabelTasks
+                      .findIndex((d) => d === data.item.value) >= 0"
+                    :input-value="selectedLabelTasks
+                      .findIndex((d) => d === data.item.value) >= 0"
+                    class="py-0 ma-0 parameter-panel-checkbox"
+                    dense
+                    hide-details
+                  />
+                </v-list-item-title>
+              </template>
+            </v-autocomplete>
+          </div>
+        </div>
       </v-list>
     </v-card-actions>
   </v-card>

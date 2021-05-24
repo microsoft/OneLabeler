@@ -5,10 +5,14 @@ import {
   ILabelStorage,
   IMessage,
   IStatusStorage,
+  SourceService,
   StorageService,
-  StorageType,
   TaskWindow,
 } from '@/commons/types';
+import {
+  storageServices,
+  sourceServices,
+} from '@/commons/builtins';
 
 export interface IState {
   /** The data labeling project record attributes. */
@@ -39,6 +43,13 @@ export interface IState {
   /** The task windows in the interface. */
   taskWindows: TaskWindow[];
 
+  /** The service for transferring dataset to the client. */
+  sourceService: SourceService;
+  /** Alternative services for transferring dataset to the client. */
+  sourceServices: SourceService[];
+  /** The service for storing dataset. */
+  storageServices: StorageService[];
+  /** Alternative services for storing dataset. */
   storageService: StorageService;
 }
 
@@ -55,12 +66,10 @@ export const createInitialState = (): IState => ({
   commandHistory: [],
   message: null,
   taskWindows: [],
-  storageService: {
-    type: StorageType.ClientMemory,
-    api: 'ClientMemory',
-    isBuiltIn: true,
-    isServerless: true,
-  },
+  sourceService: sourceServices[0],
+  sourceServices,
+  storageService: storageServices[0],
+  storageServices,
 });
 
 export default createInitialState();

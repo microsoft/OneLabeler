@@ -1,61 +1,54 @@
 <template>
-  <!-- The configuration menus. -->
-  <v-container
-    class="pa-0"
-    style="max-width: 1700px"
-  >
-    <v-row no-gutters>
-      <v-col
-        class="pr-1"
-        style="flex-basis: 60%;"
-      >
-        <v-card tile>
-          <v-card-title class="view-header">
-            <v-icon
-              class="px-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.flowChart
-            </v-icon>
-            Workflow Graph
-          </v-card-title>
-          <v-divider />
-          <v-card-actions class="pa-0">
-            <!-- The graph canvas. -->
-            <TheWorkflowGraphViewCanvas
-              :graph="{ nodes, edges }"
-              :current-node="currentNode"
-              @create:node="onCreateNode"
-              @edit:node="onEditNode"
-              @remove:node="onRemoveNode"
-              @select:nodes="onSelectNodes"
-              @jumpto:node="onJumpToNode"
-              @flowfrom:node="onFlowFromNode"
-              @create:edge="onCreateEdge"
-              @remove:edge="onRemoveEdge"
-              @select:edges="onSelectEdges"
-            />
-            <!-- The graph grammar checking console. -->
-            <TheWorkflowGraphViewConsole
-              :graph="{ nodes, edges }"
-              :style="{
-                position: 'absolute',
-                bottom: '8px',
-                left: '8px',
-                right: '8px',
-                height: '200px',
-              }"
-              @select:nodes="onSelectNodes"
-              @select:edges="onSelectEdges"
-            />
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col
-        class="pl-1"
-        style="flex-basis: 40%;"
-      >
+  <div style="display: flex">
+    <div
+      class="pr-1"
+      style="flex-basis: 60%;"
+    >
+      <v-card tile>
+        <v-card-title class="view-header">
+          <v-icon
+            class="px-2"
+            aria-hidden="true"
+            small
+          >
+            $vuetify.icons.values.flowChart
+          </v-icon>
+          Workflow Graph
+        </v-card-title>
+        <v-divider />
+        <div>
+          <!-- The graph canvas. -->
+          <TheWorkflowGraphViewCanvas
+            :graph="{ nodes, edges }"
+            :current-node="currentNode"
+            @create:node="onCreateNode"
+            @edit:node="onEditNode"
+            @remove:node="onRemoveNode"
+            @select:nodes="onSelectNodes"
+            @jumpto:node="onJumpToNode"
+            @flowfrom:node="onFlowFromNode"
+            @create:edge="onCreateEdge"
+            @remove:edge="onRemoveEdge"
+            @select:edges="onSelectEdges"
+          />
+          <!-- The graph grammar checking console. -->
+          <TheWorkflowGraphViewConsole
+            :graph="{ nodes, edges }"
+            :style="{
+              position: 'absolute',
+              bottom: '8px',
+              left: '8px',
+              right: '8px',
+              height: '200px',
+            }"
+            @select:nodes="onSelectNodes"
+            @select:edges="onSelectEdges"
+          />
+        </div>
+      </v-card>
+    </div>
+    <div style="display: flex; flex-direction: column; flex-basis: 40%;">
+      <div style="flex: 1 1 100%;">
         <!-- The process parameter panel. -->
         <TheElementDetails
           :methods="processesValid"
@@ -67,9 +60,12 @@
           @create:model="onCreateModel"
           @edit:model="onEditModel"
         />
-      </v-col>
-    </v-row>
-  </v-container>
+      </div>
+      <div class="pt-1">
+        <TheDataManagementView />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -81,13 +77,15 @@ import {
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
+import TheDataManagementView from '../TheDataManagementView/TheDataManagementView.vue';
+import TheElementDetails from '../TheWorkflowNodeDetails/TheElementDetails.vue';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
-import TheElementDetails from '../TheWorkflowNodeDetails/TheElementDetails.vue';
 
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
   components: {
+    TheDataManagementView,
     TheElementDetails,
     TheWorkflowGraphViewCanvas,
     TheWorkflowGraphViewConsole,

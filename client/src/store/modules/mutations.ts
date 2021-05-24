@@ -5,6 +5,8 @@ import {
   ILabelStorage,
   IMessage,
   IStatusStorage,
+  SourceService,
+  StorageService,
   TaskWindow,
 } from '@/commons/types';
 import { IState } from './state';
@@ -46,5 +48,17 @@ export default {
   },
   [types.SET_SCOPE_UUIDS](state: IState, scopeUuids: string[]): void {
     state.scopeUuids = scopeUuids;
+  },
+  [types.SET_SOURCE_SERVICE](state: IState, service: SourceService): void {
+    state.sourceService = service;
+  },
+  [types.SET_SOURCE_SERVICES](state: IState, services: SourceService[]): void {
+    state.sourceServices = services;
+  },
+  [types.SET_STORAGE_SERVICE](state: IState, service: StorageService): void {
+    state.storageService = service;
+  },
+  [types.SET_STORAGE_SERVICES](state: IState, services: StorageService[]): void {
+    state.storageServices = services;
   },
 };

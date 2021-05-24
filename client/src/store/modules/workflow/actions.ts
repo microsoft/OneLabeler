@@ -16,6 +16,11 @@ import {
   ILabelCategory,
   IDataObject,
   IDataObjectStorage,
+  SourceType,
+  StorageService,
+  IStorageStore,
+  SourceService,
+  StorageType,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
@@ -144,13 +149,6 @@ export const editModelService = (
   commit(types.SET_MODEL_SERVICES, newModelServices);
 };
 
-export const setProcesses = (
-  { commit }: ActionContext<IState, IRootState>,
-  processes: Process[],
-): void => {
-  commit(types.SET_PROCESSES, processes);
-};
-
 export const pushProcesses = (
   { commit, state }: ActionContext<IState, IRootState>,
   process: Process,
@@ -170,31 +168,55 @@ export const editProcess = (
   commit(types.SET_PROCESSES, processesUpdated);
 };
 
+const pointsToSameDB = (
+  s1: SourceService | StorageService,
+  s2: SourceService | StorageService,
+): boolean => {
+  if (s1.type !== SourceType.ServerDB && s1.type !== StorageType.ServerDB) return false;
+  if (s2.type !== SourceType.ServerDB && s2.type !== StorageType.ServerDB) return false;
+  return s1.api === s2.api;
+};
+
+export const executeRegisterStorage = async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+): Promise<void> => {
+  // Initialize the storage.
+  const { sourceService, storageService } = rootState;
+  const storage: IStorageStore | null = createStorage(storageService);
+  if (storage === null) return;
+  if (!pointsToSameDB(sourceService, storageService)) {
+    await storage.dataObjects.deleteAll();
+    await storage.labels.deleteAll();
+    await storage.statuses.deleteAll();
+    if (sourceService.type === SourceType.ServerDB) {
+      const source = createStorage(sourceService as unknown as StorageService);
+      if (source !== null) {
+        await storage.dataObjects.setBulk(await source.dataObjects.getAll());
+        await storage.labels.setBulk(await source.labels.getAll());
+        await storage.statuses.setBulk(await source.statuses.getAll());
+      }
+    }
+  }
+  commit(rootTypes.SET_DATA_OBJECTS, storage.dataObjects, { root: true });
+  commit(rootTypes.SET_LABELS, storage.labels, { root: true });
+  commit(rootTypes.SET_STATUSES, storage.statuses, { root: true });
+};
+
 export const executeDataObjectExtraction = async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   input: File | FileList,
 ): Promise<void> => {
   const type = dataType(state);
-  if (type === null) return;
-
-  // Initialize the storage.
-  const { storageService } = rootState;
-  const storage = createStorage(storageService);
-  if (storage === null) return;
-  await storage.dataObjects.deleteAll();
-  await storage.labels.deleteAll();
-  await storage.statuses.deleteAll();
+  const { dataObjects } = rootState;
+  if (type === null || dataObjects === null) return;
 
   // Extract data objects.
-  const dataObjects: IDataObjectStorage = await API.dataObjectExtraction(
+  const updatedDataObjects: IDataObjectStorage = await API.dataObjectExtraction(
     input,
     type,
-    storage.dataObjects,
+    dataObjects,
   );
-
-  commit(rootTypes.SET_DATA_OBJECTS, dataObjects, { root: true });
-  commit(rootTypes.SET_LABELS, storage.labels, { root: true });
-  commit(rootTypes.SET_STATUSES, storage.statuses, { root: true });
+  commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
 };
 
 export const executeDataObjectSelectionAlgorithmic = async (
@@ -464,7 +486,7 @@ export const executeWorkflow = async (
     }
     */
     [outputNode] = getOutputNodes(node, nodes, edges);
-    commit(types.SET_CURRENT_NODE, outputNode);
+    // commit(types.SET_CURRENT_NODE, outputNode);
   }
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {

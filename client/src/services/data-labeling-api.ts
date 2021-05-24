@@ -94,7 +94,7 @@ export const dataObjectExtraction = showProgressBar(async (
   } else {
     console.warn(`Invalid Data Type: ${dataType}`);
   }
-  return storage;
+  return storage.shallowCopy();
 });
 
 /**
@@ -111,7 +111,6 @@ export const featureExtraction = showProgressBar(async (
   labels: ILabelStorage | null = null,
   statuses: IStatusStorage | null = null,
 ): Promise<{ dataObjects: IDataObjectStorage, featureNames: string[] }> => {
-  console.log('feature extraction method', method);
   if (method.isServerless && (method.api === 'Random3D')) {
     const SEED = '20';
     const random = xor4096(SEED);

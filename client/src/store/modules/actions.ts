@@ -6,6 +6,8 @@ import {
   ILabel,
   IMessage,
   IStatus,
+  SourceService,
+  StorageService,
   TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
@@ -157,4 +159,56 @@ export const setProject = (
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES,
     featureNames === undefined ? [] : featureNames);
+};
+
+export const setSourceService = (
+  { commit }: ActionContext<IState, IState>,
+  service: SourceService,
+): void => {
+  commit(types.SET_SOURCE_SERVICE, service);
+};
+
+export const pushSourceServices = (
+  { commit, state }: ActionContext<IState, IState>,
+  service: SourceService,
+): void => {
+  const { sourceServices } = state;
+  commit(types.SET_SOURCE_SERVICES, [...sourceServices, service]);
+};
+
+export const editSourceService = (
+  { commit, state }: ActionContext<IState, IState>,
+  serviceUpdated: SourceService,
+): void => {
+  const { sourceServices } = state;
+  const idx = sourceServices.findIndex((d) => d.id === serviceUpdated.id);
+  const servicesUpdated = [...sourceServices];
+  servicesUpdated[idx] = serviceUpdated;
+  commit(types.SET_SOURCE_SERVICES, servicesUpdated);
+};
+
+export const setStorageService = (
+  { commit }: ActionContext<IState, IState>,
+  service: StorageService,
+): void => {
+  commit(types.SET_STORAGE_SERVICE, service);
+};
+
+export const pushStorageServices = (
+  { commit, state }: ActionContext<IState, IState>,
+  service: StorageService,
+): void => {
+  const { storageServices } = state;
+  commit(types.SET_STORAGE_SERVICES, [...storageServices, service]);
+};
+
+export const editStorageService = (
+  { commit, state }: ActionContext<IState, IState>,
+  serviceUpdated: StorageService,
+): void => {
+  const { storageServices } = state;
+  const idx = storageServices.findIndex((d) => d.id === serviceUpdated.id);
+  const servicesUpdated = [...storageServices];
+  servicesUpdated[idx] = serviceUpdated;
+  commit(types.SET_STORAGE_SERVICES, servicesUpdated);
 };

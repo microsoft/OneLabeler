@@ -73,7 +73,7 @@ class DataObjectStorage implements IDataObjectStorage {
   }
 
   shallowCopy(): IDataObjectStorage {
-    return { ...this };
+    return new DataObjectStorage(this.#url);
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
@@ -147,7 +147,7 @@ class LabelStorage implements ILabelStorage {
   }
 
   shallowCopy(): ILabelStorage {
-    return { ...this };
+    return new LabelStorage(this.#url);
   }
 }
 
@@ -205,7 +205,7 @@ class StatusStorage implements IStatusStorage {
   }
 
   shallowCopy(): IStatusStorage {
-    return { ...this };
+    return new StatusStorage(this.#url);
   }
 }
 

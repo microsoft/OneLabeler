@@ -4,7 +4,7 @@
       class="subtitle-2"
       style="user-select: none; flex: 1 1 100%; align-self: center;"
     >
-      Selected Method
+      {{ menu.label }}
     </span>
     <v-menu offset-y>
       <template #activator="{ on }">
@@ -64,12 +64,17 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Process } from '@/commons/types';
+
+interface IMethod {
+  label: string;
+  isBuiltIn: boolean;
+  isServerless: boolean;
+}
 
 interface MethodMenu {
   label: string;
   options: {
-    value: Process;
+    value: IMethod;
     label: string;
   }[];
 }
@@ -78,7 +83,7 @@ export default Vue.extend({
   name: 'VNodeSelectMethodSingle',
   props: {
     selectedMethod: {
-      type: Object as PropType<Process | null>,
+      type: Object as PropType<IMethod | null>,
       default: null,
     },
     menu: {
@@ -91,7 +96,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickMenuOption(option: Process): void {
+    onClickMenuOption(option: IMethod): void {
       this.$emit('update:selection', option);
     },
     onCreateMenuOption(): void {
