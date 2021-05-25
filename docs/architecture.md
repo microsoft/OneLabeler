@@ -11,6 +11,7 @@
       - [`services`](#services)
       - [`store`](#store)
       - [`style`](#style)
+  - [`db`](#db)
   - [`docs`](#docs)
   - [`server`](#server)
     - [`handlers`](#handlers)
@@ -57,13 +58,17 @@ The global state management.
 
 The frontend global styling.
 
+## `db`
+
+The database resource server of the system.
+
 ## `docs`
 
 The documentation for the project.
 
 ## `server`
 
-The backend of the system.
+The algorithm server of the system.
 
 ### `handlers`
 
