@@ -75,7 +75,6 @@ import Vue from 'vue';
 import { mapState } from 'vuex';
 import {
   Category,
-  ILabel,
   ILabelStorage,
   IStatusStorage,
   StatusType,

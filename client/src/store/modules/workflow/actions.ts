@@ -191,9 +191,9 @@ export const executeRegisterStorage = async (
     if (sourceService.type === SourceType.ServerDB) {
       const source = createStorage(sourceService as unknown as StorageService);
       if (source !== null) {
-        await storage.dataObjects.setBulk(await source.dataObjects.getAll());
-        await storage.labels.setBulk(await source.labels.getAll());
-        await storage.statuses.setBulk(await source.statuses.getAll());
+        await storage.dataObjects.upsertBulk(await source.dataObjects.getAll());
+        await storage.labels.upsertBulk(await source.labels.getAll());
+        await storage.statuses.upsertBulk(await source.statuses.getAll());
       }
     }
   }
@@ -241,7 +241,7 @@ export const executeDataObjectSelectionAlgorithmic = async (
         ? StatusType.Skipped
         : StatusType.Labeled,
     };
-    await statuses.set(status);
+    await statuses.upsert(status);
   }));
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
 
@@ -264,7 +264,7 @@ export const executeDataObjectSelectionAlgorithmic = async (
   await Promise.all(newQueryUuids.map(async (uuid: string) => {
     const status: IStatus | undefined = await statuses.get(uuid);
     if (status !== undefined && status.value === StatusType.Labeled) return;
-    await statuses.set({ uuid, value: StatusType.Viewed });
+    await statuses.upsert({ uuid, value: StatusType.Viewed });
   }));
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
 };
@@ -291,7 +291,7 @@ export const executeDataObjectSelectionManual = async (
         ? StatusType.Skipped
         : StatusType.Labeled,
     };
-    await statuses.set(status);
+    await statuses.upsert(status);
   }));
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
 
@@ -304,7 +304,7 @@ export const executeDataObjectSelectionManual = async (
   await Promise.all(newQueryUuids.map(async (uuid: string) => {
     const status: IStatus | undefined = await statuses.get(uuid);
     if (status !== undefined && status.value === StatusType.Labeled) return;
-    await statuses.set({ uuid, value: StatusType.Viewed });
+    await statuses.upsert({ uuid, value: StatusType.Viewed });
   }));
 
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
@@ -342,7 +342,7 @@ export const executeDefaultLabeling = async (
         shapes: undefined,
         mask: undefined,
       } : { ...label, category: labelCategories[i] };
-    await labels.set(labelUpdated);
+    await labels.upsert(labelUpdated);
   }));
   commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
 };

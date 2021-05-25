@@ -34,34 +34,24 @@ class DataObjectStorage implements IDataObjectStorage {
     this.#storage = storage;
   }
 
-  // Add one data object.
-  async add(value: IDataObject): Promise<void> {
-    this.#storage[value.uuid] = value;
-  }
-
-  // Count the number of data objects.
   async count(): Promise<number> {
     return Object.keys(this.#storage).length;
   }
 
-  // Delete all the data objects.
   async deleteAll(): Promise<void> {
     this.#storage = {};
   }
 
-  // Retrieve a data object by uuid.
   async get(uuid: string): Promise<IDataObject | undefined> {
     return this.#storage[uuid];
   }
 
-  // Retrieve a list of data objects by uuids.
-  async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
-    return uuids.map((d) => this.#storage[d]);
-  }
-
-  // Retrieve all the data objects.
   async getAll(): Promise<IDataObject[]> {
     return Object.values(this.#storage);
+  }
+
+  async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
+    return uuids.map((d) => this.#storage[d]);
   }
 
   async randomChoice(
@@ -79,17 +69,6 @@ class DataObjectStorage implements IDataObjectStorage {
       (idx) => this.#storage[uuids[idx]],
     )) as IDataObject[];
     return samples;
-  }
-
-  async set(value: IDataObject): Promise<void> {
-    this.#storage[value.uuid] = value;
-  }
-
-  // Set the data objects.
-  async setBulk(values: IDataObject[]): Promise<void> {
-    values.forEach((value) => {
-      this.#storage[value.uuid] = value;
-    });
   }
 
   shallowCopy(): IDataObjectStorage {
@@ -110,6 +89,16 @@ class DataObjectStorage implements IDataObjectStorage {
     return Object.values(this.#storage);
   }
 
+  async upsert(value: IDataObject): Promise<void> {
+    this.#storage[value.uuid] = value;
+  }
+
+  async upsertBulk(values: IDataObject[]): Promise<void> {
+    values.forEach((value) => {
+      this.#storage[value.uuid] = value;
+    });
+  }
+
   async uuids(): Promise<string[]> {
     return Object.keys(this.#storage);
   }
@@ -122,7 +111,6 @@ class LabelStorage implements ILabelStorage {
     this.#storage = storage;
   }
 
-  // Count the number of labels.
   async count(query?: FilterQuery<unknown>): Promise<number> {
     if (query === undefined) {
       return Object.keys(this.#storage).length;
@@ -131,46 +119,39 @@ class LabelStorage implements ILabelStorage {
     return Object.values(this.#storage).filter(filter).length;
   }
 
-  // Delete all the labels.
   async deleteAll(): Promise<void> {
     this.#storage = {};
   }
 
-  // Retrieve a label by uuid.
   async get(uuid: string): Promise<ILabel | undefined> {
     return this.#storage[uuid];
   }
 
-  // Retrieve a list of labels by uuids.
-  async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
-    return uuids.map((d) => this.#storage[d]);
-  }
-
-  // Retrieve all the labels.
   async getAll(): Promise<ILabel[]> {
     return Object.values(this.#storage);
   }
 
-  // Retrieve a list of labels by filter.
+  async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
+    return uuids.map((d) => this.#storage[d]);
+  }
+
   async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
     const filter: ((item: unknown) => boolean) = sift(query);
     return Object.values(this.#storage).filter(filter);
   }
 
-  // Set the label.
-  async set(value: ILabel): Promise<void> {
+  shallowCopy(): ILabelStorage {
+    return new LabelStorage(this.#storage);
+  }
+
+  async upsert(value: ILabel): Promise<void> {
     this.#storage[value.uuid] = value;
   }
 
-  // Set the labels.
-  async setBulk(values: ILabel[]): Promise<void> {
+  async upsertBulk(values: ILabel[]): Promise<void> {
     values.forEach((value) => {
       this.#storage[value.uuid] = value;
     });
-  }
-
-  shallowCopy(): ILabelStorage {
-    return new LabelStorage(this.#storage);
   }
 }
 
@@ -181,7 +162,6 @@ class StatusStorage implements IStatusStorage {
     this.#storage = storage;
   }
 
-  // Count the number of statuses.
   async count(query?: FilterQuery<unknown>): Promise<number> {
     if (query === undefined) {
       return Object.keys(this.#storage).length;
@@ -190,40 +170,34 @@ class StatusStorage implements IStatusStorage {
     return Object.values(this.#storage).filter(filter).length;
   }
 
-  // Delete all the statuses.
   async deleteAll(): Promise<void> {
     this.#storage = {};
   }
 
-  // Retrieve a status by uuid.
   async get(uuid: string): Promise<IStatus | undefined> {
     return this.#storage[uuid];
   }
 
-  // Retrieve a list of statuses by uuids.
-  async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
-    return uuids.map((d) => this.#storage[d]);
-  }
-
-  // Retrieve all the statuses.
   async getAll(): Promise<IStatus[]> {
     return Object.values(this.#storage);
   }
 
-  // Set the status.
-  async set(value: IStatus): Promise<void> {
-    this.#storage[value.uuid] = value;
-  }
-
-  // Set the statuses.
-  async setBulk(values: IStatus[]): Promise<void> {
-    values.forEach((value) => {
-      this.#storage[value.uuid] = value;
-    });
+  async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
+    return uuids.map((d) => this.#storage[d]);
   }
 
   shallowCopy(): IStatusStorage {
     return new StatusStorage(this.#storage);
+  }
+
+  async upsert(value: IStatus): Promise<void> {
+    this.#storage[value.uuid] = value;
+  }
+
+  async upsertBulk(values: IStatus[]): Promise<void> {
+    values.forEach((value) => {
+      this.#storage[value.uuid] = value;
+    });
   }
 }
 

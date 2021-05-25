@@ -3,6 +3,7 @@
     :style="{
       'overflow': 'hidden',
       'box-shadow': isSelected ? '0px 0px 0px 3px #757575 !important' : undefined,
+      'opacity': isLabeled ? '0.5' : undefined,
     }"
     :ripple="false"
     @click="onClickCard"
@@ -127,6 +128,9 @@ export default Vue.extend({
     },
     bodyWidth(): number {
       return this.width;
+    },
+    isLabeled(): boolean {
+      return this.status === StatusType.Labeled;
     },
   },
   methods: {

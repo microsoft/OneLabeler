@@ -6,13 +6,19 @@ import {
   ILabelStorage,
   IStatus,
   IStatusStorage,
-} from './types';
-import { randomChoice } from './random';
+  IStorageStore,
+} from './commons/types';
+import { randomChoice } from './commons/random';
 
 /* eslint max-classes-per-file: ["error", 4] */
 
 const DB_NAME = 'DataLabelingStorage';
 const DB_URL = `mongodb://localhost:27017/${DB_NAME}`;
+
+type EmptyObject = Record<string, never>;
+type IDataObjectModel = mongoose.Model<IDataObject, EmptyObject, EmptyObject>;
+type ILabelModel = mongoose.Model<ILabel, EmptyObject, EmptyObject>;
+type IStatusModel = mongoose.Model<IStatus, EmptyObject, EmptyObject>;
 
 const DataObjectSchema = new mongoose.Schema<IDataObject>({
   uuid: { type: String, required: true },
@@ -34,26 +40,14 @@ const StatusSchema = new mongoose.Schema({
   value: { type: String, required: true },
 }, { strict: true });
 
-type EmptyObject = Record<string, never>;
-type IDataObjectModel = mongoose.Model<IDataObject, EmptyObject, EmptyObject>;
-type ILabelModel = mongoose.Model<ILabel, EmptyObject, EmptyObject>;
-type IStatusModel = mongoose.Model<IStatus, EmptyObject, EmptyObject>;
+const dataObjectModel: IDataObjectModel = mongoose.model<IDataObject>(
+  'DataObject',
+  DataObjectSchema,
+);
+const labelModel: ILabelModel = mongoose.model<ILabel>('Label', LabelSchema);
+const statusModel: IStatusModel = mongoose.model<IStatus>('Status', StatusSchema);
 
-class DataLabelingDB {
-  dataObjects: IDataObjectModel;
-
-  labels: ILabelModel;
-
-  statuses: IStatusModel;
-
-  constructor() {
-    this.dataObjects = mongoose.model<IDataObject>('DataObject', DataObjectSchema);
-    this.labels = mongoose.model<ILabel>('Label', LabelSchema);
-    this.statuses = mongoose.model<IStatus>('Status', StatusSchema);
-  }
-}
-
-const formatMatches = <T extends { uuid: string }>(
+const sortAndPadMatches = <T extends { uuid: string }>(
   uuids: string[],
   matches: T[],
 ): (T | undefined)[] => {
@@ -70,30 +64,21 @@ const formatMatches = <T extends { uuid: string }>(
   return formattedMatches;
 };
 
-class DataObjectDB implements IDataObjectStorage {
+class DataObjectStorage implements IDataObjectStorage {
   #storage: IDataObjectModel;
 
   constructor(storage: IDataObjectModel) {
     this.#storage = storage;
   }
 
-  // Add one data object.
-  async add(value: IDataObject): Promise<void> {
-    const entry = new this.#storage(value);
-    await entry.save();
-  }
-
-  // Count the number of data objects.
   async count(): Promise<number> {
     return this.#storage.countDocuments();
   }
 
-  // Delete all the data objects.
   async deleteAll(): Promise<void> {
     await this.#storage.deleteMany({});
   }
 
-  // Retrieve a data object by uuid.
   async get(uuid: string): Promise<IDataObject | undefined> {
     const match: IDataObject | null = await this.#storage
       .findOne({ uuid }).lean();
@@ -101,16 +86,14 @@ class DataObjectDB implements IDataObjectStorage {
     return match;
   }
 
-  // Retrieve a list of data objects by uuids.
+  async getAll(): Promise<IDataObject[]> {
+    return this.#storage.find({}).lean();
+  }
+
   async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
     const matches: IDataObject[] = await this.#storage
       .find({ uuid: { $in: uuids } }).lean();
-    return formatMatches(uuids, matches);
-  }
-
-  // Retrieve all the data objects.
-  async getAll(): Promise<IDataObject[]> {
-    return this.#storage.find({}).lean();
+    return sortAndPadMatches(uuids, matches);
   }
 
   async randomChoice(
@@ -129,33 +112,17 @@ class DataObjectDB implements IDataObjectStorage {
     return samples;
   }
 
-  async set(value: IDataObject): Promise<void> {
-    await this.#storage.updateOne(
-      { uuid: value.uuid },
-      value,
-      { upsert: true },
-    );
-  }
-
-  // Set the data objects.
-  async setBulk(values: IDataObject[]): Promise<void> {
-    const ops = values.map((d) => ({
-      updateOne: {
-        filter: { uuid: d.uuid },
-        update: d,
-        upsert: true,
-      }
-    }));
-    await this.#storage.bulkWrite(ops);
-  }
-
   shallowCopy(): IDataObjectStorage {
-    return new DataObjectDB(this.#storage);
+    return new DataObjectStorage(this.#storage);
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
     if (begin !== undefined && end !== undefined) {
-      const n = end - begin;
+      // When begin >= end, return an empty slice.
+      const n = Math.max(end - begin, 0);
+      // Note: the edge case of setting limit = 0 for mongoose
+      // is equivalent to not setting limit.
+      if (n === 0) return [];
       return this.#storage.find({}).skip(begin).limit(n).lean();
     }
     if (begin !== undefined && end === undefined) {
@@ -167,19 +134,37 @@ class DataObjectDB implements IDataObjectStorage {
     return this.#storage.find({}).lean();
   }
 
+  async upsert(value: IDataObject): Promise<void> {
+    await this.#storage.updateOne(
+      { uuid: value.uuid },
+      value,
+      { upsert: true },
+    );
+  }
+
+  async upsertBulk(values: IDataObject[]): Promise<void> {
+    const ops = values.map((d) => ({
+      updateOne: {
+        filter: { uuid: d.uuid },
+        update: d,
+        upsert: true,
+      }
+    }));
+    await this.#storage.bulkWrite(ops);
+  }
+
   async uuids(): Promise<string[]> {
     return this.#storage.find({}).distinct('uuid').lean();
   }
 }
 
-class LabelDB implements ILabelStorage {
+class LabelStorage implements ILabelStorage {
   #storage: ILabelModel;
 
   constructor(storage: ILabelModel) {
     this.#storage = storage;
   }
 
-  // Count the number of labels.
   async count(query?: FilterQuery<unknown>): Promise<number> {
     if (query === undefined) {
       return this.#storage.countDocuments();
@@ -187,12 +172,10 @@ class LabelDB implements ILabelStorage {
     return this.#storage.countDocuments(query);
   }
 
-  // Delete all the labels.
   async deleteAll(): Promise<void> {
     await this.#storage.deleteMany({});
   }
 
-  // Retrieve a label by uuid.
   async get(uuid: string): Promise<ILabel | undefined> {
     const match: ILabel | null = await this.#storage
       .findOne({ uuid }).lean();
@@ -200,25 +183,25 @@ class LabelDB implements ILabelStorage {
     return match;
   }
 
-  // Retrieve a list of labels by uuids.
-  async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
-    const matches: ILabel[] = await this.#storage
-      .find({ uuid: { $in: uuids } }).lean();
-    return formatMatches(uuids, matches);
-  }
-
-  // Retrieve all the labels.
   async getAll(): Promise<ILabel[]> {
     return this.#storage.find({}).lean();
   }
 
-  // Retrieve a list of labels by condition.
+  async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
+    const matches: ILabel[] = await this.#storage
+      .find({ uuid: { $in: uuids } }).lean();
+    return sortAndPadMatches(uuids, matches);
+  }
+
   async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
     return this.#storage.find(query).lean();
   }
 
-  // Set the label.
-  async set(value: ILabel): Promise<void> {
+  shallowCopy(): ILabelStorage {
+    return new LabelStorage(this.#storage);
+  }
+
+  async upsert(value: ILabel): Promise<void> {
     await this.#storage.updateOne(
       { uuid: value.uuid },
       value,
@@ -226,8 +209,7 @@ class LabelDB implements ILabelStorage {
     );
   }
 
-  // Set the labels.
-  async setBulk(values: ILabel[]): Promise<void> {
+  async upsertBulk(values: ILabel[]): Promise<void> {
     const ops = values.map((d) => ({
       updateOne: {
         filter: { uuid: d.uuid },
@@ -237,20 +219,15 @@ class LabelDB implements ILabelStorage {
     }));
     await this.#storage.bulkWrite(ops);
   }
-
-  shallowCopy(): ILabelStorage {
-    return new LabelDB(this.#storage);
-  }
 }
 
-class StatusDB implements IStatusStorage {
+class StatusStorage implements IStatusStorage {
   #storage: IStatusModel;
 
   constructor(storage: IStatusModel) {
     this.#storage = storage;
   }
 
-  // Count the number of statuses.
   async count(query?: FilterQuery<unknown>): Promise<number> {
     if (query === undefined) {
       return this.#storage.countDocuments();
@@ -258,12 +235,10 @@ class StatusDB implements IStatusStorage {
     return this.#storage.countDocuments(query);
   }
 
-  // Delete all the statuses.
   async deleteAll(): Promise<void> {
     await this.#storage.deleteMany({});
   }
 
-  // Retrieve a status by uuid.
   async get(uuid: string): Promise<IStatus | undefined> {
     const match: IStatus | null = await this.#storage
       .findOne({ uuid: { $eq: uuid } }).lean();
@@ -271,20 +246,21 @@ class StatusDB implements IStatusStorage {
     return match;
   }
 
-  // Retrieve a list of statuses by uuids.
-  async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
-    const matches: IStatus[] = await this.#storage
-      .find({ uuid: { $in: uuids } }).lean();
-    return formatMatches(uuids, matches);
-  }
-
-  // Retrieve all the statuses.
   async getAll(): Promise<IStatus[]> {
     return this.#storage.find({}).lean();
   }
 
-  // Set the status.
-  async set(value: IStatus): Promise<void> {
+  async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
+    const matches: IStatus[] = await this.#storage
+      .find({ uuid: { $in: uuids } }).lean();
+    return sortAndPadMatches(uuids, matches);
+  }
+
+  shallowCopy(): IStatusStorage {
+    return new StatusStorage(this.#storage);
+  }
+
+  async upsert(value: IStatus): Promise<void> {
     await this.#storage.updateOne(
       { uuid: value.uuid },
       value,
@@ -292,8 +268,7 @@ class StatusDB implements IStatusStorage {
     );
   }
 
-  // Set the statuses.
-  async setBulk(values: IStatus[]): Promise<void> {
+  async upsertBulk(values: IStatus[]): Promise<void> {
     const ops = values.map((d) => ({
       updateOne: {
         filter: { uuid: d.uuid },
@@ -303,19 +278,29 @@ class StatusDB implements IStatusStorage {
     }));
     await this.#storage.bulkWrite(ops);
   }
+}
 
-  shallowCopy(): IStatusStorage {
-    return new StatusDB(this.#storage);
+class StorageStore implements IStorageStore {
+  dataObjects: IDataObjectStorage;
+
+  labels: ILabelStorage;
+
+  statuses: IStatusStorage;
+
+  constructor() {
+    this.dataObjects = new DataObjectStorage(dataObjectModel);
+    this.labels = new LabelStorage(labelModel);
+    this.statuses = new StatusStorage(statusModel);
+  }
+
+  async init(): Promise<void> {
+    await mongoose.connect(DB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
+    });
   }
 }
 
-mongoose.connect(DB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-});
-const DB = new DataLabelingDB();
-export const dataObjectDB = new DataObjectDB(DB.dataObjects);
-export const labelDB = new LabelDB(DB.labels);
-export const statusDB = new StatusDB(DB.statuses);
+export default StorageStore;

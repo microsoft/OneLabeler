@@ -82,6 +82,7 @@
         "tolist",
         "tsne",
         "upsert",
+        "upserted",
         "uuidv",
         "vectorizer",
         "vetur",

@@ -12,6 +12,8 @@ import {
 
 /* eslint max-classes-per-file: ["error", 4] */
 
+const SECRETE = 'UKBumAJziW5eL8t';
+
 const path = (
   url: string,
   table: string,
@@ -21,55 +23,39 @@ const path = (
 class DataObjectStorage implements IDataObjectStorage {
   #url: string;
 
+  #path: (op: string) => string;
+
   constructor(url: string) {
     this.#url = url;
+    this.#path = (op: string) => path(this.#url, 'dataObjects', `${op}?auth=${SECRETE}`);
   }
 
-  // Add one data object.
-  async add(value: IDataObject): Promise<void> {
-    await axios.post(path(this.#url, 'dataObjects', 'add'), { value });
-  }
-
-  // Count the number of data objects.
   async count(): Promise<number> {
-    return (await axios.post(path(this.#url, 'dataObjects', 'count'))).data;
+    return (await axios.post(this.#path('count'))).data;
   }
 
-  // Delete all the data objects.
   async deleteAll(): Promise<void> {
-    await axios.post(path(this.#url, 'dataObjects', 'deleteAll'));
+    await axios.post(this.#path('deleteAll'));
   }
 
-  // Retrieve a data object by uuid.
   async get(uuid: string): Promise<IDataObject | undefined> {
     const value: IDataObject | null = (await axios.post(
-      path(this.#url, 'dataObjects', 'get'),
+      this.#path('get'),
       { uuid },
     )).data;
     return value === null ? undefined : value;
   }
 
-  // Retrieve a list of data objects by uuids.
+  async getAll(): Promise<IDataObject[]> {
+    return (await axios.post(this.#path('getAll'))).data;
+  }
+
   async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
     const values: (IDataObject | null)[] = (await axios.post(
-      path(this.#url, 'dataObjects', 'getBulk'),
+      this.#path('getBulk'),
       { uuids },
     )).data;
     return values.map((d) => (d === null ? undefined : d));
-  }
-
-  // Retrieve all the data objects.
-  async getAll(): Promise<IDataObject[]> {
-    return (await axios.post(path(this.#url, 'dataObjects', 'getAll'))).data;
-  }
-
-  async set(value: IDataObject): Promise<void> {
-    await axios.post(path(this.#url, 'dataObjects', 'set'), { value });
-  }
-
-  // Set the data objects.
-  async setBulk(values: IDataObject[]): Promise<void> {
-    await axios.post(path(this.#url, 'dataObjects', 'setBulk'), { values });
   }
 
   shallowCopy(): IDataObjectStorage {
@@ -77,135 +63,125 @@ class DataObjectStorage implements IDataObjectStorage {
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
-    return (await axios.post(
-      path(this.#url, 'dataObjects', 'slice'),
-      { begin, end },
-    )).data;
+    return (await axios.post(this.#path('slice'), { begin, end })).data;
+  }
+
+  async upsert(value: IDataObject): Promise<void> {
+    await axios.post(this.#path('upsert'), { value });
+  }
+
+  async upsertBulk(values: IDataObject[]): Promise<void> {
+    await axios.post(this.#path('upsertBulk'), { values });
   }
 
   async uuids(): Promise<string[]> {
-    return (await axios.post(path(this.#url, 'dataObjects', 'uuids'))).data;
+    return (await axios.post(this.#path('uuids'))).data;
   }
 }
 
 class LabelStorage implements ILabelStorage {
   #url: string;
 
+  #path: (op: string) => string;
+
   constructor(url: string) {
     this.#url = url;
+    this.#path = (op: string) => path(this.#url, 'labels', `${op}?auth=${SECRETE}`);
   }
 
-  // Count the number of labels.
   async count(query?: FilterQuery<unknown>): Promise<number> {
-    return (await axios.post(path(this.#url, 'labels', 'count'), { query })).data;
+    return (await axios.post(this.#path('count'), { query })).data;
   }
 
-  // Delete all the labels.
   async deleteAll(): Promise<void> {
-    await axios.post(path(this.#url, 'labels', 'deleteAll'));
+    await axios.post(this.#path('deleteAll'));
   }
 
-  // Retrieve a label by uuid.
   async get(uuid: string): Promise<ILabel | undefined> {
     const value: ILabel | null = (await axios.post(
-      path(this.#url, 'labels', 'get'),
+      this.#path('get'),
       { uuid },
     )).data;
     return value === null ? undefined : value;
   }
 
-  // Retrieve a list of labels by uuids.
+  async getAll(): Promise<ILabel[]> {
+    return (await axios.post(this.#path('getAll'))).data;
+  }
+
   async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
     const values: (ILabel | null)[] = (await axios.post(
-      path(this.#url, 'labels', 'getBulk'),
+      this.#path('getBulk'),
       { uuids },
     )).data;
     return values.map((d) => (d === null ? undefined : d));
   }
 
-  // Retrieve all the labels.
-  async getAll(): Promise<ILabel[]> {
-    return (await axios.post(path(this.#url, 'labels', 'getAll'))).data;
-  }
-
-  // Retrieve a list of labels by condition.
   async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
-    return (await axios.post(
-      path(this.#url, 'labels', 'getFiltered'),
-      { query },
-    )).data;
-  }
-
-  // Set the label.
-  async set(value: ILabel): Promise<void> {
-    await axios.post(path(this.#url, 'labels', 'set'), { value });
-  }
-
-  // Set the labels.
-  async setBulk(values: ILabel[]): Promise<void> {
-    await axios.post(path(this.#url, 'labels', 'setBulk'), { values });
+    return (await axios.post(this.#path('getFiltered'), { query })).data;
   }
 
   shallowCopy(): ILabelStorage {
     return new LabelStorage(this.#url);
+  }
+
+  async upsert(value: ILabel): Promise<void> {
+    await axios.post(this.#path('upsert'), { value });
+  }
+
+  async upsertBulk(values: ILabel[]): Promise<void> {
+    await axios.post(this.#path('upsertBulk'), { values });
   }
 }
 
 class StatusStorage implements IStatusStorage {
   #url: string;
 
+  #path: (op: string) => string;
+
   constructor(url: string) {
     this.#url = url;
+    this.#path = (op: string) => path(this.#url, 'statuses', `${op}?auth=${SECRETE}`);
   }
 
-  // Count the number of statuses.
   async count(query?: FilterQuery<unknown>): Promise<number> {
-    return (await axios.post(
-      path(this.#url, 'statuses', 'count'),
-      { query },
-    )).data;
+    return (await axios.post(this.#path('count'), { query })).data;
   }
 
-  // Delete all the statuses.
   async deleteAll(): Promise<void> {
-    await axios.post(path(this.#url, 'statuses', 'deleteAll'));
+    await axios.post(this.#path('deleteAll'));
   }
 
-  // Retrieve a status by uuid.
   async get(uuid: string): Promise<IStatus | undefined> {
     const value: IStatus | null = (await axios.post(
-      path(this.#url, 'statuses', 'get'),
+      this.#path('get'),
       { uuid },
     )).data;
     return value === null ? undefined : value;
   }
 
-  // Retrieve a list of statuses by uuids.
+  async getAll(): Promise<IStatus[]> {
+    return (await axios.post(this.#path('getAll'))).data;
+  }
+
   async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
     const values: (IStatus | null)[] = (await axios.post(
-      path(this.#url, 'statuses', 'getBulk'),
+      this.#path('getBulk'),
       { uuids },
     )).data;
     return values.map((d) => (d === null ? undefined : d));
   }
 
-  // Retrieve all the statuses.
-  async getAll(): Promise<IStatus[]> {
-    return (await axios.post(path(this.#url, 'statuses', 'getAll'))).data;
-  }
-
-  // Set the status.
-  async set(value: IStatus): Promise<void> {
-    await axios.post(path(this.#url, 'statuses', 'set'), { value });
-  }
-
-  // Set the statuses.
-  async setBulk(values: IStatus[]): Promise<void> {
-    await axios.post(path(this.#url, 'statuses', 'setBulk'), { values });
-  }
-
   shallowCopy(): IStatusStorage {
     return new StatusStorage(this.#url);
+  }
+
+  async upsert(value: IStatus): Promise<void> {
+    await axios.post(this.#path('upsert'), { value });
+  }
+
+  async upsertBulk(values: IStatus[]): Promise<void> {
+    await axios.post(this.#path('upsertBulk'), { values });
   }
 }
 

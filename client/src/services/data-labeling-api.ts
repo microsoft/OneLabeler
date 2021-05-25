@@ -80,7 +80,7 @@ export const dataObjectExtraction = showProgressBar(async (
         width,
         height,
       };
-      storage.add(dataObject);
+      storage.upsert(dataObject);
     }));
   } else if (dataType === DataType.Text) {
     const file = input as File;
@@ -89,7 +89,7 @@ export const dataObjectExtraction = showProgressBar(async (
         uuid: uuidv4(),
         content,
       };
-      storage.add(dataObject);
+      storage.upsert(dataObject);
     });
   } else {
     console.warn(`Invalid Data Type: ${dataType}`);
@@ -119,7 +119,7 @@ export const featureExtraction = showProgressBar(async (
       const features = [random(), random(), random()];
       const dataObject = await dataObjects.get(uuid);
       if (dataObject === undefined) return;
-      await dataObjects.set({ ...dataObject, features });
+      await dataObjects.upsert({ ...dataObject, features });
     }));
     const featureNames = [
       'Random[0]',
@@ -145,7 +145,7 @@ export const featureExtraction = showProgressBar(async (
       }),
     )
   ).data as { dataObjects: IDataObject[], featureNames: string[] };
-  dataObjects.setBulk(response.dataObjects);
+  dataObjects.upsertBulk(response.dataObjects);
   return {
     dataObjects,
     featureNames: response.featureNames,

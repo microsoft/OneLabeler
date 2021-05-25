@@ -18,7 +18,7 @@ export const setLabelOf = async (
   label: ILabel,
 ): Promise<void> => {
   if (state.labels === null) return;
-  await state.labels.set(label);
+  await state.labels.upsert(label);
   commit(types.SET_LABELS, state.labels.shallowCopy());
 };
 
@@ -27,7 +27,7 @@ export const setLabelsOf = async (
   labels: ILabel[],
 ): Promise<void> => {
   if (state.labels === null) return;
-  await state.labels.setBulk(labels);
+  await state.labels.upsertBulk(labels);
   commit(types.SET_LABELS, state.labels.shallowCopy());
 };
 
@@ -36,7 +36,7 @@ export const setStatusOf = async (
   status: IStatus,
 ): Promise<void> => {
   if (state.statuses === null) return;
-  await state.statuses.set(status);
+  await state.statuses.upsert(status);
   commit(types.SET_STATUSES, state.statuses.shallowCopy());
 };
 
@@ -45,7 +45,7 @@ export const setStatusesOf = async (
   statuses: IStatus[],
 ): Promise<void> => {
   if (state.statuses === null) return;
-  await state.statuses.setBulk(statuses);
+  await state.statuses.upsertBulk(statuses);
   commit(types.SET_STATUSES, state.statuses.shallowCopy());
 };
 

@@ -80,7 +80,7 @@ export const sourceServices: SourceService[] = [{
 }, {
   type: SourceType.ServerDB,
   label: 'Server-Side Database',
-  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}/database`,
+  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}`,
   id: 'ServerDB',
   isBuiltIn: true,
   isServerless: false,
@@ -103,7 +103,7 @@ export const storageServices: StorageService[] = [{
 }, {
   type: StorageType.ServerDB,
   label: 'Server-Side Database',
-  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}/database`,
+  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}`,
   id: 'ServerDB',
   isBuiltIn: true,
   isServerless: false,
