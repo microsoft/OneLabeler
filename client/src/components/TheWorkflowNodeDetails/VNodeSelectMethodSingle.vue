@@ -13,6 +13,7 @@
           style="border-color: #e0e0e0"
           small
           outlined
+          :disabled="disabled"
           v-on="on"
         >
           {{ selectedMethod !== null ? selectedMethod.label : '' }}
@@ -93,6 +94,10 @@ export default Vue.extend({
     appendCreateOption: {
       type: Boolean,
       default: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   methods: {

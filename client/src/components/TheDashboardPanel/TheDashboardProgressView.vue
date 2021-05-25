@@ -12,7 +12,7 @@
     </v-card-title>
     <v-divider />
     <v-card-actions class="pa-0">
-      <v-container style="height: 200px; width: fit-content;">
+      <v-container style="height: 370px; width: fit-content;">
         <div
           v-for="(bar, i) in stackedBars"
           :key="i"

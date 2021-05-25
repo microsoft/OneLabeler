@@ -1,7 +1,7 @@
 <template>
   <v-card
     width="300"
-    height="250"
+    height="400"
   >
     <v-card-title class="view-header">
       <v-icon
@@ -100,6 +100,7 @@ export default Vue.extend({
     },
     async statuses() {
       this.nLabeled = await this.getNLabeled();
+      this.nLabeledByCategory = await this.getNLabeledByCategory();
     },
   },
   async mounted() {
@@ -113,6 +114,7 @@ export default Vue.extend({
       return statuses.count({ value: StatusType.Labeled });
     },
     async getNLabeledOf(category: Category): Promise<number> {
+      // Note: the number of labels of a category depends on both labels and statuses.
       const { labels } = this as { labels: ILabelStorage | null };
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (labels === null || statuses === null) return 0;

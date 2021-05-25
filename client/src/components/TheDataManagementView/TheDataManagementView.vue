@@ -25,6 +25,7 @@
           :label="'Source'"
           :service="sourceService"
           :options="sourceServices"
+          :disabled="disabled"
           @select:service="onSelectSourceService"
           @edit:service="onEditSourceService"
           @create:service="onCreateSourceService"
@@ -35,6 +36,7 @@
           :label="'Storage'"
           :service="storageService"
           :options="storageServices"
+          :disabled="disabled"
           @select:service="onSelectStorageService"
           @edit:service="onEditStorageService"
           @create:service="onCreateStorageService"
@@ -68,11 +70,15 @@ export default Vue.extend({
   },
   computed: {
     ...mapState([
+      'dataObjects',
       'sourceService',
       'sourceServices',
       'storageService',
       'storageServices',
     ]),
+    disabled(): boolean {
+      return this.dataObjects !== null;
+    },
   },
   methods: {
     ...mapActions([

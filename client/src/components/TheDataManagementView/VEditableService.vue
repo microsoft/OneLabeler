@@ -6,6 +6,7 @@
         :title="label"
         :selected-method="service"
         :menu="menuOfServices"
+        :disabled="disabled"
         append-create-option
         @update:selection="onSelectService"
         @create:option="onCreateService"
@@ -20,7 +21,7 @@
       </span>
       <v-text-field
         :value="service.isServerless ? 'serverless' : service.api"
-        :disabled="service.isBuiltIn"
+        :disabled="service.isBuiltIn || disabled"
         class="my-0 pl-4 subtitle-2"
         style="padding-bottom: 6px !important"
         type="text"
@@ -61,6 +62,10 @@ export default Vue.extend({
     options: {
       type: Array as PropType<IService[]>,
       required: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
