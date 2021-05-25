@@ -163,10 +163,6 @@ import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
 import {
   DataType,
   ICommand,
-  IDataObject,
-  ILabel,
-  IImage,
-  IText,
   IMessage,
   MessageType,
   SourceType,
@@ -177,6 +173,7 @@ import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
 import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
 import { ProjectData, validate } from './load-project';
+import exportLabels from './export-labels';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -407,39 +404,11 @@ export default Vue.extend({
       }
     },
     async onClickExport(): Promise<void> {
-      const dataObjects = (await this.dataObjects.getAll()) as IDataObject[];
-      const labels = (await this.labels.getAll()) as ILabel[];
-      const uuid2idxInLabels: Record<string, number> = {};
-      labels.forEach((d: ILabel, i) => {
-        uuid2idxInLabels[d.uuid] = i;
-      });
-      const dataType = this.dataType as DataType;
-      if (dataType === DataType.Image) {
-        const labeledData = dataObjects.map((d: IImage, i: number) => {
-          const pathSegments = (d.path as string).split('/');
-          const filename = pathSegments[pathSegments.length - 1];
-          return {
-            filename,
-            category: labels === null ? undefined : labels[i].category,
-            shapes: labels === null ? undefined : labels[i].shapes,
-            mask: labels === null ? undefined : labels[i].mask,
-          };
-        });
-        saveJsonFile(labeledData, 'labels.json');
-      } else if (dataType === DataType.Text) {
-        const labeledData = (dataObjects as IText[]).map((d: IText) => {
-          const result: { uuid: string, content: string, category?: string } = {
-            uuid: d.uuid,
-            content: d.content,
-          };
-          const idx = uuid2idxInLabels[d.uuid];
-          if (idx !== undefined) {
-            result.category = labels[idx].category;
-          }
-          return result;
-        });
-        saveJsonFile(labeledData, 'labels.json');
-      }
+      await exportLabels(
+        this.dataObjects,
+        this.labels,
+        this.dataType,
+      );
     },
   },
 });

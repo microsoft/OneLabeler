@@ -20,6 +20,10 @@ export enum LabelTaskType {
 export interface IDataObject {
   /** The universal unique id of the data object. */
   uuid: string;
+  /** The content of the data object. */
+  content?: unknown | null;
+  /** The storage url of the data object. */
+  url?: string | null;
   /** The features of the data object. */
   features?: number[];
 }
@@ -28,8 +32,6 @@ export interface IDataObject {
 export interface IImage extends IDataObject {
   /** The image content as base64 string. */
   content?: string | null;
-  /** The storage path of the image on the server. */
-  path?: string | null;
   /** The width of the image. */
   width?: number | null;
   /** The height of the image. */

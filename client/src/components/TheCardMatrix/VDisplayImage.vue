@@ -102,9 +102,9 @@ export default Vue.extend({
   },
   computed: {
     src(): string {
-      const { content, path } = this.dataObject;
+      const { content, url } = this.dataObject;
       if (content !== null && content !== undefined) return content;
-      if (path !== null && path !== undefined) return imageURLFormatter(path);
+      if (url !== null && url !== undefined) return url;
       return '';
     },
     transform(): string {

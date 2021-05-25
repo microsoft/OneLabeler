@@ -1,4 +1,5 @@
 import { ActionContext } from 'vuex';
+import createStorage from '@/services/storage';
 import {
   Category,
   ICommand,
@@ -6,6 +7,7 @@ import {
   ILabel,
   IMessage,
   IStatus,
+  IStorageStore,
   SourceService,
   StorageService,
   TaskWindow,
@@ -140,25 +142,38 @@ type ProjectData = {
   featureNames?: string[];
 }
 
-export const setProject = (
-  { commit }: ActionContext<IState, IState>,
+export const setProject = async (
+  { commit, state }: ActionContext<IState, IState>,
   projectData: ProjectData,
-): void => {
+): Promise<void> => {
+  const { storageService } = state;
   const {
     dataObjects,
-    classes,
     labels,
     statuses,
+    classes,
     unlabeledMark,
     featureNames,
   } = projectData;
-  commit(types.SET_DATA_OBJECTS, dataObjects);
+
   commit(types.SET_CLASSES, classes);
-  commit(types.SET_LABELS, labels);
-  commit(types.SET_STATUSES, statuses);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES,
     featureNames === undefined ? [] : featureNames);
+
+  const storage: IStorageStore | null = createStorage(storageService);
+  if (storage === null) return;
+
+  await storage.dataObjects.deleteAll();
+  await storage.labels.deleteAll();
+  await storage.statuses.deleteAll();
+  await storage.dataObjects.upsertBulk(dataObjects);
+  await storage.labels.upsertBulk(labels);
+  await storage.statuses.upsertBulk(statuses);
+
+  commit(types.SET_DATA_OBJECTS, storage.dataObjects);
+  commit(types.SET_LABELS, storage.labels);
+  commit(types.SET_STATUSES, storage.statuses);
 };
 
 export const setSourceService = (

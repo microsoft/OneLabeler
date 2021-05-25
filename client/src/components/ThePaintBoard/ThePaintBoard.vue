@@ -211,13 +211,7 @@ export default Vue.extend({
     },
     onSetLabelMask(labelMaskCanvas: HTMLCanvasElement) {
       if (this.dataObject === null) return;
-      const { path, uuid } = this.dataObject as IImage;
-      /*
-      if (path === null) return;
-      const pathSegments = path.split('/');
-      const filename = pathSegments[pathSegments.length - 1]
-        .split('.')[0];
-      */
+      const { uuid } = this.dataObject as IImage;
       const filename = uuid;
 
       labelMaskCanvas.toBlob(async (blob: Blob | null) => {

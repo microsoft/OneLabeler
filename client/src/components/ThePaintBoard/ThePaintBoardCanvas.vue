@@ -250,8 +250,8 @@ export default Vue.extend({
           this.setImageBlur();
           resolve();
         };
-        // const { path } = this.dataObject;
-        // img.src = imageURLFormatter(path as string);
+        // const { url } = this.dataObject;
+        // img.src = url as string;
         img.src = this.dataObject.content as string;
       });
     },

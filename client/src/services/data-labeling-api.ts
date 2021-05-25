@@ -67,7 +67,7 @@ export const dataObjectExtraction = showProgressBar(async (
       )).data;
       const dataObject: IImage = {
         uuid: uuidv4(),
-        path,
+        url: path,
         width,
         height,
       };
