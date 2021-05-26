@@ -101,5 +101,5 @@ export const createCircle = (size: (1 | 5 | 15)): Konva.Shape => {
   if (size === 1) return createCircle1x1();
   if (size === 5) return createCircle5x5();
   if (size === 15) return createCircle15x15();
-  throw TypeError(`Invalid size: ${size}`);
+  throw new TypeError(`Invalid size: ${size}`);
 };

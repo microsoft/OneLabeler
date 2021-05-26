@@ -268,24 +268,29 @@ export default Vue.extend({
       this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
     async getFeatureValues(): Promise<(number[] | undefined)[]> {
-      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
+      if (dataObjects === null) return [];
       const promiseDataObjects = this.scopeUuids === null
         ? dataObjects.getAll()
         : dataObjects.getBulk(this.scopeUuids);
       return (await promiseDataObjects)
         .map((d) => (d === undefined ? undefined : d.features));
     },
-    getUuids(): Promise<string[]> {
-      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
+    async getUuids(): Promise<string[]> {
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
+      if (dataObjects === null) return [];
       if (this.scopeUuids !== null) {
-        return this.scopeUuids;
+        return this.scopeUuids as string[];
       }
       return dataObjects.uuids();
     },
     async getLabelCategories(): Promise<(ILabelCategory | undefined)[]> {
       const { uuids } = this;
-      const labels = await ((this.labels as ILabelStorage).getBulk(uuids));
-      return labels.map((d) => (d === undefined ? undefined : d.category));
+      const { labels } = this as { labels: ILabelStorage | null };
+      if (labels === null) return [];
+      const labelCategories = (await ((labels).getBulk(uuids)))
+        .map((d) => (d === undefined ? undefined : d.category));
+      return labelCategories;
     },
   },
 });

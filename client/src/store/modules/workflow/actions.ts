@@ -1,4 +1,5 @@
 import { ActionContext } from 'vuex';
+import showProgressBar from '@/plugins/nprogress-interceptor';
 import * as API from '@/services/data-labeling-api';
 import createStorage from '@/services/storage';
 import {
@@ -177,7 +178,21 @@ const pointsToSameDB = (
   return s1.api === s2.api;
 };
 
-export const executeRegisterStorage = async (
+const handleAlgorithmServiceError = (
+  e: unknown,
+  commit: ActionContext<IState, IRootState>['commit'],
+): void => {
+  if (e instanceof TypeError) {
+    commit(rootTypes.SET_MESSAGE, {
+      content: e.message,
+      type: MessageType.Error,
+    }, { root: true });
+    return;
+  }
+  throw e;
+};
+
+export const executeRegisterStorage = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
   // Initialize the storage.
@@ -200,9 +215,9 @@ export const executeRegisterStorage = async (
   commit(rootTypes.SET_DATA_OBJECTS, storage.dataObjects, { root: true });
   commit(rootTypes.SET_LABELS, storage.labels, { root: true });
   commit(rootTypes.SET_STATUSES, storage.statuses, { root: true });
-};
+});
 
-export const executeDataObjectExtraction = async (
+export const executeDataObjectExtraction = showProgressBar(async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   input: File | FileList,
 ): Promise<void> => {
@@ -217,9 +232,9 @@ export const executeDataObjectExtraction = async (
     dataObjects,
   );
   commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
-};
+});
 
-export const executeDataObjectSelectionAlgorithmic = async (
+export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
@@ -249,14 +264,21 @@ export const executeDataObjectSelectionAlgorithmic = async (
   const { dataObjects } = rootState as { dataObjects: IDataObjectStorage };
   const model = method.model as ModelService;
   const nBatch = (method.params as MethodParams).nBatch.value as number;
-  const newQueryUuids = (await API.dataObjectSelection(
-    method,
-    dataObjects,
-    statuses,
-    nBatch,
-    model,
-  ));
-  commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
+
+  let newQueryUuids: string[] = [];
+  try {
+    newQueryUuids = (await API.dataObjectSelection(
+      method,
+      dataObjects,
+      statuses,
+      nBatch,
+      model,
+    ));
+    commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
+  } catch (e) {
+    handleAlgorithmServiceError(e, commit);
+    return;
+  }
 
   // Set the labels status of samples in the current batch.
   // If the samples had been labeled, keep it unchanged.
@@ -267,9 +289,9 @@ export const executeDataObjectSelectionAlgorithmic = async (
     await statuses.upsert({ uuid, value: StatusType.Viewed });
   }));
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
-};
+});
 
-export const executeDataObjectSelectionManual = async (
+export const executeDataObjectSelectionManual = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   newQueryUuids: string[],
 ): Promise<void> => {
@@ -308,9 +330,9 @@ export const executeDataObjectSelectionManual = async (
   }));
 
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
-};
+});
 
-export const executeDefaultLabeling = async (
+export const executeDefaultLabeling = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
@@ -326,13 +348,21 @@ export const executeDefaultLabeling = async (
   const queriedDataObjects = (await (dataObjects as IDataObjectStorage)
     .getBulk(queryUuids)) as IDataObject[];
   const model = method.model as ModelService;
-  const labelCategories: ILabelCategory[] = (await API.defaultLabeling(
-    method,
-    queriedDataObjects,
-    model,
-    classes,
-    unlabeledMark,
-  ));
+
+  let labelCategories: ILabelCategory[];
+  try {
+    labelCategories = (await API.defaultLabeling(
+      method,
+      queriedDataObjects,
+      model,
+      classes,
+      unlabeledMark,
+    ));
+  } catch (e) {
+    handleAlgorithmServiceError(e, commit);
+    return;
+  }
+
   await Promise.all(queryUuids.map(async (uuid, i) => {
     const label: ILabel | undefined = await labels.get(uuid);
     const labelUpdated: ILabel = label === undefined
@@ -345,9 +375,9 @@ export const executeDefaultLabeling = async (
     await labels.upsert(labelUpdated);
   }));
   commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
-};
+});
 
-export const executeFeatureExtraction = async (
+export const executeFeatureExtraction = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
@@ -357,16 +387,21 @@ export const executeFeatureExtraction = async (
 
   const requireLabels = method.inputs
     .findIndex((d) => d === 'labels') >= 0;
-  const response = requireLabels
-    ? (await API.featureExtraction(method, dataObjects, labels, statuses))
-    : (await API.featureExtraction(method, dataObjects));
 
-  commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects.shallowCopy(), { root: true });
-  commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
-};
+  try {
+    const response = requireLabels
+      ? (await API.featureExtraction(method, dataObjects, labels, statuses))
+      : (await API.featureExtraction(method, dataObjects));
 
-export const executeInterimModelTraining = async (
-  { state, rootState }: ActionContext<IState, IRootState>,
+    commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects.shallowCopy(), { root: true });
+    commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
+  } catch (e) {
+    handleAlgorithmServiceError(e, commit);
+  }
+});
+
+export const executeInterimModelTraining = showProgressBar(async (
+  { commit, state, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
   const isProcessNode = (node: WorkflowNode): boolean => (
@@ -391,19 +426,24 @@ export const executeInterimModelTraining = async (
       nodeMethods.forEach(async (nodeMethod) => {
         if (!nodeMethod.isModelBased) return;
         const model = nodeMethod.model as ModelService;
-        (await API.interimModelTraining(
-          method,
-          model,
-          unlabeledMark,
-          dataObjects,
-          labels,
-          statuses,
-        ));
+
+        try {
+          (await API.interimModelTraining(
+            method,
+            model,
+            unlabeledMark,
+            dataObjects,
+            labels,
+            statuses,
+          ));
+        } catch (e) {
+          handleAlgorithmServiceError(e, commit);
+        }
       });
     });
-};
+});
 
-export const executeStoppageAnalysis = async (
+export const executeStoppageAnalysis = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
@@ -419,7 +459,7 @@ export const executeStoppageAnalysis = async (
     }, { root: true });
   }
   commit(rootTypes.SET_STOP, stop, { root: true });
-};
+});
 
 const getOutputNodes = (
   node: WorkflowNode,

@@ -6,7 +6,6 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { xor4096 } from 'seedrandom';
-import showProgressBar from '@/plugins/nprogress-interceptor';
 import { loadJsonFile } from '@/plugins/json-utils';
 import { randomChoice } from '@/plugins/random';
 import { getBase64 } from '@/plugins/file';
@@ -41,7 +40,7 @@ const getImgSize = (content: string) => new Promise((resolve, reject) => {
  * @Note The extraction implementation is dependent
  * on the data source type and data object type.
  */
-export const dataObjectExtraction = showProgressBar(async (
+export const dataObjectExtraction = async (
   input: File | FileList,
   dataType: DataType,
   storage: IDataObjectStorage,
@@ -89,7 +88,7 @@ export const dataObjectExtraction = showProgressBar(async (
     console.warn(`Invalid Data Type: ${dataType}`);
   }
   return storage.shallowCopy();
-});
+};
 
 /**
  * Workflow Component - Feature Extraction
@@ -99,52 +98,70 @@ export const dataObjectExtraction = showProgressBar(async (
  * @Note The extraction implementation is dependent
  * on the data object type.
  */
-export const featureExtraction = showProgressBar(async (
+export const featureExtraction = async (
   method: Process,
+  dataObjectStorage: IDataObjectStorage,
+  labelStorage: ILabelStorage | null = null,
+  statusStorage: IStatusStorage | null = null,
+): Promise<{
   dataObjects: IDataObjectStorage,
-  labels: ILabelStorage | null = null,
-  statuses: IStatusStorage | null = null,
-): Promise<{ dataObjects: IDataObjectStorage, featureNames: string[] }> => {
+  featureNames: string[],
+}> => {
   if (method.isServerless && (method.api === 'Random3D')) {
     const SEED = '20';
     const random = xor4096(SEED);
-    const uuids = await dataObjects.uuids();
+    const uuids = await dataObjectStorage.uuids();
     await Promise.all(uuids.map(async (uuid) => {
       const features = [random(), random(), random()];
-      const dataObject = await dataObjects.get(uuid);
+      const dataObject = await dataObjectStorage.get(uuid);
       if (dataObject === undefined) return;
-      await dataObjects.upsert({ ...dataObject, features });
+      await dataObjectStorage.upsert({ ...dataObject, features });
     }));
     const featureNames = [
       'Random[0]',
       'Random[1]',
       'Random[2]',
     ];
-    return { dataObjects, featureNames };
+    return { dataObjects: dataObjectStorage, featureNames };
   }
-  const dataObjectValues = await dataObjects.getAll() as IImage[];
-  const labelValues = labels !== null
-    ? (await labels.getAll()).map((d) => d.category as Category)
+
+  const dataObjects = await dataObjectStorage.getAll() as IImage[];
+  const labels = labelStorage !== null
+    ? (await labelStorage.getAll()).map((d) => d.category as Category)
     : null;
-  const statusValues = statuses !== null
-    ? (await statuses.getAll()).map((d) => d.value)
+  const statuses = statusStorage !== null
+    ? (await statusStorage.getAll()).map((d) => d.value)
     : null;
-  const response = (
-    await axios.post(
+
+  let updatedDataObjects: IDataObject[];
+  let featureNames: string[];
+
+  try {
+    const data = (await axios.post(
       method.api as string,
       JSON.stringify({
-        dataObjects: dataObjectValues,
-        labels: labelValues,
-        statuses: statusValues,
+        dataObjects,
+        labels,
+        statuses,
       }),
-    )
-  ).data as { dataObjects: IDataObject[], featureNames: string[] };
-  dataObjects.upsertBulk(response.dataObjects);
+    )).data as { dataObjects: IDataObject[], featureNames: string[] };
+    updatedDataObjects = data.dataObjects;
+    featureNames = data.featureNames;
+  } catch (e) {
+    if (e.request !== undefined && e.response === undefined) {
+      // The service cannot be connected.
+      throw new TypeError('Cannot Connect to Feature Extraction Server');
+    } else {
+      throw e;
+    }
+  }
+
+  await dataObjectStorage.upsertBulk(updatedDataObjects);
   return {
-    dataObjects,
-    featureNames: response.featureNames,
+    dataObjects: dataObjectStorage,
+    featureNames,
   };
-});
+};
 
 /**
  * Workflow Component - Default Labeling
@@ -153,38 +170,56 @@ export const featureExtraction = showProgressBar(async (
  * @param model The default labeling model.
  * @returns defaultLabels - the default labels of the selected data objects.
  */
-export const defaultLabeling = showProgressBar(async (
+export const defaultLabeling = async (
   method: Process,
   dataObjects: IDataObject[],
   model: ModelService,
   classes: Category[] | null = null,
   unlabeledMark: Category | null = null,
 ): Promise<ILabelCategory[]> => {
-  let labels = null;
   if (method.isServerless && (method.api === 'Null')) {
-    labels = dataObjects.map(() => unlabeledMark);
-  } else if (method.isServerless && (method.api === 'Random')) {
+    if (unlabeledMark === null) throw new TypeError('unlabeled mark not given');
+
+    const nDataObjects = dataObjects.length;
+    const labels = Array(nDataObjects).fill(null).map(() => unlabeledMark);
+
+    return labels;
+  }
+  if (method.isServerless && (method.api === 'Random')) {
+    if (classes === null) throw new TypeError('classes not given');
+
     const SEED = '20';
     const random = xor4096(SEED);
-    const nClasses = (classes as Category[]).length;
-    labels = dataObjects.map(() => (
-      (classes as Category[])[Math.floor(random() * nClasses)]
-    ));
-  } else {
-    labels = (
-      await axios.post(
-        method.api as string,
-        JSON.stringify({
-          dataObjects,
-          model,
-          classes,
-          unlabeledMark,
-        }),
-      )
-    ).data.labels;
+    const nClasses = classes.length;
+    const labels = dataObjects.map(() => classes[Math.floor(random() * nClasses)]);
+
+    return labels;
   }
-  return labels as ILabelCategory[];
-});
+
+  let labels: ILabelCategory[];
+
+  try {
+    const data = (await axios.post(
+      method.api,
+      JSON.stringify({
+        dataObjects,
+        model,
+        classes,
+        unlabeledMark,
+      }),
+    )).data as { labels: ILabelCategory[] };
+    labels = data.labels;
+  } catch (e) {
+    if (e.request !== undefined && e.response === undefined) {
+      // The service cannot be connected.
+      throw new TypeError('Cannot Connect to Default Labeling Server');
+    } else {
+      throw e;
+    }
+  }
+
+  return labels;
+};
 
 /**
  * Workflow Component - Data Object Selection (Algorithmic)
@@ -193,19 +228,20 @@ export const defaultLabeling = showProgressBar(async (
  * @param nBatch The number of data objects to sample.
  * @returns queryUuids - the uuids of sampled data objects.
  */
-export const dataObjectSelection = showProgressBar(async (
+export const dataObjectSelection = async (
   method: Process,
   dataObjectStorage: IDataObjectStorage,
   statusStorage: IStatusStorage,
   nBatch: number,
   model?: ModelService,
 ): Promise<string[]> => {
-  let queryUuids = null;
   const uuids = await dataObjectStorage.uuids();
   const statuses: IStatus[] = (await statusStorage.getBulk(uuids)).map((d, i) => (
     d !== undefined ? d : { uuid: uuids[i], value: StatusType.New }
   ));
+
   if (method.isServerless && (method.api === 'Random')) {
+    let queryUuids: string[];
     const SEED = '20';
     const random = xor4096(SEED);
     const uuidsNew: string[] = statuses
@@ -223,12 +259,18 @@ export const dataObjectSelection = showProgressBar(async (
         : randomChoice(uuidsSkipped, nResidue, random);
       queryUuids = [...uuidsNew, ...queryUuidsSkipped];
     }
-  } else {
-    // Note: remove the raw content to save space.
-    const dataObjects: IDataObject[] = (await (dataObjectStorage as IDataObjectStorage)
-      .getAll())
-      .map((d) => ({ ...d, content: undefined }));
-    const { queryIndices } = (
+
+    return queryUuids;
+  }
+
+  // Note: remove the raw content to save storage.
+  const dataObjects: IDataObject[] = (await (dataObjectStorage as IDataObjectStorage)
+    .getAll())
+    .map((d) => ({ ...d, content: undefined }));
+
+  let queryIndices: number[];
+  try {
+    const data = (
       await axios.post(
         method.api as string,
         JSON.stringify({
@@ -239,10 +281,18 @@ export const dataObjectSelection = showProgressBar(async (
         }),
       )
     ).data as { queryIndices: number[] };
-    queryUuids = queryIndices.map((d) => uuids[d]);
+    queryIndices = data.queryIndices;
+  } catch (e) {
+    if (e.request !== undefined && e.response === undefined) {
+      // The service cannot be connected.
+      throw new TypeError('Cannot Connect to Data Object Selection Server');
+    } else {
+      throw e;
+    }
   }
+  const queryUuids = queryIndices.map((d) => uuids[d]);
   return queryUuids;
-});
+};
 
 /**
  * Workflow Components - Default Label Model Update & Sampling Model Update
@@ -254,7 +304,7 @@ export const dataObjectSelection = showProgressBar(async (
  * @param model The model to be updated.
  * @returns modelUpdated - the updated model.
  */
-export const interimModelTraining = showProgressBar(async (
+export const interimModelTraining = async (
   method: Process,
   model: ModelService,
   unlabeledMark: Category,
@@ -276,16 +326,30 @@ export const interimModelTraining = showProgressBar(async (
     .map((d) => (d === undefined ? unlabeledMark : d.category as string));
   const statuses: StatusType[] = (await statusStorage.getBulk(uuids))
     .map((d) => (d === undefined ? StatusType.New : d.value));
-  const modelUpdated = (
-    await axios.post(
-      method.api as string,
-      JSON.stringify({
-        model,
-        dataObjects,
-        labels,
-        statuses,
-      }),
-    )
-  ).data.model;
+
+  let modelUpdated: ModelService;
+
+  try {
+    const data = (
+      await axios.post(
+        method.api as string,
+        JSON.stringify({
+          model,
+          dataObjects,
+          labels,
+          statuses,
+        }),
+      )
+    ).data as { model: ModelService };
+    modelUpdated = data.model;
+  } catch (e) {
+    if (e.request !== undefined && e.response === undefined) {
+      // The service cannot be connected.
+      throw new TypeError('Cannot Connect to Interim Model Training Server');
+    } else {
+      throw e;
+    }
+  }
+
   return modelUpdated;
-});
+};
