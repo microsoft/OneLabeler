@@ -74,7 +74,10 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        assert key in ['Null', 'Random', 'ModelPrediction']
+        if key not in ['Null', 'Random', 'ModelPrediction']:
+            # The service is not found.
+            self.send_error(404)
+            return
 
         # process input: (dataObjects, model, classes?, unlabeledMark?)
         # note: classes are required to be strings

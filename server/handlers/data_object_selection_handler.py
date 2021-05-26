@@ -56,11 +56,14 @@ class DataObjectSelectionHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        assert key in [
+        if key not in [
             'Random', 'Cluster', 'DenseAreas',
             'ClusterCentroids', 'Entropy',
             'LeastConfident', 'SmallestMargin',
-        ], f'Invalid sampling strategy: {key}'
+        ]:
+            # The service is not found.
+            self.send_error(404)
+            return
 
         # process input: (labels, features?, model?, dataObjects?)
         statuses = json_data['statuses']

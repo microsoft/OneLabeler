@@ -115,8 +115,10 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        assert key in ['image/SVD', 'image/BoW',
-                       'image/LDA', 'text/NMF']
+        if key not in ['image/SVD', 'image/BoW', 'image/LDA', 'text/NMF']:
+            # The service is not found.
+            self.send_error(404)
+            return
 
         # process input: (dataObjects, labels?, statuses?)
         data_objects = json_data['dataObjects']

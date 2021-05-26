@@ -170,7 +170,10 @@ class InterimModelTrainingHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        assert key in ['Retrain']
+        if key not in ['Retrain']:
+            # The service is not found.
+            self.send_error(404)
+            return
 
         # process input: (features, labels, model?)
         data_objects = json_data['dataObjects']
