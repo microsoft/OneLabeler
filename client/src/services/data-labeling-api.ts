@@ -195,27 +195,27 @@ export const defaultLabeling = showProgressBar(async (
  */
 export const dataObjectSelection = showProgressBar(async (
   method: Process,
-  dataObjects: IDataObjectStorage,
-  statuses: IStatusStorage,
+  dataObjectStorage: IDataObjectStorage,
+  statusStorage: IStatusStorage,
   nBatch: number,
   model?: ModelService,
 ): Promise<string[]> => {
   let queryUuids = null;
-  const uuids = await dataObjects.uuids();
-  const statusValues: IStatus[] = (await statuses.getBulk(uuids)).map((d, i) => (
+  const uuids = await dataObjectStorage.uuids();
+  const statuses: IStatus[] = (await statusStorage.getBulk(uuids)).map((d, i) => (
     d !== undefined ? d : { uuid: uuids[i], value: StatusType.New }
   ));
   if (method.isServerless && (method.api === 'Random')) {
     const SEED = '20';
     const random = xor4096(SEED);
-    const uuidsNew = statusValues
+    const uuidsNew: string[] = statuses
       .filter((d) => d.value === StatusType.New)
       .map((d) => d.uuid);
     if (uuidsNew.length >= nBatch) {
       queryUuids = randomChoice(uuidsNew, nBatch, random);
     } else {
       const nResidue = nBatch - uuidsNew.length;
-      const uuidsSkipped = statusValues
+      const uuidsSkipped = statuses
         .filter((d) => d.value === StatusType.Skipped)
         .map((d) => d.uuid);
       const queryUuidsSkipped = uuidsSkipped.length <= nResidue
@@ -224,19 +224,17 @@ export const dataObjectSelection = showProgressBar(async (
       queryUuids = [...uuidsNew, ...queryUuidsSkipped];
     }
   } else {
-    const dataObjectValues: IDataObject[] = (await (dataObjects as IDataObjectStorage)
+    // Note: remove the raw content to save space.
+    const dataObjects: IDataObject[] = (await (dataObjectStorage as IDataObjectStorage)
       .getAll())
-      .map((d) => {
-        const compressed = { ...d, content: undefined };
-        return compressed;
-      });
+      .map((d) => ({ ...d, content: undefined }));
     const { queryIndices } = (
       await axios.post(
         method.api as string,
         JSON.stringify({
-          statuses: statusValues.map((d) => d.value),
+          statuses: statuses.map((d) => d.value),
           nBatch,
-          dataObjects: dataObjectValues,
+          dataObjects,
           model,
         }),
       )
@@ -259,27 +257,33 @@ export const dataObjectSelection = showProgressBar(async (
 export const interimModelTraining = showProgressBar(async (
   method: Process,
   model: ModelService,
-  dataObjects: IDataObjectStorage | null = null,
-  labels: ILabelStorage | null = null,
-  statuses: IStatusStorage | null = null,
+  unlabeledMark: Category,
+  dataObjectStorage: IDataObjectStorage | null = null,
+  LabelStorage: ILabelStorage | null = null,
+  statusStorage: IStatusStorage | null = null,
 ): Promise<ModelService> => {
   if (method.isBuiltIn && (method.api === 'Static')) {
     return model;
   }
-  if (dataObjects === null || labels === null || statuses === null) {
+  if (dataObjectStorage === null
+    || LabelStorage === null
+    || statusStorage === null) {
     return model;
   }
-  const dataObjectValues = await dataObjects.getAll();
-  const labelValues = (await labels.getAll()).map((d) => d.category as Category);
-  const statusValues = (await statuses.getAll()).map((status) => status.value);
+  const dataObjects: IDataObject[] = await dataObjectStorage.getAll();
+  const uuids: string[] = await dataObjectStorage.uuids();
+  const labels: ILabelCategory[] = (await LabelStorage.getBulk(uuids))
+    .map((d) => (d === undefined ? unlabeledMark : d.category as string));
+  const statuses: StatusType[] = (await statusStorage.getBulk(uuids))
+    .map((d) => (d === undefined ? StatusType.New : d.value));
   const modelUpdated = (
     await axios.post(
       method.api as string,
       JSON.stringify({
         model,
-        dataObjects: dataObjectValues,
-        labels: labelValues,
-        statuses: statusValues,
+        dataObjects,
+        labels,
+        statuses,
       }),
     )
   ).data.model;

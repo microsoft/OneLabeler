@@ -378,6 +378,7 @@ export const executeInterimModelTraining = async (
     dataObjects,
     labels,
     statuses,
+    unlabeledMark,
   } = rootState;
   if (labels === null || statuses === null) return;
 
@@ -393,6 +394,7 @@ export const executeInterimModelTraining = async (
         (await API.interimModelTraining(
           method,
           model,
+          unlabeledMark,
           dataObjects,
           labels,
           statuses,

@@ -69,8 +69,8 @@ import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   IDataObjectStorage,
-  ILabel,
   ILabelCategory,
+  ILabelStorage,
   ProjectionMethodType,
   TaskWindow,
 } from '@/commons/types';
@@ -124,6 +124,8 @@ export default Vue.extend({
   data() {
     return {
       featureValues: [] as number[][],
+      uuids: [] as string[],
+      labelCategories: [] as ILabelCategory[],
       resizeObserver: null as ResizeObserver | null,
       nRows: 1,
       nColumns: 1,
@@ -141,9 +143,6 @@ export default Vue.extend({
     ...mapState('workflow', ['currentNode']),
     ...mapGetters(['label2color']),
     ...mapGetters('workflow', ['nextNodes']),
-    uuids(): string[] {
-      return (this.labels as ILabel[]).map((d) => d.uuid);
-    },
     nTotal(): number {
       return this.featureValues.length;
     },
@@ -152,20 +151,21 @@ export default Vue.extend({
       return Array.isArray(featureValues)
         && featureValues.every((d) => Array.isArray(d));
     },
-    labelCategories(): ILabelCategory[] {
-      return (this.labels as ILabel[]).map((d) => d.category as string);
-    },
   },
   watch: {
+    async dataObjects() {
+      this.featureValues = await this.getFeatureValues() as number[][];
+      this.uuids = await this.getUuids();
+    },
     async scopeUuids() {
-      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
-      if (this.scopeUuids === null) {
-        this.featureValues = (await dataObjects.getAll())
-          .map((d) => d?.features) as number[][];
-      } else {
-        this.featureValues = (await dataObjects.getBulk(this.scopeUuids))
-          .map((d) => d?.features) as number[][];
-      }
+      this.featureValues = await this.getFeatureValues() as number[][];
+      this.uuids = await this.getUuids();
+    },
+    async uuids() {
+      this.labelCategories = await this.getLabelCategories() as ILabelCategory[];
+    },
+    async labels() {
+      this.labelCategories = await this.getLabelCategories() as ILabelCategory[];
     },
     featureValues() {
       this.forceViewsUpdate();
@@ -266,6 +266,26 @@ export default Vue.extend({
     forceViewsUpdate() {
       // change the id to force view update
       this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
+    },
+    async getFeatureValues(): Promise<(number[] | undefined)[]> {
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
+      const promiseDataObjects = this.scopeUuids === null
+        ? dataObjects.getAll()
+        : dataObjects.getBulk(this.scopeUuids);
+      return (await promiseDataObjects)
+        .map((d) => (d === undefined ? undefined : d.features));
+    },
+    getUuids(): Promise<string[]> {
+      const { dataObjects } = this as { dataObjects: IDataObjectStorage };
+      if (this.scopeUuids !== null) {
+        return this.scopeUuids;
+      }
+      return dataObjects.uuids();
+    },
+    async getLabelCategories(): Promise<(ILabelCategory | undefined)[]> {
+      const { uuids } = this;
+      const labels = await ((this.labels as ILabelStorage).getBulk(uuids));
+      return labels.map((d) => (d === undefined ? undefined : d.category));
     },
   },
 });
