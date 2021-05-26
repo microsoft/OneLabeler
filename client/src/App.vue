@@ -42,8 +42,7 @@
 </template>
 
 <script lang="ts">
-import { VueConstructor } from 'vue';
-import { Component, Vue } from 'vue-property-decorator';
+import Vue, { VueConstructor } from 'vue';
 import { mapState } from 'vuex';
 import {
   TaskWindow,
@@ -55,12 +54,18 @@ import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 
-@Component({
+export default Vue.extend({
   name: 'App',
   components: {
     TheNavBarView,
     TheFooterView,
     TheMessageView,
+  },
+  data(): { navBarHeight: number, footerHeight: number } {
+    return {
+      navBarHeight: 35,
+      footerHeight: 30,
+    };
   },
   computed: {
     ...mapState(['taskWindows']),
@@ -87,13 +92,5 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
       return null;
     },
   },
-})
-export default class App extends Vue {
-  data(): { navBarHeight: number, footerHeight: number } {
-    return {
-      navBarHeight: 35,
-      footerHeight: 30,
-    };
-  }
-}
+});
 </script>
