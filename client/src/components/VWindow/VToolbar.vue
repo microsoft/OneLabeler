@@ -1,11 +1,12 @@
 <template>
-  <v-card-title class="view-header">
+  <div class="view-header">
     <slot name="title">
       Window
     </slot>
     <slot name="tools" />
 
-    <v-spacer />
+    <div style="flex-grow: 1" />
+
     <v-btn
       title="Minimize"
       x-small
@@ -38,7 +39,7 @@
         $vuetify.icons.values.pin
       </v-icon>
     </v-btn>
-  </v-card-title>
+  </div>
 </template>
 
 <script lang="ts">

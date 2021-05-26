@@ -70,6 +70,8 @@ html {
   @extend .grey--text;
   @extend .text--darken-1;
   @extend .pa-0;
+  display: flex;
+  align-items: center;
   user-select: none;
 }
 

@@ -1,23 +1,18 @@
 <template>
-  <v-container
-    ref="container"
-    class="pa-0"
-    fluid
-  >
-    <v-row
+  <div ref="container">
+    <!-- Note: need align-content: flex-start
+      to let the cards float to top left when the number of cards
+      is less than the allocated grids. -->
+    <div
       ref="labelCards"
-      align-content="start"
-      dense
-      no-gutters
+      style="display: flex; flex-wrap: wrap; align-content: flex-start"
     >
-      <v-col
+      <div
         v-for="i in indicesInPage"
         :key="dataObjects[i].uuid"
         :style="{
           'padding': `${padding}px`,
           'width': `${100/itemsPerRow}%`,
-          'max-width': `${100/itemsPerRow}%`,
-          'flex-basis': `${100/itemsPerRow}%`,
         }"
       >
         <VDataObjectCard
@@ -34,26 +29,18 @@
           @click:card="onClickCard"
           @click:card-label="onClickCardLabel"
         />
-      </v-col>
-    </v-row>
-    <v-row
-      v-if="enablePagination"
-      dense
-      no-gutters
-    >
-      <div
-        ref="pagination"
-        class="text-center"
-        style="width: 100%"
-      >
+      </div>
+    </div>
+    <div v-if="enablePagination">
+      <div ref="pagination">
         <v-pagination
           v-model="page"
           :length="nPages"
           :total-visible="Math.min(5, nPages)"
         />
       </div>
-    </v-row>
-  </v-container>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

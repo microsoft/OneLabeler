@@ -1,7 +1,6 @@
 <template>
   <v-card
     :style="{
-      'overflow': 'hidden',
       'box-shadow': isSelected ? '0px 0px 0px 3px #757575 !important' : undefined,
       'opacity': isLabeled ? '0.5' : undefined,
     }"
@@ -25,9 +24,10 @@
       }"
       @click:label="onClickCardLabel"
     />
-    <v-card-actions
+    <div
       class="pa-0"
       pointer-events="none"
+      style="display: flex; align-items: center;"
     >
       <component
         :is="component"
@@ -35,7 +35,7 @@
         :height="bodyHeight"
         :width="bodyWidth"
       />
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

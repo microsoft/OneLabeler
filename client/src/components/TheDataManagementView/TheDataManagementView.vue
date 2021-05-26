@@ -4,7 +4,7 @@
     style="width: 100%"
     tile
   >
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -13,7 +13,7 @@
         $vuetify.icons.values.parameter
       </v-icon>
       Data Management
-    </v-card-title>
+    </div>
     <v-divider />
     <div
       class="px-2"

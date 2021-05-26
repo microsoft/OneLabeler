@@ -142,7 +142,8 @@ export default Vue.extend({
       */
     },
     async onUserEditLabels(uuids: string[], newValues: Partial<ILabel>[]) {
-      const { labels } = this as { labels: ILabelStorage };
+      const { labels } = this as { labels: ILabelStorage | null };
+      if (labels === null) return;
       const updatedLabels: ILabel[] = (await labels.getBulk(uuids)).map((label, i) => (
         label === undefined
           ? { uuid: uuids[i], ...newValues[i] }
@@ -190,7 +191,7 @@ export default Vue.extend({
           ? []
           : undefined,
         mask: labelTasks.includes(LabelTaskType.Segmentation)
-          ? { path: null }
+          ? { content: null }
           : undefined,
       };
     },

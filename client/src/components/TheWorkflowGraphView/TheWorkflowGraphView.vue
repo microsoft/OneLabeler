@@ -5,7 +5,7 @@
       style="flex-basis: 60%;"
     >
       <v-card tile>
-        <v-card-title class="view-header">
+        <div class="view-header">
           <v-icon
             class="px-2"
             aria-hidden="true"
@@ -14,7 +14,7 @@
             $vuetify.icons.values.flowChart
           </v-icon>
           Workflow Graph
-        </v-card-title>
+        </div>
         <v-divider />
         <div>
           <!-- The graph canvas. -->

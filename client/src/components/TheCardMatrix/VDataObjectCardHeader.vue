@@ -1,7 +1,7 @@
 <template>
-  <v-card-title
+  <div
     class="subtitle-1 grey darken-1"
-    style="user-select: none;"
+    style="display: flex; align-items: center; user-select: none;"
   >
     {{ title }}
     <v-icon
@@ -14,7 +14,8 @@
     >
       $vuetify.icons.values.verified
     </v-icon>
-    <v-spacer />
+
+    <div style="flex-grow: 1" />
 
     <!-- The data object label menu. -->
     <v-menu
@@ -35,20 +36,15 @@
         <v-list-item
           v-for="(entry, i) in classes"
           :key="i"
+          class="subtitle-2 px-4"
           style="min-height: 30px"
           @click="onClickLabel(entry)"
         >
-          <v-list-item-title
-            height="20"
-            class="subtitle-2 pa-0 ma-0"
-            style="height: 20px"
-          >
-            {{ entry }}
-          </v-list-item-title>
+          {{ entry }}
         </v-list-item>
       </v-list>
     </v-menu>
-  </v-card-title>
+  </div>
 </template>
 
 <script lang="ts">
