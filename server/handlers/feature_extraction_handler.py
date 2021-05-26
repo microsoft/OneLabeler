@@ -1,3 +1,4 @@
+import base64
 from typing import Any, List, Tuple, Union
 import json
 
@@ -21,7 +22,12 @@ ListLike = Union[List[Any], np.ndarray]
 
 
 def get_image(data_object) -> np.ndarray:
-    return cv.imread(data_object['path'])
+    data_url = data_object['content']
+    base64str = data_url.split('base64,', 1)[1]
+    img_arr = np.fromstring(base64.b64decode(base64str), np.uint8)
+    img = cv.imdecode(img_arr, cv.IMREAD_COLOR)
+    # return cv.imread(data_object['url'])
+    return img
 
 
 def extract_features_img_SVD(data_objects: ListLike

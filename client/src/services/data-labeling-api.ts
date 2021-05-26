@@ -9,6 +9,7 @@ import { xor4096 } from 'seedrandom';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import { loadJsonFile } from '@/plugins/json-utils';
 import { randomChoice } from '@/plugins/random';
+import { getBase64 } from '@/plugins/file';
 import {
   Category,
   DataType,
@@ -24,13 +25,6 @@ import {
   ModelService,
   Process,
 } from '@/commons/types';
-
-const getBase64 = (file: File) => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result as string);
-  reader.onerror = (error) => reject(error);
-}) as Promise<string>;
 
 const getImgSize = (content: string) => new Promise((resolve, reject) => {
   const img = new Image();

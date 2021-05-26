@@ -71,8 +71,8 @@ export interface ILabelShape {
 
 /** The interface of the segmentation label of an image data object. */
 export interface ILabelMask {
-  /** The storage path of the mask on the server. */
-  path: string | null;
+  /** The mask content as base64 string. */
+  content: string | null;
   /** The color encoding of the stored mask image. */
   label2color?: { [key: string]: number | [number, number, number] } | null;
   /** The width of the mask. */

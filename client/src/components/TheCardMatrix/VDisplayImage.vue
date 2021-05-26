@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import imageURLFormatter from '@/services/image-url';
 import { IImage } from '@/commons/types';
 
 /**

@@ -70,7 +70,6 @@ import {
   ILabelShape,
   ObjectShapeType,
 } from '@/commons/types';
-import imageURLFormatter from '@/services/image-url';
 import {
   MouseOperationType,
   StrokeShapeType,
@@ -83,6 +82,18 @@ import EditablePolygon from './editable-polygon';
 
 type VueKonvaImage = Vue & { getNode: () => Konva.Image };
 type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
+
+const createImage = async (
+  url: string,
+): Promise<HTMLImageElement> => new Promise((resolve) => {
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = () => {
+    resolve(img);
+  };
+  // Note: the url is may be Data URLs storing a base64 token.
+  img.src = url;
+});
 
 export default Vue.extend({
   name: 'ThePaintBoardCanvas',
@@ -242,18 +253,10 @@ export default Vue.extend({
       stage.height(container.clientHeight);
     },
     async setImage(): Promise<void> {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          this.image = img;
-          this.setImageBlur();
-          resolve();
-        };
-        // const { url } = this.dataObject;
-        // img.src = url as string;
-        img.src = this.dataObject.content as string;
-      });
+      // const img = await createImage(this.dataObject.url as string);
+      const image = await createImage(this.dataObject.content as string);
+      this.image = image;
+      this.setImageBlur();
     },
     setImageBlur(): void {
       const stage = (this.$refs.stage as unknown as Konva.Stage).getStage();
@@ -469,27 +472,22 @@ export default Vue.extend({
       layerInteraction.add(cursor);
       layerInteraction.batchDraw();
     },
-    drawLabelMask(): void {
+    async drawLabelMask(): Promise<void> {
       const { labelMask } = this;
       const layerPaint = (this.$refs.layerPaint as VueKonvaLayer).getNode();
 
       // clean layerPaint
       layerPaint.destroyChildren();
 
-      if (labelMask === null || labelMask.path === null) {
+      if (labelMask === null || labelMask.content === null) {
         layerPaint.batchDraw();
         return;
       }
 
-      const { path } = labelMask;
-      const image = new Image();
-      image.crossOrigin = 'Anonymous';
-      image.onload = () => {
-        const labelImage = new Konva.Image({ image });
-        layerPaint.add(labelImage);
-        layerPaint.draw();
-      };
-      image.src = imageURLFormatter(path as string);
+      // const image: HTMLImageElement = await createImage(labelMask.url);
+      const image: HTMLImageElement = await createImage(labelMask.content);
+      layerPaint.add(new Konva.Image({ image }));
+      layerPaint.draw();
     },
     drawEditableCircle(labelCircle: ILabelShape): void {
       const { label2color, editable } = this;

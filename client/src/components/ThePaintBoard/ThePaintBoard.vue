@@ -83,7 +83,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import uploadFile from '@/services/upload-file';
+import { getBase64 } from '@/plugins/file';
 import {
   Category,
   IDataObject,
@@ -221,7 +221,7 @@ export default Vue.extend({
           `${filename}-mask.png`,
           { type: blob.type },
         );
-        const mask = { path: (await uploadFile(file)).data.path };
+        const mask: ILabelMask = { content: (await getBase64(file)) };
         const newValue: Partial<ILabel> = { mask };
         this.$emit('user-edit-label', uuid, newValue);
       });

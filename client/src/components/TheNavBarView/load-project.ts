@@ -55,7 +55,7 @@ const schema: JSONSchemaType<ProjectData> = {
       type: 'object',
       required: ['path'],
       properties: {
-        path: { type: 'string', nullable: true },
+        content: { type: 'string', nullable: true },
         width: { type: 'number', nullable: true },
         height: { type: 'number', nullable: true },
       },
