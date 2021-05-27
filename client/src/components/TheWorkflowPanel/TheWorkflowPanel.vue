@@ -1,12 +1,12 @@
 <template>
   <v-card class="rounded-0">
-    <v-toolbar
+    <div
       class="app-header"
-      height="35"
+      style="display: flex; align-items: center; height: 35px;"
     >
-      <v-toolbar-title class="app-header-logo pl-2 pr-2">
+      <div class="app-header-logo px-2">
         Workflow Configuration
-      </v-toolbar-title>
+      </div>
 
       <v-divider
         class="app-header-divider"
@@ -122,10 +122,10 @@
           $vuetify.icons.values.close
         </v-icon>
       </v-btn>
-    </v-toolbar>
-    <v-card-text class="px-2 py-2">
+    </div>
+    <div class="pa-2 subtitle-2">
       <TheWorkflowGraphView />
-    </v-card-text>
+    </div>
   </v-card>
 </template>
 

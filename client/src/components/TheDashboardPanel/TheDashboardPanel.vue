@@ -1,19 +1,14 @@
 <template>
   <v-card class="rounded-0">
-    <v-toolbar
+    <div
       class="app-header"
-      height="35"
+      style="display: flex; align-items: center; height: 35px;"
     >
-      <v-toolbar-title class="app-header-logo pl-2 pr-2">
+      <div class="app-header-logo px-2">
         Dashboard
-      </v-toolbar-title>
+      </div>
 
-      <v-divider
-        class="app-header-divider"
-        vertical
-      />
-
-      <v-spacer />
+      <div style="flex-grow: 1" />
 
       <v-btn
         class="mr-1"
@@ -31,16 +26,17 @@
           $vuetify.icons.values.close
         </v-icon>
       </v-btn>
-    </v-toolbar>
-    <v-card-text class="pa-1">
-      <v-row no-gutters>
-        <TheDashboardProgressView />
-        <TheDashboardLabelDistributionView
-          v-if="containsClassification"
-          class="ml-1"
-        />
-      </v-row>
-    </v-card-text>
+    </div>
+    <div
+      class="pa-1 subtitle-2"
+      style="display: flex; flex-direction: row;"
+    >
+      <TheDashboardProgressView />
+      <TheDashboardLabelDistributionView
+        v-if="containsClassification"
+        class="ml-1"
+      />
+    </div>
   </v-card>
 </template>
 

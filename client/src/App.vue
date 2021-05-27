@@ -1,42 +1,22 @@
 <template>
-  <v-app id="app">
-    <v-container
-      class="pa-0"
-      fill-height
-      fluid
-    >
-      <v-row
-        class="pa-0"
-        no-gutters
-      >
-        <TheNavBarView :height="navBarHeight" />
-      </v-row>
-      <v-row
-        :style="`height: calc(100% - ${navBarHeight + footerHeight}px);`"
+  <v-app>
+    <TheNavBarView />
+    <div style="display: flex; flex: 1 1 auto;">
+      <v-col
+        v-for="(taskWindow, i) in taskWindowsDisplayed"
+        :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
+        :cols="12/nWindows"
         class="pa-1"
-        no-gutters
+        :class="{ 'pl-0': (taskWindows.length !== 1 && i !== 0) }"
       >
-        <template v-for="(taskWindow, i) in taskWindowsDisplayed">
-          <v-col
-            :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
-            :cols="12/nWindows"
-            :class="(taskWindows.length !== 1 && i !== 0) ? 'pl-1' : ''"
-          >
-            <component
-              :is="getComponent(taskWindow)"
-              :task-window="taskWindow"
-              style="height: 100%;"
-            />
-          </v-col>
-        </template>
-      </v-row>
-      <v-row
-        class="pa-0"
-        no-gutters
-      >
-        <TheFooterView :height="footerHeight" />
-      </v-row>
-    </v-container>
+        <component
+          :is="getComponent(taskWindow)"
+          :task-window="taskWindow"
+          style="height: 100%;"
+        />
+      </v-col>
+    </div>
+    <TheFooterView />
     <TheMessageView />
   </v-app>
 </template>
@@ -60,12 +40,6 @@ export default Vue.extend({
     TheNavBarView,
     TheFooterView,
     TheMessageView,
-  },
-  data(): { navBarHeight: number, footerHeight: number } {
-    return {
-      navBarHeight: 35,
-      footerHeight: 30,
-    };
   },
   computed: {
     ...mapState(['taskWindows']),

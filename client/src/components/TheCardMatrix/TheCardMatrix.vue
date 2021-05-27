@@ -10,13 +10,10 @@
       @window:pin="onWindowPin"
     />
     <v-divider />
-    <v-card-actions
-      class="pa-0"
-      style="height: calc(100% - 30px)"
-    >
+    <div style="height: calc(100% - 30px); display: flex; align-items: center;">
       <VCardMatrix
         v-if="dataObjects.length !== 0"
-        style="height: 100%"
+        style="height: 100%; width: 100%;"
         :data-type="dataType"
         :data-objects="dataObjects"
         :labels="labelCategories"
@@ -35,7 +32,7 @@
       >
         No Data Objects Queried
       </p>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

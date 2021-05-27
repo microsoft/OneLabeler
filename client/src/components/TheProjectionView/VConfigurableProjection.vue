@@ -1,7 +1,5 @@
 <template>
-  <div
-    style="border: 0.5px solid #757575"
-  >
+  <div style="border: 0.5px solid #757575">
     <!-- The configure projection attribute dialog button. -->
     <VConfigurableProjectionHeader
       :feature-names="featureNames"

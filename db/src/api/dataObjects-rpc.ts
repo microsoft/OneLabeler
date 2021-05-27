@@ -134,6 +134,9 @@ const factory = (
 
     dataObjects.getAll()
       .then((values) => {
+        // Note: trying to send extremely large data object list
+        // may raise "RangeError: Invalid string length" at JSON.stringify.
+        // The maximum string size JSON.stringify can handle is ~ 1GB.
         res.json(values);
         next();
       })

@@ -1,6 +1,6 @@
 <template>
   <v-card width="300">
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -9,7 +9,7 @@
         $vuetify.icons.values.info
       </v-icon>
       Progress
-    </v-card-title>
+    </div>
     <v-divider />
     <v-card-actions class="pa-0">
       <v-container style="height: 370px; width: fit-content;">

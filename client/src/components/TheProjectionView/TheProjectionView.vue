@@ -8,21 +8,19 @@
       @window:pin="onWindowPin"
     />
     <v-divider />
-    <v-card-actions
+    <div
       ref="container"
-      class="pa-0"
-      style="height: calc(100% - 30px)"
+      style="height: calc(100% - 30px); display: flex; align-items: center;"
     >
-      <v-container
+      <div
         v-if="nTotal >= 2 && isFeatureValuesValid"
         :style="{
           height: '100%',
+          width: '100%',
           display: 'grid',
           'grid-template-rows': `repeat(${nRows}, ${100/nRows}%)`,
           'grid-template-columns': `repeat(${nColumns}, ${100/nColumns}%)`,
         }"
-        class="pa-0"
-        fluid
       >
         <VConfigurableProjection
           v-for="(view, i) in views"
@@ -47,7 +45,7 @@
           @update:subsampling="onUpdateSubsampling($event, i)"
           @select:uuids="onSelectUuids"
         />
-      </v-container>
+      </div>
       <p
         v-else-if="nTotal <= 1"
         class="mx-auto subtitle-1"
@@ -60,7 +58,7 @@
       >
         Feature Values not Computed
       </p>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

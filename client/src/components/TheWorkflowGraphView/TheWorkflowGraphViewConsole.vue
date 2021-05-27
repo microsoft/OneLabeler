@@ -1,8 +1,9 @@
 <template>
-  <v-card class="rounded-0">
-    <v-card-title
-      class="view-header"
-    >
+  <v-card
+    class="rounded-0"
+    style="display: flex; flex-direction: column"
+  >
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -11,59 +12,49 @@
         $vuetify.icons.values.info
       </v-icon>
       Console
-    </v-card-title>
-    <v-card-actions
-      class="pa-0"
-      style="height: calc(100% - 28px)"
-    >
+    </div>
+    <div style="overflow-y: scroll;">
       <div
-        class="pa-0"
-        style="width: 100%; height: 100%; overflow-y: scroll;"
-        dense
+        v-for="(notification, i) in notifications"
+        :key="i"
+        :style="{
+          color: {
+            'Success': '#5aaf4b',
+            'Warning': '#fb8c00',
+            'Error': '#f5504e',
+          }[notification.type],
+          'background-color': {
+            'Success': '#ebf6ea',
+            'Warning': '#fef1e0',
+            'Error': '#fdebeb',
+          }[notification.type],
+          cursor: isSubjectNode(notification) ? 'pointer' : undefined,
+          'border-style': 'solid',
+          'border-width': '1px',
+          'margin-top': i === 0 ? 0 : '-1px',
+        }"
+        class="px-2 shadow"
+        @click="onClickMessage(notification)"
       >
-        <div
-          v-for="(notification, i) in notifications"
-          :key="i"
-          :style="{
-            color: {
-              'Success': '#5aaf4b',
-              'Warning': '#fb8c00',
-              'Error': '#f5504e',
-            }[notification.type],
-            'background-color': {
-              'Success': '#ebf6ea',
-              'Warning': '#fef1e0',
-              'Error': '#fdebeb',
-            }[notification.type],
-            cursor: isSubjectNode(notification) ? 'pointer' : undefined,
-            'border-style': 'solid',
-            'border-width': '1px',
-            'margin-top': i === 0 ? 0 : '-1px',
-            'margin-bottom': '0px',
-          }"
-          class="px-2 py-0 mx-0 shadow"
-          @click="onClickMessage(notification)"
+        <v-icon
+          aria-hidden="true"
+          :color="{
+            'Success': '#5aaf4b',
+            'Warning': '#fb8c00',
+            'Error': '#f5504e',
+          }[notification.type]"
+          class="pr-1"
+          small
         >
-          <v-icon
-            aria-hidden="true"
-            :color="{
-              'Success': '#5aaf4b',
-              'Warning': '#fb8c00',
-              'Error': '#f5504e',
-            }[notification.type]"
-            class="pr-1"
-            small
-          >
-            {{ {
-              'Success': $vuetify.icons.values.success,
-              'Warning': $vuetify.icons.values.warning,
-              'Error': $vuetify.icons.values.error,
-            }[notification.type] }}
-          </v-icon>
-          {{ notification.message }}
-        </div>
+          {{ {
+            'Success': $vuetify.icons.values.success,
+            'Warning': $vuetify.icons.values.warning,
+            'Error': $vuetify.icons.values.error,
+          }[notification.type] }}
+        </v-icon>
+        {{ notification.message }}
       </div>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

@@ -23,17 +23,11 @@
       class="pa-0"
       style="height: calc(100% - 31px)"
     >
-      <v-container
+      <div
         v-if="showCanvas"
-        class="pa-0 ma-0"
-        style="height: 100%"
-        fluid
+        style="height: 100%; width: 100%;"
       >
-        <v-row
-          :style="`height: ${canvasHeight}px`"
-          class="pa-0"
-          no-gutters
-        >
+        <div :style="`height: ${canvasHeight}px`">
           <ThePaintBoardCanvas
             ref="canvas"
             :data-object="dataObject"
@@ -50,27 +44,16 @@
             @delete:shape="onRemoveLabelShape"
             @update:label-mask="onSetLabelMask"
           />
-        </v-row>
+        </div>
         <template v-if="enablePagination">
           <v-divider />
-          <v-row
-            class="pa-0"
-            no-gutters
-          >
-            <div
-              ref="pagination"
-              class="text-center"
-              style="width: 100%"
-            >
-              <v-pagination
-                v-model="page"
-                :length="nPages"
-                :total-visible="Math.min(5, nPages)"
-              />
-            </div>
-          </v-row>
+          <v-pagination
+            v-model="page"
+            :length="nPages"
+            :total-visible="Math.min(5, nPages)"
+          />
         </template>
-      </v-container>
+      </div>
       <p
         v-else
         class="mx-auto subtitle-1"

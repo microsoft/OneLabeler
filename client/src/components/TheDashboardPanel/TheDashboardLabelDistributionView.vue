@@ -3,7 +3,7 @@
     width="300"
     height="400"
   >
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -12,12 +12,9 @@
         $vuetify.icons.values.info
       </v-icon>
       Label Class Distribution
-    </v-card-title>
+    </div>
     <v-divider />
-    <v-card-actions
-      class="pa-0"
-      style="height: calc(100% - 30px)"
-    >
+    <div style="height: calc(100% - 30px)">
       <v-list
         class="pa-0"
         style="height: 100%; overflow-y: scroll"
@@ -66,7 +63,7 @@
           </div>
         </v-list-item>
       </v-list>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

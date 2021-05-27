@@ -27,11 +27,9 @@
       </template>
       <v-card>
         <v-container class="pa-0">
-          <v-card-title class="view-header">
-            <v-container class="px-2 py-0">
-              Feature Space Configuration
-            </v-container>
-          </v-card-title>
+          <div class="view-header px-2">
+            Feature Space Configuration
+          </div>
           <v-card>
             <v-list
               style="width: 100%"

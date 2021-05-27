@@ -1,31 +1,29 @@
 <template>
   <div
-    dense
     class="app-footer"
     :style="{
-      flex: '1 1 auto',
       display: 'flex',
       height: `${height}px`,
     }"
   >
-    <div style="height: 100%">
-      <button
-        v-for="(taskWindow, i) in taskWindows"
-        :key="i"
-        class="mx-1 subtitle-2 grey--text text--lighten-2 window-bar"
-        :class="{ 'active': !taskWindow.isMinimized }"
-        :style="{
-          'background': isNodeCurrent(taskWindow.node)
-            ? 'rgba(255,255,255,0.2)' : undefined,
-        }"
-        @click="onClickBar(taskWindow)"
-      >
-        <div class="mx-2">
-          {{ `${taskWindow.node.label} - ${taskWindow.process.label}` }}
-        </div>
-      </button>
-    </div>
-    <v-spacer />
+    <button
+      v-for="(taskWindow, i) in taskWindows"
+      :key="i"
+      class="mx-1 subtitle-2 grey--text text--lighten-2 window-bar"
+      :class="{ 'active': !taskWindow.isMinimized }"
+      :style="{
+        'background': isNodeCurrent(taskWindow.node)
+          ? 'rgba(255,255,255,0.2)' : undefined,
+      }"
+      @click="onClickBar(taskWindow)"
+    >
+      <div class="mx-2">
+        {{ `${taskWindow.node.label} - ${taskWindow.process.label}` }}
+      </div>
+    </button>
+
+    <div style="flex-grow: 1" />
+
     <TheFooterViewStats />
   </div>
 </template>
@@ -43,7 +41,7 @@ export default Vue.extend({
   },
   props: {
     height: {
-      default: 40,
+      default: 30,
       type: Number,
     },
   },

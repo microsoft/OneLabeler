@@ -1,11 +1,15 @@
 <template>
-  <v-toolbar
+  <div
     class="app-header"
-    :height="height"
+    :style="{
+      'display': 'flex',
+      'align-items': 'center',
+      'height': `${height}px`,
+    }"
   >
-    <v-toolbar-title class="app-header-logo pl-2 pr-2">
+    <div class="app-header-logo px-2">
       Generic Labeler
-    </v-toolbar-title>
+    </div>
 
     <v-divider
       class="app-header-divider"
@@ -152,7 +156,7 @@
 
     <!-- The workflow dialog button. -->
     <TheNavBarViewWorkflowDialogButton />
-  </v-toolbar>
+  </div>
 </template>
 
 <script lang="ts">
@@ -207,7 +211,7 @@ export default Vue.extend({
   },
   props: {
     height: {
-      default: 40,
+      default: 35,
       type: Number,
     },
   },

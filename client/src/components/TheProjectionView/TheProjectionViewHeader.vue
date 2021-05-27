@@ -37,40 +37,36 @@
             </v-icon>
           </v-btn>
         </template>
-        <v-card>
-          <v-container>
-            <v-card-title class="subtitle-1 pa-0 grey--text text--darken-1">
-              {{ `${nRows} x ${nColumns} layout` }}
-            </v-card-title>
+        <v-card class="pa-3">
+          <div class="subtitle-1 grey--text text--darken-1">
+            {{ `${nRows} x ${nColumns} layout` }}
+          </div>
+          <div
+            :style="{
+              display: 'grid',
+              'grid-template-rows': `repeat(${maxRows}, ${100/maxRows}%)`,
+              'grid-template-columns': `repeat(${maxColumns}, ${100/maxColumns}%)`,
+            }"
+          >
             <template v-for="row in maxRows">
-              <v-row
-                :key="`row-${row}`"
-                class="ma-0"
-                style="padding: 0.5px 0px 0.5px 0px"
-              >
-                <template v-for="column in maxColumns">
-                  <v-col
-                    :key="`col-${column}`"
-                    class="ma-0"
-                    style="padding: 0px 0.5px 0px 0.5px"
-                  >
-                    <div
-                      :style="{
-                        'border-width': '1px',
-                        'border-style': 'solid',
-                        'border-color': (
-                          (column <= nColumns) && (row <= nRows)
-                        ) ? 'orange' : '#757575',
-                        'width': '40px',
-                        'height': '40px',
-                      }"
-                      @click="onSetMatrixShape(row, column)"
-                    />
-                  </v-col>
-                </template>
-              </v-row>
+              <template v-for="column in maxColumns">
+                <div
+                  :key="`row-${row}-col-${column}`"
+                  :style="{
+                    'border-width': '1px',
+                    'border-style': 'solid',
+                    'border-color': (
+                      (column <= nColumns) && (row <= nRows)
+                    ) ? 'orange' : '#757575',
+                    'width': '40px',
+                    'height': '40px',
+                    'margin': '0.5px',
+                  }"
+                  @click="onSetMatrixShape(row, column)"
+                />
+              </template>
             </template>
-          </v-container>
+          </div>
         </v-card>
       </v-menu>
     </template>

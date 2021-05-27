@@ -1,10 +1,7 @@
 <template>
-  <v-container
+  <div
     ref="container"
-    class="pa-0 ma-0"
-    style="background-color: #D0DAE8"
-    fill-height
-    fluid
+    style="height: 100%; width: 100%; background-color: #D0DAE8"
     @mouseout="onMouseOutStage"
   >
     <v-stage
@@ -55,7 +52,7 @@
         style="image-rendering: pixelated"
       />
     </v-stage>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">

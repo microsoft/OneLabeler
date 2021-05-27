@@ -21,9 +21,7 @@
         Workflow
       </v-btn>
     </template>
-    <TheWorkflowPanel
-      @click:close="onClickClose"
-    />
+    <TheWorkflowPanel @click:close="onClickClose" />
   </v-dialog>
 </template>
 

@@ -23,6 +23,7 @@
         $vuetify.icons.values.minimize
       </v-icon>
     </v-btn>
+    <!--
     <v-btn
       title="Pin"
       x-small
@@ -39,6 +40,7 @@
         $vuetify.icons.values.pin
       </v-icon>
     </v-btn>
+    -->
   </div>
 </template>
 
