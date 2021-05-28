@@ -11,8 +11,11 @@
       Progress
     </div>
     <v-divider />
-    <v-card-actions class="pa-0">
-      <v-container style="height: 370px; width: fit-content;">
+    <div style="display: flex">
+      <div
+        class="py-3"
+        style="height: 370px; width: fit-content; margin: auto"
+      >
         <div
           v-for="(bar, i) in stackedBars"
           :key="i"
@@ -22,14 +25,12 @@
             'background-color': bar.color,
           }"
         />
-      </v-container>
-      <v-list
-        style="margin: auto"
-        dense
-      >
-        <v-list-item
+      </div>
+      <div style="margin: auto">
+        <div
           v-for="(entry, i) in statusList"
           :key="i"
+          style="display: flex; align-items: center; min-height: 40px;"
         >
           <v-icon
             class="pr-2"
@@ -43,9 +44,9 @@
             {{ entry.label }}
           </span>
           {{ entry.value }}
-        </v-list-item>
-      </v-list>
-    </v-card-actions>
+        </div>
+      </div>
+    </div>
   </v-card>
 </template>
 

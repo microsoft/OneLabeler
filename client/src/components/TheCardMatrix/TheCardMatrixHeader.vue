@@ -32,25 +32,19 @@
           <v-list-item
             v-for="(entry, i) in [...classes, unlabeledMark]"
             :key="i"
+            class="subtitle-2"
             style="min-height: 30px"
             @click="onClickBatchLabel(entry)"
           >
-            <v-list-item-title
-              height="20"
-              class="subtitle-2 pa-0 ma-0"
-              style="height: 20px"
+            {{ entry }}
+            <div style="flex-grow: 1" />
+            <v-icon
+              aria-hidden="true"
+              small
+              :style="`color: ${label2color(entry)}`"
             >
-              {{ entry }}
-              <v-icon
-                class="pl-1"
-                style="float: right"
-                aria-hidden="true"
-                small
-                :style="`color: ${label2color(entry)}`"
-              >
-                $vuetify.icons.values.square
-              </v-icon>
-            </v-list-item-title>
+              $vuetify.icons.values.square
+            </v-icon>
           </v-list-item>
         </v-list>
       </v-menu>

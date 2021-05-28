@@ -4,7 +4,7 @@
     style="width: 100%"
     tile
   >
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -13,93 +13,81 @@
         $vuetify.icons.values.parameter
       </v-icon>
       {{ viewTitle }}
-    </v-card-title>
+    </div>
     <v-divider />
-    <v-card-actions class="pa-0">
-      <v-list
-        style="width: 100%"
-        dense
-        subheader
+    <v-list style="width: 100%">
+      <!-- The source node. -->
+      <v-card
+        flat
+        outlined
+        class="mx-4"
       >
-        <!-- The source node. -->
-        <v-list-item class="pt-2">
-          <v-card
-            flat
-            outlined
-            style="width: 100%"
+        <div class="view-header px-2">
+          <span
+            class="subtitle-2"
+            style="padding-bottom: 7.4px; padding-top: 7px"
           >
-            <v-card-title class="view-header px-2">
-              <span
-                class="subtitle-2"
-                style="padding-bottom: 7.4px; padding-top: 7px"
-              >
-                Source Node
-              </span>
-            </v-card-title>
-          </v-card>
-        </v-list-item>
+            Source Node
+          </span>
+        </div>
+      </v-card>
 
-        <v-list-item class="pt-2">
-          <v-card
-            outlined
-            style="width: 100%; display: flex; flex: 1 1 100%;"
-          >
-            <span class="pl-4 py-2 subtitle-2">
-              ID
-            </span>
-            <v-text-field
-              :value="edge.source"
-              disabled
-              class="ma-0 px-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-            />
-          </v-card>
-        </v-list-item>
+      <v-card
+        outlined
+        class="mt-2 mx-4"
+        style="display: flex"
+      >
+        <span class="pl-2 py-2 subtitle-2">
+          ID
+        </span>
+        <v-text-field
+          :value="edge.source"
+          disabled
+          class="ma-0 px-4 pt-1 subtitle-2"
+          style="padding-bottom: 6px !important"
+          type="text"
+          dense
+          hide-details
+          single-line
+        />
+      </v-card>
 
-        <!-- The target node. -->
-        <v-list-item class="pt-2">
-          <v-card
-            flat
-            outlined
-            style="width: 100%"
+      <!-- The target node. -->
+      <v-card
+        flat
+        outlined
+        class="mt-2 mx-4"
+      >
+        <div class="view-header px-2">
+          <span
+            class="subtitle-2"
+            style="padding-bottom: 7.4px; padding-top: 7px"
           >
-            <v-card-title class="view-header px-2">
-              <span
-                class="subtitle-2"
-                style="padding-bottom: 7.4px; padding-top: 7px"
-              >
-                Target Node
-              </span>
-            </v-card-title>
-          </v-card>
-        </v-list-item>
+            Target Node
+          </span>
+        </div>
+      </v-card>
 
-        <v-list-item class="pt-2">
-          <v-card
-            outlined
-            style="width: 100%; display: flex; flex: 1 1 100%;"
-          >
-            <span class="pl-4 py-2 subtitle-2">
-              ID
-            </span>
-            <v-text-field
-              :value="edge.target"
-              disabled
-              class="ma-0 px-4 pt-1 subtitle-2"
-              style="padding-bottom: 6px !important"
-              type="text"
-              dense
-              hide-details
-              single-line
-            />
-          </v-card>
-        </v-list-item>
-      </v-list>
-    </v-card-actions>
+      <v-card
+        outlined
+        class="mt-2 mx-4"
+        style="display: flex"
+      >
+        <span class="pl-2 py-2 subtitle-2">
+          ID
+        </span>
+        <v-text-field
+          :value="edge.target"
+          disabled
+          class="ma-0 px-4 pt-1 subtitle-2"
+          style="padding-bottom: 6px !important"
+          type="text"
+          dense
+          hide-details
+          single-line
+        />
+      </v-card>
+    </v-list>
   </v-card>
 </template>
 

@@ -3,7 +3,7 @@
     style="width: 100%; height: 100%"
     tile
   >
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -12,32 +12,24 @@
         $vuetify.icons.values.parameter
       </v-icon>
       {{ viewTitle }}
-    </v-card-title>
+    </div>
     <v-divider />
-    <v-card-actions class="pa-0">
-      <v-list
-        style="width: 100%"
-        dense
-        subheader
+    <div class="py-2 px-4">
+      <!-- The data type selection. -->
+      <span class="subtitle-2">
+        Decision Criteria
+      </span>
+      <span
+        class="pl-4 py-2 subtitle-2 grey--text"
+        style="
+          text-decoration: underline;
+          text-decoration-style: dotted;
+          text-underline-position: under;
+        "
       >
-        <!-- The data type selection. -->
-        <v-list-item class="pa-0">
-          <span class="pl-4 py-2 subtitle-2">
-            Decision Criteria
-          </span>
-          <span
-            class="pl-4 py-2 subtitle-2 grey--text"
-            style="
-              text-decoration: underline;
-              text-decoration-style: dotted;
-              text-underline-position: under;
-            "
-          >
-            stop == true ?
-          </span>
-        </v-list-item>
-      </v-list>
-    </v-card-actions>
+        stop == true ?
+      </span>
+    </div>
   </v-card>
 </template>
 

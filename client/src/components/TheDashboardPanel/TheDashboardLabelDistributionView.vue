@@ -14,55 +14,47 @@
       Label Class Distribution
     </div>
     <v-divider />
-    <div style="height: calc(100% - 30px)">
-      <v-list
-        class="pa-0"
-        style="height: 100%; overflow-y: scroll"
-        dense
+    <div
+      class="px-4"
+      style="height: calc(100% - 30px); overflow-y: scroll"
+    >
+      <div
+        v-for="category in classes"
+        :key="category"
+        style="min-height: 40px"
       >
-        <v-list-item
-          v-for="category in classes"
-          :key="category"
-          class="pa-0"
-        >
+        <div style="display: flex">
+          <span style="font-weight: 700">
+            {{ category }}
+          </span>
+          <div style="flex-grow: 1" />
+          {{
+            `${ category in nLabeledByCategory ? nLabeledByCategory[category] : 0 }
+            / ${nLabeled}`
+          }}
+        </div>
+        <div style="position: relative; height: 13px;">
           <div
-            class="mx-4"
-            style="width: 300px;"
-          >
-            <div style="display: flex">
-              <span style="font-weight: 700">
-                {{ category }}
-              </span>
-              <v-spacer />
-              {{
-                `${ category in nLabeledByCategory ? nLabeledByCategory[category] : 0 }
-                / ${nLabeled}`
-              }}
-            </div>
-            <div style="position: relative;">
-              <div
-                :style="{
-                  'position': 'absolute',
-                  'background-color': '#d9d9d9',
-                  'height': '13px',
-                  'width': '100%',
-                }"
-              />
-              <div
-                :style="{
-                  'position': 'absolute',
-                  'background-color': '#0078d4',
-                  'height': '13px',
-                  'width': `${
-                    (category in nLabeledByCategory ? nLabeledByCategory[category] : 0)
-                    / nLabeled * 100
-                  }%`,
-                }"
-              />
-            </div>
-          </div>
-        </v-list-item>
-      </v-list>
+            :style="{
+              'position': 'absolute',
+              'background-color': '#d9d9d9',
+              'height': '100%',
+              'width': '100%',
+            }"
+          />
+          <div
+            :style="{
+              'position': 'absolute',
+              'background-color': '#0078d4',
+              'height': '100%',
+              'width': `${
+                (category in nLabeledByCategory ? nLabeledByCategory[category] : 0)
+                / nLabeled * 100
+              }%`,
+            }"
+          />
+        </div>
+      </div>
     </div>
   </v-card>
 </template>

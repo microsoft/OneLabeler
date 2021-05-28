@@ -149,22 +149,19 @@
             <v-list-item
               v-for="(option, i) in strokeShapeMenu.options"
               :key="i"
-              class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
+              class="subtitle-2"
+              style="min-height: 30px"
               @click="onSetStrokeShape(option)"
             >
-              <v-list-item-title
-                class="subtitle-2"
-                style="height: 20px"
+              {{ strokeShapeMenu.optionsText[i] }}
+              <div style="flex-grow: 1" />
+              <v-icon
+                class="pl-2"
+                aria-hidden="true"
+                small
               >
-                {{ strokeShapeMenu.optionsText[i] }}
-                <v-icon
-                  style="float: right"
-                  aria-hidden="true"
-                  small
-                >
-                  {{ strokeShapeMenu.optionsIcon[i] }}
-                </v-icon>
-              </v-list-item-title>
+                {{ strokeShapeMenu.optionsIcon[i] }}
+              </v-icon>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -185,14 +182,14 @@
               x-small
               v-on="on"
             >
-              Size
-              <v-container class="pl-1 pr-0 py-0">
+              <div style="display: flex; flex-direction: row; align-items: center">
+                Size
                 <svg
+                  class="pl-1"
                   width="30px"
-                  height="23.2px"
+                  :height="`${strokeWidth + 1}px`"
                 >
                   <rect
-                    :y="13.1 - strokeWidth/2"
                     :height="strokeWidth"
                     width="30"
                     :fill="(mouseOperation === MouseOperationType.PaintBrush
@@ -200,31 +197,27 @@
                       ? 'black' : 'rgba(0,0,0,.26)'"
                   />
                 </svg>
-              </v-container>
+              </div>
             </v-btn>
           </template>
           <v-list dense>
             <v-list-item
               v-for="(entry, i) in strokeWidthMenu.options"
               :key="i"
-              class="list-group-item d-flex justify-content-between align-items-center py-0 px-2"
+              style="min-height: 30px"
               @click="onSetStrokeWidth(entry)"
             >
-              <v-list-item-title
-                style="height: 20px"
+              <svg
+                width="60px"
+                height="18px"
               >
-                <svg
-                  width="60px"
-                  height="18px"
-                >
-                  <rect
-                    :y="9 - strokeWidthMenu.options[i]/2"
-                    :height="strokeWidthMenu.options[i]"
-                    width="60"
-                    fill="black"
-                  />
-                </svg>
-              </v-list-item-title>
+                <rect
+                  :y="9 - strokeWidthMenu.options[i]/2"
+                  :height="strokeWidthMenu.options[i]"
+                  width="60"
+                  fill="black"
+                />
+              </svg>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -268,23 +261,21 @@
           <v-list-item
             v-for="option in strokeLabelMenu"
             :key="option.category"
+            class="subtitle-2"
+            style="min-height: 30px"
             @click="onSetStrokeLabel(option.category)"
           >
-            <v-list-item-title
-              class="subtitle-2"
-              style="height: 20px"
+            {{ `${option.category}` }}
+            <div style="flex-grow: 1" />
+            <v-icon
+              class="pl-1"
+              style="float: right"
+              aria-hidden="true"
+              small
+              :style="`color: ${option.color}`"
             >
-              {{ `${option.category}` }}
-              <v-icon
-                class="pl-1"
-                style="float: right"
-                aria-hidden="true"
-                small
-                :style="`color: ${option.color}`"
-              >
-                $vuetify.icons.values.square
-              </v-icon>
-            </v-list-item-title>
+              $vuetify.icons.values.square
+            </v-icon>
           </v-list-item>
         </v-list>
       </v-menu>
