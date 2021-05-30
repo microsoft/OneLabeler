@@ -15,7 +15,7 @@
       {{ viewTitle }}
     </div>
     <v-divider />
-    <v-list style="width: 100%">
+    <div class="pt-2">
       <!-- The source node. -->
       <v-card
         flat
@@ -87,7 +87,7 @@
           single-line
         />
       </v-card>
-    </v-list>
+    </div>
   </v-card>
 </template>
 

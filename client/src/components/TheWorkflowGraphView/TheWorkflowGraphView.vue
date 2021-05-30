@@ -1,52 +1,51 @@
 <template>
   <div style="display: flex">
-    <div
-      class="pr-1"
+    <v-card
+      class="mr-1"
       style="flex-basis: 60%;"
+      tile
     >
-      <v-card tile>
-        <div class="view-header">
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.flowChart
-          </v-icon>
-          Workflow Graph
-        </div>
-        <v-divider />
-        <div>
-          <!-- The graph canvas. -->
-          <TheWorkflowGraphViewCanvas
-            :graph="{ nodes, edges }"
-            :current-node="currentNode"
-            @create:node="onCreateNode"
-            @edit:node="onEditNode"
-            @remove:node="onRemoveNode"
-            @select:nodes="onSelectNodes"
-            @jumpto:node="onJumpToNode"
-            @flowfrom:node="onFlowFromNode"
-            @create:edge="onCreateEdge"
-            @remove:edge="onRemoveEdge"
-            @select:edges="onSelectEdges"
-          />
-          <!-- The graph grammar checking console. -->
-          <TheWorkflowGraphViewConsole
-            :graph="{ nodes, edges }"
-            :style="{
-              position: 'absolute',
-              bottom: '8px',
-              left: '8px',
-              right: '8px',
-              height: '200px',
-            }"
-            @select:nodes="onSelectNodes"
-            @select:edges="onSelectEdges"
-          />
-        </div>
-      </v-card>
-    </div>
+      <div class="view-header">
+        <v-icon
+          class="px-2"
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.flowChart
+        </v-icon>
+        Workflow Graph
+      </div>
+      <v-divider />
+      <div>
+        <!-- The graph canvas. -->
+        <TheWorkflowGraphViewCanvas
+          :graph="{ nodes, edges }"
+          :current-node="currentNode"
+          @create:node="onCreateNode"
+          @edit:node="onEditNode"
+          @remove:node="onRemoveNode"
+          @select:nodes="onSelectNodes"
+          @jumpto:node="onJumpToNode"
+          @flowfrom:node="onFlowFromNode"
+          @create:edge="onCreateEdge"
+          @remove:edge="onRemoveEdge"
+          @select:edges="onSelectEdges"
+        />
+        <!-- The graph grammar checking console. -->
+        <TheWorkflowGraphViewConsole
+          :graph="{ nodes, edges }"
+          :style="{
+            position: 'absolute',
+            bottom: '8px',
+            left: '8px',
+            right: '8px',
+            height: '200px',
+          }"
+          @select:nodes="onSelectNodes"
+          @select:edges="onSelectEdges"
+        />
+      </div>
+    </v-card>
     <div style="display: flex; flex-direction: column; flex-basis: 40%;">
       <div style="flex: 1 1 100%;">
         <!-- The process parameter panel. -->

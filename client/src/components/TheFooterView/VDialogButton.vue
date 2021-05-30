@@ -28,8 +28,11 @@
         </v-btn>
       </slot>
     </template>
-    <v-card style="border-radius: 2px">
-      <v-card-title>
+    <v-card
+      class="px-6 py-4"
+      style="border-radius: 2px"
+    >
+      <div style="display: flex; flex-direction: row;">
         <slot name="dialog-header">
           <span
             class="title"
@@ -37,7 +40,9 @@
           >
             {{ dialogHeaderTitle }}
           </span>
-          <v-spacer />
+
+          <div style="flex-grow: 1" />
+
           <v-btn
             color="black"
             title="Close"
@@ -54,10 +59,9 @@
             </v-icon>
           </v-btn>
         </slot>
-      </v-card-title>
-      <v-card-text>
-        <slot name="dialog-body" />
-      </v-card-text>
+      </div>
+
+      <slot name="dialog-body" />
     </v-card>
   </v-dialog>
 </template>

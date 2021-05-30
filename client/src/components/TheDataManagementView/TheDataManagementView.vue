@@ -1,7 +1,7 @@
 <template>
   <v-card
-    :class="`fill-height ${classNameOfPanel}`"
-    style="width: 100%"
+    :class="classNameOfPanel"
+    style="width: 100%; height: 100%;"
     tile
   >
     <div class="view-header">

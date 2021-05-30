@@ -1,9 +1,9 @@
 <template>
   <v-card
-    style="height: 100%; width: 100%;"
+    style="height: 100%; width: 100%; display: flex; flex-direction: column"
     tile
   >
-    <v-card-title class="view-header">
+    <div class="view-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -12,13 +12,13 @@
         $vuetify.icons.values.parameter
       </v-icon>
       Element Setting
-    </v-card-title>
+    </div>
     <v-divider />
-    <v-card-actions style="height: calc(100% - 30px)">
+    <div style="flex: 1 1 auto; display: flex; align-items: center">
       <p class="mx-auto subtitle-1">
         Multiple Workflow Elements Selected
       </p>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 

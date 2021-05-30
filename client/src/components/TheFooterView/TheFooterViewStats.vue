@@ -1,33 +1,15 @@
 <template>
-  <div style="height: 100%">
-    <v-divider
-      style="position: fixed; display: inline-block"
-      vertical
-    />
-    <span
-      class="mx-2 subtitle-2 grey--text text--lighten-2"
-      style="vertical-align: text-top"
-    >
+  <div style="display: flex; align-items: center;">
+    <v-divider vertical />
+    <span class="mx-2 subtitle-2 grey--text text--lighten-2">
       {{ `${nTotal} data objects` }}
     </span>
-    <v-divider
-      style="position: fixed"
-      vertical
-    />
-    <span
-      class="mx-2 subtitle-2 grey--text text--lighten-2"
-      style="vertical-align: text-top"
-    >
+    <v-divider vertical />
+    <span class="mx-2 subtitle-2 grey--text text--lighten-2">
       {{ `${nLabeled} / ${nTotal} labeled` }}
     </span>
-    <v-divider
-      style="position: fixed"
-      vertical
-    />
-    <span
-      class="ml-2 mr-1 subtitle-2 grey--text text--lighten-2"
-      style="vertical-align: text-top"
-    >
+    <v-divider vertical />
+    <span class="ml-2 mr-1 subtitle-2 grey--text text--lighten-2">
       {{ `${classes.length} classes` }}
     </span>
     <!-- The create new class option button. -->

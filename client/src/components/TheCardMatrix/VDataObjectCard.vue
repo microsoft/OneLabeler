@@ -25,7 +25,6 @@
       @click:label="onClickCardLabel"
     />
     <div
-      class="pa-0"
       pointer-events="none"
       style="display: flex; align-items: center;"
     >
