@@ -1,4 +1,5 @@
 import { FilterQuery } from 'mongoose';
+import { VueConstructor } from 'vue';
 
 /** The types of data objects. */
 export enum DataType {
@@ -283,6 +284,20 @@ export interface StorageService {
   id: string;
   isBuiltIn: boolean;
   isServerless: boolean;
+}
+
+/** The data type setup abstracting type-dependent properties. */
+export interface IDataTypeSetup {
+  type: DataType | string;
+  tasks: LabelTaskType[];
+  label: string;
+  handleImport: ((input: FileList, storage: IDataObjectStorage) => void | Promise<void>)
+    | ((input: File, storage: IDataObjectStorage) => void | Promise<void>);
+  handleExport: (
+    dataObjects: IDataObject[],
+    labels: ILabel[],
+  ) => Record<string, unknown>[];
+  display: VueConstructor;
 }
 
 export enum WorkflowNodeType {

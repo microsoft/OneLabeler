@@ -53,19 +53,8 @@ import {
   ILabelCategory,
   StatusType,
 } from '@/commons/types';
+import dataTypeSetups from '@/builtins/data-types/index';
 import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
-import VDisplayImage from './VDisplayImage.vue';
-import VDisplayText from './VDisplayText.vue';
-
-const getDisplay = (dataType: DataType): VueConstructor | null => {
-  const mapper = {
-    [DataType.Image]: VDisplayImage,
-    [DataType.Text]: VDisplayText,
-  } as Partial<Record<DataType, VueConstructor>>;
-  if (dataType === null) return null;
-  const value = mapper[dataType];
-  return value === undefined ? null : value;
-};
 
 export default Vue.extend({
   name: 'VDataObjectCard',
@@ -122,7 +111,9 @@ export default Vue.extend({
   computed: {
     component(): VueConstructor | null {
       const { dataType } = this;
-      return getDisplay(dataType);
+      const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
+      if (dataTypeSetup === undefined) return null;
+      return dataTypeSetup.display;
     },
     bodyHeight(): number {
       return Math.max(this.height - this.headerHeight, 0);

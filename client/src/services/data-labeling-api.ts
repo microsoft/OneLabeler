@@ -4,16 +4,11 @@
  */
 
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import { xor4096 } from 'seedrandom';
-import { loadJsonFile } from '@/plugins/json-utils';
 import { randomChoice } from '@/plugins/random';
-import { getBase64 } from '@/plugins/file';
 import {
   Category,
   DataType,
-  IText,
-  IImage,
   IDataObject,
   IDataObjectStorage,
   IStatus,
@@ -24,13 +19,7 @@ import {
   ModelService,
   Process,
 } from '@/commons/types';
-
-const getImgSize = (content: string) => new Promise((resolve, reject) => {
-  const img = new Image();
-  img.onload = () => resolve({ width: img.width, height: img.height });
-  img.onerror = (error) => reject(error);
-  img.src = content;
-}) as Promise<{ width: number, height: number }>;
+import dataTypeSetups from '@/builtins/data-types/index';
 
 /**
  * Workflow Component - Data Object Extraction
@@ -45,48 +34,12 @@ export const dataObjectExtraction = async (
   dataType: DataType,
   storage: IDataObjectStorage,
 ): Promise<IDataObjectStorage> => {
-  if (dataType === DataType.Image) {
-    const files = input as FileList;
-    await Promise.all([...files].map(async (file) => {
-      /*
-      const { name } = file;
-      const formData = new FormData();
-      formData.append('fileToUpload', file);
-      formData.append('fileName', name);
-      formData.append('key', name);
-      const { path, width, height } = (await axios.post(
-        `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/dataObject/image`,
-        formData,
-      )).data;
-      const dataObject: IImage = {
-        uuid: uuidv4(),
-        url: path,
-        width,
-        height,
-      };
-      */
-      const content = await getBase64(file);
-      const { width, height } = await getImgSize(content);
-      const dataObject: IImage = {
-        uuid: uuidv4(),
-        content,
-        width,
-        height,
-      };
-      storage.upsert(dataObject);
-    }));
-  } else if (dataType === DataType.Text) {
-    const file = input as File;
-    (await loadJsonFile(file) as string[]).forEach((content) => {
-      const dataObject: IText = {
-        uuid: uuidv4(),
-        content,
-      };
-      storage.upsert(dataObject);
-    });
-  } else {
+  const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
+  if (dataTypeSetup === undefined) {
     console.warn(`Invalid Data Type: ${dataType}`);
+    return storage;
   }
+  await dataTypeSetup.handleImport(input, storage);
   return storage.shallowCopy();
 };
 
@@ -125,7 +78,7 @@ export const featureExtraction = async (
     return { dataObjects: dataObjectStorage, featureNames };
   }
 
-  const dataObjects = await dataObjectStorage.getAll() as IImage[];
+  const dataObjects = await dataObjectStorage.getAll() as IDataObject[];
   const labels = labelStorage !== null
     ? (await labelStorage.getAll()).map((d) => d.category as Category)
     : null;

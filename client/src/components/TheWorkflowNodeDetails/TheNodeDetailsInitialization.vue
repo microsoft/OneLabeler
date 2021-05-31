@@ -119,6 +119,7 @@ import {
   LabelTaskType,
   WorkflowNode,
 } from '@/commons/types';
+import dataTypeSetups from '@/builtins/data-types/index';
 
 export default Vue.extend({
   name: 'TheNodeDetailsInitialization',
@@ -131,16 +132,18 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Initialization Setting',
-      menuOfDataType: {
-        label: 'Data Type',
-        options: [
-          { value: DataType.Image, label: 'Image' },
-          { value: DataType.Text, label: 'Text' },
-        ],
-      },
     };
   },
   computed: {
+    menuOfDataType() {
+      return {
+        label: 'Data Type',
+        options: dataTypeSetups.map((d) => ({
+          value: d.type,
+          label: d.label,
+        })),
+      };
+    },
     selectedDataType(): DataType | null {
       if (this.node === null) return null;
       return (this.node.value as { dataType: DataType }).dataType;
@@ -157,17 +160,10 @@ export default Vue.extend({
           LabelTaskType.Segmentation,
         ];
       }
-      const mapper = {
-        [DataType.Image]: [
-          LabelTaskType.Classification,
-          LabelTaskType.ObjectDetection,
-          LabelTaskType.Segmentation,
-        ],
-        [DataType.Text]: [
-          LabelTaskType.Classification,
-        ],
-      } as Record<DataType, LabelTaskType[]>;
-      return mapper[this.selectedDataType];
+      const dataTypeSetup = dataTypeSetups
+        .find((d) => d.type === this.selectedDataType);
+      if (dataTypeSetup === undefined) return [];
+      return dataTypeSetup.tasks;
     },
     menuOfLabelTask() {
       const { validLabelTasks } = this;

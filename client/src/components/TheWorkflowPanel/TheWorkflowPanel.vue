@@ -139,10 +139,7 @@ import {
   WorkflowGraph,
 } from '@/commons/types';
 import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
-import imageClassificationIML from '@/builtins/workflow-templates/image-classification-iml';
-import imageClassificationMinimal from '@/builtins/workflow-templates/image-classification-minimal';
-import imageSegmentationMinimal from '@/builtins/workflow-templates/image-segmentation-minimal';
-import textClassificationMinimal from '@/builtins/workflow-templates/text-classification-minimal';
+import templates from '@/builtins/workflow-templates/index';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
@@ -181,14 +178,7 @@ export default Vue.extend({
     TheWorkflowGraphView,
   },
   data() {
-    return {
-      templates: [
-        { label: 'Image Classification Minimal', value: imageClassificationMinimal },
-        { label: 'Image Classification with IML', value: imageClassificationIML },
-        { label: 'Image Segmentation Minimal', value: imageSegmentationMinimal },
-        { label: 'Text Classification Minimal', value: textClassificationMinimal },
-      ],
-    };
+    return { templates };
   },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
