@@ -1,113 +1,13 @@
-import ObjectId from 'bson-objectid';
 import {
   DataType,
-  ModelService,
   Process,
   ProcessType,
-  SourceType,
-  SourceService,
-  StorageType,
-  StorageService,
 } from '@/commons/types';
 import {
   PROTOCOL_ALGO,
-  PROTOCOL_DB,
   IP_ALGO,
-  IP_DB,
   PORT_ALGO,
-  PORT_DB,
 } from '@/services/http-params';
-
-export const modelServices: ModelService[] = [{
-  type: 'DecisionTree',
-  label: 'DecisionTree (Supervised)',
-  objectId: (new ObjectId('DecisionTree')).toHexString(),
-  isBuiltIn: true,
-  isServerless: false,
-  isValidSampler: false,
-  // id: 'DecisionTree-95912701',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/DecisionTree`,
-  // isLocal: true,
-}, {
-  type: 'SVM',
-  label: 'SVM (Supervised)',
-  objectId: (new ObjectId('SVM000000000')).toHexString(),
-  isBuiltIn: true,
-  isServerless: false,
-  isValidSampler: false,
-  // id: 'SVM-99885399',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/SVM`,
-  // isLocal: true,
-}, {
-  type: 'LogisticRegression',
-  label: 'LogisticRegression (Supervised)',
-  objectId: (new ObjectId('LogisticRegr')).toHexString(),
-  isBuiltIn: true,
-  isServerless: false,
-  isValidSampler: true,
-  // id: 'LogisticRegression-75095119',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LogisticRegression`,
-  // isLocal: true,
-}, {
-  type: 'RestrictedBoltzmannMachine',
-  label: 'RestrictedBoltzmannMachine (Supervised)',
-  objectId: (new ObjectId('RestrictedBo')).toHexString(),
-  isBuiltIn: true,
-  isServerless: false,
-  isValidSampler: false,
-  // id: 'RestrictedBoltzmannMachine-73157581',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/RestrictedBoltzmannMachine`,
-  // isLocal: true,
-}, {
-  type: 'LabelSpreading',
-  label: 'LabelSpreading (Semi-Supervised)',
-  objectId: (new ObjectId('LabelSpreadi')).toHexString(),
-  isBuiltIn: true,
-  isServerless: false,
-  isValidSampler: true,
-  // id: 'LabelSpreading-81419641',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LabelSpreading`,
-  // isLocal: true,
-}];
-
-export const sourceServices: SourceService[] = [{
-  type: SourceType.FileUpload,
-  label: 'File Upload',
-  api: 'FileUpload',
-  id: 'FileUpload',
-  isBuiltIn: true,
-  isServerless: true,
-}, {
-  type: SourceType.ServerDB,
-  label: 'Server-Side Database',
-  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}`,
-  id: 'ServerDB',
-  isBuiltIn: true,
-  isServerless: false,
-}];
-
-export const storageServices: StorageService[] = [{
-  type: StorageType.ClientMemory,
-  label: 'Client-Side Memory',
-  api: 'ClientMemory',
-  id: 'ClientMemory',
-  isBuiltIn: true,
-  isServerless: true,
-}, {
-  type: StorageType.ClientDB,
-  label: 'Client-Side Database',
-  api: 'ClientDB',
-  id: 'ClientDB',
-  isBuiltIn: true,
-  isServerless: true,
-}, {
-  type: StorageType.ServerDB,
-  label: 'Server-Side Database',
-  api: `${PROTOCOL_DB}://${IP_DB}:${PORT_DB}`,
-  id: 'ServerDB',
-  isBuiltIn: true,
-  isServerless: false,
-}];
 
 const dataObjectSelectionMethods: Process[] = [{
   type: ProcessType.DataObjectSelection,
@@ -531,7 +431,7 @@ const taskTransformationMethods: Process[] = [{
   api: 'DirectLabeling',
 }];
 
-export const processes: Process[] = [
+const processes: Process[] = [
   ...dataObjectSelectionMethods,
   ...defaultLabelingMethods,
   ...featureExtractionMethods,
@@ -540,3 +440,5 @@ export const processes: Process[] = [
   ...stoppageAnalysisMethods,
   ...taskTransformationMethods,
 ];
+
+export default processes;

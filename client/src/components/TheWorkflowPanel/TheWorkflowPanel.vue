@@ -139,10 +139,10 @@ import {
   WorkflowGraph,
 } from '@/commons/types';
 import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
-import imageClassificationIML from '@/commons/workflow-templates/image-classification-iml';
-import imageClassificationMinimal from '@/commons/workflow-templates/image-classification-minimal';
-import imageSegmentationMinimal from '@/commons/workflow-templates/image-segmentation-minimal';
-import textClassificationMinimal from '@/commons/workflow-templates/text-classification-minimal';
+import imageClassificationIML from '@/builtins/workflow-templates/image-classification-iml';
+import imageClassificationMinimal from '@/builtins/workflow-templates/image-classification-minimal';
+import imageSegmentationMinimal from '@/builtins/workflow-templates/image-segmentation-minimal';
+import textClassificationMinimal from '@/builtins/workflow-templates/text-classification-minimal';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {

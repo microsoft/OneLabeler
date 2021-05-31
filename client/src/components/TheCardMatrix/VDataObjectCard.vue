@@ -57,12 +57,20 @@ import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
 import VDisplayImage from './VDisplayImage.vue';
 import VDisplayText from './VDisplayText.vue';
 
+const getDisplay = (dataType: DataType): VueConstructor | null => {
+  const mapper = {
+    [DataType.Image]: VDisplayImage,
+    [DataType.Text]: VDisplayText,
+  } as Partial<Record<DataType, VueConstructor>>;
+  if (dataType === null) return null;
+  const value = mapper[dataType];
+  return value === undefined ? null : value;
+};
+
 export default Vue.extend({
   name: 'VDataObjectCard',
   components: {
     VDataObjectCardHeader,
-    VDisplayImage,
-    VDisplayText,
   },
   props: {
     dataType: {
@@ -114,13 +122,7 @@ export default Vue.extend({
   computed: {
     component(): VueConstructor | null {
       const { dataType } = this;
-      const mapper = {
-        [DataType.Image]: VDisplayImage,
-        [DataType.Text]: VDisplayText,
-      } as Partial<Record<DataType, VueConstructor>>;
-      if (dataType === null) return null;
-      const value = mapper[dataType];
-      return value === undefined ? null : value;
+      return getDisplay(dataType);
     },
     bodyHeight(): number {
       return Math.max(this.height - this.headerHeight, 0);

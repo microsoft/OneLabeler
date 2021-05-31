@@ -12,7 +12,7 @@ import {
 import {
   storageServices,
   sourceServices,
-} from '@/commons/builtins';
+} from '@/builtins/data-services';
 
 export interface IState {
   /** The data labeling project record attributes. */

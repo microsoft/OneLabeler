@@ -21,7 +21,7 @@ export interface IDataObject {
   /** The universal unique id of the data object. */
   uuid: string;
   /** The content of the data object. */
-  content?: unknown | null;
+  content?: any;
   /** The storage url of the data object. */
   url?: string | null;
   /** The features of the data object. */
@@ -41,7 +41,7 @@ export interface IImage extends IDataObject {
 /** The interface of an text data object. */
 export interface IText extends IDataObject {
   /** The text content. */
-  content: string;
+  content?: string | null;
 }
 
 /** The label category. */

@@ -4,7 +4,8 @@ import {
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
-import { modelServices, processes } from '@/commons/builtins';
+import modelServices from '@/builtins/model-services';
+import processes from '@/builtins/processes';
 
 export interface IState {
   /** The node currently being processed. */

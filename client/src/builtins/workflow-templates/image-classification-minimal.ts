@@ -5,7 +5,7 @@ import {
   ProcessType,
   WorkflowGraph,
   WorkflowNodeType,
-} from '../types';
+} from '@/commons/types';
 
 export default {
   nodes: [
@@ -14,7 +14,7 @@ export default {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
       value: {
-        dataType: DataType.Text,
+        dataType: DataType.Image,
         labelTasks: [LabelTaskType.Classification],
       },
       layout: {

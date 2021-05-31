@@ -5,7 +5,7 @@ import {
   ProcessType,
   WorkflowGraph,
   WorkflowNodeType,
-} from '../types';
+} from '@/commons/types';
 
 export default {
   nodes: [

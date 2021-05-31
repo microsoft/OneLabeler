@@ -12,7 +12,7 @@ import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
-import { processes } from '@/commons/builtins';
+import processes from '@/builtins/processes';
 
 type MethodParam = MethodParams[keyof MethodParams];
 type JsonMethodParams = Record<string, MethodParam | MethodParam['value']>;
