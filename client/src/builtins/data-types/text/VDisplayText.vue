@@ -1,12 +1,14 @@
 <template>
   <div
+    ref="textElement"
     :style="{
-      'width': `${width}px`,
-      'height': `${height}px`,
+      'width': widthStr,
+      'height': heightStr,
       'overflow-y': 'scroll',
       'font-size': '24px',
       'line-height': 'initial',
     }"
+    @scroll="onScroll"
   >
     {{ dataObject.content }}
   </div>
@@ -47,6 +49,29 @@ export default Vue.extend({
         return typeof val === 'number'
           || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
       },
+    },
+  },
+  computed: {
+    widthStr(): string {
+      const { width } = this;
+      if (typeof width === 'number') return `${width}px`;
+      return width;
+    },
+    heightStr(): string {
+      const { height } = this;
+      if (typeof height === 'number') return `${height}px`;
+      return height;
+    },
+  },
+  methods: {
+    /** Get the text node (needed by span annotation). */
+    getTextNode(): Text {
+      const textElement = this.$refs.textElement as HTMLElement;
+      const textNode = textElement.childNodes[0] as Text;
+      return textNode;
+    },
+    onScroll(e: MouseEvent): void {
+      this.$emit('scroll', e);
     },
   },
 });

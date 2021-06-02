@@ -49,6 +49,7 @@ const icons = {
   superpixel: 'fas fa-puzzle-piece',
   minimize: 'fas fa-minus',
   pin: 'fas fa-thumbtack',
+  text: 'fas fa-paragraph',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

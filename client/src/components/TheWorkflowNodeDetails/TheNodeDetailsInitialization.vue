@@ -158,6 +158,7 @@ export default Vue.extend({
           LabelTaskType.Classification,
           LabelTaskType.ObjectDetection,
           LabelTaskType.Segmentation,
+          LabelTaskType.SpanClassification,
         ];
       }
       const dataTypeSetup = dataTypeSetups
@@ -171,6 +172,7 @@ export default Vue.extend({
         { value: LabelTaskType.Classification, label: 'Classification' },
         { value: LabelTaskType.ObjectDetection, label: 'Object Detection' },
         { value: LabelTaskType.Segmentation, label: 'Segmentation' },
+        { value: LabelTaskType.SpanClassification, label: 'Span Tagging' },
       ];
       return {
         label: 'Label Tasks',

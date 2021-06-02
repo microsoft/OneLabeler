@@ -5,6 +5,7 @@ import {
   IDataObjectStorage,
   ILabel,
   ILabelCategory,
+  ILabelSpan,
   IText,
 } from '@/commons/types';
 import { loadJsonFile } from '@/plugins/json-utils';
@@ -24,12 +25,14 @@ type TextWithTableWithLabel = {
   uuid: string;
   content: ITextWithTable['content'];
   category?: ILabelCategory;
+  spans?: ILabelSpan[];
 }
 
 export default {
   type: 'TextWithTable',
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.SpanClassification,
   ],
   label: 'text with table',
   handleImport: async (input: File, storage: IDataObjectStorage) => {
@@ -53,6 +56,7 @@ export default {
       const idx = uuid2idxInLabels[d.uuid];
       if (idx !== undefined) {
         result.category = labels[idx].category;
+        result.spans = labels[idx].spans;
       }
       return result;
     });

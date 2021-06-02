@@ -24,7 +24,7 @@
     >
       <template #activator="{ on }">
         <v-btn
-          :color="buttonColor === null ? '' : buttonColor "
+          :color="buttonColor === null ? '' : buttonColor"
           class="view-header-button subtitle-2"
           x-small
           v-on="on"

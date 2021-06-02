@@ -6,6 +6,7 @@ import {
   IDataObjectStorage,
   ILabel,
   ILabelCategory,
+  ILabelSpan,
   IText,
 } from '@/commons/types';
 import { loadJsonFile } from '@/plugins/json-utils';
@@ -15,12 +16,14 @@ type TextWithLabel = {
   uuid: string;
   content: string;
   category?: ILabelCategory;
+  spans?: ILabelSpan[];
 }
 
 export default {
   type: DataType.Text,
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.SpanClassification,
   ],
   label: 'text',
   handleImport: async (input: File, storage: IDataObjectStorage) => {
@@ -49,6 +52,7 @@ export default {
       const idx = uuid2idxInLabels[d.uuid];
       if (idx !== undefined) {
         result.category = labels[idx].category;
+        result.spans = labels[idx].spans;
       }
       return result;
     });

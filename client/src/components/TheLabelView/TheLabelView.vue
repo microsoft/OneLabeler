@@ -23,6 +23,7 @@ import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   Category,
+  DataType,
   IDataObject,
   IDataObjectStorage,
   ILabel,
@@ -36,6 +37,7 @@ import {
 } from '@/commons/types';
 import TheCardMatrix from '@/components/TheCardMatrix/TheCardMatrix.vue';
 import ThePaintBoard from '@/components/ThePaintBoard/ThePaintBoard.vue';
+import TheTextSpanBoard from '@/components/TheTextSpanBoard/TheTextSpanBoard.vue';
 
 const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
   Object.entries(d).filter(([_, v]) => v != null),
@@ -71,10 +73,18 @@ export default Vue.extend({
       'labelTasks',
     ]),
     component(): VueConstructor | null {
+      const { dataType, labelTasks } = this;
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
-      if (process.api === 'SingleObjectDisplay') return ThePaintBoard;
+      if (process.api === 'SingleObjectDisplay'
+        && dataType === DataType.Image) return ThePaintBoard;
+      if (process.api === 'SingleObjectDisplay'
+        && dataType === DataType.Text) return TheTextSpanBoard;
       if (process.api === 'GridMatrix') return TheCardMatrix;
+      if (
+        process.api === 'SingleObjectDisplay'
+        && labelTasks.includes(LabelTaskType.SpanClassification)
+      ) return TheTextSpanBoard;
       return null;
     },
     ready(): boolean {

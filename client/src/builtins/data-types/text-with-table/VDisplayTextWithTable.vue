@@ -1,14 +1,15 @@
 <template>
   <div
     :style="{
-      'width': `${width}px`,
-      'height': `${height}px`,
+      'width': widthStr,
+      'height': heightStr,
       'overflow-y': 'scroll',
       'font-size': '24px',
       'line-height': 'initial',
       'display': 'flex',
       'flex-direction': 'column',
     }"
+    @scroll="onScroll"
   >
     <v-simple-table>
       <thead>
@@ -41,8 +42,8 @@
       class="px-2"
       style="flex: 1 1 auto;"
     >
-      <p>
-      {{ text }}
+      <p ref="textElement">
+        {{ text }}
       </p>
     </div>
   </div>
@@ -106,6 +107,27 @@ export default Vue.extend({
       const { table } = this;
       if (table.length === 0) return [];
       return Object.keys(table[0]);
+    },
+    widthStr(): string {
+      const { width } = this;
+      if (typeof width === 'number') return `${width}px`;
+      return width;
+    },
+    heightStr(): string {
+      const { height } = this;
+      if (typeof height === 'number') return `${height}px`;
+      return height;
+    },
+  },
+  methods: {
+    /** Get the text node (needed by span annotation). */
+    getTextNode(): Text {
+      const textElement = this.$refs.textElement as HTMLElement;
+      const textNode = textElement.childNodes[0] as Text;
+      return textNode;
+    },
+    onScroll(e: MouseEvent): void {
+      this.$emit('scroll', e);
     },
   },
 });

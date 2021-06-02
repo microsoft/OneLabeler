@@ -14,7 +14,7 @@ export enum LabelTaskType {
   Classification = 'Classification',
   ObjectDetection = 'ObjectDetection',
   Segmentation = 'Segmentation',
-  WordClassification = 'WordClassification',
+  SpanClassification = 'SpanClassification',
 }
 
 /** The interface of a data object to be labeled. */
@@ -82,6 +82,20 @@ export interface ILabelMask {
   height?: number | null;
 }
 
+/** The interface of the named entity label of a text data object. */
+export interface ILabelSpan {
+  /** The string of the entity. */
+  text: string | null;
+  /** The index of the entity's first character in the original text. */
+  start: number;
+  /** The index of the entity's last character in the original text. */
+  end: number;
+  /** The category of the entity. */
+  category: Category;
+  /** The uuid for differentiating spans with the same content. */
+  uuid: string;
+}
+
 export interface ILabel {
   /** The uuid of the data object that owns the label. */
   uuid: string;
@@ -89,6 +103,7 @@ export interface ILabel {
   category?: ILabelCategory;
   shapes?: ILabelShape[];
   mask?: ILabelMask;
+  spans?: ILabelSpan[];
 }
 
 /** The enum of label status types. */
