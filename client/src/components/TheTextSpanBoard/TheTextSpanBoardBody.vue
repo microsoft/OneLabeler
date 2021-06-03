@@ -1,7 +1,7 @@
 <template>
   <div
-    style="width: 100%"
     v-click-outside="onClickOutside"
+    style="width: 100%"
     @click="onClickInside"
     @mouseup="onMouseUp"
   >
@@ -25,8 +25,8 @@
 
     <!-- The content of the data object. -->
     <component
-      ref="component"
       :is="component"
+      ref="component"
       :data-object="dataObject"
       :height="'100%'"
       :width="'100%'"
@@ -83,13 +83,8 @@ export default Vue.extend({
     return {
       selectedLabelSpan: null as ILabelSpan | null,
       boxes: [] as Box[],
+      resizeObserver: null as ResizeObserver | null,
     };
-  },
-  watch: {
-    async labelSpans() {
-      await this.$nextTick();
-      this.boxes = this.getBoxes();
-    },
   },
   computed: {
     component(): VueConstructor | null {
@@ -99,9 +94,20 @@ export default Vue.extend({
       return dataTypeSetup.display;
     },
   },
+  watch: {
+    async labelSpans() {
+      await this.$nextTick();
+      this.boxes = this.getBoxes();
+    },
+  },
+  beforeDestroy(): void {
+    (this.resizeObserver as ResizeObserver).disconnect();
+  },
   async mounted() {
     await this.$nextTick();
     this.boxes = this.getBoxes();
+    this.resizeObserver = new ResizeObserver(this.onResize);
+    this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
     onClickInside(e: MouseEvent): void {
@@ -144,7 +150,10 @@ export default Vue.extend({
       this.$emit('select:span', labelSpan);
       this.selectedLabelSpan = labelSpan;
     },
-    onScroll() {
+    onScroll(): void {
+      this.boxes = this.getBoxes();
+    },
+    onResize(): void {
       this.boxes = this.getBoxes();
     },
     isBoxSelected(box: Box): boolean {
@@ -172,17 +181,31 @@ export default Vue.extend({
       // as the HTML may not be updated when computed properties are computed.
       const { labelSpans } = this;
       const textNode = this.getTextNode();
+      const parent = textNode.parentNode;
+      if (parent === null) return [];
+      const boundingBox = (parent as HTMLElement).getBoundingClientRect();
       if (labelSpans === null) return [];
       const boxes: Box[] = labelSpans.reduce((acc: Box[], span: ILabelSpan) => {
         const range = document.createRange();
         if (span.end >= textNode.length) return acc;
         range.setStart(textNode, span.start);
         range.setEnd(textNode, span.end);
-        return acc.concat([...range.getClientRects()].map((d) => ({
-          top: d.top,
-          bottom: d.bottom,
-          left: d.left,
-          right: d.right,
+
+        // Do not plot the spans outside the viewport.
+        const rects = [...range.getClientRects()]
+          .filter((rect) => (
+            rect.top <= boundingBox.bottom
+            && rect.bottom >= boundingBox.top
+            && rect.left <= boundingBox.right
+            && rect.right >= boundingBox.left
+          ));
+
+        // Clip the spans to fit inside the viewport.
+        return acc.concat(rects.map((d) => ({
+          top: Math.max(d.top, boundingBox.top),
+          bottom: Math.min(d.bottom, boundingBox.bottom),
+          left: Math.max(d.left, boundingBox.left),
+          right: Math.min(d.right, boundingBox.right),
           span,
         })));
       }, []);
