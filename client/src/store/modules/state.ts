@@ -60,7 +60,7 @@ export const createInitialState = (): IState => ({
   queryUuids: [],
   stop: false,
   classes: [],
-  unlabeledMark: '-1',
+  unlabeledMark: 'UNLABELED',
   featureNames: [],
   scopeUuids: null,
   commandHistory: [],

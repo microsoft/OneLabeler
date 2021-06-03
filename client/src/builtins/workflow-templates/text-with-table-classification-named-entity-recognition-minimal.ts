@@ -14,7 +14,7 @@ export default {
       type: WorkflowNodeType.Initialization,
       value: {
         dataType: 'TextWithTable',
-        labelTasks: [LabelTaskType.Classification],
+        labelTasks: [LabelTaskType.Classification, LabelTaskType.SpanClassification],
       },
       layout: {
         x: 40,
@@ -84,38 +84,18 @@ export default {
     },
     {
       id: 'node-44216216',
-      label: 'grid matrix',
+      label: 'single object display',
       type: WorkflowNodeType.InteractiveLabeling,
       value: [{
         type: ProcessType.InteractiveLabeling,
-        label: 'Grid Matrix',
-        id: 'GridMatrix-89670576',
+        label: 'Single Object Display',
+        id: 'SingleObjectDisplay-48263667',
         inputs: ['dataObjects', 'samples'],
         isAlgorithmic: false,
         isBuiltIn: true,
         isModelBased: false,
         isServerless: true,
-        api: 'GridMatrix',
-        params: {
-          nRows: {
-            value: 4,
-            label: 'Number of Objects per Column',
-            options: [
-              { value: 1, label: '1' },
-              { value: 2, label: '2' },
-              { value: 4, label: '4' },
-              { value: 6, label: '6' },
-            ],
-          },
-          nColumns: {
-            value: 1,
-            label: 'Number of Objects per Row',
-            options: [
-              { value: 1, label: '1' },
-              { value: 2, label: '2' },
-            ],
-          },
-        },
+        api: 'SingleObjectDisplay',
       }],
       layout: {
         x: 400,
