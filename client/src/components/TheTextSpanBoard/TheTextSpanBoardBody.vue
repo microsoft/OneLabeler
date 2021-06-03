@@ -1,12 +1,13 @@
 <template>
   <div
+    ref="container"
     v-click-outside="onClickOutside"
     style="width: 100%"
     @click="onClickInside"
     @mouseup="onMouseUp"
   >
     <!-- The annotated spans. -->
-    <div ref="container">
+    <div ref="annotations">
       <div
         v-for="(box, i) in boxes"
         :key="`box-${i}`"
@@ -24,14 +25,19 @@
     </div>
 
     <!-- The content of the data object. -->
-    <component
-      :is="component"
-      ref="component"
-      :data-object="dataObject"
-      :height="'100%'"
-      :width="'100%'"
-      @scroll="onScroll"
-    />
+    <div
+      ref="content"
+      style="position: relative; width: 100%; height: 100%;"
+    >
+      <component
+        :is="component"
+        ref="dataObject"
+        :data-object="dataObject"
+        :height="'100%'"
+        :width="'100%'"
+        @scroll="onScroll"
+      />
+    </div>
   </div>
 </template>
 
@@ -114,9 +120,9 @@ export default Vue.extend({
       /** Find the top box that contains the clicked position. */
       const x = e.clientX;
       const y = e.clientY;
-      const container = this.$refs.container as HTMLElement;
+      const annotations = this.$refs.annotations as HTMLElement;
       const elements = document.elementsFromPoint(x, y) as HTMLElement[];
-      const element = elements.find((d) => container.contains(d));
+      const element = elements.find((d) => annotations.contains(d));
       if (element === undefined) return;
       element.click();
     },
@@ -163,8 +169,8 @@ export default Vue.extend({
         && (selectedLabelSpan.uuid === box.span.uuid);
     },
     getTextNode(): Text {
-      const component = this.$refs.component as Vue & { getTextNode: () => Text };
-      const textNode: Text = component.getTextNode();
+      const dataObjectElement = this.$refs.dataObject as Vue & { getTextNode: () => Text };
+      const textNode: Text = dataObjectElement.getTextNode();
       return textNode;
     },
     getBoxColor(category: Category): string {
@@ -174,6 +180,9 @@ export default Vue.extend({
       const { r, g, b } = color.rgb();
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
     },
+    getViewPort(): DOMRect {
+      return (this.$refs.content as HTMLElement).getBoundingClientRect();
+    },
     getBoxes(): Box[] {
       // Compute the boxes to render for the span annotations.
       // Note: boxes depend on the rendering result of the text.
@@ -181,9 +190,7 @@ export default Vue.extend({
       // as the HTML may not be updated when computed properties are computed.
       const { labelSpans } = this;
       const textNode = this.getTextNode();
-      const parent = textNode.parentNode;
-      if (parent === null) return [];
-      const boundingBox = (parent as HTMLElement).getBoundingClientRect();
+      const boundingBox = this.getViewPort();
       if (labelSpans === null) return [];
       const boxes: Box[] = labelSpans.reduce((acc: Box[], span: ILabelSpan) => {
         const range = document.createRange();
