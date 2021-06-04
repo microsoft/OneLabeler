@@ -1,12 +1,9 @@
 import {
   IDataObject,
-  IDataTypeSetup,
-  LabelTaskType,
   IDataObjectStorage,
+  IDataTypeSetup,
   ILabel,
-  ILabelCategory,
-  ILabelSpan,
-  IText,
+  LabelTaskType,
 } from '@/commons/types';
 import { loadJsonFile } from '@/plugins/json-utils';
 import VDisplayTextWithTable from './VDisplayTextWithTable.vue';
@@ -21,17 +18,15 @@ interface ITextWithTable extends IDataObject {
   };
 }
 
-type TextWithTableWithLabel = {
-  uuid: string;
-  content: ITextWithTable['content'];
-  category?: ILabelCategory;
-  spans?: ILabelSpan[];
-}
+type IExport<T extends IDataObject> = (
+  Partial<ILabel> & { content: T['content'] }
+)[];
 
 export default {
   type: 'TextWithTable',
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],
   label: 'text with table',
@@ -40,25 +35,21 @@ export default {
     (await loadJsonFile(file) as ITextWithTable[])
       .forEach((entry) => storage.upsert(entry));
   },
-  handleExport: (
-    dataObjects: IText[],
+  handleExport: <T extends IDataObject>(
+    dataObjects: T[],
     labels: ILabel[],
-  ): Record<string, unknown>[] => {
+  ): IExport<T> => {
     const uuid2idxInLabels: Record<string, number> = {};
     labels.forEach((d: ILabel, i) => {
       uuid2idxInLabels[d.uuid] = i;
     });
-    return (dataObjects as unknown as ITextWithTable[]).map((d: ITextWithTable) => {
-      const result: TextWithTableWithLabel = {
+    return dataObjects.map((d) => {
+      const partial = {
         uuid: d.uuid,
         content: d.content,
       };
       const idx = uuid2idxInLabels[d.uuid];
-      if (idx !== undefined) {
-        result.category = labels[idx].category;
-        result.spans = labels[idx].spans;
-      }
-      return result;
+      return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
   display: VDisplayTextWithTable,

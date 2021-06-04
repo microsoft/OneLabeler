@@ -14,7 +14,11 @@ export default {
       type: WorkflowNodeType.Initialization,
       value: {
         dataType: 'TextWithTable',
-        labelTasks: [LabelTaskType.Classification, LabelTaskType.SpanClassification],
+        labelTasks: [
+          LabelTaskType.Classification,
+          LabelTaskType.FreeformText,
+          LabelTaskType.SpanClassification,
+        ],
       },
       layout: {
         x: 40,

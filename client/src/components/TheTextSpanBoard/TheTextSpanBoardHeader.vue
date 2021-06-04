@@ -43,6 +43,18 @@
           </v-list>
         </v-menu>
       </template>
+      <template v-if="enableFreeformText">
+        <v-divider
+          class="mx-2"
+          vertical
+        />
+        <!-- The create/edit freeform text annotation button. -->
+        <VFreeformTextToolLocal
+          :label-text="label === null ? null : label.text"
+          :disabled="label === null"
+          @set:label="onSetLabelText"
+        />
+      </template>
       <template v-if="enableSpanClassification">
         <v-divider
           class="mx-2"
@@ -80,12 +92,21 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, ILabel, LabelTaskType } from '@/commons/types';
+import {
+  Category,
+  ILabel,
+  ILabelText,
+  LabelTaskType,
+} from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
+import VFreeformTextToolLocal from '@/components/VLabelFreeformText/VToolLocal.vue';
 
 export default Vue.extend({
   name: 'TheTextSpanBoardHeader',
-  components: { VToolbar },
+  components: {
+    VToolbar,
+    VFreeformTextToolLocal,
+  },
   props: {
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
@@ -114,6 +135,11 @@ export default Vue.extend({
         (d: LabelTaskType) => d === LabelTaskType.Classification,
       ) >= 0;
     },
+    enableFreeformText(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.FreeformText,
+      ) >= 0;
+    },
     enableSpanClassification(): boolean {
       return this.labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.SpanClassification,
@@ -121,11 +147,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSetBrushCategory(category: Category) {
-      this.$emit('set:brush-category', category);
-    },
     onSetLabelCategory(category: Category): void {
       this.$emit('set:label-category', category);
+    },
+    onSetLabelText(text: ILabelText) {
+      this.$emit('set:label-text', text);
+    },
+    onSetBrushCategory(category: Category) {
+      this.$emit('set:brush-category', category);
     },
     onClickMinimize() {
       this.$emit('window:minimize');

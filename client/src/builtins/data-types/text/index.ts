@@ -1,23 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   DataType,
-  IDataTypeSetup,
-  LabelTaskType,
+  IDataObject,
   IDataObjectStorage,
+  IDataTypeSetup,
   ILabel,
-  ILabelCategory,
-  ILabelSpan,
   IText,
+  LabelTaskType,
 } from '@/commons/types';
 import { loadJsonFile } from '@/plugins/json-utils';
 import VDisplayText from './VDisplayText.vue';
 
-type TextWithLabel = {
-  uuid: string;
-  content: string;
-  category?: ILabelCategory;
-  spans?: ILabelSpan[];
-}
+type IExport<T extends IDataObject> = (
+  Partial<ILabel> & { content: T['content'] }
+)[];
 
 export default {
   type: DataType.Text,
@@ -36,25 +32,21 @@ export default {
       storage.upsert(dataObject);
     });
   },
-  handleExport: (
-    dataObjects: IText[],
+  handleExport: <T extends IDataObject>(
+    dataObjects: T[],
     labels: ILabel[],
-  ): Record<string, unknown>[] => {
+  ): IExport<T> => {
     const uuid2idxInLabels: Record<string, number> = {};
     labels.forEach((d: ILabel, i) => {
       uuid2idxInLabels[d.uuid] = i;
     });
-    return (dataObjects as IText[]).map((d: IText) => {
-      const result: TextWithLabel = {
+    return dataObjects.map((d) => {
+      const partial = {
         uuid: d.uuid,
-        content: d.content as string,
+        content: d.content,
       };
       const idx = uuid2idxInLabels[d.uuid];
-      if (idx !== undefined) {
-        result.category = labels[idx].category;
-        result.spans = labels[idx].spans;
-      }
-      return result;
+      return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
   display: VDisplayText,

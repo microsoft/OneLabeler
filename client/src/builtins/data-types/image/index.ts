@@ -1,17 +1,19 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   DataType,
-  IDataTypeSetup,
-  LabelTaskType,
+  IDataObject,
   IDataObjectStorage,
-  ILabel,
-  ILabelCategory,
-  ILabelShape,
-  ILabelMask,
+  IDataTypeSetup,
   IImage,
+  ILabel,
+  LabelTaskType,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
 import VDisplayImage from './VDisplayImage.vue';
+
+type IExport<T extends IDataObject> = (
+  Partial<ILabel> & { content: T['content'] }
+)[];
 
 const getImgSize = (content: string) => new Promise((resolve, reject) => {
   const img = new Image();
@@ -19,15 +21,6 @@ const getImgSize = (content: string) => new Promise((resolve, reject) => {
   img.onerror = (error) => reject(error);
   img.src = content;
 }) as Promise<{ width: number, height: number }>;
-
-type ImageWithLabel = {
-  uuid: string;
-  url?: string | null;
-  content?: string | null;
-  category?: ILabelCategory;
-  shapes?: ILabelShape[];
-  mask?: ILabelMask;
-}
 
 export default {
   type: DataType.Image,
@@ -68,29 +61,22 @@ export default {
       storage.upsert(dataObject);
     }));
   },
-  handleExport: (
-    dataObjects: IImage[],
+  handleExport: <T extends IDataObject>(
+    dataObjects: T[],
     labels: ILabel[],
-  ): Record<string, unknown>[] => {
+  ): IExport<T> => {
     const uuid2idxInLabels: Record<string, number> = {};
     labels.forEach((d: ILabel, i) => {
       uuid2idxInLabels[d.uuid] = i;
     });
-    return dataObjects.map((d: IImage) => {
-      const result: ImageWithLabel = {
+    return dataObjects.map((d) => {
+      const partial = {
         uuid: d.uuid,
         url: d.url,
         content: d.content,
       };
       const idx = uuid2idxInLabels[d.uuid];
-      if (idx !== undefined) {
-        const label = labels[idx];
-        const { category, shapes, mask } = label;
-        if (category !== undefined) result.category = category;
-        if (shapes !== undefined) result.shapes = shapes;
-        if (mask !== undefined) result.mask = mask;
-      }
-      return result as Record<string, unknown>;
+      return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
   display: VDisplayImage,

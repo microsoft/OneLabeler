@@ -12,6 +12,7 @@ export enum DataType {
 /** The types of label tasks. */
 export enum LabelTaskType {
   Classification = 'Classification',
+  FreeformText = 'FreeformText',
   ObjectDetection = 'ObjectDetection',
   Segmentation = 'Segmentation',
   SpanClassification = 'SpanClassification',
@@ -96,11 +97,18 @@ export interface ILabelSpan {
   uuid: string;
 }
 
+/** The interface of the freeform text label of a data object. */
+export interface ILabelText {
+  /** The text annotation. */
+  content: string | null;
+}
+
 export interface ILabel {
   /** The uuid of the data object that owns the label. */
   uuid: string;
   /** Different modalities of label. */
   category?: ILabelCategory;
+  text?: ILabelText;
   shapes?: ILabelShape[];
   mask?: ILabelMask;
   spans?: ILabelSpan[];

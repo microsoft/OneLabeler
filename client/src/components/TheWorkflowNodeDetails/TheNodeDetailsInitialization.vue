@@ -156,6 +156,7 @@ export default Vue.extend({
       if (this.selectedDataType === null) {
         return [
           LabelTaskType.Classification,
+          LabelTaskType.FreeformText,
           LabelTaskType.ObjectDetection,
           LabelTaskType.Segmentation,
           LabelTaskType.SpanClassification,
@@ -170,6 +171,7 @@ export default Vue.extend({
       const { validLabelTasks } = this;
       const options = [
         { value: LabelTaskType.Classification, label: 'Classification' },
+        { value: LabelTaskType.FreeformText, label: 'Freeform Text' },
         { value: LabelTaskType.ObjectDetection, label: 'Object Detection' },
         { value: LabelTaskType.Segmentation, label: 'Segmentation' },
         { value: LabelTaskType.SpanClassification, label: 'Span Tagging' },

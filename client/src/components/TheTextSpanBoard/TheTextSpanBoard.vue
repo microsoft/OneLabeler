@@ -6,8 +6,9 @@
       :brush-category="brushCategory"
       :label2color="label2color"
       :label="label"
-      @set:brush-category="onSetBrushCategory"
       @set:label-category="onSetLabelCategory"
+      @set:label-text="onSetLabelText"
+      @set:brush-category="onSetBrushCategory"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
     />
@@ -55,6 +56,8 @@ import {
   LabelTaskType,
   TaskWindow,
   ILabelSpan,
+  ILabelCategory,
+  ILabelText,
 } from '@/commons/types';
 import TheTextSpanBoardHeader from './TheTextSpanBoardHeader.vue';
 import TheTextSpanBoardBody from './TheTextSpanBoardBody.vue';
@@ -210,11 +213,18 @@ export default Vue.extend({
       ];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSetLabelCategory(category: Category): void {
+    onSetLabelCategory(category: ILabelCategory): void {
       const { dataObject } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject;
       const newValue: Partial<ILabel> = { category };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelText(text: ILabelText): void {
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { text };
       this.$emit('user-edit-label', uuid, newValue);
     },
     onSetBrushCategory(category: Category) {
