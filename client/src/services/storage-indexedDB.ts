@@ -190,6 +190,11 @@ class StatusStorage implements IStatusStorage {
     return this.#storage.bulkGet(uuids);
   }
 
+  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+    const filter: ((item: unknown) => boolean) = sift(query);
+    return this.#storage.filter(filter).toArray();
+  }
+
   shallowCopy(): IStatusStorage {
     return new StatusStorage(this.#storage);
   }

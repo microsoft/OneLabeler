@@ -138,10 +138,10 @@ const factory = (
     let end: number | undefined = Number(req.query.end);
     if (isNaN(end)) end = undefined;
 
-    const promiseDataObjects = (begin === undefined && end === undefined)
+    const promise = (begin === undefined && end === undefined)
       ? dataObjects.getAll()
       : dataObjects.slice(begin, end);
-    promiseDataObjects
+    promise
       .then((values) => {
         res.json(values);
         next();

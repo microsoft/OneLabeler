@@ -144,6 +144,7 @@ export default Vue.extend({
       this.page = 1;
     },
     dataObject() {
+      this.brushCategory = null;
       this.selectedLabelSpan = null;
     },
     classes() {

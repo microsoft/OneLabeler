@@ -256,6 +256,10 @@ class StatusStorage implements IStatusStorage {
     return sortAndPadMatches(uuids, matches);
   }
 
+  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+    return this.#storage.find(query).lean();
+  }
+
   shallowCopy(): IStatusStorage {
     return new StatusStorage(this.#storage);
   }

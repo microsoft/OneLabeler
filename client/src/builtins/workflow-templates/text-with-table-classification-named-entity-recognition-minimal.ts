@@ -43,7 +43,7 @@ export default {
         api: 'Random',
         params: {
           nBatch: {
-            value: 4,
+            value: 1000,
             label: 'Selection Batch Size',
             options: [
               { value: 1, label: '1' },

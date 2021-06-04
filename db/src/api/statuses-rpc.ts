@@ -175,6 +175,34 @@ const factory = (
   });
 
   /**
+   * /labels/getFiltered?auth={auth}:
+   *   post:
+   *     description: Get all the labels with filtering.
+   *     responses:
+   *       200:
+   *         description: All the labels.
+   *       401:
+   *         description: Unauthorized.
+   *       500:
+   *         description: Unable to get the labels.
+   */
+   router.post('/getFiltered', (req, res, next) => {
+    const auth: string = req.query.auth as string;
+    if (auth !== secrete) return res.sendStatus(401);
+    const query: FilterQuery<unknown> = req.body.query;
+
+    statuses.getFiltered(query)
+      .then((values) => {
+        res.json(values);
+        next();
+      })
+      .catch((reason) => {
+        res.sendStatus(500);
+        next(reason);
+      });
+  });
+
+  /**
    * /statuses/upsert?auth={auth}:
    *   post:
    *     description: Upsert a status by uuid (idempotent).

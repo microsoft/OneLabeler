@@ -208,6 +208,8 @@ export interface IStatusStorage {
   getAll(): Promise<IStatus[]>;
   /** Get an ordered list of statuses by uuids. */
   getBulk(uuids: string[]): Promise<(IStatus | undefined)[]>;
+  /** Get a list of statuses by filter. */
+  getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): IStatusStorage;
   /** Upsert a status to the storage. */

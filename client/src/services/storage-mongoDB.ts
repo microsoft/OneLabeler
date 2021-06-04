@@ -172,6 +172,10 @@ class StatusStorage implements IStatusStorage {
     return values.map((d) => (d === null ? undefined : d));
   }
 
+  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+    return (await axios.post(this.#path('getFiltered'), { query })).data;
+  }
+
   shallowCopy(): IStatusStorage {
     return new StatusStorage(this.#url);
   }

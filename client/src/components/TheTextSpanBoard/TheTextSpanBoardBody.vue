@@ -4,7 +4,6 @@
     v-click-outside="onClickOutside"
     style="width: 100%"
     @click="onClickInside"
-    @mouseup="onMouseUp"
   >
     <!-- The annotated spans. -->
     <div ref="annotations">
@@ -101,9 +100,18 @@ export default Vue.extend({
     },
   },
   watch: {
+    dataObject() {
+      this.selectedLabelSpan = null;
+    },
     async labelSpans() {
       await this.$nextTick();
       this.boxes = this.getBoxes();
+    },
+    brushCategory() {
+      // When changing brush category,
+      // try to create a span if there exists a selection
+      // for which a span has not been created.
+      this.onCreateSpan();
     },
   },
   beforeDestroy(): void {
@@ -117,19 +125,21 @@ export default Vue.extend({
   },
   methods: {
     onClickInside(e: MouseEvent): void {
-      /** Find the top box that contains the clicked position. */
+      // Find the top box that contains the clicked position.
       const x = e.clientX;
       const y = e.clientY;
       const annotations = this.$refs.annotations as HTMLElement;
       const elements = document.elementsFromPoint(x, y) as HTMLElement[];
       const element = elements.find((d) => annotations.contains(d));
-      if (element === undefined) return;
-      element.click();
+      if (element !== undefined) element.click();
+      this.onCreateSpan();
     },
     onClickOutside(): void {
+      // Unselect label span.
       this.onSelectLabelSpan(null);
     },
-    onMouseUp(): void {
+    onCreateSpan(): void {
+      if (this.brushCategory === null) return;
       const selection = document.getSelection();
       if (selection === null) return;
       const { anchorNode } = selection;
@@ -142,7 +152,6 @@ export default Vue.extend({
       // Clear the text selection.
       selection.empty();
       if (start === end || end < 0) return;
-      if (this.brushCategory === null) return;
       const span: ILabelSpan = {
         text,
         start,
@@ -151,6 +160,7 @@ export default Vue.extend({
         uuid: uuidv4(),
       };
       this.$emit('create:span', span);
+      this.onSelectLabelSpan(null);
     },
     onSelectLabelSpan(labelSpan: ILabelSpan | null): void {
       this.$emit('select:span', labelSpan);
@@ -163,7 +173,7 @@ export default Vue.extend({
       this.boxes = this.getBoxes();
     },
     isBoxSelected(box: Box): boolean {
-      /** Whethe the box corresponds to a span annotation selected by the user. */
+      /** Whether the box corresponds to a span annotation selected by the user. */
       const { selectedLabelSpan } = this;
       return (selectedLabelSpan !== null)
         && (selectedLabelSpan.uuid === box.span.uuid);

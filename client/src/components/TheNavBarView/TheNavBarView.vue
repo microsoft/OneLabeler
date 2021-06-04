@@ -85,6 +85,7 @@
     />
 
     <!-- The undo label editing button. -->
+    <!--
     <v-btn
       :title="`Undo ${lastCommandName} (Ctrl + Z)`"
       color="white"
@@ -101,6 +102,7 @@
         $vuetify.icons.values.undo
       </v-icon>
     </v-btn>
+    -->
 
     <!-- The export labeling result button. -->
     <v-btn

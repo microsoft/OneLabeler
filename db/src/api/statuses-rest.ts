@@ -10,7 +10,7 @@
  * GET /statuses/items/{uuid}?auth={auth}
  *  Get a label by uuid.
  * GET /statuses/items?auth={auth}
- *  Get all the statuses.
+ *  Get all the statuses (with optional filtering).
  * GET /statuses/bulk?auth={auth}
  *  Get a bulk of statuses by uuids.
  * PUT /statuses/items/{uuid}?auth={auth}
@@ -132,8 +132,12 @@ const factory = (
   router.get('/items', (req, res, next) => {
     const auth: string = req.query.auth as string;
     if (auth !== secrete) return res.sendStatus(401);
+    const query: FilterQuery<unknown> | undefined = req.body.query;
 
-    statuses.getAll()
+    const promise = (query === undefined)
+      ? statuses.getAll()
+      : statuses.getFiltered(query);
+    promise
       .then((values) => {
         res.json(values);
         next();

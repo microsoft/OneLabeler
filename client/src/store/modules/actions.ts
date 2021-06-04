@@ -10,6 +10,7 @@ import {
   IStorageStore,
   SourceService,
   StorageService,
+  StatusType,
   TaskWindow,
 } from '@/commons/types';
 import * as types from './mutation-types';
@@ -171,9 +172,14 @@ export const setProject = async (
   await storage.labels.upsertBulk(labels);
   await storage.statuses.upsertBulk(statuses);
 
+  // Set the previously viewing data objects to be queried.
+  const statusesViewed = await storage.statuses.getFiltered({ value: StatusType.Viewed });
+  const queryUuids = statusesViewed.map((d) => d.uuid);
+
   commit(types.SET_DATA_OBJECTS, storage.dataObjects);
   commit(types.SET_LABELS, storage.labels);
   commit(types.SET_STATUSES, storage.statuses);
+  commit(types.SET_QUERY_UUIDS, queryUuids);
 };
 
 export const setSourceService = (

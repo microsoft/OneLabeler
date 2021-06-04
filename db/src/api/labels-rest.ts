@@ -134,10 +134,10 @@ const factory = (
     if (auth !== secrete) return res.sendStatus(401);
     const query: FilterQuery<unknown> | undefined = req.body.query;
 
-    const promiseLabels = (query === undefined)
+    const promise = (query === undefined)
       ? labels.getAll()
       : labels.getFiltered(query);
-    promiseLabels
+    promise
       .then((values) => {
         res.json(values);
         next();
