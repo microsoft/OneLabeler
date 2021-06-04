@@ -32,6 +32,8 @@
         :is="component"
         ref="dataObject"
         :data-object="dataObject"
+        :label="label"
+        :label2color="label2color"
         :height="'100%'"
         :width="'100%'"
         @scroll="onScroll"
@@ -48,6 +50,7 @@ import {
   Category,
   DataType,
   IText,
+  ILabel,
   ILabelSpan,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
@@ -71,8 +74,8 @@ export default Vue.extend({
       type: Object as PropType<IText>,
       required: true,
     },
-    labelSpans: {
-      type: Array as PropType<ILabelSpan[] | null>,
+    label: {
+      type: Object as PropType<ILabel | null>,
       default: null,
     },
     brushCategory: {
@@ -97,6 +100,12 @@ export default Vue.extend({
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
       if (dataTypeSetup === undefined) return null;
       return dataTypeSetup.display;
+    },
+    labelSpans(): ILabelSpan[] | null {
+      const { label } = this;
+      if (label === null) return null;
+      if (label.spans === null || label.spans === undefined) return null;
+      return label.spans;
     },
   },
   watch: {

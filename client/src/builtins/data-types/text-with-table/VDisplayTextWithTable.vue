@@ -7,51 +7,105 @@
       'font-size': '24px',
       'line-height': 'initial',
       'display': 'flex',
-      'flex-direction': 'column',
+      'flex-direction': 'row',
     }"
     @scroll="onScroll"
   >
-    <v-simple-table>
-      <thead>
-        <tr>
-          <th
-            v-for="attr in attributes"
-            :key="attr"
-            class="text-left"
+    <div style="flex: 1 1 70%">
+      <!-- The data table. -->
+      <v-simple-table>
+        <thead>
+          <tr>
+            <th
+              v-for="attr in attributes"
+              :key="attr"
+              class="text-left"
+            >
+              {{ attr }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, i) in table"
+            :key="i"
           >
-            {{ attr }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(item, i) in table"
-          :key="i"
-        >
-          <td
-            v-for="attr in attributes"
-            :key="attr"
-          >
-            {{ item[attr] }}
-          </td>
-        </tr>
-      </tbody>
-    </v-simple-table>
-    <v-divider class="pb-4" />
-    <div
-      class="px-2"
-      style="flex: 1 1 auto;"
-    >
-      <p ref="textElement">
-        {{ text }}
-      </p>
+            <td
+              v-for="attr in attributes"
+              :key="attr"
+            >
+              {{ item[attr] }}
+            </td>
+          </tr>
+        </tbody>
+      </v-simple-table>
+
+      <v-divider class="pb-4" />
+
+      <!-- The document to annotate. -->
+      <div
+        class="px-2"
+        style="flex: 1 1 auto;"
+      >
+        <p ref="textElement">
+          {{ text }}
+        </p>
+      </div>
     </div>
+
+    <!-- A list of created spans. -->
+    <v-card
+      class="ma-4"
+      style="flex: 1 1 30%; display: flex; flex-direction: column"
+    >
+      <div class="view-header">
+        <v-icon
+          class="px-2"
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.info
+        </v-icon>
+        Spans
+      </div>
+      <div
+        class="px-2"
+        style="overflow-y: scroll"
+      >
+        <div
+          v-for="labelSpan in labelSpans"
+          :key="labelSpan.uuid"
+        >
+          <v-btn
+            class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
+            :style="{ 'border-color': '#bbb' }"
+            x-small
+            outlined
+          >
+            {{ labelSpan.category }}
+            <v-icon
+              class="pl-2"
+              aria-hidden="true"
+              small
+              :style="{ color: label2color(labelSpan.category) }"
+            >
+              $vuetify.icons.values.square
+            </v-icon>
+          </v-btn>
+          {{ labelSpan.text }}
+        </div>
+      </div>
+    </v-card>
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { IDataObject } from '@/commons/types';
+import {
+  IDataObject,
+  ILabel,
+  ILabelSpan,
+} from '@/commons/types';
 
 interface ITextWithTable extends IDataObject {
   /** The content of the data object. */
@@ -66,16 +120,19 @@ interface ITextWithTable extends IDataObject {
 export default Vue.extend({
   name: 'VDisplayTextWithTable',
   props: {
-    /**
-     * @description The data object to be rendered.
-     */
     dataObject: {
       type: Object as PropType<ITextWithTable>,
       required: true,
     },
-    /**
-     * @description The width of the svg as a number or string of form '...%'
-     */
+    label: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
+    },
+    label2color: {
+      type: Function as PropType<(label: string) => string>,
+      required: true,
+    },
+    /** The width of the svg as a number or string of form '...%' */
     width: {
       type: [Number, String],
       default: undefined,
@@ -84,9 +141,7 @@ export default Vue.extend({
           || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
       },
     },
-    /**
-     * @description The height of the svg as a number or string of form '...%'
-     */
+    /** The height of the svg as a number or string of form '...%' */
     height: {
       type: [Number, String],
       default: undefined,
@@ -107,6 +162,12 @@ export default Vue.extend({
       const { table } = this;
       if (table.length === 0) return [];
       return Object.keys(table[0]);
+    },
+    labelSpans(): ILabelSpan[] | null {
+      const { label } = this;
+      if (label === null) return null;
+      if (label.spans === null || label.spans === undefined) return null;
+      return label.spans;
     },
     widthStr(): string {
       const { width } = this;

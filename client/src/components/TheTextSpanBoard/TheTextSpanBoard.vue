@@ -20,7 +20,7 @@
             ref="canvas"
             :data-type="dataType"
             :data-object="dataObject"
-            :label-spans="labelSpans"
+            :label="label"
             :brush-category="brushCategory"
             :label2color="label2color"
             @create:span="onCreateLabelSpan"
