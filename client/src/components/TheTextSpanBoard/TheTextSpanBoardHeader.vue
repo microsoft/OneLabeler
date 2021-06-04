@@ -15,7 +15,10 @@
     </template>
     <template #tools>
       <template v-if="enableClassification">
-        <v-divider class="mx-2" vertical />
+        <v-divider
+          class="mx-2"
+          vertical
+        />
         <v-menu offset-y>
           <template #activator="{ on }">
             <v-btn
@@ -41,7 +44,10 @@
         </v-menu>
       </template>
       <template v-if="enableSpanClassification">
-        <v-divider class="mx-2" vertical />
+        <v-divider
+          class="mx-2"
+          vertical
+        />
         <v-btn
           v-for="category in classes"
           :key="category"

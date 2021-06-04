@@ -2,10 +2,10 @@
   <v-app>
     <TheNavBarView />
     <div style="display: flex; flex: 1 1 auto;">
-      <v-col
+      <div
         v-for="(taskWindow, i) in taskWindowsDisplayed"
         :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
-        :cols="12/nWindows"
+        :style="{ width: `${100 / nWindows}%` }"
         class="pa-1"
         :class="{ 'pl-0': (taskWindows.length !== 1 && i !== 0) }"
       >
@@ -14,7 +14,7 @@
           :task-window="taskWindow"
           style="height: 100%;"
         />
-      </v-col>
+      </div>
     </div>
     <TheFooterView />
     <TheMessageView />
