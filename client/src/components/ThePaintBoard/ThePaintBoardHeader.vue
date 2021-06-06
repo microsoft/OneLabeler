@@ -45,7 +45,7 @@
       >
         <v-btn
           v-for="btn in (enableImageSegmentation
-            ? mouseOperationButtons : mouseOperationButtons.slice(0, 1))"
+            ? mouseOperationButtons : mouseOperationButtons.slice(0, 2))"
           :key="btn.mouseOperation"
           :title="btn.title"
           :disabled="btn.disabled"
