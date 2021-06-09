@@ -1,24 +1,15 @@
 from handlers import (FeatureExtractionHandler,
-                      DataObjectExtractionHandler,
                       DataObjectSelectionHandler,
                       DefaultLabelingHandler,
                       InterimModelTrainingHandler,
-                      ImageHandler,
                       ImageProcessingHandler,
-                      ProjectionHandler,
-                      UploadHandler)
+                      ProjectionHandler)
 
 url = [
-    # request for file upload
-    (r'/uploadFile', UploadHandler),
-    # request for image resource
-    (r'/img/(.+)', ImageHandler),
     # request for projection computed with dimension reduction algorithms
     (r'/projection/(\w+)', ProjectionHandler),
     # request for image processing algorithms
     (r'/imgproc/(.*)', ImageProcessingHandler),
-    # request for data object computed with data object extraction algorithms
-    (r'/dataObject/(.*)', DataObjectExtractionHandler),
     # request for features computed with features extraction algorithms
     (r'/features/(.*)', FeatureExtractionHandler),
     # request for selection computed with data object selection algorithms
