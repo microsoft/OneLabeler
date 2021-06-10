@@ -7,8 +7,8 @@
   >
     <template #activator="{ on }">
       <v-btn
-        class="app-header-button mr-1"
-        title="Workflow"
+        class="app-header-button mr-1 text-none subtitle-1"
+        title="Dashboard"
         v-on="on"
       >
         <v-icon
@@ -21,9 +21,7 @@
         Dashboard
       </v-btn>
     </template>
-    <TheDashboardPanel
-      @click:close="onClickClose"
-    />
+    <TheDashboardPanel @click:close="onClickClose" />
   </v-dialog>
 </template>
 

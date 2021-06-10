@@ -14,6 +14,7 @@
     <VDataObjectCardHeader
       class="px-1 py-0 white--text"
       pointer-events="none"
+      :label-tasks="labelTasks"
       :label="label"
       :status="status"
       :classes="classes"
@@ -22,7 +23,8 @@
       :style="{
         'height': `${headerHeight}px`
       }"
-      @click:label="onClickCardLabel"
+      @set:label-category="onSetLabelCategory"
+      @set:label-text="onSetLabelText"
     />
     <div
       pointer-events="none"
@@ -50,7 +52,9 @@ import {
   Category,
   DataType,
   IDataObject,
-  ILabelCategory,
+  ILabel,
+  ILabelText,
+  LabelTaskType,
   StatusType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
@@ -66,12 +70,16 @@ export default Vue.extend({
       type: String as PropType<DataType>,
       required: true,
     },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataObject: {
       type: Object as PropType<IDataObject>,
       required: true,
     },
     label: {
-      type: String as PropType<ILabelCategory | undefined>,
+      type: Object as PropType<ILabel | undefined>,
       default: undefined,
       required: false,
     },
@@ -126,13 +134,17 @@ export default Vue.extend({
     },
   },
   methods: {
+    onSetLabelCategory(category: Category): void {
+      const { dataObject } = this;
+      this.$emit('set:label-category', dataObject, category);
+    },
+    onSetLabelText(text: ILabelText): void {
+      const { dataObject } = this;
+      this.$emit('set:label-text', dataObject, text);
+    },
     onClickCard(e: MouseEvent): void {
       const { dataObject } = this;
       this.$emit('click:card', dataObject, e);
-    },
-    onClickCardLabel(label: ILabelCategory): void {
-      const { dataObject } = this;
-      this.$emit('click:card-label', dataObject, label);
     },
     onHoverCard(dataObject: IDataObject): void {
       this.$emit('hover:card', dataObject);

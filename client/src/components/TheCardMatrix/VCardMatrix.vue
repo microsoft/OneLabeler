@@ -17,6 +17,7 @@
       >
         <VDataObjectCard
           :data-type="dataType"
+          :label-tasks="labelTasks"
           :data-object="dataObjects[i]"
           :label="labels[i]"
           :status="statuses[i]"
@@ -27,7 +28,8 @@
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
           @click:card="onClickCard"
-          @click:card-label="onClickCardLabel"
+          @set:label-category="onSetLabelCategory"
+          @set:label-text="onSetLabelText"
         />
       </div>
     </div>
@@ -54,7 +56,9 @@ import {
   Category,
   DataType,
   IDataObject,
-  ILabelCategory,
+  ILabel,
+  ILabelText,
+  LabelTaskType,
   StatusType,
 } from '@/commons/types';
 import VDataObjectCard from './VDataObjectCard.vue';
@@ -69,6 +73,10 @@ export default Vue.extend({
       type: String as PropType<DataType>,
       required: true,
     },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataObjects: {
       type: Array as PropType<IDataObject[]>,
       required: true,
@@ -76,7 +84,7 @@ export default Vue.extend({
     labels: {
       // When grid matrix is activate while the label task does not include classification,
       // the passed labels can be undefined
-      type: Array as PropType<(ILabelCategory | undefined)[]>,
+      type: Array as PropType<(ILabel | undefined)[]>,
       required: true,
     },
     statuses: {
@@ -151,11 +159,14 @@ export default Vue.extend({
     this.updateCardSize();
   },
   methods: {
+    onSetLabelCategory(dataObject: IDataObject, category: Category) {
+      this.$emit('set:label-category', dataObject, category);
+    },
+    onSetLabelText(dataObject: IDataObject, text: ILabelText) {
+      this.$emit('set:label-text', dataObject, text);
+    },
     onClickCard(dataObject: IDataObject, e: MouseEvent) {
       this.$emit('click:card', dataObject, e);
-    },
-    onClickCardLabel(dataObject: IDataObject, label: ILabelCategory) {
-      this.$emit('click:card-label', dataObject, label);
     },
     updateCardSize() {
       const {
@@ -174,10 +185,12 @@ export default Vue.extend({
       this.cardHeight = (height - paginationHeight) / this.itemsPerCol;
       this.cardWidth = width / this.itemsPerRow;
     },
-    getColor(label: ILabelCategory | undefined): string | null {
+    getColor(label: ILabel): string | null {
       const { label2color } = this;
-      if (label === undefined || label2color === null) return null;
-      return label2color(label);
+      if (label === undefined
+        || label.category === undefined
+        || label2color === null) return null;
+      return label2color(label.category);
     },
   },
 });

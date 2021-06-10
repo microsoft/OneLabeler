@@ -17,33 +17,29 @@
 
     <div style="flex-grow: 1" />
 
-    <!-- The data object label menu. -->
-    <v-menu
-      v-if="label !== undefined"
-      offset-y
-    >
-      <template #activator="{ on }">
-        <v-btn
-          :color="buttonColor === null ? '' : buttonColor"
-          class="view-header-button subtitle-2"
-          x-small
-          v-on="on"
-        >
-          {{ label }}
-        </v-btn>
-      </template>
-      <v-list dense>
-        <v-list-item
-          v-for="(entry, i) in classes"
-          :key="i"
-          class="subtitle-2 px-4"
-          style="min-height: 30px"
-          @click="onClickLabel(entry)"
-        >
-          {{ entry }}
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <template v-if="enableClassification">
+      <!-- The data object label menu. -->
+      <VCategorySingleTool
+        :label-category="label === null ? null : label.category"
+        :classes="classes"
+        :button-color="buttonColor"
+        :disabled="label === null"
+        @set:label-category="onSetLabelCategory"
+      />
+    </template>
+
+    <template v-if="enableFreeformText">
+      <v-divider
+        class="mx-2"
+        vertical
+      />
+      <!-- The create/edit freeform text annotation button. -->
+      <VFreeformTextSingleTool
+        :label-text="label === null ? null : label.text"
+        :disabled="label === null"
+        @set:label-text="onSetLabelText"
+      />
+    </template>
   </div>
 </template>
 
@@ -51,15 +47,27 @@
 import Vue, { PropType } from 'vue';
 import {
   Category,
-  ILabelCategory,
+  ILabel,
+  ILabelText,
+  LabelTaskType,
   StatusType,
 } from '@/commons/types';
+import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
+import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',
+  components: {
+    VCategorySingleTool,
+    VFreeformTextSingleTool,
+  },
   props: {
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     label: {
-      type: String as PropType<ILabelCategory | undefined>,
+      type: Object as PropType<ILabel | undefined>,
       default: undefined,
       required: false,
     },
@@ -84,10 +92,23 @@ export default Vue.extend({
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
     },
+    enableClassification(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.Classification,
+      ) >= 0;
+    },
+    enableFreeformText(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.FreeformText,
+      ) >= 0;
+    },
   },
   methods: {
-    onClickLabel(entry: ILabelCategory, e: Event): void {
-      this.$emit('click:label', entry, e);
+    onSetLabelCategory(category: Category): void {
+      this.$emit('set:label-category', category);
+    },
+    onSetLabelText(text: ILabelText) {
+      this.$emit('set:label-text', text);
     },
   },
 });

@@ -19,29 +19,14 @@
           class="mx-2"
           vertical
         />
-        <v-menu offset-y>
-          <template #activator="{ on }">
-            <v-btn
-              :color="label === null ? '' : label2color(label.category)"
-              class="view-header-button subtitle-2"
-              x-small
-              v-on="on"
-            >
-              {{ label === null ? '' : label.category }}
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item
-              v-for="(entry, i) in classes"
-              :key="i"
-              class="subtitle-2"
-              style="min-height: 30px"
-              @click="onSetLabelCategory(entry)"
-            >
-              {{ entry }}
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <!-- The data object label menu. -->
+        <VCategorySingleTool
+          :label-category="label === null ? null : label.category"
+          :classes="classes"
+          :button-color="label === null ? null : label2color(label.category)"
+          :disabled="label === null"
+          @set:label-category="onSetLabelCategory"
+        />
       </template>
       <template v-if="enableFreeformText">
         <v-divider
@@ -49,10 +34,10 @@
           vertical
         />
         <!-- The create/edit freeform text annotation button. -->
-        <VFreeformTextToolLocal
+        <VFreeformTextSingleTool
           :label-text="label === null ? null : label.text"
           :disabled="label === null"
-          @set:label="onSetLabelText"
+          @set:label-text="onSetLabelText"
         />
       </template>
       <template v-if="enableSpanClassification">
@@ -99,13 +84,15 @@ import {
   LabelTaskType,
 } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import VFreeformTextToolLocal from '@/components/VLabelFreeformText/VToolLocal.vue';
+import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
+import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
 
 export default Vue.extend({
   name: 'TheTextSpanBoardHeader',
   components: {
     VToolbar,
-    VFreeformTextToolLocal,
+    VCategorySingleTool,
+    VFreeformTextSingleTool,
   },
   props: {
     labelTasks: {
@@ -150,7 +137,7 @@ export default Vue.extend({
     onSetLabelCategory(category: Category): void {
       this.$emit('set:label-category', category);
     },
-    onSetLabelText(text: ILabelText) {
+    onSetLabelText(text: ILabelText): void {
       this.$emit('set:label-text', text);
     },
     onSetBrushCategory(category: Category) {

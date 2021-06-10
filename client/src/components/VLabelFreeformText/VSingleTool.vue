@@ -69,7 +69,7 @@
         x-small
         class="view-header-button subtitle-2"
         type="submit"
-        @click="onSubmitText"
+        @click="onSetLabelText"
       >
         submit
       </v-btn>
@@ -82,7 +82,7 @@ import Vue, { PropType } from 'vue';
 import { ILabelText } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'VDialogButton',
+  name: 'VSingleTool',
   props: {
     labelText: {
       type: Object as PropType<ILabelText | null>,
@@ -113,13 +113,11 @@ export default Vue.extend({
     this.syncLabel();
   },
   methods: {
-    onSubmitText(): void {
-      const label: ILabelText = {
-        content: this.text,
-      };
+    onSetLabelText(): void {
+      const text: ILabelText = { content: this.text };
       this.dialog = false;
       this.syncLabel();
-      this.$emit('set:label', label);
+      this.$emit('set:label-text', text);
     },
     onClickCloseDialog(): void {
       this.dialog = false;

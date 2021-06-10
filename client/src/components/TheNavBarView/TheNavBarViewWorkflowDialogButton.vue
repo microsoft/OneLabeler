@@ -7,7 +7,7 @@
   >
     <template #activator="{ on }">
       <v-btn
-        class="app-header-button mr-1"
+        class="app-header-button mr-1 text-none subtitle-1"
         title="Workflow"
         v-on="on"
       >

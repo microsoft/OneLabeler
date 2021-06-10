@@ -5,7 +5,7 @@
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       :label-tasks="labelTasks"
-      @click:batch-label="onClickBatchLabel"
+      @set:label-batch-category="onSetLabelBatchCategory"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
     />
@@ -15,16 +15,18 @@
         v-if="dataObjects.length !== 0"
         style="height: 100%; width: 100%;"
         :data-type="dataType"
+        :label-tasks="labelTasks"
         :data-objects="dataObjects"
-        :labels="labelCategories"
+        :labels="labels"
         :statuses="statuses"
         :classes="classes"
         :selected-uuids="selectedUuids"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
         :label2color="label2color"
+        @set:label-category="onSetLabelCategory"
+        @set:label-text="onSetLabelText"
         @click:card="onClickCard"
-        @click:card-label="onClickCardLabel"
       />
       <p
         v-else
@@ -41,8 +43,9 @@ import Vue, { PropType } from 'vue';
 import {
   DataType,
   IDataObject,
-  ILabelCategory,
   ILabel,
+  ILabelCategory,
+  ILabelText,
   LabelTaskType,
   StatusType,
   TaskWindow,
@@ -101,9 +104,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    labelCategories(): (Category | undefined)[] {
-      return this.labels.map((d) => d.category);
-    },
     itemsPerRow(): number {
       return this.taskWindow.process.params?.nRows.value as number;
     },
@@ -112,7 +112,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickBatchLabel(category: ILabelCategory): void {
+    onSetLabelBatchCategory(category: Category): void {
       const { selectedUuids, dataObjects } = this;
       // If multi-selection is applied, set the labels for the selected objects.
       const uuids = selectedUuids.length !== 0
@@ -121,6 +121,16 @@ export default Vue.extend({
       const newValues: Partial<ILabel>[] = new Array(uuids.length)
         .fill(null).map(() => ({ category }));
       this.$emit('user-edit-labels', uuids, newValues);
+    },
+    onSetLabelCategory(dataObject: IDataObject, category: ILabelCategory): void {
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { category };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelText(dataObject: IDataObject, text: ILabelText): void {
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { text };
+      this.$emit('user-edit-label', uuid, newValue);
     },
     onClickCard(dataObject: IDataObject, e: MouseEvent): void {
       const { uuid } = dataObject;
@@ -134,11 +144,6 @@ export default Vue.extend({
       this.selectedUuids = idx >= 0
         ? [...selectedUuids.slice(0, idx), ...selectedUuids.slice(idx + 1)]
         : [...selectedUuids, uuid];
-    },
-    onClickCardLabel(dataObject: IDataObject, category: ILabelCategory): void {
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { category };
-      this.$emit('user-edit-label', uuid, newValue);
     },
     onWindowMinimize(): void {
       const newValue: Partial<TaskWindow> = { isMinimized: true };
