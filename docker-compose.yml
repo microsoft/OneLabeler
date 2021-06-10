@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - 8080:80
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - 8005:8005
+
+  db:
+    build:
+      context: .
+      dockerfile: db/deploy-mongo/Dockerfile
+    ports:
+      - 27018:27017
+
+  resource:
+    build:
+      context: .
+      dockerfile: db/Dockerfile
+    ports:
+      - 8887:8887
+
