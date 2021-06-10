@@ -21,6 +21,8 @@ Make sure you have the following installed:
 
 ## Installation
 
+Note that OpenCV needs to be installed separately at https://github.com/opencv/opencv/releases.
+
 ```bash
 # Enter the directory for the backend
 cd .\server\

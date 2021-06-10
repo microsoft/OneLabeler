@@ -11,7 +11,10 @@
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "docker:build": "docker build . -t generic-labeler-client",
+    "docker:deploy": "docker run -d -p 8080:80 generic-labeler-client",
+    "docker:save": "docker save -o client.tar generic-labeler-client"
   },
   "main": "background.js",
   "dependencies": {

@@ -27,3 +27,7 @@
         - in the IIS manager panel, in the website list, add the website to be deployed, let it work on the 80 port
     6. modify network security setting in Azure
         - in the Azure control panel, in the setting of the virtual machine, select network, in the in port rules, add permission to the 80 port
+
+## Reference
+
+- deployment guideline <https://cli.vuejs.org/guide/deployment.html>
