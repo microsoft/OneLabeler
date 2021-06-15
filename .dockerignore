@@ -1,0 +1,6 @@
+client/**/node_modules
+client/**/dist
+client/**/dist_electron
+
+db/**/node_modules
+db/**/dist

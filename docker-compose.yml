@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
 
@@ -19,14 +19,16 @@ services:
   db:
     build:
       context: .
-      dockerfile: db/deploy-mongo/Dockerfile
-    ports:
-      - 27018:27017
-
-  resource:
-    build:
-      context: .
       dockerfile: db/Dockerfile
+    depends_on:
+      - mongo
     ports:
       - 8887:8887
+    environment:
+      WAIT_HOSTS: mongo:27017
 
+  mongo:
+    container_name: mongo
+    image: mongo:4.4.5
+    ports:
+      - 27017:27017

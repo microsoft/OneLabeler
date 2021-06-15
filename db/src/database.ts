@@ -13,7 +13,12 @@ import { randomChoice } from './commons/random';
 /* eslint max-classes-per-file: ["error", 4] */
 
 const DB_NAME = 'DataLabelingStorage';
-const DB_URL = `mongodb://localhost:27017/${DB_NAME}`;
+// Note: when distributing database and mongodb in separate docker images,
+// the address of mongodb is normally not localhost or 127.0.0.1,
+// and is dependent on the image name in the docker file.
+const DB_URL: string = process.env.NODE_ENV === 'development'
+  ? `mongodb://localhost:27017/${DB_NAME}`
+  : `mongodb://mongo:27017/${DB_NAME}`;
 
 type EmptyObject = Record<string, never>;
 type IDataObjectModel = mongoose.Model<IDataObject, EmptyObject, EmptyObject>;
@@ -298,12 +303,16 @@ class StorageStore implements IStorageStore {
   }
 
   async init(): Promise<void> {
-    await mongoose.connect(DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    });
+    try {
+      await mongoose.connect(DB_URL, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true,
+      });
+    } catch (err) {
+      console.log(`Mongoose connection error: ${err.message}`);
+    }
   }
 }
 
