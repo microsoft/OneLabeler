@@ -3,14 +3,18 @@
 - [Architecture](#architecture)
   - [`.vscode`](#vscode)
   - [`client`](#client)
-    - [`plugins`](#plugins)
+    - [`nginx`](#nginx)
     - [`public`](#public)
     - [`src`](#src)
       - [`commons`](#commons)
       - [`components`](#components)
+    - [`plugins`](#plugins)
       - [`services`](#services)
       - [`store`](#store)
       - [`style`](#style)
+    - [`tests`](#tests)
+      - [`e2e`](#e2e)
+      - [`unit`](#unit)
   - [`db`](#db)
   - [`docs`](#docs)
   - [`server`](#server)
@@ -20,15 +24,15 @@ The architecture is inspired by [vue-enterprise-boilerplate](https://github.com/
 
 ## `.vscode`
 
-Settings and extensions specific to this project, for Visual Studio Code.
+Development settings and extensions specific to this project, for Visual Studio Code.
 
 ## `client`
 
 The frontend of the system.
 
-### `plugins`
+### `nginx`
 
-The manually managed libraries.
+The nginx server for serving the client at deployment.
 
 ### `public`
 
@@ -46,6 +50,10 @@ The frontend shared utility functions and global constants.
 
 The components of the frontend interface.
 
+### `plugins`
+
+The manually managed libraries.
+
 #### `services`
 
 The APIs for frontend-backend communication.
@@ -57,6 +65,18 @@ The global state management.
 #### `style`
 
 The frontend global styling.
+
+### `tests`
+
+The tests.
+
+#### `e2e`
+
+The end to end tests.
+
+#### `unit`
+
+The unit tests.
 
 ## `db`
 
