@@ -60,9 +60,6 @@
           @edit:model="onEditModel"
         />
       </div>
-      <div class="pt-1">
-        <TheDataManagementView />
-      </div>
     </div>
   </div>
 </template>
@@ -76,7 +73,7 @@ import {
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
-import TheDataManagementView from '../TheDataManagementView/TheDataManagementView.vue';
+// import TheDataManagementView from '../TheDataManagementView/TheDataManagementView.vue';
 import TheElementDetails from '../TheWorkflowNodeDetails/TheElementDetails.vue';
 import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
 import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
@@ -84,7 +81,7 @@ import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
 export default Vue.extend({
   name: 'TheWorkflowGraphView',
   components: {
-    TheDataManagementView,
+    // TheDataManagementView,
     TheElementDetails,
     TheWorkflowGraphViewCanvas,
     TheWorkflowGraphViewConsole,

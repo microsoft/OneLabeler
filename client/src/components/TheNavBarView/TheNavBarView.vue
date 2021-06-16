@@ -153,11 +153,14 @@
     </template>
     <v-spacer />
 
-    <!-- The dashboard dialog button. -->
-    <TheNavBarViewDashboardDialogButton />
+    <!-- The data management dialog button -->
+    <TheNavBarViewDataManagementDialogButton />
 
     <!-- The workflow dialog button. -->
     <TheNavBarViewWorkflowDialogButton />
+
+    <!-- The dashboard dialog button. -->
+    <TheNavBarViewDashboardDialogButton />
   </div>
 </template>
 
@@ -177,6 +180,7 @@ import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
+import TheNavBarViewDataManagementDialogButton from './TheNavBarViewDataManagementDialogButton.vue';
 import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
 import { ProjectData, validate } from './load-project';
 import exportLabels from './export-labels';
@@ -209,6 +213,7 @@ export default Vue.extend({
   components: {
     VUploadButton,
     TheNavBarViewDashboardDialogButton,
+    TheNavBarViewDataManagementDialogButton,
     TheNavBarViewWorkflowDialogButton,
   },
   props: {
