@@ -51,7 +51,7 @@ import {
   DataType,
   IText,
   ILabel,
-  ILabelSpan,
+  ILabelTextSpan,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 
@@ -60,7 +60,7 @@ type Box = {
   bottom: number;
   left: number;
   right: number;
-  span: ILabelSpan;
+  span: ILabelTextSpan;
 }
 
 export default Vue.extend({
@@ -89,7 +89,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      selectedLabelSpan: null as ILabelSpan | null,
+      selectedSpan: null as ILabelTextSpan | null,
       boxes: [] as Box[],
       resizeObserver: null as ResizeObserver | null,
     };
@@ -101,7 +101,7 @@ export default Vue.extend({
       if (dataTypeSetup === undefined) return null;
       return dataTypeSetup.display;
     },
-    labelSpans(): ILabelSpan[] | null {
+    labelSpans(): ILabelTextSpan[] | null {
       const { label } = this;
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;
@@ -110,7 +110,7 @@ export default Vue.extend({
   },
   watch: {
     dataObject() {
-      this.selectedLabelSpan = null;
+      this.selectedSpan = null;
     },
     async labelSpans() {
       await this.$nextTick();
@@ -153,6 +153,7 @@ export default Vue.extend({
       if (selection === null) return;
       const { anchorNode } = selection;
       const textNode = this.getTextNode();
+      // Check if the selection starts at the text node.
       if (anchorNode !== textNode) return;
 
       const text: string = selection.toString();
@@ -161,7 +162,7 @@ export default Vue.extend({
       // Clear the text selection.
       selection.empty();
       if (start === end || end < 0) return;
-      const span: ILabelSpan = {
+      const span: ILabelTextSpan = {
         text,
         start,
         end,
@@ -171,9 +172,9 @@ export default Vue.extend({
       this.$emit('create:span', span);
       this.onSelectLabelSpan(null);
     },
-    onSelectLabelSpan(labelSpan: ILabelSpan | null): void {
+    onSelectLabelSpan(labelSpan: ILabelTextSpan | null): void {
       this.$emit('select:span', labelSpan);
-      this.selectedLabelSpan = labelSpan;
+      this.selectedSpan = labelSpan;
     },
     onScroll(): void {
       this.boxes = this.getBoxes();
@@ -183,9 +184,9 @@ export default Vue.extend({
     },
     isBoxSelected(box: Box): boolean {
       /** Whether the box corresponds to a span annotation selected by the user. */
-      const { selectedLabelSpan } = this;
-      return (selectedLabelSpan !== null)
-        && (selectedLabelSpan.uuid === box.span.uuid);
+      const { selectedSpan } = this;
+      return (selectedSpan !== null)
+        && (selectedSpan.uuid === box.span.uuid);
     },
     getTextNode(): Text {
       const dataObjectElement = this.$refs.dataObject as Vue & { getTextNode: () => Text };
@@ -211,7 +212,7 @@ export default Vue.extend({
       const textNode = this.getTextNode();
       const boundingBox = this.getViewPort();
       if (labelSpans === null) return [];
-      const boxes: Box[] = labelSpans.reduce((acc: Box[], span: ILabelSpan) => {
+      const boxes: Box[] = labelSpans.reduce((acc: Box[], span: ILabelTextSpan) => {
         const range = document.createRange();
         if (span.end >= textNode.length) return acc;
         range.setStart(textNode, span.start);

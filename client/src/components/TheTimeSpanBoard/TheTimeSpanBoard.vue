@@ -1,14 +1,12 @@
 <template>
   <v-card style="display: flex; flex-direction: column">
-    <TheTextSpanBoardHeader
+    <TheTimeSpanBoardHeader
       :label-tasks="labelTasks"
       :classes="classes"
-      :brush-category="brushCategory"
       :label2color="label2color"
       :label="label"
       @set:label-category="onSetLabelCategory"
       @set:label-text="onSetLabelText"
-      @set:brush-category="onSetBrushCategory"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
     />
@@ -16,15 +14,16 @@
     <div style="flex: 1 1 auto; display: flex; flex-direction: column">
       <template v-if="showDataObject">
         <div style="height: 0px; flex: 1 1 auto; display: flex">
-          <TheTextSpanBoardBody
+          <TheTimeSpanBoardBody
             ref="canvas"
             :data-type="dataType"
             :data-object="dataObject"
             :label="label"
-            :brush-category="brushCategory"
+            :classes="classes"
             :label2color="label2color"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
+            @select:slot="onSelectSlot"
           />
         </div>
         <template v-if="enablePagination">
@@ -55,18 +54,18 @@ import {
   ILabel,
   LabelTaskType,
   TaskWindow,
-  ILabelTextSpan,
+  ILabelTimeSpan,
   ILabelCategory,
   ILabelText,
 } from '@/commons/types';
-import TheTextSpanBoardHeader from './TheTextSpanBoardHeader.vue';
-import TheTextSpanBoardBody from './TheTextSpanBoardBody.vue';
+import TheTimeSpanBoardHeader from './TheTimeSpanBoardHeader.vue';
+import TheTimeSpanBoardBody from './TheTimeSpanBoardBody.vue';
 
 export default Vue.extend({
-  name: 'TheTextSpanBoard',
+  name: 'TheTimeSpanBoard',
   components: {
-    TheTextSpanBoardHeader,
-    TheTextSpanBoardBody,
+    TheTimeSpanBoardHeader,
+    TheTimeSpanBoardBody,
   },
   props: {
     dataType: {
@@ -100,8 +99,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      brushCategory: null as Category | null,
-      selectedSpan: null as ILabelTextSpan | null,
+      selectedSlot: null as Category | null,
+      selectedSpan: null as ILabelTimeSpan | null,
       page: 1 as number,
     };
   },
@@ -119,7 +118,7 @@ export default Vue.extend({
       if (this.labels === null) return null;
       return this.labels[this.page - 1];
     },
-    labelSpans(): ILabelTextSpan[] | null {
+    labelSpans(): ILabelTimeSpan[] | null {
       const { label } = this;
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;
@@ -140,11 +139,7 @@ export default Vue.extend({
       this.page = 1;
     },
     dataObject() {
-      this.brushCategory = null;
       this.selectedSpan = null;
-    },
-    classes() {
-      this.initializeBrushCategory();
     },
   },
   created(): void {
@@ -158,14 +153,8 @@ export default Vue.extend({
   },
   mounted() {
     this.page = 1;
-    this.initializeBrushCategory();
   },
   methods: {
-    initializeBrushCategory() {
-      if (this.brushCategory === null && this.classes.length !== 0) {
-        [this.brushCategory] = this.classes;
-      }
-    },
     onKey(e: KeyboardEvent): void {
       const { key } = e;
 
@@ -176,33 +165,33 @@ export default Vue.extend({
         this.onRemoveLabelSpan(selectedSpan);
       }
     },
-    onCreateLabelSpan(labelSpan: ILabelTextSpan) {
+    onCreateLabelSpan(labelSpan: ILabelTimeSpan) {
       const { dataObject, labelSpans } = this;
       if (dataObject === null) return;
       const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(labelSpan: ILabelTextSpan | null) {
+    onSelectLabelSpan(labelSpan: ILabelTimeSpan | null) {
       this.selectedSpan = labelSpan;
-      if (labelSpan !== null) {
-        this.brushCategory = labelSpan.category;
-      }
     },
-    onUpdateLabelSpan(labelSpan: ILabelTextSpan) {
+    onSelectSlot(category: Category | null): void {
+      this.selectedSlot = category;
+    },
+    onUpdateLabelSpan(labelSpan: ILabelTimeSpan) {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
       const index = labelSpans.findIndex(
-        (d: ILabelTextSpan) => d.uuid === labelSpan.uuid,
+        (d: ILabelTimeSpan) => d.uuid === labelSpan.uuid,
       );
       const spans = [...labelSpans];
       spans[index] = labelSpan;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onRemoveLabelSpan(labelSpan: ILabelTextSpan) {
+    onRemoveLabelSpan(labelSpan: ILabelTimeSpan) {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
       const index = labelSpans.findIndex(
-        (d: ILabelTextSpan) => d.uuid === labelSpan.uuid,
+        (d: ILabelTimeSpan) => d.uuid === labelSpan.uuid,
       );
       const spans = [
         ...labelSpans.slice(0, index),
@@ -223,12 +212,6 @@ export default Vue.extend({
       const { uuid } = dataObject;
       const newValue: Partial<ILabel> = { text };
       this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetBrushCategory(category: Category) {
-      this.brushCategory = category;
-      const { selectedSpan } = this;
-      if (selectedSpan === null) return;
-      this.onUpdateLabelSpan({ ...selectedSpan, category });
     },
     onWindowMinimize() {
       const newValue: Partial<TaskWindow> = { isMinimized: true };

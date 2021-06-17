@@ -46,6 +46,26 @@ export interface IText extends IDataObject {
   content?: string | null;
 }
 
+/** The interface of a media (video/audio) data object. */
+export interface IMedia extends IDataObject {
+  /** The media content as base64 string. */
+  content: string | null;
+  /** The duration of the media. */
+  duration: number;
+}
+
+/** The interface of a video data object. */
+export interface IVideo extends IMedia {
+  /** The video content as base64 string. */
+  content: string | null;
+  /** The width of the video. */
+  width: number;
+  /** The height of the video. */
+  height: number;
+  /** The duration of the video. */
+  duration: number;
+}
+
 /** The label category. */
 export type Category = string;
 
@@ -83,8 +103,20 @@ export interface ILabelMask {
   height?: number | null;
 }
 
-/** The interface of the named entity label of a text data object. */
+/** The interface of the span of part of a data object. */
 export interface ILabelSpan {
+  /** The start of the span. */
+  start: number;
+  /** The end of the span. */
+  end: number;
+  /** The category of the span. */
+  category: Category;
+  /** The uuid for differentiating spans with the same content. */
+  uuid: string;
+}
+
+/** The interface of the named entity label of a text data object. */
+export interface ILabelTextSpan extends ILabelSpan {
   /** The string of the entity. */
   text: string | null;
   /** The index of the entity's first character in the original text. */
@@ -92,6 +124,18 @@ export interface ILabelSpan {
   /** The index of the entity's last character in the original text. */
   end: number;
   /** The category of the entity. */
+  category: Category;
+  /** The uuid for differentiating spans with the same content. */
+  uuid: string;
+}
+
+/** The interface of the temporal span of a video/audio data object. */
+export interface ILabelTimeSpan extends ILabelSpan {
+  /** The timestamp of the first frame. */
+  start: number;
+  /** The timestamp of the final frame. */
+  end: number;
+  /** The category of the span. */
   category: Category;
   /** The uuid for differentiating spans with the same content. */
   uuid: string;
@@ -111,7 +155,7 @@ export interface ILabel {
   text?: ILabelText;
   shapes?: ILabelShape[];
   mask?: ILabelMask;
-  spans?: ILabelSpan[];
+  spans?: ILabelTextSpan[];
 }
 
 /** The enum of label status types. */

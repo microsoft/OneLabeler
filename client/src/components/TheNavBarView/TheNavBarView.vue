@@ -19,7 +19,7 @@
     <!-- The new project button. -->
     <VUploadButton
       v-if="showFileUploadButton"
-      :type="dataType === DataType.Image ? 'folder' : 'file'"
+      :type="(dataType === DataType.Image || dataType === DataType.Video) ? 'folder' : 'file'"
       :disabled="disableNewProjectButton"
       :icon="$vuetify.icons.values.new"
       :keyboard-trigger="(showFileUploadButton && !disableNewProjectButton)

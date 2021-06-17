@@ -104,7 +104,7 @@ import Vue, { PropType } from 'vue';
 import {
   IDataObject,
   ILabel,
-  ILabelSpan,
+  ILabelTextSpan,
 } from '@/commons/types';
 
 interface ITextWithTable extends IDataObject {
@@ -163,7 +163,7 @@ export default Vue.extend({
       if (table.length === 0) return [];
       return Object.keys(table[0]);
     },
-    labelSpans(): ILabelSpan[] | null {
+    labelSpans(): ILabelTextSpan[] | null {
       const { label } = this;
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;

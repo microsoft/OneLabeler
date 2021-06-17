@@ -50,6 +50,12 @@ const icons = {
   minimize: 'fas fa-minus',
   pin: 'fas fa-thumbtack',
   text: 'fas fa-paragraph',
+  video: 'fas fa-film',
+  play: 'fas fa-play',
+  pause: 'fas fa-pause',
+  stop: 'fas fa-stop',
+  volume: 'fas fa-volume-up',
+  mute: 'fas fa-volume-mute',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

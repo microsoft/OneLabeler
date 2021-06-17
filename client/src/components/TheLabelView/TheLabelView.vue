@@ -38,6 +38,7 @@ import {
 import TheCardMatrix from '@/components/TheCardMatrix/TheCardMatrix.vue';
 import ThePaintBoard from '@/components/ThePaintBoard/ThePaintBoard.vue';
 import TheTextSpanBoard from '@/components/TheTextSpanBoard/TheTextSpanBoard.vue';
+import TheTimeSpanBoard from '@/components/TheTimeSpanBoard/TheTimeSpanBoard.vue';
 
 const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
   Object.entries(d).filter(([_, v]) => v != null),
@@ -80,6 +81,8 @@ export default Vue.extend({
         && dataType === DataType.Image) return ThePaintBoard;
       if (process.api === 'SingleObjectDisplay'
         && dataType === DataType.Text) return TheTextSpanBoard;
+      if (process.api === 'SingleObjectDisplay'
+        && dataType === DataType.Video) return TheTimeSpanBoard;
       if (process.api === 'GridMatrix') return TheCardMatrix;
       if (
         process.api === 'SingleObjectDisplay'
