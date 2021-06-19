@@ -24,6 +24,7 @@
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
             @select:slot="onSelectSlot"
+            @update:span="onUpdateLabelSpan"
           />
         </div>
         <template v-if="enablePagination">
@@ -165,7 +166,7 @@ export default Vue.extend({
         this.onRemoveLabelSpan(selectedSpan);
       }
     },
-    onCreateLabelSpan(labelSpan: ILabelTimeSpan) {
+    onCreateLabelSpan(labelSpan: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null) return;
       const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
@@ -177,14 +178,13 @@ export default Vue.extend({
     onSelectSlot(category: Category | null): void {
       this.selectedSlot = category;
     },
-    onUpdateLabelSpan(labelSpan: ILabelTimeSpan) {
+    onUpdateLabelSpan(newValue: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
-      const index = labelSpans.findIndex(
-        (d: ILabelTimeSpan) => d.uuid === labelSpan.uuid,
-      );
+      const index = labelSpans.findIndex((d) => d.uuid === newValue.uuid);
+      if (!(index >= 0)) return;
       const spans = [...labelSpans];
-      spans[index] = labelSpan;
+      spans[index] = newValue;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
     onRemoveLabelSpan(labelSpan: ILabelTimeSpan) {

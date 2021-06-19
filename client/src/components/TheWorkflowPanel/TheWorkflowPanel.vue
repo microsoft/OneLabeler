@@ -138,7 +138,7 @@ import {
   MessageType,
   WorkflowGraph,
 } from '@/commons/types';
-import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
+import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
@@ -205,7 +205,7 @@ export default Vue.extend({
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
-      const jsonGraph = await loadJsonFile(file);
+      const jsonGraph = await parseJsonFile(file);
       if (validate(jsonGraph)) {
         const workflowGraph = JsonGraphToWorkflowGraph(
           jsonGraph as JsonGraph,

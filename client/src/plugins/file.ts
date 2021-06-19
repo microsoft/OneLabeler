@@ -1,4 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
+import { csvParse } from 'd3';
+import { saveAs } from 'file-saver';
 
 export const getBase64 = (
   file: File,
@@ -19,4 +21,39 @@ export const upload = async (
   formData.append('fileName', name);
   formData.append('key', name);
   return axios.post(url, formData);
+};
+
+export const saveJsonFile = (
+  data: unknown,
+  filename: string,
+): void => {
+  const json = JSON.stringify(data);
+  const blob = new Blob([json], { type: 'application/json' });
+  saveAs(blob, filename);
+};
+
+export const parseJsonFile = (file: File): Promise<unknown> => {
+  const promise = new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const { result } = event.target as FileReader;
+      const parsedObject = JSON.parse(result as string) as unknown;
+      resolve(parsedObject);
+    };
+    reader.readAsText(file);
+  }) as Promise<unknown>;
+  return promise;
+};
+
+export const parseCsvFile = (file: File): Promise<unknown> => {
+  const promise = new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const { result } = event.target as FileReader;
+      const parsedObject = csvParse(result as string) as unknown;
+      resolve(parsedObject);
+    };
+    reader.readAsText(file);
+  }) as Promise<unknown>;
+  return promise;
 };

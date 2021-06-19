@@ -9,6 +9,11 @@ import {
   PORT_ALGO,
 } from '@/services/http-params';
 
+/**
+ * TODO: [refactor] may store the valid processes at the data type declarations
+ * so that given a customized data type, the existing processes can still be reused.
+ */
+
 const dataObjectSelectionMethods: Process[] = [{
   type: ProcessType.DataObjectSelection,
   label: 'Projection (User Sampling)',

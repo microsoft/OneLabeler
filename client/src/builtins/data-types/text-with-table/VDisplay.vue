@@ -118,7 +118,7 @@ interface ITextWithTable extends IDataObject {
 }
 
 export default Vue.extend({
-  name: 'VDisplayTextWithTable',
+  name: 'VDisplay',
   props: {
     dataObject: {
       type: Object as PropType<ITextWithTable>,

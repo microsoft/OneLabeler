@@ -1,6 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 import {
-  DataType,
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
@@ -9,53 +8,51 @@ import {
   LabelTaskType,
   UploadTarget,
 } from '@/commons/types';
-import { getBase64 } from '@/plugins/file';
+import { parseCsvFile } from '@/plugins/file';
 import VDisplay from './VDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
 )[];
 
-const getVideoSize = (content: string) => new Promise((resolve) => {
-  const video = document.createElement('video');
-  video.addEventListener('loadedmetadata', function () {
-    resolve({
-      height: this.videoHeight,
-      width: this.videoWidth,
-      duration: this.duration,
-    });
-  }, false);
-  video.src = content;
-}) as Promise<{
+const getVideoSize = async (url: string): Promise<{
   width: number,
   height: number,
-  duration: number,
-}>;
+}> => {
+  /**
+   * reference
+   * [1] https://github.com/leedo/noembed
+   * [2] https://stackoverflow.com/questions/30084140
+   */
+  const { data } = await axios.get(`https://noembed.com/embed?url=${url}`);
+  const { width, height } = data;
+  return { width, height };
+};
 
 export default {
-  type: DataType.Video,
+  type: 'YoutubeVideo',
   tasks: [
     LabelTaskType.Classification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],
-  label: 'video',
-  importType: UploadTarget.Folder,
-  handleImport: async (input: FileList, storage: IDataObjectStorage) => {
-    const files = input as FileList;
-    await Promise.all([...files].map(async (file) => {
-      const content = await getBase64(file);
+  label: 'youtube video',
+  importType: UploadTarget.File,
+  handleImport: async (input: File, storage: IDataObjectStorage) => {
+    const file = input as File;
+    const records = await parseCsvFile(file) as Record<string, any>[];
+    await Promise.all(records.map(async (d) => {
+      const content = d.url;
+      const uuid = d.id;
       const {
         width,
         height,
-        duration,
       } = await getVideoSize(content);
       const dataObject: IVideo = {
-        uuid: uuidv4(),
+        uuid,
         content,
         width,
         height,
-        duration,
       };
       storage.upsert(dataObject);
     }));
@@ -71,7 +68,6 @@ export default {
     return dataObjects.map((d) => {
       const partial = {
         uuid: d.uuid,
-        url: d.url,
         content: d.content,
       };
       const idx = uuid2idxInLabels[d.uuid];
@@ -79,4 +75,4 @@ export default {
     });
   },
   display: VDisplay,
-} as IDataTypeSetup<UploadTarget.Folder>;
+} as IDataTypeSetup<UploadTarget.File>;

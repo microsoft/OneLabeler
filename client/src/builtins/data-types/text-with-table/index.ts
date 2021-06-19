@@ -4,9 +4,10 @@ import {
   IDataTypeSetup,
   ILabel,
   LabelTaskType,
+  UploadTarget,
 } from '@/commons/types';
-import { loadJsonFile } from '@/plugins/json-utils';
-import VDisplayTextWithTable from './VDisplayTextWithTable.vue';
+import { parseJsonFile } from '@/plugins/file';
+import VDisplay from './VDisplay.vue';
 
 interface ITextWithTable extends IDataObject {
   /** The content of the data object. */
@@ -30,9 +31,10 @@ export default {
     LabelTaskType.SpanClassification,
   ],
   label: 'text with table',
+  importType: UploadTarget.File,
   handleImport: async (input: File, storage: IDataObjectStorage) => {
     const file = input as File;
-    (await loadJsonFile(file) as ITextWithTable[])
+    (await parseJsonFile(file) as ITextWithTable[])
       .forEach((entry) => storage.upsert(entry));
   },
   handleExport: <T extends IDataObject>(
@@ -52,5 +54,5 @@ export default {
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
-  display: VDisplayTextWithTable,
-} as IDataTypeSetup;
+  display: VDisplay,
+} as IDataTypeSetup<UploadTarget.File>;

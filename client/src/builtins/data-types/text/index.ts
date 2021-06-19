@@ -7,9 +7,10 @@ import {
   ILabel,
   IText,
   LabelTaskType,
+  UploadTarget,
 } from '@/commons/types';
-import { loadJsonFile } from '@/plugins/json-utils';
-import VDisplayText from './VDisplayText.vue';
+import { parseJsonFile } from '@/plugins/file';
+import VDisplay from './VDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
@@ -23,9 +24,10 @@ export default {
     LabelTaskType.SpanClassification,
   ],
   label: 'text',
+  importType: UploadTarget.File,
   handleImport: async (input: File, storage: IDataObjectStorage) => {
     const file = input as File;
-    (await loadJsonFile(file) as string[]).forEach((content) => {
+    (await parseJsonFile(file) as string[]).forEach((content) => {
       const dataObject: IText = {
         uuid: uuidv4(),
         content,
@@ -50,5 +52,5 @@ export default {
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
-  display: VDisplayText,
-} as IDataTypeSetup;
+  display: VDisplay,
+} as IDataTypeSetup<UploadTarget.File>;

@@ -19,11 +19,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import { UploadTarget } from '@/commons/types';
 
-enum UploadTarget {
-  File = 'file',
-  Folder = 'folder',
-}
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
 type KeyboardTrigger = ((e: KeyboardEvent) => boolean) | null
@@ -37,7 +34,7 @@ export default Vue.extend({
     },
     type: {
       type: String as PropType<UploadTarget>,
-      default: 'file',
+      default: UploadTarget.File,
     },
     color: {
       type: String,

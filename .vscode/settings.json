@@ -53,6 +53,7 @@
         "objectid",
         "outdegree",
         "peucker",
+        "playsinline",
         "postuninstall",
         "prelabel",
         "proba",
@@ -81,6 +82,7 @@
         "timeit",
         "tolist",
         "tsne",
+        "unstarted",
         "upsert",
         "upserted",
         "uuidv",
@@ -89,7 +91,8 @@
         "vuejs",
         "vuetify",
         "vuetify's",
-        "vuex"
+        "vuex",
+        "youtube"
     ],
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "python.linting.enabled": true,

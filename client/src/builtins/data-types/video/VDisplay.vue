@@ -15,7 +15,7 @@ import { IVideo } from '@/commons/types';
 import VMedia from './VMedia.vue';
 
 export default Vue.extend({
-  name: 'VDisplayVideo',
+  name: 'VDisplay',
   components: { VMedia },
   props: {
     // The data object to be rendered.

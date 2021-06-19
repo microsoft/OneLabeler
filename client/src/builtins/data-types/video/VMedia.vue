@@ -14,8 +14,8 @@
   >
     <!-- The media element. -->
     <component
-      ref="media"
       :is="component"
+      ref="media"
       :src="src"
       :style="{ height: `calc(100% - ${controlHeight}px)` }"
       @timeupdate="onTimeUpdate"
@@ -117,7 +117,7 @@ export default Vue.extend({
   props: {
     // The html element of the media.
     component: {
-      type: String as PropType<'video' | 'audio'>,
+      type: [String, Object] as PropType<string | Vue.VueConstructor>,
       required: true,
     },
     // The source of the media.
@@ -162,6 +162,18 @@ export default Vue.extend({
       timer: null as ReturnType<typeof setTimeout> | null,
     };
   },
+  computed: {
+    widthStr(): string {
+      const { width } = this;
+      if (typeof width === 'number') return `${width}px`;
+      return width;
+    },
+    heightStr(): string {
+      const { height } = this;
+      if (typeof height === 'number') return `${height}px`;
+      return height;
+    },
+  },
   watch: {
     src() {
       // Pause when the displayed content is changed.
@@ -179,18 +191,6 @@ export default Vue.extend({
   },
   mounted() {
     this.paused = true;
-  },
-  computed: {
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
-    },
   },
   methods: {
     onKey(e: KeyboardEvent): void {

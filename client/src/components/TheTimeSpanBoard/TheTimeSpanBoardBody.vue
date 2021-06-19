@@ -18,6 +18,7 @@
         :height="'100%'"
         :width="'100%'"
         @timeupdate="onTimeUpdate"
+        @loadedmetadata="onLoadedMetadata"
       />
     </div>
 
@@ -63,22 +64,25 @@
               'background-color': selectedSlot === category ? '#ddd' : undefined,
             }"
           >
-            <!-- The label spans. -->
-            <template v-for="(span, i) in labelSpans">
+            <!-- The labeled spans. -->
+            <template v-for="(span, j) in labelSpans">
               <div
                 v-if="span.category === category"
-                :key="`span-${i}`"
-                :style="{
-                  position: 'absolute',
-                  width: `${100 * (span.end - span.start) / duration}%`,
-                  height: `calc(100% - ${margin * 2}px)`,
-                  left: `${100 * span.start / duration}%`,
-                  top: `${margin}px`,
-                  'background-color': getBoxColor(category),
-                  'border': isSpanSelected(span) ? 'gray 3px solid' : undefined,
-                }"
-                @click="onSelectLabelSpan(span)"
-              />
+                :key="`span-${j}`"
+              >
+                <div
+                  :style="{
+                    position: 'absolute',
+                    width: `${100 * (span.end - span.start) / duration}%`,
+                    height: `calc(100% - ${margin * 2}px)`,
+                    left: `${100 * span.start / duration}%`,
+                    top: `${margin}px`,
+                    'background-color': getBoxColor(category),
+                    'border': isSpanSelected(span) ? 'gray 3px solid' : undefined,
+                  }"
+                  @click="onSelectLabelSpan(span)"
+                />
+              </div>
             </template>
 
             <!-- The newly created span. -->
@@ -147,6 +151,7 @@ export default Vue.extend({
       currentTime: 0,
       margin: 5,
       slotXRange: { left: 0, width: 0 },
+      loadedDuration: null as number | null,
     };
   },
   computed: {
@@ -163,7 +168,9 @@ export default Vue.extend({
       return label.spans;
     },
     duration(): number {
-      return this.dataObject.duration;
+      if (this.dataObject.duration) return this.dataObject.duration;
+      if (this.loadedDuration !== null) return this.loadedDuration;
+      return 0;
     },
   },
   watch: {
@@ -217,6 +224,10 @@ export default Vue.extend({
         this.setMediaCurrentTime(this.selectedSpan.start);
       }
     },
+    onLoadedMetadata(e: Event): void {
+      const media = e.target as HTMLMediaElement;
+      this.loadedDuration = media.duration;
+    },
     onStartCreateSpan(): void {
       if (this.newSpan !== null) {
         this.onEndCreateSpan();
@@ -236,7 +247,7 @@ export default Vue.extend({
     onEndCreateSpan(): void {
       const span = this.newSpan;
       if (span === null) return;
-      span.end = this.currentTime;
+      if (this.currentTime >= span.start) span.end = this.currentTime;
       if (span.start === span.end) return;
       this.$emit('create:span', span);
       this.newSpan = null;

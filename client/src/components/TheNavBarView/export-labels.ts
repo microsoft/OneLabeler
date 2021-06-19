@@ -5,7 +5,7 @@ import {
   ILabel,
   ILabelStorage,
 } from '@/commons/types';
-import { saveJsonFile } from '@/plugins/json-utils';
+import { saveJsonFile } from '@/plugins/file';
 import dataTypeSetups from '@/builtins/data-types/index';
 
 const EXPORT_FILE_NAME = 'labels.json';

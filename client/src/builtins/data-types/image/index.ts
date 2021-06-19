@@ -7,9 +7,10 @@ import {
   IImage,
   ILabel,
   LabelTaskType,
+  UploadTarget,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
-import VDisplayImage from './VDisplayImage.vue';
+import VDisplay from './VDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
@@ -31,6 +32,7 @@ export default {
     LabelTaskType.Segmentation,
   ],
   label: 'image',
+  importType: UploadTarget.Folder,
   handleImport: async (input: FileList, storage: IDataObjectStorage) => {
     const files = input as FileList;
     await Promise.all([...files].map(async (file) => {
@@ -40,16 +42,10 @@ export default {
       formData.append('fileToUpload', file);
       formData.append('fileName', name);
       formData.append('key', name);
-      const { path, width, height } = (await axios.post(
+      const { url, width, height } = (await axios.post(
         `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/dataObject/image`,
         formData,
       )).data;
-      const dataObject: IImage = {
-        uuid: uuidv4(),
-        url: path,
-        width,
-        height,
-      };
       */
       const content = await getBase64(file);
       const { width, height } = await getImgSize(content);
@@ -80,5 +76,5 @@ export default {
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
-  display: VDisplayImage,
-} as IDataTypeSetup;
+  display: VDisplay,
+} as IDataTypeSetup<UploadTarget.Folder>;

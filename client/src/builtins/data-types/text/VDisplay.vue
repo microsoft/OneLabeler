@@ -19,7 +19,7 @@ import Vue, { PropType } from 'vue';
 import { IText } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'VDisplayText',
+  name: 'VDisplay',
   props: {
     /**
      * @description The data object to be rendered.

@@ -51,19 +51,19 @@ export interface IMedia extends IDataObject {
   /** The media content as base64 string. */
   content: string | null;
   /** The duration of the media. */
-  duration: number;
+  duration?: number;
 }
 
 /** The interface of a video data object. */
 export interface IVideo extends IMedia {
-  /** The video content as base64 string. */
+  /** The video content as base64 string or url. */
   content: string | null;
   /** The width of the video. */
   width: number;
   /** The height of the video. */
   height: number;
   /** The duration of the video. */
-  duration: number;
+  duration?: number;
 }
 
 /** The label category. */
@@ -355,13 +355,21 @@ export interface StorageService {
   isServerless: boolean;
 }
 
+export enum UploadTarget {
+  File = 'File',
+  Folder = 'Folder',
+}
+
 /** The data type setup abstracting type-dependent properties. */
-export interface IDataTypeSetup {
+export interface IDataTypeSetup<T extends UploadTarget> {
   type: DataType | string;
   tasks: LabelTaskType[];
   label: string;
-  handleImport: ((input: FileList, storage: IDataObjectStorage) => void | Promise<void>)
-    | ((input: File, storage: IDataObjectStorage) => void | Promise<void>);
+  importType: T;
+  handleImport: (
+    input: T extends UploadTarget.File ? File : FileList,
+    storage: IDataObjectStorage
+  ) => void | Promise<void>;
   handleExport: (
     dataObjects: IDataObject[],
     labels: ILabel[],

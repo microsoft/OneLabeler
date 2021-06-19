@@ -18,8 +18,8 @@
 
     <!-- The new project button. -->
     <VUploadButton
-      v-if="showFileUploadButton"
-      :type="(dataType === DataType.Image || dataType === DataType.Video) ? 'folder' : 'file'"
+      v-if="showFileUploadButton && uploadType !== null"
+      :type="uploadType"
       :disabled="disableNewProjectButton"
       :icon="$vuetify.icons.values.new"
       :keyboard-trigger="(showFileUploadButton && !disableNewProjectButton)
@@ -168,16 +168,18 @@
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
-import { saveJsonFile, loadJsonFile } from '@/plugins/json-utils';
+import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import {
   DataType,
   ICommand,
   IMessage,
   MessageType,
   SourceType,
+  UploadTarget,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
+import dataTypeSetups from '@/builtins/data-types/index';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
 import TheNavBarViewDataManagementDialogButton from './TheNavBarViewDataManagementDialogButton.vue';
@@ -278,6 +280,12 @@ export default Vue.extend({
       return this.currentNode !== null
         || this.sourceService.type === SourceType.ServerDB;
     },
+    uploadType(): UploadTarget | null {
+      const dataType = this.dataType as DataType | null;
+      const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
+      if (dataTypeSetup === undefined) return null;
+      return dataTypeSetup.importType;
+    },
     lastCommand(): ICommand | null {
       if (this.commandHistory.length === 0) {
         return null;
@@ -358,7 +366,7 @@ export default Vue.extend({
       await this.executeWorkflow(this.startNode);
     },
     async onLoadProject(file: File): Promise<void> {
-      const data = await loadJsonFile(file);
+      const data = await parseJsonFile(file);
       if (validate(data)) {
         this.setProject(data as ProjectData);
         this.setMessage({

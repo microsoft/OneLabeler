@@ -55,7 +55,7 @@ const calFittingTransform = (
 };
 
 export default Vue.extend({
-  name: 'VDisplayImage',
+  name: 'VDisplay',
   props: {
     /**
      * @description The data object to be rendered.

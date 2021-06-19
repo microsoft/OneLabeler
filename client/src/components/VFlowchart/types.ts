@@ -25,7 +25,12 @@ export enum PortDirection {
   Right = 'Right',
 }
 
-/** The port on a node that can connect edges. */
+/**
+ * The port on a node that can connect edges.
+ * @apiNote Store nodeId instead of a node object to
+ * avoid the need to explicitly synchronizing the node
+ * after editing the node.
+ */
 export interface FlowchartPort {
   /** The id of node containing the port. */
   nodeId: string;
