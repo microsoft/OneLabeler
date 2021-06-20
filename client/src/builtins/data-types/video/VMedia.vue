@@ -178,6 +178,8 @@ export default Vue.extend({
     src() {
       // Pause when the displayed content is changed.
       this.paused = true;
+      // Reset the duration to unknown.
+      this.duration = 0;
     },
   },
   created(): void {
@@ -209,49 +211,58 @@ export default Vue.extend({
     },
     onTimeUpdate(e: Event): void {
       const media = this.getMedia();
+      if (media === null) return;
       this.currentTime = media.currentTime;
       this.$emit('timeupdate', e);
     },
-    onLoadedMetadata(): void {
+    onLoadedMetadata(e: Event): void {
       const media = this.getMedia();
+      if (media === null) return;
       this.duration = media.duration;
+      this.$emit('loadedmetadata', e);
     },
     onEnded(): void {
       this.pause();
     },
     onClickPlayPause(): void {
       const media = this.getMedia();
+      if (media === null) return;
       if (media.paused) this.play();
       else this.pause();
     },
     onClickStop(): void {
       this.pause();
       const media = this.getMedia();
+      if (media === null) return;
       media.currentTime = 0;
     },
     onClickMute(): void {
       const media = this.getMedia();
+      if (media === null) return;
       this.muted = !this.muted;
       media.muted = this.muted;
     },
     onClickProgress(e: MouseEvent): void {
+      const media = this.getMedia();
+      if (media === null) return;
       const progress = this.getProgress();
       const rect = progress.getBoundingClientRect();
       const offsetX = rect.x;
       const { width } = rect;
       const x = e.clientX;
       const rate = (x - offsetX) / width;
-      const media = this.getMedia();
       media.currentTime = rate * media.duration;
     },
     play(): void {
       const media = this.getMedia();
+      if (media === null) return;
       this.paused = false;
       media.play();
       this.registerClock();
     },
     pause(): void {
       const media = this.getMedia();
+      if (media === null) return;
       this.paused = true;
       media.pause();
       this.clearClock();
@@ -259,6 +270,7 @@ export default Vue.extend({
     registerClock(): void {
       // Start dispatching timeupdate periodically.
       const media = this.getMedia();
+      if (media === null) return;
       const run = () => {
         if (this.timer === null) return;
         media.dispatchEvent(new Event('timeupdate'));
@@ -277,8 +289,9 @@ export default Vue.extend({
       date.setSeconds(duration);
       return date.toISOString().substr(11, 8);
     },
-    getMedia(): HTMLMediaElement {
-      return this.$refs.media as HTMLMediaElement;
+    getMedia(): HTMLMediaElement | null {
+      const media = this.$refs.media as HTMLMediaElement | undefined;
+      return media === undefined ? null : media;
     },
     getProgress(): HTMLProgressElement {
       return this.$refs.progress as HTMLProgressElement;

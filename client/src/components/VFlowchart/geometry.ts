@@ -1,3 +1,7 @@
+/**
+ * Reference: https://github.com/joyceworks/flowchart-vue
+ */
+
 import {
   Box,
   Line,

@@ -3,112 +3,42 @@
     ref="container"
     style="width: 100%; display: flex; flex-direction: column"
   >
-    <!-- The content of the data object. -->
-    <div
-      ref="content"
+    <!-- The data object display. -->
+    <component
+      :is="component"
+      ref="dataObject"
+      :data-object="dataObject"
+      :label="label"
+      :label2color="label2color"
+      :height="'70%'"
+      :width="'100%'"
+      @timeupdate="onTimeUpdate"
+      @loadedmetadata="onLoadedMetadata"
       class="px-2"
-      style="width: 100%; height: 70%;"
-    >
-      <component
-        :is="component"
-        ref="dataObject"
-        :data-object="dataObject"
-        :label="label"
-        :label2color="label2color"
-        :height="'100%'"
-        :width="'100%'"
-        @timeupdate="onTimeUpdate"
-        @loadedmetadata="onLoadedMetadata"
-      />
-    </div>
+    />
 
-    <!-- The annotated spans. -->
-    <v-card
-      ref="annotations"
-      v-click-outside="onClickOutside"
-      class="pa-0 ma-2"
-      style="flex: 1 1 auto; overflow-y: scroll; border-radius: 0"
-    >
-      <div
-        v-for="(category, i) in classes"
-        :key="`slot-${i}`"
-        class="my-1"
-        :style="{
-          'height': '40px',
-          'display': 'flex',
-          'align-items': 'center',
-        }"
-      >
-        <span
-          class="subtitle-2 px-2"
-          style="width: 15%"
-        >
-          {{ category }}
-        </span>
-        <div
-          :style="{
-            'flex': '1 1 auto',
-            'height': '100%',
-            display: 'flex',
-          }"
-          @click="onSelectSlot(category)"
-        >
-          <!-- The slot. -->
-          <div
-            :style="{
-              position: 'absolute',
-              width: `${slotXRange.width}px`,
-              height: '40px',
-              left: `${slotXRange.left}px`,
-              border: `${label2color(category)} 1px solid`,
-              'background-color': selectedSlot === category ? '#ddd' : undefined,
-            }"
-          >
-            <!-- The labeled spans. -->
-            <template v-for="(span, j) in labelSpans">
-              <div
-                v-if="span.category === category"
-                :key="`span-${j}`"
-              >
-                <div
-                  :style="{
-                    position: 'absolute',
-                    width: `${100 * (span.end - span.start) / duration}%`,
-                    height: `calc(100% - ${margin * 2}px)`,
-                    left: `${100 * span.start / duration}%`,
-                    top: `${margin}px`,
-                    'background-color': getBoxColor(category),
-                    'border': isSpanSelected(span) ? 'gray 3px solid' : undefined,
-                  }"
-                  @click="onSelectLabelSpan(span)"
-                />
-              </div>
-            </template>
-
-            <!-- The newly created span. -->
-            <div
-              v-if="newSpan !== null && newSpan.category === category"
-              :style="{
-                position: 'absolute',
-                width: `${100 * (newSpan.end - newSpan.start) / duration}%`,
-                height: `calc(100% - ${margin * 2}px)`,
-                left: `${100 * newSpan.start / duration}%`,
-                top: `${margin}px`,
-                'background-color': getBoxColor(category),
-                'border': 'red 3px solid',
-              }"
-            />
-          </div>
-        </div>
-      </div>
-    </v-card>
+    <!-- The annotated time spans. -->
+    <TheTimeSpanAnnotation
+      :duration="duration"
+      :current-time="currentTime"
+      :slot-client-x-range="slotClientXRange"
+      :classes="classes"
+      :selected-slot="selectedSlot"
+      :spans="spans"
+      :selected-span="selectedSpan"
+      :label2color="label2color"
+      @create:span="onCreateSpan"
+      @select:span="onSelectSpan"
+      @update:span="onUpdateSpan"
+      @select:slot="onSelectSlot"
+      class="ma-2"
+      style="flex: 1 1 auto"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType, VueConstructor } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-import { color as d3color } from 'd3';
 import {
   Category,
   DataType,
@@ -117,9 +47,11 @@ import {
   ILabelTimeSpan,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
+import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
 
 export default Vue.extend({
   name: 'TheTimeSpanBoardBody',
+  components: { TheTimeSpanAnnotation },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -137,6 +69,14 @@ export default Vue.extend({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    selectedSlot: {
+      type: String as PropType<Category | null>,
+      default: null,
+    },
+    selectedSpan: {
+      type: Object as PropType<ILabelTimeSpan | null>,
+      default: null,
+    },
     label2color: {
       type: Function as PropType<(label: string) => string>,
       required: true,
@@ -144,13 +84,9 @@ export default Vue.extend({
   },
   data() {
     return {
-      selectedSlot: null as Category | null,
-      selectedSpan: null as ILabelTimeSpan | null,
-      newSpan: null as ILabelTimeSpan | null,
       resizeObserver: null as ResizeObserver | null,
       currentTime: 0,
-      margin: 5,
-      slotXRange: { left: 0, width: 0 },
+      slotClientXRange: null as { left: number, width: number } | null,
       loadedDuration: null as number | null,
     };
   },
@@ -161,7 +97,7 @@ export default Vue.extend({
       if (dataTypeSetup === undefined) return null;
       return dataTypeSetup.display;
     },
-    labelSpans(): ILabelTimeSpan[] | null {
+    spans(): ILabelTimeSpan[] | null {
       const { label } = this;
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;
@@ -173,52 +109,28 @@ export default Vue.extend({
       return 0;
     },
   },
-  watch: {
-    dataObject() {
-      this.selectedSlot = null;
-    },
-  },
-  created(): void {
-    // Bind keyboard events.
-    window.addEventListener('keydown', this.onKey);
-  },
-  beforeDestroy(): void {
-    // Remove listener before distroy,
-    // otherwise the onKey method will be called multiple times.
-    window.removeEventListener('keydown', this.onKey);
-  },
-  async mounted() {
-    await this.$nextTick();
-    this.slotXRange = this.getSlotXRange();
+  mounted() {
+    this.slotClientXRange = this.getSlotClientXRange();
     this.resizeObserver = new ResizeObserver(this.onResize);
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
-    onKey(e: KeyboardEvent): void {
-      const { key } = e;
-      this.getSlotXRange();
-      // shortcut for start creating span: a
-      if (key === 'a') {
-        this.onStartCreateSpan();
-      }
-      // shortcut for end creating span: d
-      if (key === 'd') {
-        this.onEndCreateSpan();
-      }
+    onUpdateSpan(newValue: ILabelTimeSpan): void {
+      this.$emit('update:span', newValue);
     },
-    onClickOutside(): void {
-      // Unselect slot.
-      this.onSelectSlot(null);
-      // Unselect label span.
-      this.onSelectLabelSpan(null);
+    onCreateSpan(span: ILabelTimeSpan): void {
+      this.$emit('create:span', span);
+    },
+    onSelectSpan(span: ILabelTimeSpan | null): void {
+      this.$emit('select:span', span);
+      if (span !== null) this.setMediaCurrentTime(span.start);
+    },
+    onSelectSlot(category: Category | null): void {
+      this.$emit('select:slot', category);
     },
     onTimeUpdate(e: Event): void {
       const media = e.target as HTMLMediaElement;
       this.currentTime = media.currentTime;
-      if (this.newSpan !== null) {
-        this.newSpan.end = this.currentTime;
-      }
-
       // Loop on the selected span.
       if (this.selectedSpan !== null && this.currentTime >= this.selectedSpan.end) {
         this.setMediaCurrentTime(this.selectedSpan.start);
@@ -228,46 +140,8 @@ export default Vue.extend({
       const media = e.target as HTMLMediaElement;
       this.loadedDuration = media.duration;
     },
-    onStartCreateSpan(): void {
-      if (this.newSpan !== null) {
-        this.onEndCreateSpan();
-      }
-      const category: Category | null = this.selectedSlot;
-      if (category === null) return;
-      const start: number = this.currentTime;
-      const end: number = start;
-      const span: ILabelTimeSpan = {
-        start,
-        end,
-        category,
-        uuid: uuidv4(),
-      };
-      this.newSpan = span;
-    },
-    onEndCreateSpan(): void {
-      const span = this.newSpan;
-      if (span === null) return;
-      if (this.currentTime >= span.start) span.end = this.currentTime;
-      if (span.start === span.end) return;
-      this.$emit('create:span', span);
-      this.newSpan = null;
-    },
-    onSelectLabelSpan(span: ILabelTimeSpan | null): void {
-      this.$emit('select:span', span);
-      this.selectedSpan = span;
-      if (span !== null) this.setMediaCurrentTime(span.start);
-    },
-    onSelectSlot(category: Category | null): void {
-      this.$emit('select:slot', category);
-      this.selectedSlot = category;
-    },
     onResize(): void {
-      this.slotXRange = this.getSlotXRange();
-    },
-    isSpanSelected(span: ILabelTimeSpan): boolean {
-      const { selectedSpan } = this;
-      return (selectedSpan !== null)
-        && (selectedSpan.uuid === span.uuid);
+      this.slotClientXRange = this.getSlotClientXRange();
     },
     setMediaCurrentTime(time: number): void {
       const component = this.$refs.dataObject as Vue & {
@@ -276,28 +150,18 @@ export default Vue.extend({
       const media = component.getMedia();
       media.currentTime = time;
     },
-    getProgress(): HTMLProgressElement {
+    getProgress(): HTMLProgressElement | null {
       const component = this.$refs.dataObject as Vue & {
         getProgress: () => HTMLProgressElement,
-      };
+      } | undefined;
+      if (component === undefined) return null;
       return component.getProgress();
     },
-    getSlotXRange(): { left: number, width: number } {
+    getSlotClientXRange(): { left: number, width: number } | null {
       const progress = this.getProgress();
-      const annotations = (this.$refs.annotations as Vue).$el as HTMLElement;
-      const progressBox = progress.getBoundingClientRect();
-      const annotationsBox = annotations.getBoundingClientRect();
-      return {
-        left: progressBox.x - annotationsBox.x,
-        width: progressBox.width,
-      };
-    },
-    getBoxColor(category: Category): string {
-      const { label2color } = this;
-      const color = d3color(label2color(category));
-      if (color === null) return 'black';
-      const { r, g, b } = color.rgb();
-      return `rgba(${r}, ${g}, ${b}, 0.5)`;
+      if (progress === null) return null;
+      const rect = progress.getBoundingClientRect();
+      return { left: rect.left, width: rect.width };
     },
   },
 });

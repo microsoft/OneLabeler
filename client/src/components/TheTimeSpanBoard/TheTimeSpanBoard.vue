@@ -20,6 +20,8 @@
             :data-object="dataObject"
             :label="label"
             :classes="classes"
+            :selected-slot="selectedSlot"
+            :selected-span="selectedSpan"
             :label2color="label2color"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
@@ -188,8 +190,15 @@ export default Vue.extend({
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
     onRemoveLabelSpan(labelSpan: ILabelTimeSpan) {
-      const { dataObject, labelSpans } = this;
+      const {
+        dataObject,
+        labelSpans,
+        selectedSpan,
+      } = this;
       if (dataObject === null || labelSpans === null) return;
+      if (selectedSpan !== null && selectedSpan.uuid === labelSpan.uuid) {
+        this.selectedSpan = null;
+      }
       const index = labelSpans.findIndex(
         (d: ILabelTimeSpan) => d.uuid === labelSpan.uuid,
       );

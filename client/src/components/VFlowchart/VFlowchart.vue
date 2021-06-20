@@ -415,7 +415,7 @@ export default Vue.extend({
       }
     },
     onMouseDownNode(node: FlowchartNode, event: MouseEvent): void {
-      // node on:drag-start
+      // MouseDown node triggers node:selection and node:draggstart.
       this.draggedNodeId = node.id;
       const { ctrlKey } = event;
       const isSelected = this.isNodeSelected(node);
@@ -445,6 +445,8 @@ export default Vue.extend({
       this.dragLastPoint = { x: e.offsetX, y: e.offsetY };
     },
     onMouseMoveCanvas(e: MouseEvent): void {
+      // MouseMove canvas triggers node:drag (if there exists selected nodes(s))
+      // and edge:creating (if there exists dragged port).
       const {
         draggedNode,
         dragStartPoint,

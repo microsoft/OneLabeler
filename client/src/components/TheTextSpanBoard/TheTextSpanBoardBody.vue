@@ -16,7 +16,7 @@
           'height': `${box.bottom - box.top}px`,
           'left': `${box.left}px`,
           'top': `${box.top}px`,
-          'background-color': getBoxColor(box.span.category),
+          'background-color': getSpanColor(box.span.category),
           'border': isBoxSelected(box) ? 'gray 3px solid' : undefined
         }"
         @click="onSelectLabelSpan(box.span)"
@@ -193,7 +193,7 @@ export default Vue.extend({
       const textNode: Text = dataObjectElement.getTextNode();
       return textNode;
     },
-    getBoxColor(category: Category): string {
+    getSpanColor(category: Category): string {
       const { label2color } = this;
       const color = d3color(label2color(category));
       if (color === null) return 'black';

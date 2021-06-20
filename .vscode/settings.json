@@ -48,6 +48,7 @@
         "mongodb",
         "ndarray",
         "nlogn",
+        "nocookie",
         "nprogress",
         "numpy",
         "objectid",
@@ -92,6 +93,7 @@
         "vuetify",
         "vuetify's",
         "vuex",
+        "youtu",
         "youtube"
     ],
     "restructuredtext.confPath": "${workspaceFolder}\\docs",

@@ -44,11 +44,19 @@ class YoutubeVideoElement extends HTMLElement {
     this.load();
   }
 
+  attributeChangedCallback(name: string): void {
+    if (name === 'src') {
+      this.load();
+    }
+  }
+
   disconnectedCallback(): void {
     if (this.ytPlayer) {
       this.ytPlayer.destroy();
     }
   }
+
+  static get observedAttributes() { return ['src']; }
 
   private load(): void {
     this.metadataLoaded = false;
