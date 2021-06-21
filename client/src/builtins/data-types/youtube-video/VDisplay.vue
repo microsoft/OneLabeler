@@ -16,7 +16,9 @@ import { IVideo } from '@/commons/types';
 import VMedia from '../video/VMedia.vue';
 import YoutubeVideoElement from './youtube-video';
 
-customElements.define('youtube-video', YoutubeVideoElement);
+if (customElements.get('youtube-video') === undefined) {
+  customElements.define('youtube-video', YoutubeVideoElement);
+}
 
 export default Vue.extend({
   name: 'VDisplay',
@@ -46,12 +48,16 @@ export default Vue.extend({
       },
     },
   },
+  mounted() {
+    const media = this.getMedia();
+    media.volume = 0.2;
+  },
   methods: {
-    onTimeUpdate(e: Event): void {
-      this.$emit('timeupdate', e);
-    },
     onLoadedMetadata(e: Event): void {
       this.$emit('loadedmetadata', e);
+    },
+    onTimeUpdate(e: Event): void {
+      this.$emit('timeupdate', e);
     },
     getMedia(): HTMLMediaElement {
       const component = this.$refs.media as Vue & {

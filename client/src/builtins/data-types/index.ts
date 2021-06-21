@@ -8,6 +8,7 @@ import videoTypeSetup from './video';
 import youtubeVideoTypeSetup from './youtube-video';
 import textTypeSetup from './text';
 import textWithTableTypeSetup from './text-with-table';
+import textWithVideoTypeSetup from './text-with-video';
 
 export default [
   audioTypeSetup,
@@ -16,4 +17,5 @@ export default [
   youtubeVideoTypeSetup,
   textTypeSetup,
   textWithTableTypeSetup,
+  textWithVideoTypeSetup,
 ] as IDataTypeSetup<UploadTarget>[];
