@@ -1,3 +1,5 @@
+import audioClassificationMinimal from '@/builtins/workflow-templates/audio-classification-minimal';
+import audioTemporalSegmentationMinimal from '@/builtins/workflow-templates/audio-temporal-segmentation-minimal';
 import imageClassificationIML from '@/builtins/workflow-templates/image-classification-iml';
 import imageClassificationMinimal from '@/builtins/workflow-templates/image-classification-minimal';
 import imageSegmentationMinimal from '@/builtins/workflow-templates/image-segmentation-minimal';
@@ -15,6 +17,8 @@ export default [
   { label: 'Video Classification Minimal', value: videoClassificationMinimal },
   { label: 'Video Temporal Segmentation Minimal', value: videoTemporalSegmentationMinimal },
   { label: 'Youtube Video Temporal Segmentation Minimal', value: youtubeVideoTemporalSegmentationMinimal },
+  { label: 'Audio Classification Minimal', value: audioClassificationMinimal },
+  { label: 'Audio Temporal Segmentation Minimal', value: audioTemporalSegmentationMinimal },
   { label: 'Text Classification Minimal', value: textClassificationMinimal },
   { label: 'Text Named Entity Recognition Minimal', value: textNamedEntityRecognitionMinimal },
   { label: 'Text with Table Classification & Named Entity Recognition Minimal', value: textWithTableClassificationNamedEntityRecognitionMinimal },

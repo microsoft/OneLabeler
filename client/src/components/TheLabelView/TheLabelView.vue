@@ -85,6 +85,8 @@ export default Vue.extend({
         && dataType === DataType.Video) return TheTimeSpanBoard;
       if (process.api === 'SingleObjectDisplay'
         && dataType === 'YoutubeVideo') return TheTimeSpanBoard;
+      if (process.api === 'SingleObjectDisplay'
+        && dataType === DataType.Audio) return TheTimeSpanBoard;
       if (process.api === 'GridMatrix') return TheCardMatrix;
       if (
         process.api === 'SingleObjectDisplay'

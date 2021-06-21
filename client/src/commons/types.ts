@@ -54,6 +54,14 @@ export interface IMedia extends IDataObject {
   duration?: number;
 }
 
+/** The interface of an audio data object. */
+export interface IAudio extends IMedia {
+  /** The audio content as base64 string or url. */
+  content: string | null;
+  /** The duration of the audio. */
+  duration?: number;
+}
+
 /** The interface of a video data object. */
 export interface IVideo extends IMedia {
   /** The video content as base64 string or url. */
