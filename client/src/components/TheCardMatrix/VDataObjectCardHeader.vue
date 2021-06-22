@@ -35,7 +35,7 @@
       />
       <!-- The data object label menu. -->
       <VMultiCategorySingleTool
-        :label-multi-category="label === null ? null : label.categories"
+        :label-multi-category="label === null ? null : label.multiCategory"
         :classes="classes"
         :disabled="label === null"
         @set:label-multi-category="onSetLabelMultiCategory"

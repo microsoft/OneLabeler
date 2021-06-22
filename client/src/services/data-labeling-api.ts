@@ -193,6 +193,27 @@ export const dataObjectSelection = async (
     d !== undefined ? d : { uuid: uuids[i], value: StatusType.New }
   ));
 
+  if (method.isServerless && (method.api === 'DatasetOrder')) {
+    let queryUuids: string[];
+    const uuidsNew: string[] = statuses
+      .filter((d) => d.value === StatusType.New)
+      .map((d) => d.uuid);
+    if (uuidsNew.length >= nBatch) {
+      queryUuids = uuidsNew.slice(0, nBatch);
+    } else {
+      const nResidue = nBatch - uuidsNew.length;
+      const uuidsSkipped = statuses
+        .filter((d) => d.value === StatusType.Skipped)
+        .map((d) => d.uuid);
+      const queryUuidsSkipped = uuidsSkipped.length <= nResidue
+        ? uuidsSkipped
+        : uuidsSkipped.slice(0, nResidue);
+      queryUuids = [...uuidsNew, ...queryUuidsSkipped];
+    }
+
+    return queryUuids;
+  }
+
   if (method.isServerless && (method.api === 'Random')) {
     let queryUuids: string[];
     const SEED = '20';

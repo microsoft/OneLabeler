@@ -1,34 +1,11 @@
 <template>
-  <v-menu offset-y>
-    <template #activator="{ on }">
-      <v-btn
-        :disabled="disabled"
-        class="view-header-button subtitle-2 text-none"
-        x-small
-        v-on="on"
-      >
-        {{ 'Multi-Label' }}
-      </v-btn>
-    </template>
-    <v-list dense>
-      <v-list-item
-        v-for="(category, i) in classes"
-        :key="i"
-        class="subtitle-2 pr-4 pl-2"
-        style="min-height: 30px"
-        @click.stop="onClickLabelCategory(category)"
-      >
-        <v-checkbox
-          :value="isCategorySelected(category)"
-          :input-value="isCategorySelected(category)"
-          class="py-0 ma-0"
-          dense
-          hide-details
-        />
-        {{ category }}
-      </v-list-item>
-    </v-list>
-  </v-menu>
+  <component
+    :is="element"
+    :label-multi-category="labelMultiCategory"
+    :classes="classes"
+    :disabled="disabled"
+    @set:label-multi-category="onSetLabelMultiCategory"
+  />
 </template>
 
 <script lang="ts">
@@ -37,6 +14,13 @@ import {
   Category,
   ILabelMultiCategory,
 } from '@/commons/types';
+import VSingleToolMenu from './VSingleToolMenu.vue';
+import VSingleToolTags from './VSingleToolTags.vue';
+
+enum Component {
+  Menu = 'Menu',
+  Tags = 'Tags',
+}
 
 export default Vue.extend({
   name: 'VSingleTool',
@@ -53,21 +37,23 @@ export default Vue.extend({
       type: Boolean,
       default: false,
     },
+    component: {
+      type: String as PropType<Component>,
+      default: Component.Tags,
+    },
+  },
+  computed: {
+    element() {
+      const mapper: Record<Component, Vue.VueConstructor> = {
+        [Component.Menu]: VSingleToolMenu,
+        [Component.Tags]: VSingleToolTags,
+      };
+      return mapper[this.component];
+    },
   },
   methods: {
-    onClickLabelCategory(category: Category): void {
-      const { labelMultiCategory } = this;
-      if (labelMultiCategory === null) return;
-      const idx = labelMultiCategory.findIndex((d) => d === category);
-      const newValue: ILabelMultiCategory = idx >= 0
-        ? [...labelMultiCategory.slice(0, idx), ...labelMultiCategory.slice(idx + 1)]
-        : [...labelMultiCategory, category];
+    onSetLabelMultiCategory(newValue: ILabelMultiCategory): void {
       this.$emit('set:label-multi-category', newValue);
-    },
-    isCategorySelected(category: Category): boolean {
-      const { labelMultiCategory } = this;
-      if (labelMultiCategory === null) return false;
-      return labelMultiCategory.find((d) => d === category) !== undefined;
     },
   },
 });
