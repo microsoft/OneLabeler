@@ -92,6 +92,7 @@ export default Vue.extend({
         process.api === 'SingleObjectDisplay'
         && labelTasks.includes(LabelTaskType.SpanClassification)
       ) return TheTextSpanBoard;
+      if (process.api === 'SingleObjectDisplay') return TheTextSpanBoard;
       return null;
     },
     ready(): boolean {

@@ -121,6 +121,12 @@ import {
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 
+const getValidLabelTasks = (dataType: DataType): LabelTaskType[] => {
+  const setup = dataTypeSetups.find((d) => d.type === dataType);
+  if (setup === undefined) return [];
+  return setup.tasks;
+};
+
 export default Vue.extend({
   name: 'TheNodeDetailsInitialization',
   props: {
@@ -153,20 +159,16 @@ export default Vue.extend({
       return (this.node.value as { labelTasks: LabelTaskType[] }).labelTasks;
     },
     validLabelTasks(): LabelTaskType[] {
-      if (this.selectedDataType === null) {
-        return [
-          LabelTaskType.Classification,
-          LabelTaskType.MultiLabelClassification,
-          LabelTaskType.FreeformText,
-          LabelTaskType.ObjectDetection,
-          LabelTaskType.Segmentation,
-          LabelTaskType.SpanClassification,
-        ];
-      }
-      const dataTypeSetup = dataTypeSetups
-        .find((d) => d.type === this.selectedDataType);
-      if (dataTypeSetup === undefined) return [];
-      return dataTypeSetup.tasks;
+      const dataType = this.selectedDataType;
+      const tasks = [
+        LabelTaskType.Classification,
+        LabelTaskType.MultiLabelClassification,
+        LabelTaskType.FreeformText,
+        LabelTaskType.ObjectDetection,
+        LabelTaskType.Segmentation,
+        LabelTaskType.SpanClassification,
+      ];
+      return dataType === null ? tasks : getValidLabelTasks(dataType);
     },
     menuOfLabelTask() {
       const { validLabelTasks } = this;
@@ -187,10 +189,12 @@ export default Vue.extend({
   methods: {
     onUpdateDataTypeOption(option: DataType): void {
       const { node } = this;
+      // Note: when onUpdateDataTypeOption is triggered, this.validLabelTasks
+      // have not been updated, thus needs to use getValidLabelTasks.
+      const validLabelTasks = getValidLabelTasks(option);
       // Filter the labelTasks by the dataType.
-      const selectedLabelTasksFiltered = this.selectedLabelTasks.filter((d) => (
-        this.validLabelTasks.indexOf(d) >= 0
-      ));
+      const selectedLabelTasksFiltered = this.selectedLabelTasks
+        .filter((d) => validLabelTasks.indexOf(d) >= 0);
       const nodeValue = node.value as { dataType: DataType, labelTasks: LabelTaskType[] };
       this.onEditNode({
         ...node,

@@ -42,7 +42,6 @@ export default {
     const file = input as File;
     const records = await parseCsvFile(file) as Record<string, any>[];
     await Promise.all(records.map(async (d) => {
-      console.log('d', d);
       const dataObject: ITextWithVideo = {
         uuid: uuidv4(),
         content: {
@@ -51,7 +50,6 @@ export default {
           timestamp: Number(d.timestamp),
         },
       };
-      console.log(dataObject);
       storage.upsert(dataObject);
     }));
   },
