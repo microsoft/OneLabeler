@@ -27,6 +27,7 @@ export default {
   type: DataType.Image,
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.ObjectDetection,
     LabelTaskType.Segmentation,

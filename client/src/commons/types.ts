@@ -12,6 +12,7 @@ export enum DataType {
 /** The types of label tasks. */
 export enum LabelTaskType {
   Classification = 'Classification',
+  MultiLabelClassification = 'MultiLabelClassification',
   FreeformText = 'FreeformText',
   ObjectDetection = 'ObjectDetection',
   Segmentation = 'Segmentation',
@@ -79,6 +80,8 @@ export type Category = string;
 
 /** The type of data category labels. */
 export type ILabelCategory = Category;
+
+export type ILabelMultiCategory = Category[];
 
 /** The type of data shapes in polygon annotation. */
 export enum ObjectShapeType {
@@ -160,6 +163,7 @@ export interface ILabel {
   uuid: string;
   /** Different modalities of label. */
   category?: ILabelCategory;
+  multiCategory?: ILabelMultiCategory;
   text?: ILabelText;
   shapes?: ILabelShape[];
   mask?: ILabelMask;

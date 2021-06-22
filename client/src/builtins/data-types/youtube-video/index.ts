@@ -33,6 +33,7 @@ export default {
   type: 'YoutubeVideo',
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],

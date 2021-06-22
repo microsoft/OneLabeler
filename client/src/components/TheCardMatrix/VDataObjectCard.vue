@@ -24,6 +24,7 @@
         'height': `${headerHeight}px`
       }"
       @set:label-category="onSetLabelCategory"
+      @set:label-multi-category="onSetLabelMultiCategory"
       @set:label-text="onSetLabelText"
     />
     <div
@@ -53,6 +54,8 @@ import {
   DataType,
   IDataObject,
   ILabel,
+  ILabelCategory,
+  ILabelMultiCategory,
   ILabelText,
   LabelTaskType,
   StatusType,
@@ -134,9 +137,13 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSetLabelCategory(category: Category): void {
+    onSetLabelCategory(category: ILabelCategory): void {
       const { dataObject } = this;
       this.$emit('set:label-category', dataObject, category);
+    },
+    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
+      const { dataObject } = this;
+      this.$emit('set:label-multi-category', dataObject, multiCategory);
     },
     onSetLabelText(text: ILabelText): void {
       const { dataObject } = this;

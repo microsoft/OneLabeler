@@ -36,6 +36,7 @@ export default {
   type: DataType.Video,
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],

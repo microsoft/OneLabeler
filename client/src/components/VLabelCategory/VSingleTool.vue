@@ -4,7 +4,7 @@
       <v-btn
         :color="buttonColor === null ? '' : buttonColor"
         :disabled="disabled"
-        class="view-header-button subtitle-2"
+        class="view-header-button subtitle-2 text-none"
         x-small
         v-on="on"
       >
@@ -53,7 +53,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSetLabelCategory(category: Category): void {
+    onSetLabelCategory(category: ILabelCategory): void {
       this.$emit('set:label-category', category);
     },
   },

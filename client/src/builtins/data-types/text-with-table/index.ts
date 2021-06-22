@@ -27,6 +27,7 @@ export default {
   type: 'TextWithTable',
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],

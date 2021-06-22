@@ -29,6 +29,7 @@
           :width="Math.max(cardWidth - 2 * padding, 0)"
           @click:card="onClickCard"
           @set:label-category="onSetLabelCategory"
+          @set:label-multi-category="onSetLabelMultiCategory"
           @set:label-text="onSetLabelText"
         />
       </div>
@@ -57,6 +58,8 @@ import {
   DataType,
   IDataObject,
   ILabel,
+  ILabelCategory,
+  ILabelMultiCategory,
   ILabelText,
   LabelTaskType,
   StatusType,
@@ -159,8 +162,11 @@ export default Vue.extend({
     this.updateCardSize();
   },
   methods: {
-    onSetLabelCategory(dataObject: IDataObject, category: Category) {
+    onSetLabelCategory(dataObject: IDataObject, category: ILabelCategory) {
       this.$emit('set:label-category', dataObject, category);
+    },
+    onSetLabelMultiCategory(dataObject: IDataObject, multiCategory: ILabelMultiCategory) {
+      this.$emit('set:label-multi-category', dataObject, multiCategory);
     },
     onSetLabelText(dataObject: IDataObject, text: ILabelText) {
       this.$emit('set:label-text', dataObject, text);

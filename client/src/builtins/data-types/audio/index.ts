@@ -28,6 +28,7 @@ export default {
   type: DataType.Audio,
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],

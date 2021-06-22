@@ -25,6 +25,7 @@
         :items-per-col="itemsPerCol"
         :label2color="label2color"
         @set:label-category="onSetLabelCategory"
+        @set:label-multi-category="onSetLabelMultiCategory"
         @set:label-text="onSetLabelText"
         @click:card="onClickCard"
       />
@@ -50,6 +51,7 @@ import {
   StatusType,
   TaskWindow,
   Category,
+  ILabelMultiCategory,
 } from '@/commons/types';
 import VCardMatrix from './VCardMatrix.vue';
 import TheCardMatrixHeader from './TheCardMatrixHeader.vue';
@@ -125,6 +127,11 @@ export default Vue.extend({
     onSetLabelCategory(dataObject: IDataObject, category: ILabelCategory): void {
       const { uuid } = dataObject;
       const newValue: Partial<ILabel> = { category };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelMultiCategory(dataObject: IDataObject, multiCategory: ILabelMultiCategory): void {
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { multiCategory };
       this.$emit('user-edit-label', uuid, newValue);
     },
     onSetLabelText(dataObject: IDataObject, text: ILabelText): void {

@@ -20,6 +20,7 @@ export default {
   type: DataType.Text,
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
   ],

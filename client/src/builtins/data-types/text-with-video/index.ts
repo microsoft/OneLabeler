@@ -33,6 +33,7 @@ export default {
   type: 'TextWithVideo',
   tasks: [
     LabelTaskType.Classification,
+    LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
   ],
   label: 'text with video',

@@ -7,6 +7,7 @@
       :label2color="label2color"
       :label="label"
       @set:label-category="onSetLabelCategory"
+      @set:label-multi-category="onSetLabelMultiCategory"
       @set:label-text="onSetLabelText"
       @set:brush-category="onSetBrushCategory"
       @window:minimize="onWindowMinimize"
@@ -53,11 +54,12 @@ import {
   DataType,
   IDataObject,
   ILabel,
+  ILabelCategory,
+  ILabelMultiCategory,
+  ILabelText,
+  ILabelTextSpan,
   LabelTaskType,
   TaskWindow,
-  ILabelTextSpan,
-  ILabelCategory,
-  ILabelText,
 } from '@/commons/types';
 import TheTextSpanBoardHeader from './TheTextSpanBoardHeader.vue';
 import TheTextSpanBoardBody from './TheTextSpanBoardBody.vue';
@@ -215,6 +217,13 @@ export default Vue.extend({
       if (dataObject === null) return;
       const { uuid } = dataObject;
       const newValue: Partial<ILabel> = { category };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { multiCategory };
       this.$emit('user-edit-label', uuid, newValue);
     },
     onSetLabelText(text: ILabelText): void {

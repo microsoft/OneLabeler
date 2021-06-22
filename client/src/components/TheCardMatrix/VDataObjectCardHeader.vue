@@ -28,6 +28,20 @@
       />
     </template>
 
+    <template v-if="enableMultiLabelClassification">
+      <v-divider
+        class="mx-2"
+        vertical
+      />
+      <!-- The data object label menu. -->
+      <VMultiCategorySingleTool
+        :label-multi-category="label === null ? null : label.categories"
+        :classes="classes"
+        :disabled="label === null"
+        @set:label-multi-category="onSetLabelMultiCategory"
+      />
+    </template>
+
     <template v-if="enableFreeformText">
       <v-divider
         class="mx-2"
@@ -48,17 +62,21 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   ILabel,
+  ILabelCategory,
+  ILabelMultiCategory,
   ILabelText,
   LabelTaskType,
   StatusType,
 } from '@/commons/types';
 import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
+import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
 import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',
   components: {
     VCategorySingleTool,
+    VMultiCategorySingleTool,
     VFreeformTextSingleTool,
   },
   props: {
@@ -97,6 +115,11 @@ export default Vue.extend({
         (d: LabelTaskType) => d === LabelTaskType.Classification,
       ) >= 0;
     },
+    enableMultiLabelClassification(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.MultiLabelClassification,
+      ) >= 0;
+    },
     enableFreeformText(): boolean {
       return this.labelTasks.findIndex(
         (d: LabelTaskType) => d === LabelTaskType.FreeformText,
@@ -104,8 +127,11 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSetLabelCategory(category: Category): void {
+    onSetLabelCategory(category: ILabelCategory): void {
       this.$emit('set:label-category', category);
+    },
+    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
+      this.$emit('set:label-multi-category', multiCategory);
     },
     onSetLabelText(text: ILabelText) {
       this.$emit('set:label-text', text);
