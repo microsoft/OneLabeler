@@ -9,6 +9,7 @@ export enum MouseOperationType {
   ClickCreateRect = 'ClickCreateRect',
   ClickCreatePoint = 'ClickCreatePoint',
   LassoCreatePolygon = 'LassoCreatePolygon',
+  ScissorsCreatePolygon = 'ScissorsCreatePolygon',
 }
 
 export enum StrokeShapeType {

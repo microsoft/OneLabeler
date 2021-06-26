@@ -29,6 +29,7 @@ const icons = {
   matrix: 'fas fa-th',
   hand: 'far fa-hand-paper',
   paint: 'fas fa-brush',
+  scissors: 'fas fa-cut',
   circle: 'fas fa-circle',
   square: 'fas fa-square',
   pen: 'fas fa-pen',

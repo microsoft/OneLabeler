@@ -248,7 +248,7 @@ export default Vue.extend({
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
     onResetImageSize() {
-      (this.$refs.canvas as Vue & { resetZoom: () => void }).resetZoom();
+      (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();
     },
     onSetStrokeLabel(strokeLabel: Category) {
       this.strokeLabel = strokeLabel;

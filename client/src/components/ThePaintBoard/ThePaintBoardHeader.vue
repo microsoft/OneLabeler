@@ -107,11 +107,11 @@
               $vuetify.icons.values.drawCircle
             </v-icon>
             <v-icon
-              v-else-if="btn.icon === $vuetify.icons.values.pen"
+              v-else
               aria-hidden="true"
               small
             >
-              $vuetify.icons.values.pen
+              {{ btn.icon }}
             </v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -402,6 +402,12 @@ export default Vue.extend({
           title: 'free-form contour',
           icon: this.$vuetify.icons.values.pen,
           mouseOperation: MouseOperationType.LassoCreatePolygon,
+          disabled: !this.classesNotEmpty,
+        },
+        {
+          title: 'intellignet scissors',
+          icon: this.$vuetify.icons.values.scissors,
+          mouseOperation: MouseOperationType.ScissorsCreatePolygon,
           disabled: !this.classesNotEmpty,
         },
       ];
