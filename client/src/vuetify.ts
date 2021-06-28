@@ -57,6 +57,8 @@ const icons = {
   stop: 'fas fa-stop',
   volume: 'fas fa-volume-up',
   mute: 'fas fa-volume-mute',
+  link: 'fas fa-link',
+  arrowRight: 'fas fa-arrow-right',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

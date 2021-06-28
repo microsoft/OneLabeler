@@ -11,7 +11,7 @@
     }"
     @scroll="onScroll"
   >
-    <div style="flex: 1 1 70%">
+    <div>
       <!-- The data table. -->
       <v-simple-table>
         <thead>
@@ -52,50 +52,6 @@
         </p>
       </div>
     </div>
-
-    <!-- A list of created spans. -->
-    <v-card
-      class="ma-4"
-      style="flex: 1 1 30%; display: flex; flex-direction: column"
-    >
-      <div class="view-header">
-        <v-icon
-          class="px-2"
-          aria-hidden="true"
-          small
-        >
-          $vuetify.icons.values.info
-        </v-icon>
-        Spans
-      </div>
-      <div
-        class="px-2"
-        style="overflow-y: scroll"
-      >
-        <div
-          v-for="labelSpan in labelSpans"
-          :key="labelSpan.uuid"
-        >
-          <v-btn
-            class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
-            :style="{ 'border-color': '#bbb' }"
-            x-small
-            outlined
-          >
-            {{ labelSpan.category }}
-            <v-icon
-              class="pl-2"
-              aria-hidden="true"
-              small
-              :style="{ color: label2color(labelSpan.category) }"
-            >
-              $vuetify.icons.values.square
-            </v-icon>
-          </v-btn>
-          {{ labelSpan.text }}
-        </div>
-      </div>
-    </v-card>
   </div>
 </template>
 

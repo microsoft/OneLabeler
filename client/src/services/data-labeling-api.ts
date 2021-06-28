@@ -80,7 +80,7 @@ export const featureExtraction = async (
 
   const dataObjects = await dataObjectStorage.getAll() as IDataObject[];
   const labels = labelStorage !== null
-    ? (await labelStorage.getAll()).map((d) => d.category as Category)
+    ? (await labelStorage.getAll()).map((d) => d.category as ILabelCategory)
     : null;
   const statuses = statusStorage !== null
     ? (await statusStorage.getAll()).map((d) => d.value)

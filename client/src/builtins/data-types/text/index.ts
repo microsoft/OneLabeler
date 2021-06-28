@@ -23,6 +23,7 @@ export default {
     LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
+    LabelTaskType.AnnotationRelation,
   ],
   label: 'text',
   importType: UploadTarget.File,

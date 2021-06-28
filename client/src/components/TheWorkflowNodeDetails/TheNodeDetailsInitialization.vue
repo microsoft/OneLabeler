@@ -167,6 +167,7 @@ export default Vue.extend({
         LabelTaskType.ObjectDetection,
         LabelTaskType.Segmentation,
         LabelTaskType.SpanClassification,
+        LabelTaskType.AnnotationRelation,
       ];
       return dataType === null ? tasks : getValidLabelTasks(dataType);
     },
@@ -179,6 +180,7 @@ export default Vue.extend({
         { value: LabelTaskType.ObjectDetection, label: 'Object Detection' },
         { value: LabelTaskType.Segmentation, label: 'Segmentation' },
         { value: LabelTaskType.SpanClassification, label: 'Span Tagging' },
+        { value: LabelTaskType.AnnotationRelation, label: 'Relation' },
       ];
       return {
         label: 'Label Tasks',

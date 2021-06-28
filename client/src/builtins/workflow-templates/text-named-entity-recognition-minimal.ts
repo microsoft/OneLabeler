@@ -15,7 +15,10 @@ export default {
       type: WorkflowNodeType.Initialization,
       value: {
         dataType: DataType.Text,
-        labelTasks: [LabelTaskType.SpanClassification],
+        labelTasks: [
+          LabelTaskType.SpanClassification,
+          LabelTaskType.AnnotationRelation,
+        ],
       },
       layout: {
         x: 40,

@@ -26,7 +26,7 @@
     <!-- The content of the data object. -->
     <div
       ref="content"
-      style="position: relative; width: 100%; height: 100%;"
+      style="position: relative; width: 100%; height: 100%; display: flex;"
     >
       <component
         :is="component"
@@ -37,6 +37,27 @@
         :height="'100%'"
         :width="'100%'"
         @scroll="onScroll"
+      />
+      <TheTextSpanList
+        v-if="enableSpanClassification"
+        :label-tasks="labelTasks"
+        :label-spans="labelSpans"
+        :label2color="label2color"
+        :selected-span="selectedSpan"
+        class="ma-2"
+        style="flex: 1 1 30%"
+        @remove:span="onRemoveLabelSpan"
+        @select:span="onSelectLabelSpan"
+        @create:relation="onCreateLabelRelation"
+      />
+      <TheRelationList
+        v-if="enableAnnotationRelation"
+        :label-relations="labelRelations"
+        :label-spans="labelSpans"
+        :label2color="label2color"
+        class="ma-2 ml-0"
+        style="flex: 1 1 30%"
+        @remove:relation="onRemoveLabelRelation"
       />
     </div>
   </div>
@@ -51,9 +72,13 @@ import {
   DataType,
   IText,
   ILabel,
+  ILabelRelation,
   ILabelTextSpan,
+  LabelTaskType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
+import TheRelationList from './TheRelationList.vue';
+import TheTextSpanList from './TheTextSpanList.vue';
 
 type Box = {
   top: number;
@@ -65,9 +90,17 @@ type Box = {
 
 export default Vue.extend({
   name: 'TheTextSpanBoardBody',
+  components: {
+    TheRelationList,
+    TheTextSpanList,
+  },
   props: {
     dataType: {
       type: String as PropType<DataType>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     dataObject: {
@@ -106,6 +139,22 @@ export default Vue.extend({
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;
       return label.spans;
+    },
+    labelRelations(): ILabelRelation[] | null {
+      const { label } = this;
+      if (label === null) return null;
+      if (label.relations === null || label.relations === undefined) return null;
+      return label.relations;
+    },
+    enableSpanClassification(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.SpanClassification,
+      ) >= 0;
+    },
+    enableAnnotationRelation(): boolean {
+      return this.labelTasks.findIndex(
+        (d: LabelTaskType) => d === LabelTaskType.AnnotationRelation,
+      ) >= 0;
     },
   },
   watch: {
@@ -176,6 +225,15 @@ export default Vue.extend({
       this.$emit('select:span', labelSpan);
       this.selectedSpan = labelSpan;
     },
+    onRemoveLabelSpan(labelSpan: ILabelTextSpan): void {
+      this.$emit('remove:span', labelSpan);
+    },
+    onCreateLabelRelation(labelRelation: ILabelRelation): void {
+      this.$emit('create:relation', labelRelation);
+    },
+    onRemoveLabelRelation(labelRelation: ILabelRelation): void {
+      this.$emit('remove:relation', labelRelation);
+    },
     onScroll(): void {
       this.boxes = this.getBoxes();
     },
@@ -183,7 +241,7 @@ export default Vue.extend({
       this.boxes = this.getBoxes();
     },
     isBoxSelected(box: Box): boolean {
-      /** Whether the box corresponds to a span annotation selected by the user. */
+      // Whether the box corresponds to a span annotation selected by the user.
       const { selectedSpan } = this;
       return (selectedSpan !== null)
         && (selectedSpan.uuid === box.span.uuid);

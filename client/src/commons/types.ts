@@ -14,6 +14,7 @@ export enum LabelTaskType {
   Classification = 'Classification',
   MultiLabelClassification = 'MultiLabelClassification',
   FreeformText = 'FreeformText',
+  AnnotationRelation = 'AnnotationRelation',
   ObjectDetection = 'ObjectDetection',
   Segmentation = 'Segmentation',
   SpanClassification = 'SpanClassification',
@@ -82,6 +83,12 @@ export type Category = string;
 export type ILabelCategory = Category;
 
 export type ILabelMultiCategory = Category[];
+
+/** The interface of the freeform text label of a data object. */
+export interface ILabelText {
+  /** The text annotation. */
+  content: string | null;
+}
 
 /** The type of data shapes in polygon annotation. */
 export enum ObjectShapeType {
@@ -152,10 +159,14 @@ export interface ILabelTimeSpan extends ILabelSpan {
   uuid: string;
 }
 
-/** The interface of the freeform text label of a data object. */
-export interface ILabelText {
-  /** The text annotation. */
-  content: string | null;
+/** The interface of the relation between two annotations. */
+export interface ILabelRelation {
+  /** The uuid of the source annotation. */
+  sourceUuid: string;
+  /** The uuid of the target annotation. */
+  targetUuid: string;
+  /** The uuid of the annotation itself. */
+  uuid: string;
 }
 
 export interface ILabel {
@@ -168,6 +179,7 @@ export interface ILabel {
   shapes?: ILabelShape[];
   mask?: ILabelMask;
   spans?: ILabelTextSpan[];
+  relations?: ILabelRelation[];
 }
 
 /** The enum of label status types. */

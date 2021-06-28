@@ -20,12 +20,16 @@
           <TheTextSpanBoardBody
             ref="canvas"
             :data-type="dataType"
+            :label-tasks="labelTasks"
             :data-object="dataObject"
             :label="label"
             :brush-category="brushCategory"
             :label2color="label2color"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
+            @remove:span="onRemoveLabelSpan"
+            @create:relation="onCreateLabelRelation"
+            @remove:relation="onRemoveLabelRelation"
           />
         </div>
         <template v-if="enablePagination">
@@ -56,6 +60,7 @@ import {
   ILabel,
   ILabelCategory,
   ILabelMultiCategory,
+  ILabelRelation,
   ILabelText,
   ILabelTextSpan,
   LabelTaskType,
@@ -75,6 +80,10 @@ export default Vue.extend({
       type: String as PropType<DataType>,
       required: true,
     },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataObjects: {
       type: Array as PropType<IDataObject[]>,
       required: true,
@@ -85,10 +94,6 @@ export default Vue.extend({
     },
     taskWindow: {
       type: Object as PropType<TaskWindow>,
-      required: true,
-    },
-    labelTasks: {
-      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     classes: {
@@ -126,6 +131,12 @@ export default Vue.extend({
       if (label === null) return null;
       if (label.spans === null || label.spans === undefined) return null;
       return label.spans;
+    },
+    labelRelations(): ILabelRelation[] | null {
+      const { label } = this;
+      if (label === null) return null;
+      if (label.relations === null || label.relations === undefined) return null;
+      return label.relations;
     },
     enablePagination(): boolean {
       if (!this.showDataObject) return false;
@@ -178,39 +189,61 @@ export default Vue.extend({
         this.onRemoveLabelSpan(selectedSpan);
       }
     },
-    onCreateLabelSpan(labelSpan: ILabelTextSpan) {
+    onCreateLabelRelation(relation: ILabelRelation): void {
+      const { dataObject, labelRelations } = this;
+      if (dataObject === null) return;
+      const relations = labelRelations === null
+        ? [relation]
+        : [...labelRelations, relation];
+      this.$emit('user-edit-label', dataObject.uuid, { relations } as Partial<ILabel>);
+    },
+    onRemoveLabelRelation(relation: ILabelRelation): void {
+      const { dataObject, labelRelations } = this;
+      if (dataObject === null || labelRelations === null) return;
+      const relations = [...labelRelations.filter((d) => d.uuid !== relation.uuid)];
+      this.$emit('user-edit-label', dataObject.uuid, { relations } as Partial<ILabel>);
+    },
+    onCreateLabelSpan(span: ILabelTextSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null) return;
-      const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
+      const spans = labelSpans === null ? [span] : [...labelSpans, span];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(labelSpan: ILabelTextSpan | null) {
-      this.selectedSpan = labelSpan;
-      if (labelSpan !== null) {
-        this.brushCategory = labelSpan.category;
+    onSelectLabelSpan(span: ILabelTextSpan | null) {
+      this.selectedSpan = span;
+      if (span !== null) {
+        this.brushCategory = span.category;
       }
     },
-    onUpdateLabelSpan(labelSpan: ILabelTextSpan) {
+    onUpdateLabelSpan(span: ILabelTextSpan) {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
       const index = labelSpans.findIndex(
-        (d: ILabelTextSpan) => d.uuid === labelSpan.uuid,
+        (d: ILabelTextSpan) => d.uuid === span.uuid,
       );
       const spans = [...labelSpans];
-      spans[index] = labelSpan;
+      spans[index] = span;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onRemoveLabelSpan(labelSpan: ILabelTextSpan) {
-      const { dataObject, labelSpans } = this;
+    onRemoveLabelSpan(span: ILabelTextSpan) {
+      const {
+        dataObject,
+        labelSpans,
+        labelRelations,
+      } = this;
       if (dataObject === null || labelSpans === null) return;
-      const index = labelSpans.findIndex(
-        (d: ILabelTextSpan) => d.uuid === labelSpan.uuid,
-      );
-      const spans = [
-        ...labelSpans.slice(0, index),
-        ...labelSpans.slice(index + 1),
-      ];
-      this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
+
+      // Remove the relations that involves the label span.
+      const relations = labelRelations === null
+        ? null
+        : [...labelRelations.filter((d) => (
+          d.sourceUuid !== span.uuid && d.targetUuid !== span.uuid
+        ))];
+
+      // Remove the label span itself.
+      const spans = [...labelSpans.filter((d) => d.uuid !== span.uuid)];
+
+      this.$emit('user-edit-label', dataObject.uuid, { relations, spans } as Partial<ILabel>);
     },
     onSetLabelCategory(category: ILabelCategory): void {
       const { dataObject } = this;
