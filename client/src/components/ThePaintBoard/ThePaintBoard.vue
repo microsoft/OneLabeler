@@ -40,9 +40,9 @@
             :label2color="label2color"
             :mouse-operation="mouseOperation"
             @create:shape="onAddLabelShape"
-            @update:label-shape="onUpdateLabelShape"
+            @update:shape="onUpdateLabelShape"
             @delete:shape="onRemoveLabelShape"
-            @update:label-mask="onSetLabelMask"
+            @update:mask="onSetLabelMask"
           />
         </div>
         <template v-if="enablePagination">

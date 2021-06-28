@@ -19,23 +19,20 @@
         :src="dataObject.content"
         :blur="blur"
       />
-      <v-layer
+      <TheLayerPaint
         ref="layerPaint"
-        :config="{
-          imageSmoothingEnabled: false,
-          clip: {
-            x: 0,
-            y: 0,
-            width: imgWidth,
-            height: imgHeight,
-          },
-        }"
-        style="image-rendering: pixelated"
+        :width="imgWidth"
+        :height="imgHeight"
+        :label-mask="labelMask"
       />
-      <v-layer
+      <TheLayerShapes
         ref="layerShapes"
-        :config="{ imageSmoothingEnabled: false }"
-        style="image-rendering: pixelated"
+        :label-shapes="labelShapes"
+        :selected-shape-uuids="selectedShapeUuids"
+        :label2color="label2color"
+        :editable="editable"
+        @update:shape="onUpdateLabelShape"
+        @update:selected-shapes="onUpdateSelectedShapes"
       />
       <v-layer
         ref="layerInteraction"
@@ -61,32 +58,20 @@ import {
 import {
   MouseOperationType,
   StrokeShapeType,
-  IEditableShape,
 } from './types';
 import { createCircle } from './pixelated-circle';
-import EditableCircle from './editable-circle';
-import EditableRect from './editable-rect';
-import EditablePolygon from './editable-polygon';
 import TheLayerImage from './TheLayerImage.vue';
+import TheLayerPaint from './TheLayerPaint.vue';
+import TheLayerShapes from './TheLayerShapes.vue';
 
 type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
-
-const createImage = async (
-  url: string,
-): Promise<HTMLImageElement> => new Promise((resolve) => {
-  const img = new Image();
-  img.crossOrigin = 'Anonymous';
-  img.onload = () => {
-    resolve(img);
-  };
-  // The url that services the image content (can be a base64 style url).
-  img.src = url;
-});
 
 export default Vue.extend({
   name: 'ThePaintBoardCanvas',
   components: {
     TheLayerImage,
+    TheLayerPaint,
+    TheLayerShapes,
   },
   props: {
     dataObject: {
@@ -139,6 +124,7 @@ export default Vue.extend({
       boundPixelsPerRow: [10, 2000] as [number, number] | null,
       boundPixelsPerColumn: [10, 2000] as [number, number] | null,
       points: [] as [number, number][],
+      selectedShapeUuids: [] as string[],
     };
   },
   computed: {
@@ -154,19 +140,19 @@ export default Vue.extend({
     editable(): boolean {
       return this.mouseOperation === MouseOperationType.EditShape;
     },
-    polygonClickStageCreateable(): boolean {
+    polygonByClick(): boolean {
       return this.mouseOperation === MouseOperationType.ClickCreatePolygon;
     },
-    rectClickCreateable(): boolean {
+    rectByClick(): boolean {
       return this.mouseOperation === MouseOperationType.ClickCreateRect;
     },
-    pointClickCreateable(): boolean {
+    pointByClick(): boolean {
       return this.mouseOperation === MouseOperationType.ClickCreatePoint;
     },
-    polygonLassoCreateable(): boolean {
+    polygonByLasso(): boolean {
       return this.mouseOperation === MouseOperationType.LassoCreatePolygon;
     },
-    polygonScissorsCreateable(): boolean {
+    polygonByScissors(): boolean {
       return this.mouseOperation === MouseOperationType.ScissorsCreatePolygon;
     },
     cursor(): string {
@@ -188,17 +174,6 @@ export default Vue.extend({
       this.setStageSize();
       this.setImageBlur();
       this.resetStageZoom();
-      this.drawLabelMask();
-      this.drawEditableShapes();
-    },
-    editable() {
-      const layerShapes = this.getLayerShapes();
-      const shapes = layerShapes.find('.editable-shape');
-      shapes.each((shape) => {
-        const editableShape = shape.getAttr('object') as IEditableShape;
-        editableShape.editable(this.editable);
-      });
-      layerShapes.batchDraw();
     },
   },
   created(): void {
@@ -217,19 +192,8 @@ export default Vue.extend({
     this.resizeObserver.observe(this.getContainer());
 
     this.setStageSize();
-
-    // Note: set canvas style opacity instead of in configuration
-    // if set opacity in configuration,
-    // each object would be transparent but not the whole canvas
-    const layerPaint = this.getLayerPaint();
-    // eslint-disable-next-line no-underscore-dangle
-    const canvas = layerPaint.getCanvas()._canvas;
-    canvas.style.opacity = '0.5';
-
     this.setImageBlur();
     this.resetStageZoom();
-    this.drawLabelMask();
-    this.drawEditableShapes();
   },
   methods: {
     onResize(): void {
@@ -348,8 +312,6 @@ export default Vue.extend({
         .each((shape) => shape.destroy());
       layerShapes.find('#temp-polygon-path')
         .each((shape) => shape.destroy());
-
-      this.drawEditablePolygon(labelPolygon);
       layerShapes.draw();
       this.points = [];
     },
@@ -457,139 +419,28 @@ export default Vue.extend({
       layerInteraction.add(cursor);
       layerInteraction.batchDraw();
     },
-    async drawLabelMask(): Promise<void> {
-      const { labelMask } = this;
-      const layerPaint = this.getLayerPaint();
-
-      // clean layerPaint
-      layerPaint.destroyChildren();
-
-      if (labelMask === null || labelMask.content === null) {
-        layerPaint.batchDraw();
-        return;
-      }
-
-      const image: HTMLImageElement = await createImage(labelMask.content);
-      layerPaint.add(new Konva.Image({ image }));
-      layerPaint.draw();
-    },
-    drawEditableCircle(labelCircle: ILabelShape): void {
-      const { label2color, editable } = this;
-      const layerShapes = this.getLayerShapes();
-      const [x, y] = labelCircle.position as [number, number];
-      const { category, uuid } = labelCircle;
-
-      const editableCircle = new EditableCircle(
-        { x, y },
-        layerShapes,
-        editable,
-      );
-      const circle = editableCircle.getNode()
-        .stroke(label2color(category))
-        .name('editable-shape')
-        .setAttr('object', editableCircle)
-        .setAttr('uuid', uuid);
-      editableCircle.setOnUpdatePosition((d: EditableCircle) => {
-        const point = d.point();
-        this.$emit('update:label-shape', {
-          category,
-          shape: ObjectShapeType.Point,
-          position: [point.x, point.y],
-          uuid,
-        });
-      });
-      editableCircle.setOnClick(() => {
-        circle.addName('clicked-shape');
-      });
-      layerShapes.add(circle);
-    },
-    drawEditableRect(labelRect: ILabelShape): void {
-      const { label2color, editable } = this;
-      const layerShapes = this.getLayerShapes();
-      const points = labelRect.position as [number, number][];
-      const { category, uuid } = labelRect;
-
-      const editableRect = new EditableRect(points, layerShapes, editable);
-      const group = editableRect.getNode()
-        .name('editable-shape')
-        .setAttr('object', editableRect)
-        .setAttr('uuid', uuid);
-      editableRect.getRect()
-        .stroke(label2color(category));
-      editableRect.setOnUpdatePosition((d: EditableRect) => {
-        this.$emit('update:label-shape', {
-          category,
-          shape: ObjectShapeType.Rect,
-          position: d.points(),
-          uuid,
-        });
-      });
-      editableRect.setOnClick(() => {
-        group.addName('clicked-shape');
-      });
-      layerShapes.add(group);
-    },
-    drawEditablePolygon(labelPolygon: ILabelShape): void {
-      const { label2color, editable } = this;
-      const layerShapes = this.getLayerShapes();
-      const points = labelPolygon.position as [number, number][];
-      const { category, uuid } = labelPolygon;
-
-      const editablePolygon = new EditablePolygon(points, layerShapes, editable);
-      const group = editablePolygon.getNode()
-        .name('editable-shape')
-        .setAttr('object', editablePolygon)
-        .setAttr('uuid', uuid);
-      editablePolygon.getPolygon()
-        .stroke(label2color(category));
-      editablePolygon.setOnUpdatePosition((d: EditablePolygon) => {
-        this.$emit('update:label-shape', {
-          category,
-          shape: ObjectShapeType.Polygon,
-          position: d.points(),
-          uuid,
-        });
-      });
-      editablePolygon.setOnClick(() => {
-        group.addName('clicked-shape');
-      });
-      layerShapes.add(group);
-    },
-    drawEditableShapes(): void {
-      const { labelShapes } = this;
-      const layerShapes = this.getLayerShapes();
-
-      // clean layerShapes
-      layerShapes.destroyChildren();
-      if (labelShapes !== null) {
-        labelShapes.forEach((d: ILabelShape) => {
-          if (d.shape === ObjectShapeType.Point) {
-            this.drawEditableCircle(d);
-          } else if (d.shape === ObjectShapeType.Rect) {
-            this.drawEditableRect(d);
-          } else if (d.shape === ObjectShapeType.Polygon) {
-            this.drawEditablePolygon(d);
-          }
-        });
-      }
-      layerShapes.draw();
-    },
     onKey(e: KeyboardEvent): void {
       const { key } = e;
       // shortcut for stop polygon creation: Enter
-      if (this.polygonClickStageCreateable && key === 'Enter') {
+      if (this.polygonByClick && key === 'Enter') {
         e.preventDefault();
         this.stopPolygonCreation(false);
       }
       if (key === 'Delete') {
         const layerShapes = this.getLayerShapes();
-        const shapes = layerShapes.find('.clicked-shape');
-        shapes.each((shape) => {
+        const shapes = this.getShapes();
+        shapes.forEach((shape) => {
           const uuid = shape.getAttr('uuid');
-          this.$emit('delete:shape', {
-            uuid,
-          });
-          shape.destroy();
+          const idx = this.selectedShapeUuids.findIndex((d) => d === uuid);
+          const isSelected = idx >= 0;
+          if (isSelected) {
+            this.$emit('delete:shape', { uuid });
+            shape.destroy();
+            this.selectedShapeUuids = [
+              ...this.selectedShapeUuids.slice(0, idx),
+              ...this.selectedShapeUuids.slice(idx + 1),
+            ];
+          }
         });
         layerShapes.draw();
       }
@@ -680,7 +531,7 @@ export default Vue.extend({
       if (this.paintable || this.erasable) {
         this.drawStroke(offsetX, offsetY);
       }
-      if (this.polygonLassoCreateable) {
+      if (this.polygonByLasso) {
         const { snapToPixel } = this;
         const { x, y } = this.xyOffsetToStage(offsetX, offsetY, snapToPixel);
         this.points = [[x, y]];
@@ -693,15 +544,15 @@ export default Vue.extend({
         if (!this.isMouseDown) return;
         this.drawStroke(offsetX, offsetY);
       }
-      if (this.polygonClickStageCreateable
-        || this.rectClickCreateable
-        || this.pointClickCreateable
-        || this.polygonLassoCreateable
+      if (this.polygonByClick
+        || this.rectByClick
+        || this.pointByClick
+        || this.polygonByLasso
       ) {
         const { offsetX, offsetY } = e.evt;
         this.drawShapeCursor(offsetX, offsetY);
       }
-      if (this.polygonLassoCreateable) {
+      if (this.polygonByLasso) {
         if (!this.isMouseDown) return;
         const { snapToPixel, strokeLabel, label2color } = this;
         const { offsetX, offsetY } = e.evt;
@@ -715,15 +566,17 @@ export default Vue.extend({
         this.points = [...this.points, [x, y]];
         const color = label2color(strokeLabel);
 
+        const { points } = this;
+        const lastPoint = points[points.length - 1];
         const layerShapes = this.getLayerShapes();
 
         layerShapes.find('#temp-prospective-polygon-closing-edge')
           .each((shape) => shape.destroy());
-        if (this.points.length >= 2) {
-          const firstPoint = this.points[0];
+        if (points.length >= 2) {
+          const firstPoint = points[0];
           const prospectiveClosingEdge = new Konva.Line({
             id: 'temp-prospective-polygon-closing-edge',
-            points: [[x, y], firstPoint].flat(),
+            points: [lastPoint, firstPoint].flat(),
             stroke: 'black',
             strokeWidth: 0.25,
             opacity: 0.5,
@@ -736,7 +589,7 @@ export default Vue.extend({
           .each((shape) => shape.destroy());
         const clickedPath = new Konva.Line({
           id: 'temp-polygon-path',
-          points: this.points.flat(),
+          points: points.flat(),
           stroke: color,
           strokeWidth: 0.25,
           closed: false,
@@ -744,7 +597,7 @@ export default Vue.extend({
         layerShapes.add(clickedPath);
         layerShapes.batchDraw();
       }
-      if (this.polygonClickStageCreateable) {
+      if (this.polygonByClick) {
         if (this.points.length === 0) return;
         const { snapToPixel, strokeLabel, label2color } = this;
         const { offsetX, offsetY } = e.evt;
@@ -783,7 +636,7 @@ export default Vue.extend({
         }
         layerShapes.batchDraw();
       }
-      if (this.rectClickCreateable) {
+      if (this.rectByClick) {
         if (this.points.length !== 1) return;
         const { snapToPixel, strokeLabel, label2color } = this;
         const { offsetX, offsetY } = e.evt;
@@ -821,9 +674,9 @@ export default Vue.extend({
       this.isMouseDown = false;
       if (this.paintable || this.erasable) {
         const canvas = this.getLabelMaskCanvas();
-        this.$emit('update:label-mask', canvas);
+        this.$emit('update:mask', canvas);
       }
-      if (this.polygonLassoCreateable) {
+      if (this.polygonByLasso) {
         this.stopPolygonCreation(true);
       }
     },
@@ -842,17 +695,15 @@ export default Vue.extend({
       const { offsetX, offsetY } = e.evt;
       const { x, y } = this.xyOffsetToStage(offsetX, offsetY, snapToPixel);
       const layerShapes = this.getLayerShapes();
-      if (this.pointClickCreateable) {
+      if (this.pointByClick) {
         const labelCircle: ILabelShape = {
           category: strokeLabel,
           shape: ObjectShapeType.Point,
           position: [x, y],
           uuid: uuidv4(),
         };
-        this.drawEditableCircle(labelCircle);
-        layerShapes.draw();
         this.$emit('create:shape', labelCircle);
-      } else if (this.polygonClickStageCreateable) {
+      } else if (this.polygonByClick) {
         const color = label2color(strokeLabel);
         if (this.points.length >= 1) {
           const lastPoint = this.points[this.points.length - 1];
@@ -873,7 +724,7 @@ export default Vue.extend({
         });
         layerShapes.add(clickedPath);
         layerShapes.batchDraw();
-      } else if (this.rectClickCreateable) {
+      } else if (this.rectByClick) {
         if (this.points.length === 0) {
           this.points = [[x, y]];
         } else if (this.points.length === 1) {
@@ -888,30 +739,20 @@ export default Vue.extend({
             position: [...points, [x, y]],
             uuid: uuidv4(),
           };
-          this.drawEditableRect(labelRect);
-          layerShapes.draw();
           this.$emit('create:shape', labelRect);
         }
       }
 
       // Deselect the previous selected objects.
-      if (this.editable) {
-        const { target } = e;
-        layerShapes.find('.clicked-shape').each((shape: Konva.Node) => {
-          // Keep the newly selected object selected.
-          const editableShape = shape.getAttr('object') as IEditableShape;
-          if (editableShape instanceof EditableCircle) {
-            if (shape === target) return;
-          } else if (editableShape instanceof EditableRect) {
-            if (shape === target.getParent()) return;
-          } else if (editableShape instanceof EditablePolygon) {
-            if (shape === target.getParent()) return;
-          }
-          editableShape.endEdit();
-          shape.removeName('clicked-shape');
-        });
-        layerShapes.draw();
+      if (this.editable && e.target === this.getStage()) {
+        this.selectedShapeUuids = [];
       }
+    },
+    onUpdateLabelShape(labelShape: ILabelShape): void {
+      this.$emit('update:shape', labelShape);
+    },
+    onUpdateSelectedShapes(uuids: string[]): void {
+      this.selectedShapeUuids = uuids;
     },
     getContainer(): HTMLElement {
       return this.$refs.container as HTMLElement;
@@ -920,10 +761,16 @@ export default Vue.extend({
       return (this.$refs.layerInteraction as VueKonvaLayer).getNode();
     },
     getLayerPaint(): Konva.Layer {
-      return (this.$refs.layerPaint as VueKonvaLayer).getNode();
+      const component = this.$refs.layerPaint as Vue & { getLayer: () => Konva.Layer };
+      return component.getLayer();
     },
     getLayerShapes(): Konva.Layer {
-      return (this.$refs.layerShapes as VueKonvaLayer).getNode();
+      const component = this.$refs.layerShapes as Vue & { getLayer: () => Konva.Layer };
+      return component.getLayer();
+    },
+    getShapes(): Konva.Shape[] {
+      const component = this.$refs.layerShapes as Vue & { getShapes: () => Konva.Shape[] };
+      return component.getShapes();
     },
     getStage(): Konva.Stage {
       return (this.$refs.stage as unknown as Konva.Stage).getStage() as Konva.Stage;
