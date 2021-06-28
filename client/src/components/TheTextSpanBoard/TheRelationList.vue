@@ -22,7 +22,14 @@
       >
         <div
           class="pa-1"
-          style="border: 1px solid #eee; flex: 1 1 50%;"
+          :style="{
+            border: '1px solid',
+            'border-color': isSpanSelected(getSpanByUuid(labelRelation.sourceUuid))
+              ? 'gray' : '#eee',
+            flex: '1 1 50%',
+            cursor: 'pointer',
+          }"
+          @click="onSelectLabelSpan(getSpanByUuid(labelRelation.sourceUuid))"
         >
           <VLabelSpan
             :label-span="getSpanByUuid(labelRelation.sourceUuid)"
@@ -38,7 +45,14 @@
         </v-icon>
         <div
           class="pa-1"
-          style="border: 1px solid #eee; flex: 1 1 50%;"
+          :style="{
+            border: '1px solid',
+            'border-color': isSpanSelected(getSpanByUuid(labelRelation.targetUuid))
+              ? 'gray' : '#eee',
+            flex: '1 1 50%',
+            cursor: 'pointer',
+          }"
+          @click="onSelectLabelSpan(getSpanByUuid(labelRelation.targetUuid))"
         >
           <VLabelSpan
             :label-span="getSpanByUuid(labelRelation.targetUuid)"
@@ -90,17 +104,37 @@ export default Vue.extend({
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+    selectedSpan: {
+      type: Object as PropType<ILabelTextSpan | null>,
+      default: null,
+    },
+  },
+  computed: {
+    uuid2span() {
+      const { labelSpans } = this;
+      const uuid2span: Record<string, ILabelTextSpan> = {};
+      if (labelSpans === null) return uuid2span;
+      labelSpans.forEach((d: ILabelTextSpan, i) => {
+        uuid2span[d.uuid] = d;
+      });
+      return uuid2span;
+    },
   },
   methods: {
-    getSpanByUuid(uuid: string): ILabelTextSpan | null {
-      const { labelSpans } = this;
-      if (labelSpans === null) return null;
-      const find = labelSpans.find((d) => d.uuid === uuid);
-      if (find === undefined) return null;
-      return find;
+    onSelectLabelSpan(labelSpan: ILabelTextSpan): void {
+      this.$emit('select:span', labelSpan);
     },
     onRemoveLabelRelation(labelRelation: ILabelRelation): void {
       this.$emit('remove:relation', labelRelation);
+    },
+    getSpanByUuid(uuid: string): ILabelTextSpan | null {
+      const { uuid2span } = this;
+      return uuid in uuid2span ? uuid2span[uuid] : null;
+    },
+    isSpanSelected(labelSpan: ILabelTextSpan): boolean {
+      const { selectedSpan } = this;
+      if (selectedSpan === null) return false;
+      return selectedSpan.uuid === labelSpan.uuid;
     },
   },
 });

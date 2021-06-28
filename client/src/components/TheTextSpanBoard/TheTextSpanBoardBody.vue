@@ -55,8 +55,10 @@
         :label-relations="labelRelations"
         :label-spans="labelSpans"
         :label2color="label2color"
+        :selected-span="selectedSpan"
         class="ma-2 ml-0"
         style="flex: 1 1 30%"
+        @select:span="onSelectLabelSpan"
         @remove:relation="onRemoveLabelRelation"
       />
     </div>
