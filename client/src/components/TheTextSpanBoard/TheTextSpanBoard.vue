@@ -200,7 +200,7 @@ export default Vue.extend({
     onRemoveLabelRelation(relation: ILabelRelation): void {
       const { dataObject, labelRelations } = this;
       if (dataObject === null || labelRelations === null) return;
-      const relations = [...labelRelations.filter((d) => d.uuid !== relation.uuid)];
+      const relations = labelRelations.filter((d) => d.uuid !== relation.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { relations } as Partial<ILabel>);
     },
     onCreateLabelSpan(span: ILabelTextSpan): void {
@@ -236,12 +236,12 @@ export default Vue.extend({
       // Remove the relations that involves the label span.
       const relations = labelRelations === null
         ? null
-        : [...labelRelations.filter((d) => (
+        : labelRelations.filter((d) => (
           d.sourceUuid !== span.uuid && d.targetUuid !== span.uuid
-        ))];
+        ));
 
       // Remove the label span itself.
-      const spans = [...labelSpans.filter((d) => d.uuid !== span.uuid)];
+      const spans = labelSpans.filter((d) => d.uuid !== span.uuid);
 
       this.$emit('user-edit-label', dataObject.uuid, { relations, spans } as Partial<ILabel>);
     },

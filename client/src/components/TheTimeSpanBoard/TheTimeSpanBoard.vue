@@ -201,13 +201,7 @@ export default Vue.extend({
       if (selectedSpan !== null && selectedSpan.uuid === labelSpan.uuid) {
         this.selectedSpan = null;
       }
-      const index = labelSpans.findIndex(
-        (d: ILabelTimeSpan) => d.uuid === labelSpan.uuid,
-      );
-      const spans = [
-        ...labelSpans.slice(0, index),
-        ...labelSpans.slice(index + 1),
-      ];
+      const spans = labelSpans.filter((d) => d.uuid !== labelSpan.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
     onSetLabelCategory(category: ILabelCategory): void {

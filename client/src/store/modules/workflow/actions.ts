@@ -67,11 +67,7 @@ export const removeNode = (
   node: WorkflowNode,
 ): void => {
   const { nodes } = state;
-  const idx = nodes.findIndex((d) => d.id === node.id);
-  const nodesUpdated = [
-    ...nodes.slice(0, idx),
-    ...nodes.slice(idx + 1),
-  ];
+  const nodesUpdated = nodes.filter((d) => d.id !== node.id);
   commit(types.SET_NODES, nodesUpdated);
 };
 
@@ -95,11 +91,7 @@ export const removeEdge = (
   edge: WorkflowEdge,
 ): void => {
   const { edges } = state;
-  const idx = edges.findIndex((d) => d.id === edge.id);
-  const edgesUpdated = [
-    ...edges.slice(0, idx),
-    ...edges.slice(idx + 1),
-  ];
+  const edgesUpdated = edges.filter((d) => d.id !== edge.id);
   commit(types.SET_EDGES, edgesUpdated);
 };
 

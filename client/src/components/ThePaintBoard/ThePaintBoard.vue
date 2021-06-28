@@ -233,18 +233,9 @@ export default Vue.extend({
     onRemoveLabelShape(labelShape: ILabelShape) {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
-      let shapes: ILabelShape[];
-      if (labelShapes === null) {
-        shapes = [labelShape];
-      } else {
-        const index = labelShapes.findIndex(
-          (d: ILabelShape) => d.uuid === labelShape.uuid,
-        );
-        shapes = [
-          ...labelShapes.slice(0, index),
-          ...labelShapes.slice(index + 1),
-        ];
-      }
+      const shapes: ILabelShape[] = labelShapes === null
+        ? [labelShape]
+        : labelShapes.filter((d) => d.uuid !== labelShape.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
     onResetImageSize() {
