@@ -9,7 +9,12 @@ import IconDrawSquare from '@/plugins/IconDrawSquare.vue';
 Vue.use(Vuetify);
 
 const icons = {
-  image: 'fas fa-image',
+  file: 'far fa-file',
+  fileAudio: 'far fa-file-audio',
+  fileImage: 'far fa-file-image',
+  fileText: 'far fa-file-alt',
+  fileVideo: 'far fa-file-video',
+  text: 'fas fa-paragraph',
   new: 'fas fa-folder-plus',
   open: 'fas fa-folder-open',
   save: 'fas fa-save',
@@ -50,8 +55,6 @@ const icons = {
   superpixel: 'fas fa-puzzle-piece',
   minimize: 'fas fa-minus',
   pin: 'fas fa-thumbtack',
-  text: 'fas fa-paragraph',
-  video: 'fas fa-film',
   play: 'fas fa-play',
   pause: 'fas fa-pause',
   stop: 'fas fa-stop',

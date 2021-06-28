@@ -3,10 +3,10 @@ import { VueConstructor } from 'vue';
 
 /** The types of data objects. */
 export enum DataType {
-  Image = 'Image',
-  Video = 'Video',
   Audio = 'Audio',
+  Image = 'Image',
   Text = 'Text',
+  Video = 'Video',
 }
 
 /** The types of label tasks. */

@@ -1,10 +1,11 @@
 <template>
   <v-card>
     <TheCardMatrixHeader
+      :data-type="dataType"
+      :label-tasks="labelTasks"
       :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
-      :label-tasks="labelTasks"
       @set:label-batch-category="onSetLabelBatchCategory"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
@@ -79,12 +80,12 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-    labelTasks: {
-      type: Array as PropType<LabelTaskType[]>,
-      required: true,
-    },
     dataType: {
       type: String as PropType<DataType>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     classes: {

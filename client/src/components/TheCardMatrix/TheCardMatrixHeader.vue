@@ -9,7 +9,14 @@
         aria-hidden="true"
         small
       >
-        $vuetify.icons.values.image
+        {{
+          {
+            [DataType.Audio]: $vuetify.icons.values.fileAudio,
+            [DataType.Video]: $vuetify.icons.values.fileVideo,
+            [DataType.Text]: $vuetify.icons.values.fileText,
+            [DataType.Image]: $vuetify.icons.values.fileImage,
+          }[dataType] || $vuetify.icons.values.file
+        }}
       </v-icon>
       Sampled Objects
     </template>
@@ -29,7 +36,11 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, LabelTaskType } from '@/commons/types';
+import {
+  Category,
+  DataType,
+  LabelTaskType,
+} from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import VCategoryBatchTool from '@/components/VLabelCategory/VBatchTool.vue';
 
@@ -40,6 +51,10 @@ export default Vue.extend({
     VCategoryBatchTool,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
       required: true,
@@ -56,6 +71,9 @@ export default Vue.extend({
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  data() {
+    return { DataType };
   },
   computed: {
     enableClassification(): boolean {

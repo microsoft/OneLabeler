@@ -9,7 +9,7 @@
         aria-hidden="true"
         small
       >
-        $vuetify.icons.values.video
+        $vuetify.icons.values.fileVideo
       </v-icon>
       Video
     </template>

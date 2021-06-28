@@ -9,7 +9,7 @@
         aria-hidden="true"
         small
       >
-        $vuetify.icons.values.image
+        $vuetify.icons.values.fileImage
       </v-icon>
       Image
     </template>
