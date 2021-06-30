@@ -1,14 +1,14 @@
-import audioClassificationMinimal from '@/builtins/workflow-templates/audio-classification-minimal';
-import audioTemporalSegmentationMinimal from '@/builtins/workflow-templates/audio-temporal-segmentation-minimal';
-import imageClassificationIML from '@/builtins/workflow-templates/image-classification-iml';
-import imageClassificationMinimal from '@/builtins/workflow-templates/image-classification-minimal';
-import imageSegmentationMinimal from '@/builtins/workflow-templates/image-segmentation-minimal';
-import videoClassificationMinimal from '@/builtins/workflow-templates/video-classification-minimal';
-import videoTemporalSegmentationMinimal from '@/builtins/workflow-templates/video-temporal-segmentation-minimal';
-import youtubeVideoTemporalSegmentationMinimal from '@/builtins/workflow-templates/youtube-video-temporal-segmentation-minimal';
-import textClassificationMinimal from '@/builtins/workflow-templates/text-classification-minimal';
-import textNamedEntityRecognitionMinimal from '@/builtins/workflow-templates/text-named-entity-recognition-minimal';
-import textWithTableClassificationNamedEntityRecognitionMinimal from '@/builtins/workflow-templates/text-with-table-classification-named-entity-recognition-minimal';
+import audioClassificationMinimal from './audio-classification-minimal';
+import audioTemporalSegmentationMinimal from './audio-temporal-segmentation-minimal';
+import imageClassificationIML from './image-classification-iml';
+import imageClassificationMinimal from './image-classification-minimal';
+import imageSegmentationMinimal from './image-segmentation-minimal';
+import videoClassificationMinimal from './video-classification-minimal';
+import videoTemporalSegmentationMinimal from './video-temporal-segmentation-minimal';
+import youtubeVideoTemporalSegmentationMinimal from './youtube-video-temporal-segmentation-minimal';
+import textClassificationMinimal from './text-classification-minimal';
+import textNamedEntityRecognitionMinimal from './text-named-entity-recognition-minimal';
+import textWithTableClassificationNamedEntityRecognitionMinimal from './text-with-table-classification-named-entity-recognition-minimal';
 
 export default [
   { label: 'Image Classification Minimal', value: imageClassificationMinimal },

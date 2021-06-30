@@ -14,7 +14,7 @@ export default {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
       value: {
-        dataType: 'YoutubeVideo',
+        dataType: DataType.YoutubeVideo,
         labelTasks: [LabelTaskType.SpanClassification],
       },
       layout: {

@@ -33,8 +33,10 @@ export default {
   ],
   label: 'text with table',
   importType: UploadTarget.File,
-  handleImport: async (input: File, storage: IDataObjectStorage) => {
-    const file = input as File;
+  handleImport: async (
+    file: File,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
     (await parseJsonFile(file) as ITextWithTable[])
       .forEach((entry) => storage.upsert(entry));
   },

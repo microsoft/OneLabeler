@@ -60,8 +60,8 @@
       </div>
 
       <v-textarea
-        label="Annotation"
         v-model="text"
+        label="Annotation"
         no-resize
       />
 

@@ -42,8 +42,10 @@ export default {
   ],
   label: 'video',
   importType: UploadTarget.Folder,
-  handleImport: async (input: FileList, storage: IDataObjectStorage) => {
-    const files = input as FileList;
+  handleImport: async (
+    files: FileList,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
     await Promise.all([...files].map(async (file) => {
       const content = await getBase64(file);
       const {

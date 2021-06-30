@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  DataType,
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
@@ -30,7 +31,7 @@ const getVideoSize = async (url: string): Promise<{
 };
 
 export default {
-  type: 'YoutubeVideo',
+  type: DataType.YoutubeVideo,
   tasks: [
     LabelTaskType.Classification,
     LabelTaskType.MultiLabelClassification,
@@ -39,9 +40,11 @@ export default {
   ],
   label: 'youtube video',
   importType: UploadTarget.File,
-  handleImport: async (input: File, storage: IDataObjectStorage) => {
-    const file = input as File;
-    const records = await parseCsvFile(file) as Record<string, any>[];
+  handleImport: async (
+    file: File,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
+    const records = await parseCsvFile(file) as { url: string, id: string }[];
     await Promise.all(records.map(async (d) => {
       const content = d.url;
       const uuid = d.id;

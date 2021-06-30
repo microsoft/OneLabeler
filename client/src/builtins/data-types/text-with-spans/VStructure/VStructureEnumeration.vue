@@ -13,7 +13,7 @@
     >
       part [{{ i }}] :- { name:
       <span :style="{ 'background-color': getColorByCategory(Tag.partName) }">
-        &lt;{{ span === null ? '' :  span.text }}&gt;
+        &lt;{{ span === null ? '' : span.text }}&gt;
       </span>
       }
     </p>

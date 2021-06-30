@@ -266,10 +266,10 @@ export default Vue.extend({
       const newValue: Partial<ILabel> = { text };
       this.$emit('user-edit-label', uuid, newValue);
     },
-    onSetBrushCategory(category: Category) {
+    onSetBrushCategory(category: Category | null) {
       this.brushCategory = category;
       const { selectedSpan } = this;
-      if (selectedSpan === null) return;
+      if (selectedSpan === null || category === null) return;
       this.onUpdateLabelSpan({ ...selectedSpan, category });
     },
     onWindowMinimize() {

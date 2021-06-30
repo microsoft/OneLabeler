@@ -38,9 +38,11 @@ export default {
   ],
   label: 'text with video',
   importType: UploadTarget.File,
-  handleImport: async (input: File, storage: IDataObjectStorage) => {
-    const file = input as File;
-    const records = await parseCsvFile(file) as Record<string, any>[];
+  handleImport: async (
+    file: File,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
+    const records = await parseCsvFile(file) as Datum[];
     await Promise.all(records.map(async (d) => {
       const dataObject: ITextWithVideo = {
         uuid: uuidv4(),

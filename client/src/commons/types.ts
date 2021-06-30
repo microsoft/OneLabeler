@@ -7,6 +7,7 @@ export enum DataType {
   Image = 'Image',
   Text = 'Text',
   Video = 'Video',
+  YoutubeVideo = 'YoutubeVideo',
 }
 
 /** The types of label tasks. */
@@ -25,7 +26,7 @@ export interface IDataObject {
   /** The universal unique id of the data object. */
   uuid: string;
   /** The content of the data object. */
-  content?: any;
+  content?: unknown;
   /** The storage url of the data object. */
   url?: string | null;
   /** The features of the data object. */
@@ -201,23 +202,6 @@ export interface IStatus {
   value: StatusType;
 }
 
-export interface ICommand {
-  execute: () => void;
-  undo: () => void;
-}
-
-/** The enum of alert message types. */
-export enum MessageType {
-  Error = 'Error',
-  Success = 'Success',
-}
-
-/** The interface of an alert message. */
-export interface IMessage {
-  content: string;
-  type: MessageType;
-}
-
 /** The interface of data object storage. */
 export interface IDataObjectStorage {
   /** Count the number of stored data objects. */
@@ -291,13 +275,6 @@ export interface IStorageStore {
   dataObjects: IDataObjectStorage;
   labels: ILabelStorage;
   statuses: IStatusStorage;
-}
-
-/** The enum of projection method types. */
-export enum ProjectionMethodType {
-  PCA = 'PCA',
-  MDS = 'MDS',
-  TSNE = 't-SNE',
 }
 
 /** The interface of a model service. */
@@ -474,4 +451,28 @@ export type TaskWindow = {
   process: Process;
   isPinned: boolean;
   isMinimized: boolean;
+}
+
+export interface ICommand {
+  execute: () => void;
+  undo: () => void;
+}
+
+/** The enum of alert message types. */
+export enum MessageType {
+  Error = 'Error',
+  Success = 'Success',
+}
+
+/** The interface of an alert message. */
+export interface IMessage {
+  content: string;
+  type: MessageType;
+}
+
+/** The enum of projection method types. */
+export enum ProjectionMethodType {
+  PCA = 'PCA',
+  MDS = 'MDS',
+  TSNE = 't-SNE',
 }

@@ -168,7 +168,8 @@ export default Vue.extend({
       this.$emit('set:label-text', text);
     },
     onSetBrushCategory(category: Category) {
-      this.$emit('set:brush-category', category);
+      const brush = category === this.brushCategory ? null : category;
+      this.$emit('set:brush-category', brush);
     },
     onClickMinimize() {
       this.$emit('window:minimize');

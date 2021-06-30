@@ -29,6 +29,7 @@ const schemeCategory20: string[] = [
 ];
 
 /** The color scale for labels used in the system.  */
+// eslint-disable-next-line import/prefer-default-export
 export const label2color = (
   state: IState,
 ): ScaleOrdinal<string, string, never> => {
@@ -38,5 +39,3 @@ export const label2color = (
     .domain([unlabeledMark, ...classes]);
   return mapper;
 };
-
-export const _ = () => null;

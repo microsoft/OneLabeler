@@ -6,7 +6,7 @@
     >
       object [{{ i }}] :- { name:
       <span :style="{ 'background-color': getColorByCategory(Tag.objectName) }">
-        &lt;{{ name === null ? '' :  name.text }}&gt;
+        &lt;{{ name === null ? '' : name.text }}&gt;
       </span>
       , value:
       <span :style="{ 'background-color': getColorByCategory(Tag.objectValue) }">

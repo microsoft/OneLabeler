@@ -9,7 +9,10 @@
   >
     <div style="flex: 1 1 auto; display: flex; flex-direction: column;">
       <div ref="waveSpectrum" />
-      <div ref="waveform" style="flex: 1 1 auto" />
+      <div
+        ref="waveform"
+        style="flex: 1 1 auto"
+      />
     </div>
     <VMedia
       ref="media"

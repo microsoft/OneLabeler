@@ -56,7 +56,7 @@ class YoutubeVideoElement extends HTMLElement {
     }
   }
 
-  static get observedAttributes() { return ['src']; }
+  static get observedAttributes(): string[] { return ['src']; }
 
   private load(): void {
     this.metadataLoaded = false;

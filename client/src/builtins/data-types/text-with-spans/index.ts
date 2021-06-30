@@ -39,11 +39,10 @@ export default {
   label: 'text',
   importType: UploadTarget.File,
   handleImport: async (
-    input: File,
+    file: File,
     storage: IDataObjectStorage,
     labels: ILabelStorage,
-  ) => {
-    const file = input as File;
+  ): Promise<void> => {
     (await parseJsonFile(file) as ITextWithSpan[]).forEach((d) => {
       const dataObject: IText = {
         uuid: d.uuid,

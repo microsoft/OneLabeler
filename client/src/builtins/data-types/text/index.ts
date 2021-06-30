@@ -27,8 +27,10 @@ export default {
   ],
   label: 'text',
   importType: UploadTarget.File,
-  handleImport: async (input: File, storage: IDataObjectStorage) => {
-    const file = input as File;
+  handleImport: async (
+    file: File,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
     (await parseJsonFile(file) as string[]).forEach((content) => {
       const dataObject: IText = {
         uuid: uuidv4(),

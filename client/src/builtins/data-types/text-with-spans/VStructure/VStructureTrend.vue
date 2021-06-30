@@ -12,9 +12,11 @@
       :key="i"
     >
       part [{{ i }}] :- { time:
-      <span :style="{ 'background-color': time === null
-        ? undefined : getColorByCategory(time.category) }">
-        &lt;{{ time === null ? '' :  time.text }}&gt;
+      <span
+        :style="{ 'background-color': time === null
+          ? undefined : getColorByCategory(time.category) }"
+      >
+        &lt;{{ time === null ? '' : time.text }}&gt;
       </span>
       , value:
       <span :style="{ 'background-color': getColorByCategory(Tag.objectValue) }">

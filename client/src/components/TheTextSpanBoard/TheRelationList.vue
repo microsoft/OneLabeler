@@ -114,7 +114,7 @@ export default Vue.extend({
       const { labelSpans } = this;
       const uuid2span: Record<string, ILabelTextSpan> = {};
       if (labelSpans === null) return uuid2span;
-      labelSpans.forEach((d: ILabelTextSpan, i) => {
+      labelSpans.forEach((d: ILabelTextSpan) => {
         uuid2span[d.uuid] = d;
       });
       return uuid2span;

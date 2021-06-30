@@ -34,8 +34,10 @@ export default {
   ],
   label: 'image',
   importType: UploadTarget.Folder,
-  handleImport: async (input: FileList, storage: IDataObjectStorage) => {
-    const files = input as FileList;
+  handleImport: async (
+    files: FileList,
+    storage: IDataObjectStorage,
+  ): Promise<void> => {
     await Promise.all([...files].map(async (file) => {
       /*
       const { name } = file;

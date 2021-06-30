@@ -12,9 +12,9 @@
       :label2color="label2color"
       :height="'70%'"
       :width="'100%'"
+      class="px-2"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
-      class="px-2"
     />
 
     <!-- The annotated time spans. -->
@@ -27,12 +27,12 @@
       :spans="spans"
       :selected-span="selectedSpan"
       :label2color="label2color"
+      class="ma-2"
+      style="flex: 1 1 auto"
       @create:span="onCreateSpan"
       @select:span="onSelectSpan"
       @update:span="onUpdateSpan"
       @select:slot="onSelectSlot"
-      class="ma-2"
-      style="flex: 1 1 auto"
     />
   </div>
 </template>
