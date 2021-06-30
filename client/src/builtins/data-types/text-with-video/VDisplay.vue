@@ -9,8 +9,8 @@
   >
     <VMedia
       ref="media"
-      component="youtube-video"
       :key="dataObject.uuid"
+      component="youtube-video"
       :src="dataObject.content.url"
       :width="'100%'"
       :height="'70%'"
@@ -18,11 +18,13 @@
       @loadedmetadata="onLoadedMetadata"
     />
     <div
-      ref="textElement"
       style="overflow-y: scroll; font-size: 24px; line-height: initial;"
       @scroll="onScroll"
     >
-      {{ dataObject.content.text }}
+      <!-- Note: don't use linebreak between the text,
+        otherwise a white space will be added -->
+      <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+      <p ref="textElement">{{ dataObject.content.text }}</p>
     </div>
   </div>
 </template>

@@ -1,48 +1,15 @@
 <template>
   <div
     :style="{
-      'width': widthStr,
-      'height': heightStr,
+      width: widthStr,
+      height: heightStr,
       'overflow-y': 'scroll',
       'font-size': '24px',
       'line-height': 'initial',
-      'display': 'flex',
-      'flex-direction': 'row',
     }"
     @scroll="onScroll"
   >
     <div>
-      <!-- The data table. -->
-      <v-simple-table>
-        <thead>
-          <tr>
-            <th
-              v-for="attr in attributes"
-              :key="attr"
-              class="text-left"
-            >
-              {{ attr }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(item, i) in table"
-            :key="i"
-          >
-            <td
-              v-for="attr in attributes"
-              :key="attr"
-            >
-              {{ item[attr] }}
-            </td>
-          </tr>
-        </tbody>
-      </v-simple-table>
-
-      <v-divider class="pb-4" />
-
-      <!-- The document to annotate. -->
       <div
         class="px-2"
         style="flex: 1 1 auto;"
@@ -50,34 +17,45 @@
         <!-- Note: don't use linebreak between the text,
           otherwise a white space will be added -->
         <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
-        <p ref="textElement">{{ text }}</p>
+        <p ref="textElement">{{ dataObject.content }}</p>
       </div>
     </div>
+    <v-divider class="pb-4" />
+    <VStructure
+      :data-object="dataObject"
+      :label="label"
+      :label2color="label2color"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { IDataObject } from '@/commons/types';
-
-interface ITextWithTable extends IDataObject {
-  /** The content of the data object. */
-  content: {
-    /** The table stored as a list of objects. */
-    table: Record<string, number | string>[];
-    /** The sentence accompanying the table. */
-    sentence: string;
-  };
-}
+import { IText, ILabel } from '@/commons/types';
+import VStructure from './VStructure/VStructure.vue';
 
 export default Vue.extend({
   name: 'VDisplay',
+  components: { VStructure },
   props: {
+    /**
+     * @description The data object to be rendered.
+     */
     dataObject: {
-      type: Object as PropType<ITextWithTable>,
+      type: Object as PropType<IText>,
       required: true,
     },
-    /** The width of the svg as a number or string of form '...%' */
+    label: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
+    },
+    label2color: {
+      type: Function as PropType<(label: string) => string>,
+      required: true,
+    },
+    /**
+     * @description The width of the svg as a number or string of form '...%'
+     */
     width: {
       type: [Number, String],
       default: undefined,
@@ -86,7 +64,9 @@ export default Vue.extend({
           || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
       },
     },
-    /** The height of the svg as a number or string of form '...%' */
+    /**
+     * @description The height of the svg as a number or string of form '...%'
+     */
     height: {
       type: [Number, String],
       default: undefined,
@@ -97,17 +77,6 @@ export default Vue.extend({
     },
   },
   computed: {
-    table() {
-      return this.dataObject.content.table;
-    },
-    text(): string {
-      return this.dataObject.content.sentence;
-    },
-    attributes(): string[] {
-      const { table } = this;
-      if (table.length === 0) return [];
-      return Object.keys(table[0]);
-    },
     widthStr(): string {
       const { width } = this;
       if (typeof width === 'number') return `${width}px`;

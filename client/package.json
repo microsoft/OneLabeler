@@ -15,6 +15,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@vue/composition-api": "^1.0.0-rc.12",
     "ajv": "^7.0.3",
     "axios": "^0.21.1",
     "bson-objectid": "^2.0.1",

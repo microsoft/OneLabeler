@@ -208,6 +208,7 @@ export default Vue.extend({
       if (anchorNode !== textNode) return;
 
       const text: string = selection.toString();
+      // Note: the index is zero based (first letter has index 0).
       const start: number = Math.min(selection.anchorOffset, selection.focusOffset);
       const end: number = Math.max(selection.anchorOffset, selection.focusOffset);
       // Clear the text selection.

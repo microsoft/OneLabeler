@@ -1,16 +1,18 @@
 <template>
   <div
-    ref="textElement"
     :style="{
-      'width': widthStr,
-      'height': heightStr,
+      width: widthStr,
+      height: heightStr,
       'overflow-y': 'scroll',
       'font-size': '24px',
       'line-height': 'initial',
     }"
     @scroll="onScroll"
   >
-    {{ dataObject.content }}
+    <!-- Note: don't use linebreak between the text,
+      otherwise a white space will be added -->
+    <!-- eslint-disable-next-line vue/singleline-html-element-content-newline -->
+    <p ref="textElement">{{ dataObject.content }}</p>
   </div>
 </template>
 
