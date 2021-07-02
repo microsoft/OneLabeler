@@ -1,7 +1,3 @@
-from typing import NamedTuple, Union
-
-from sklearn.base import BaseEstimator
-
 """The label type."""
 Label = str
 

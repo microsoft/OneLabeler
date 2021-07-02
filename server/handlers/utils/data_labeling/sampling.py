@@ -1,12 +1,12 @@
 from typing import Any, List, Union
 
 import numpy as np
-from scipy import stats
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import rbf_kernel
 from sklearn.neighbors import KernelDensity
 from sklearn.base import BaseEstimator
+from sklearn.utils import check_random_state
 from modAL.uncertainty import (classifier_uncertainty,
                                classifier_margin,
                                classifier_entropy)
