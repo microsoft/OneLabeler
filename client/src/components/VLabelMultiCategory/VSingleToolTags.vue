@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="display: flex">
     <v-btn
       v-for="category in classes"
       :key="category"
