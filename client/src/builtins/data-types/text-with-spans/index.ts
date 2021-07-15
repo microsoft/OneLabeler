@@ -36,7 +36,7 @@ export default {
     LabelTaskType.SpanClassification,
     LabelTaskType.AnnotationRelation,
   ],
-  label: 'text',
+  label: 'text with spans',
   importType: UploadTarget.File,
   handleImport: async (
     file: File,

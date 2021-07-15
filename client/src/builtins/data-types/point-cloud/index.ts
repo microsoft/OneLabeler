@@ -53,10 +53,10 @@ export default {
         const [nDataObjects, nPoints, nDims] = shape;
         const length = nPoints * nDims;
         for (let i = 0; i < nDataObjects; i += 1) {
-          const points = toMatrix(value.slice(length * i, length * i + length), nDims) as Vector3d[];
+          const slice = value.slice(length * i, length * i + length);
           const dataObject: IPointCloud = {
             uuid: uuidv4(),
-            content: points,
+            content: toMatrix(slice, nDims) as Vector3d[],
           };
           storage.upsert(dataObject);
         }
