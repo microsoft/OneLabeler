@@ -6,6 +6,7 @@ import audioTypeSetup from './audio';
 import imageTypeSetup from './image';
 import videoTypeSetup from './video';
 import youtubeVideoTypeSetup from './youtube-video';
+import pointCloudTypeSetup from './point-cloud';
 import textTypeSetup from './text';
 import textWithSpansTypeSetup from './text-with-spans';
 import textWithTableTypeSetup from './text-with-table';
@@ -16,6 +17,7 @@ export default [
   imageTypeSetup,
   videoTypeSetup,
   youtubeVideoTypeSetup,
+  pointCloudTypeSetup,
   textTypeSetup,
   textWithSpansTypeSetup,
   textWithTableTypeSetup,

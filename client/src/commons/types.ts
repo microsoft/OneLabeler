@@ -8,6 +8,7 @@ export enum DataType {
   Text = 'Text',
   Video = 'Video',
   YoutubeVideo = 'YoutubeVideo',
+  PointCloud = 'PointCloud',
 }
 
 /** The types of label tasks. */
@@ -75,6 +76,14 @@ export interface IVideo extends IMedia {
   height: number;
   /** The duration of the video. */
   duration?: number;
+}
+
+export type Vector3d = [number, number, number];
+
+/** The interface of a point cloud object. */
+export interface IPointCloud extends IDataObject {
+  /** The 3d points. */
+  content: Vector3d[];
 }
 
 /** The label category. */
