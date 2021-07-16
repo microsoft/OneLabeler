@@ -17,6 +17,7 @@ type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
 )[];
 
+/** Reshape 1d array to 2d array with the given width. */
 const toMatrix = <T>(arr: T[], width: number) => arr.reduce(
   (rows: T[][], entry: T, index: number) => {
     if (index % width === 0) {
@@ -76,7 +77,6 @@ export default {
     return dataObjects.map((d) => {
       const partial = {
         uuid: d.uuid,
-        url: d.url,
         content: d.content,
       };
       const idx = uuid2idxInLabels[d.uuid];

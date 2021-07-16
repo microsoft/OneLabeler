@@ -16,6 +16,7 @@ Make sure you have the following installed:
 
 - [Node](https://nodejs.org/en/) (at least the latest LTS (14.15.3 as of 2020/12/29))
 - [NPM](https://www.npmjs.com/get-npm) (at least 6.14.9 (automatically installed when installing Node))
+- [Vue CLI](https://cli.vuejs.org/)
 
 ## Installation
 
