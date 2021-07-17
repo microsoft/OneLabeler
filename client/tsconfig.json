@@ -21,12 +21,17 @@
     ],
     "paths": {
       "@/*": ["src/*"],
+      "jsfive": ["./src/types/jsfive"]
     },
     "lib": [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
     ]
   },
   "include": [
@@ -39,6 +44,7 @@
     "plugins/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/types/**"
   ]
 }
