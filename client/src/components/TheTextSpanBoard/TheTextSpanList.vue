@@ -19,25 +19,25 @@
         :ripple="false"
         class="rounded-0 elevation-0 pa-2"
         outlined
-        @click="onSelectLabelSpan(labelSpan)"
+        @click="$emit('select:span', labelSpan)"
       >
         <div style="display: flex">
-          <v-btn
-            class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
-            :style="{ 'border-color': '#bbb' }"
-            x-small
-            outlined
+          <div
+            class="px-1"
+            style="display: flex; align-items: center;
+              font-size: 0.875rem; height: 20px;
+              border: thin solid rgba(0,0,0,.12); border-radius: 2px;"
           >
             {{ labelSpan.category }}
             <v-icon
-              class="pl-2"
+              class="pl-1"
               aria-hidden="true"
               small
               :style="{ color: label2color(labelSpan.category) }"
             >
               $vuetify.icons.values.square
             </v-icon>
-          </v-btn>
+          </div>
           <v-spacer />
           <v-btn
             title="remove"
@@ -46,7 +46,7 @@
             x-small
             icon
             outlined
-            @click.stop="onRemoveLabelSpan(labelSpan)"
+            @click.stop="$emit('remove:span', labelSpan)"
           >
             <v-icon
               aria-hidden="true"
@@ -56,7 +56,7 @@
             </v-icon>
           </v-btn>
           <v-btn
-            v-if="enableAnnotationRelation"
+            v-if="includesAnnotationRelation"
             title="link"
             class="view-header-button elevation-0"
             :style="{
@@ -119,16 +119,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    enableAnnotationRelation(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.AnnotationRelation,
-      ) >= 0;
+    includesAnnotationRelation(): boolean {
+      return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
     },
   },
   methods: {
-    onRemoveLabelSpan(labelSpan: ILabelTextSpan): void {
-      this.$emit('remove:span', labelSpan);
-    },
     onCreateLabelRelation(labelSpan: ILabelTextSpan): void {
       if (this.sourceUuid === null) {
         this.sourceUuid = labelSpan.uuid;
@@ -141,9 +136,6 @@ export default Vue.extend({
         this.$emit('create:relation', relation);
         this.sourceUuid = null;
       }
-    },
-    onSelectLabelSpan(labelSpan: ILabelTextSpan): void {
-      this.$emit('select:span', labelSpan);
     },
     isSelected(labelSpan: ILabelTextSpan): boolean {
       const { selectedSpan } = this;

@@ -1,7 +1,7 @@
 <template>
   <VToolbar
-    @window:minimize="onClickMinimize"
-    @window:pin="onClickPin"
+    @window:minimize="$emit('window:minimize')"
+    @window:pin="$emit('window:pin')"
   >
     <template #title>
       <v-icon
@@ -62,7 +62,7 @@
                     'height': '40px',
                     'margin': '0.5px',
                   }"
-                  @click="onSetMatrixShape(row, column)"
+                  @click="$emit('set:matrix-shape', row, column)"
                 />
               </template>
             </template>
@@ -95,17 +95,6 @@ export default Vue.extend({
       maxRows: 3,
       maxColumns: 3,
     };
-  },
-  methods: {
-    onSetMatrixShape(nRows: number, nColumns: number) {
-      this.$emit('set:matrix-shape', nRows, nColumns);
-    },
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
-    },
   },
 });
 </script>

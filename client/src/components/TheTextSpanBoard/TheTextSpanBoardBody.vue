@@ -39,7 +39,7 @@
         @scroll="onScroll"
       />
       <TheTextSpanList
-        v-if="enableSpanClassification"
+        v-if="includesSpanClassification"
         :label-tasks="labelTasks"
         :label-spans="labelSpans"
         :label2color="label2color"
@@ -51,7 +51,7 @@
         @create:relation="onCreateLabelRelation"
       />
       <TheRelationList
-        v-if="enableAnnotationRelation"
+        v-if="includesAnnotationRelation"
         :label-relations="labelRelations"
         :label-spans="labelSpans"
         :label2color="label2color"
@@ -148,15 +148,11 @@ export default Vue.extend({
       if (label.relations === null || label.relations === undefined) return null;
       return label.relations;
     },
-    enableSpanClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.SpanClassification,
-      ) >= 0;
+    includesSpanClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.SpanClassification);
     },
-    enableAnnotationRelation(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.AnnotationRelation,
-      ) >= 0;
+    includesAnnotationRelation(): boolean {
+      return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
     },
   },
   watch: {

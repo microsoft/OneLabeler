@@ -1,7 +1,7 @@
 <template>
   <div
     class="pa-0"
-    style="height: 600px; width: 100%;"
+    style="height: 550px; width: 100%;"
   >
     <!-- set tabindex=-1 to make the element focusable -->
     <VFlowchart
@@ -10,7 +10,8 @@
       :nodes="flowchartGraph.nodes"
       :edges="flowchartGraph.edges"
       tabindex="-1"
-      style="height: 600px; width: 100%;"
+      style="width: 100%;"
+      height="550"
       @edit:node="onEditNode"
       @create:edge="onCreateEdge"
       @select:nodes="onSelectNodes"

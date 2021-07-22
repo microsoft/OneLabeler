@@ -1,7 +1,7 @@
 <template>
   <VToolbar
-    @window:minimize="onClickMinimize"
-    @window:pin="onClickPin"
+    @window:minimize="$emit('window:minimize')"
+    @window:pin="$emit('window:pin')"
   >
     <template #title>
       <v-icon
@@ -14,7 +14,7 @@
       Text
     </template>
     <template #tools>
-      <template v-if="enableClassification">
+      <template v-if="includesClassification">
         <v-divider
           class="mx-2"
           vertical
@@ -25,25 +25,25 @@
           :classes="classes"
           :button-color="label === null ? null : label2color(label.category)"
           :disabled="label === null"
-          @set:label-category="onSetLabelCategory"
+          @set:label-category="$emit('set:label-category', $event)"
         />
       </template>
 
-      <template v-if="enableMultiLabelClassification">
+      <template v-if="includesMultiLabelClassification">
         <v-divider
           class="mx-2"
           vertical
         />
         <!-- The data object label menu. -->
         <VMultiCategorySingleTool
-          :label-multi-category="label === null ? null : label.multiCategory"
           :classes="classes"
+          :label-multi-category="label === null ? null : label.multiCategory"
           :disabled="label === null"
-          @set:label-multi-category="onSetLabelMultiCategory"
+          @set:label-multi-category="$emit('set:label-multi-category', $event)"
         />
       </template>
 
-      <template v-if="enableFreeformText">
+      <template v-if="includesFreeformText">
         <v-divider
           class="mx-2"
           vertical
@@ -52,39 +52,21 @@
         <VFreeformTextSingleTool
           :label-text="label === null ? null : label.text"
           :disabled="label === null"
-          @set:label-text="onSetLabelText"
+          @set:label-text="$emit('set:label-text', $event)"
         />
       </template>
-      <template v-if="enableSpanClassification">
+
+      <template v-if="includesSpanClassification">
         <v-divider
           class="mx-2"
           vertical
         />
-        <v-btn
-          v-for="category in classes"
-          :key="category"
-          class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
-          :class="{ 'white--text': category === brushCategory }"
-          :style="{
-            'border-color': '#bbb',
-            'background-color': category === brushCategory
-              ? label2color(category)
-              : undefined,
-          }"
-          x-small
-          outlined
-          @click="onSetBrushCategory(category)"
-        >
-          {{ category }}
-          <v-icon
-            class="pl-2"
-            aria-hidden="true"
-            small
-            :style="`color: ${label2color(category)}`"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-        </v-btn>
+        <VSpanSingleTool
+          :classes="classes"
+          :brush-category="brushCategory"
+          :label2color="label2color"
+          @set:brush-category="$emit('set:brush-category', $event)"
+        />
       </template>
     </template>
   </VToolbar>
@@ -95,15 +77,13 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
-  ILabelText,
   LabelTaskType,
 } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
 import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
 import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
+import VSpanSingleTool from '@/components/VLabelSpan/VSingleTool.vue';
 
 export default Vue.extend({
   name: 'TheTextSpanBoardHeader',
@@ -112,6 +92,7 @@ export default Vue.extend({
     VCategorySingleTool,
     VMultiCategorySingleTool,
     VFreeformTextSingleTool,
+    VSpanSingleTool,
   },
   props: {
     labelTasks: {
@@ -136,46 +117,17 @@ export default Vue.extend({
     },
   },
   computed: {
-    enableClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.Classification,
-      ) >= 0;
+    includesClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Classification);
     },
-    enableMultiLabelClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.MultiLabelClassification,
-      ) >= 0;
+    includesMultiLabelClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
     },
-    enableFreeformText(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.FreeformText,
-      ) >= 0;
+    includesFreeformText(): boolean {
+      return this.labelTasks.includes(LabelTaskType.FreeformText);
     },
-    enableSpanClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.SpanClassification,
-      ) >= 0;
-    },
-  },
-  methods: {
-    onSetLabelCategory(category: ILabelCategory): void {
-      this.$emit('set:label-category', category);
-    },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      this.$emit('set:label-multi-category', multiCategory);
-    },
-    onSetLabelText(text: ILabelText): void {
-      this.$emit('set:label-text', text);
-    },
-    onSetBrushCategory(category: Category) {
-      const brush = category === this.brushCategory ? null : category;
-      this.$emit('set:brush-category', brush);
-    },
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
+    includesSpanClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.SpanClassification);
     },
   },
 });

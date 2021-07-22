@@ -17,18 +17,18 @@
 
     <div style="flex-grow: 1" />
 
-    <template v-if="enableClassification">
+    <template v-if="includesClassification">
       <!-- The data object label menu. -->
       <VCategorySingleTool
         :label-category="label === null ? null : label.category"
         :classes="classes"
         :button-color="buttonColor"
         :disabled="label === null"
-        @set:label-category="onSetLabelCategory"
+        @set:label-category="$emit('set:label-category', $event)"
       />
     </template>
 
-    <template v-if="enableMultiLabelClassification">
+    <template v-if="includesMultiLabelClassification">
       <v-divider
         class="mx-2"
         vertical
@@ -38,11 +38,11 @@
         :label-multi-category="label === null ? null : label.multiCategory"
         :classes="classes"
         :disabled="label === null"
-        @set:label-multi-category="onSetLabelMultiCategory"
+        @set:label-multi-category="$emit('set:label-multi-category', $event)"
       />
     </template>
 
-    <template v-if="enableFreeformText">
+    <template v-if="includesFreeformText">
       <v-divider
         class="mx-2"
         vertical
@@ -51,7 +51,7 @@
       <VFreeformTextSingleTool
         :label-text="label === null ? null : label.text"
         :disabled="label === null"
-        @set:label-text="onSetLabelText"
+        @set:label-text="$emit('set:label-text', $event)"
       />
     </template>
   </div>
@@ -62,9 +62,6 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
-  ILabelText,
   LabelTaskType,
   StatusType,
 } from '@/commons/types';
@@ -107,34 +104,17 @@ export default Vue.extend({
     },
   },
   computed: {
+    includesClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Classification);
+    },
+    includesMultiLabelClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
+    },
+    includesFreeformText(): boolean {
+      return this.labelTasks.includes(LabelTaskType.FreeformText);
+    },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
-    },
-    enableClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.Classification,
-      ) >= 0;
-    },
-    enableMultiLabelClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.MultiLabelClassification,
-      ) >= 0;
-    },
-    enableFreeformText(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.FreeformText,
-      ) >= 0;
-    },
-  },
-  methods: {
-    onSetLabelCategory(category: ILabelCategory): void {
-      this.$emit('set:label-category', category);
-    },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      this.$emit('set:label-multi-category', multiCategory);
-    },
-    onSetLabelText(text: ILabelText) {
-      this.$emit('set:label-text', text);
     },
   },
 });

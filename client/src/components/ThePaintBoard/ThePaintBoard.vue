@@ -2,18 +2,22 @@
   <v-card>
     <ThePaintBoardHeader
       :label-tasks="labelTasks"
+      :classes="classes"
       :stroke-label="strokeLabel"
       :stroke-shape="strokeShape"
       :stroke-width="strokeWidth"
       :mouse-operation="mouseOperation"
-      :classes="classes"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
+      :label="label"
       @reset:image-size="onResetImageSize"
       @set:stroke-label="onSetStrokeLabel"
       @set:stroke-shape="onSetStrokeShape"
       @set:stroke-width="onSetStrokeWidth"
       @set:mouse-operation="onSetMouseOperation"
+      @set:label-category="onSetLabelCategory"
+      @set:label-multi-category="onSetLabelMultiCategory"
+      @set:label-text="onSetLabelText"
       @window:minimize="onWindowMinimize"
       @window:pin="onWindowPin"
     />
@@ -72,8 +76,11 @@ import {
   IDataObject,
   IImage,
   ILabel,
+  ILabelCategory,
+  ILabelMultiCategory,
   ILabelShape,
   ILabelMask,
+  ILabelText,
   LabelTaskType,
   TaskWindow,
 } from '@/commons/types';
@@ -117,17 +124,9 @@ export default Vue.extend({
       default: null,
     },
   },
-  data(): {
-    strokeLabel: Category | null,
-    strokeShape: StrokeShapeType,
-    strokeWidth: number,
-    paginationHeight: number,
-    canvasHeight: number,
-    mouseOperation: MouseOperationType,
-    page: number,
-    } {
+  data() {
     return {
-      strokeLabel: null,
+      strokeLabel: null as Category | null,
       strokeShape: StrokeShapeType.Square,
       strokeWidth: 1,
       paginationHeight: 43.6,
@@ -137,7 +136,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    showCanvas() {
+    showCanvas(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;
     },
@@ -187,12 +186,12 @@ export default Vue.extend({
     this.initializeStrokeLabel();
   },
   methods: {
-    initializeStrokeLabel() {
+    initializeStrokeLabel(): void {
       if (this.strokeLabel === null && this.classes.length !== 0) {
         [this.strokeLabel] = this.classes;
       }
     },
-    onSetLabelMask(labelMaskCanvas: HTMLCanvasElement) {
+    onSetLabelMask(labelMaskCanvas: HTMLCanvasElement): void {
       if (this.dataObject === null) return;
       const { uuid } = this.dataObject as IImage;
       const filename = uuid;
@@ -209,13 +208,13 @@ export default Vue.extend({
         this.$emit('user-edit-label', uuid, newValue);
       });
     },
-    onAddLabelShape(labelShape: ILabelShape) {
+    onAddLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
       const shapes = labelShapes === null ? [labelShape] : [...labelShapes, labelShape];
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
-    onUpdateLabelShape(labelShape: ILabelShape) {
+    onUpdateLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
       let shapes: ILabelShape[];
@@ -230,7 +229,7 @@ export default Vue.extend({
       }
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
-    onRemoveLabelShape(labelShape: ILabelShape) {
+    onRemoveLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
       const shapes: ILabelShape[] = labelShapes === null
@@ -238,30 +237,51 @@ export default Vue.extend({
         : labelShapes.filter((d) => d.uuid !== labelShape.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
-    onResetImageSize() {
+    onSetLabelCategory(category: ILabelCategory): void {
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { category };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { multiCategory };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onSetLabelText(text: ILabelText): void {
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const { uuid } = dataObject;
+      const newValue: Partial<ILabel> = { text };
+      this.$emit('user-edit-label', uuid, newValue);
+    },
+    onResetImageSize(): void {
       (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();
     },
-    onSetStrokeLabel(strokeLabel: Category) {
+    onSetStrokeLabel(strokeLabel: Category): void {
       this.strokeLabel = strokeLabel;
     },
-    onSetStrokeShape(strokeShape: StrokeShapeType) {
+    onSetStrokeShape(strokeShape: StrokeShapeType): void {
       this.strokeShape = strokeShape;
     },
-    onSetStrokeWidth(strokeWidth: number) {
+    onSetStrokeWidth(strokeWidth: number): void {
       this.strokeWidth = strokeWidth;
     },
-    onSetMouseOperation(mouseOperation: MouseOperationType) {
+    onSetMouseOperation(mouseOperation: MouseOperationType): void {
       this.mouseOperation = mouseOperation;
     },
-    onWindowMinimize() {
+    onWindowMinimize(): void {
       const newValue: Partial<TaskWindow> = { isMinimized: true };
       this.$emit('edit-task-window', newValue);
     },
-    onWindowPin() {
+    onWindowPin(): void {
       const newValue: Partial<TaskWindow> = { isPinned: true };
       this.$emit('edit-task-window', newValue);
     },
-    setCanvasHeight() {
+    setCanvasHeight(): void {
       // update canvas size according to whether pagination is needed
       if (!this.showCanvas) {
         this.canvasHeight = 0;

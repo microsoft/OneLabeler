@@ -1,7 +1,7 @@
 <template>
   <VToolbar
-    @window:minimize="onClickMinimize"
-    @window:pin="onClickPin"
+    @window:minimize="$emit('window:minimize')"
+    @window:pin="$emit('window:pin')"
   >
     <template #title>
       <v-icon
@@ -14,14 +14,13 @@
       Image
     </template>
     <template #tools>
-      <!-- The set batch labels menu. -->
       <!-- reset image size button -->
       <v-btn
         title="reset image size"
         class="view-header-button ml-2"
         x-small
         icon
-        @click="onResetImageSize"
+        @click="$emit('reset:image-size')"
       >
         <v-icon
           aria-hidden="true"
@@ -40,11 +39,11 @@
       <!-- mouse operation mode toggle -->
       <v-btn-toggle
         :value="mouseOperationIndex"
-        :mandatory="objectShapeIndex === null"
+        :mandatory="mouseOperationIndex !== null"
         class="view-header-button-toggle"
       >
         <v-btn
-          v-for="btn in (enableImageSegmentation
+          v-for="btn in (includesSegmentation
             ? mouseOperationButtons : mouseOperationButtons.slice(0, 2))"
           :key="btn.mouseOperation"
           :title="btn.title"
@@ -52,7 +51,7 @@
           class="px-1"
           icon
           x-small
-          @click="onSetMouseOperation(btn.mouseOperation)"
+          @click="$emit('set:mouse-operation', btn.mouseOperation)"
         >
           <v-icon
             aria-hidden="true"
@@ -63,247 +62,124 @@
         </v-btn>
       </v-btn-toggle>
 
-      <template v-if="enableObjectDetection">
+      <template v-if="includesObjectDetection">
         <v-divider
           class="mx-2"
           vertical
         />
-
-        <!-- object shape toggle -->
-        <v-btn-toggle
-          :value="objectShapeIndex"
-          :mandatory="mouseOperationIndex === null"
-          class="view-header-button-toggle"
-        >
-          <v-btn
-            v-for="btn in objectShapeButtons"
-            :key="btn.mouseOperation"
-            :title="btn.title"
-            :disabled="btn.disabled"
-            class="px-1"
-            icon
-            x-small
-            @click="onSetMouseOperation(btn.mouseOperation)"
-          >
-            <v-icon
-              v-if="btn.icon === $vuetify.icons.values.drawPolygon"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.drawPolygon
-            </v-icon>
-            <v-icon
-              v-else-if="btn.icon === $vuetify.icons.values.drawSquare"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.drawSquare
-            </v-icon>
-            <v-icon
-              v-else-if="btn.icon === $vuetify.icons.values.drawCircle"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.drawCircle
-            </v-icon>
-            <v-icon
-              v-else
-              aria-hidden="true"
-              small
-            >
-              {{ btn.icon }}
-            </v-icon>
-          </v-btn>
-        </v-btn-toggle>
+        <VShapes2DSingleTool
+          :classes="classes"
+          :mouse-operation="mouseOperation"
+          :stroke-label="strokeLabel"
+          :label2color="label2color"
+          :label-tasks="labelTasks"
+          @set:mouse-operation="$emit('set:mouse-operation', $event)"
+          @set:stroke-label="$emit('set:stroke-label', $event)"
+        />
       </template>
 
-      <template v-if="enableImageSegmentation">
+      <template v-if="includesSegmentation">
         <v-divider
           class="mx-2"
           vertical
         />
-
-        <!-- stroke shape menu -->
-        <v-menu offset-y>
-          <template #activator="{ on }">
-            <v-btn
-              :disabled="mouseOperation !== MouseOperationType.PaintBrush
-                && mouseOperation !== MouseOperationType.PaintErase"
-              class="view-header-button subtitle-2"
-              title="Set Stroke Shape"
-              x-small
-              v-on="on"
-            >
-              Brush
-              <v-icon
-                class="pl-1"
-                style="width: 20px"
-                aria-hidden="true"
-                small
-              >
-                {{ strokeShapeMenu.optionsIcon[strokeShapeIndex] }}
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item
-              v-for="(option, i) in strokeShapeMenu.options"
-              :key="i"
-              class="subtitle-2"
-              style="min-height: 30px"
-              @click="onSetStrokeShape(option)"
-            >
-              {{ strokeShapeMenu.optionsText[i] }}
-              <div style="flex-grow: 1" />
-              <v-icon
-                class="pl-2"
-                aria-hidden="true"
-                small
-              >
-                {{ strokeShapeMenu.optionsIcon[i] }}
-              </v-icon>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <v-divider
-          class="mx-2"
-          vertical
+        <VSegment2DSingleTool
+          :classes="classes"
+          :mouse-operation="mouseOperation"
+          :stroke-label="strokeLabel"
+          :stroke-shape="strokeShape"
+          :stroke-width="strokeWidth"
+          :label2color="label2color"
+          @set:stroke-shape="$emit('set:stroke-shape', $event)"
+          @set:stroke-width="$emit('set:stroke-width', $event)"
+          @set:stroke-label="$emit('set:stroke-label', $event)"
         />
-
-        <!-- stroke width menu -->
-        <v-menu offset-y>
-          <template #activator="{ on }">
-            <v-btn
-              :disabled="mouseOperation !== MouseOperationType.PaintBrush
-                && mouseOperation !== MouseOperationType.PaintErase"
-              class="view-header-button subtitle-2"
-              title="Set Stroke Width"
-              x-small
-              v-on="on"
-            >
-              <div style="display: flex; flex-direction: row; align-items: center">
-                Size
-                <svg
-                  class="pl-1"
-                  width="30px"
-                  :height="`${strokeWidth + 1}px`"
-                >
-                  <rect
-                    :height="strokeWidth"
-                    width="30"
-                    :fill="(mouseOperation === MouseOperationType.PaintBrush
-                      || mouseOperation === MouseOperationType.PaintErase)
-                      ? 'black' : 'rgba(0,0,0,.26)'"
-                  />
-                </svg>
-              </div>
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item
-              v-for="(entry, i) in strokeWidthMenu.options"
-              :key="i"
-              style="min-height: 30px"
-              @click="onSetStrokeWidth(entry)"
-            >
-              <svg
-                width="60px"
-                height="18px"
-              >
-                <rect
-                  :y="9 - strokeWidthMenu.options[i]/2"
-                  :height="strokeWidthMenu.options[i]"
-                  width="60"
-                  fill="black"
-                />
-              </svg>
-            </v-list-item>
-          </v-list>
-        </v-menu>
       </template>
 
-      <v-divider
-        class="mx-2"
-        vertical
-      />
+      <template v-if="includesClassification">
+        <v-divider
+          class="mx-2"
+          vertical
+        />
+        <!-- The data object label menu. -->
+        <VCategorySingleTool
+          :label-category="label === null ? null : label.category"
+          :classes="classes"
+          :button-color="label === null ? null : label2color(label.category)"
+          :disabled="label === null"
+          @set:label-category="$emit('set:label-category', $event)"
+        />
+      </template>
 
-      <!-- stroke color menu -->
-      <v-menu
-        v-if="strokeLabel !== null"
-        offset-y
-      >
-        <template #activator="{ on }">
-          <v-btn
-            :disabled="mouseOperation === MouseOperationType.PanAndZoom
-              || mouseOperation === MouseOperationType.EditShape
-              || mouseOperation === MouseOperationType.PaintErase"
-            width="85"
-            class="view-header-button subtitle-2 pl-1 text-none"
-            title="Set Stroke Color"
-            x-small
-            v-on="on"
-          >
-            {{ `${strokeLabelMenu.length !== 0
-              ? strokeLabelMenu[strokeLabelIndex].category : ''}` }}
-            <v-spacer />
-            <v-icon
-              v-if="strokeLabelMenu.length !== 0"
-              aria-hidden="true"
-              small
-              :style="`color: ${strokeLabelMenu[strokeLabelIndex].color}`"
-            >
-              $vuetify.icons.values.square
-            </v-icon>
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item
-            v-for="option in strokeLabelMenu"
-            :key="option.category"
-            class="subtitle-2"
-            style="min-height: 30px"
-            @click="onSetStrokeLabel(option.category)"
-          >
-            {{ `${option.category}` }}
-            <div style="flex-grow: 1" />
-            <v-icon
-              class="pl-1"
-              style="float: right"
-              aria-hidden="true"
-              small
-              :style="`color: ${option.color}`"
-            >
-              $vuetify.icons.values.square
-            </v-icon>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-btn
-        v-else
-        class="view-header-button"
-        width="85"
-        title="Set Stroke Color"
-        x-small
-        disabled
-        icon
-      />
+      <template v-if="includesMultiLabelClassification">
+        <v-divider
+          class="mx-2"
+          vertical
+        />
+        <!-- The data object label menu. -->
+        <VMultiCategorySingleTool
+          :classes="classes"
+          :label-multi-category="label === null ? null : label.multiCategory"
+          :disabled="label === null"
+          @set:label-multi-category="$emit('set:label-multi-category', $event)"
+        />
+      </template>
+
+      <template v-if="includesFreeformText">
+        <v-divider
+          class="mx-2"
+          vertical
+        />
+        <!-- The create/edit freeform text annotation button. -->
+        <VFreeformTextSingleTool
+          :label-text="label === null ? null : label.text"
+          :disabled="label === null"
+          @set:label-text="$emit('set:label-text', $event)"
+        />
+      </template>
     </template>
   </VToolbar>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, LabelTaskType } from '@/commons/types';
+import { Category, ILabel, LabelTaskType } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import { MouseOperationType, StrokeShapeType } from './types';
+import VSegment2DSingleTool, {
+  MouseOperationType as LabelMaskMouseOperationType,
+  StrokeShapeType,
+} from '@/components/VLabelMask2D/VSingleTool.vue';
+import VShapes2DSingleTool, {
+  MouseOperationType as LabelShapesMouseOperationType,
+} from '@/components/VLabelShapes2D/VSingleTool.vue';
+import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
+import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
+import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
+
+const MouseOperationType = {
+  ...LabelMaskMouseOperationType,
+  ...LabelShapesMouseOperationType,
+};
+// eslint-disable-next-line no-redeclare
+type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperationType;
 
 export default Vue.extend({
   name: 'ThePaintBoardHeader',
-  components: { VToolbar },
+  components: {
+    VToolbar,
+    VSegment2DSingleTool,
+    VShapes2DSingleTool,
+    VCategorySingleTool,
+    VMultiCategorySingleTool,
+    VFreeformTextSingleTool,
+  },
   props: {
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
+    classes: {
+      type: Array as PropType<Category[]>,
       required: true,
     },
     strokeLabel: {
@@ -322,35 +198,40 @@ export default Vue.extend({
       type: String as PropType<MouseOperationType>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
-    unlabeledMark: {
-      type: String as PropType<Category>,
-      required: true,
-    },
     label2color: {
       type: Function as PropType<(category: string) => string>,
       required: true,
     },
-  },
-  data() {
-    return {
-      MouseOperationType,
-      strokeWidthMenu: {
-        options: [1, 5, 15],
-        optionsText: ['1', '5', '15'],
-      },
-      strokeShapeMenu: {
-        options: [StrokeShapeType.Circle, StrokeShapeType.Square],
-        optionsText: ['Circle', 'Square'],
-        optionsIcon: [this.$vuetify.icons.values.circle, this.$vuetify.icons.values.square],
-      },
-    };
+    label: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
+    },
   },
   computed: {
-    mouseOperationButtons() {
+    includesObjectDetection(): boolean {
+      return this.labelTasks.includes(LabelTaskType.ObjectDetection);
+    },
+    includesSegmentation(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Segmentation);
+    },
+    includesClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Classification);
+    },
+    includesMultiLabelClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
+    },
+    includesFreeformText(): boolean {
+      return this.labelTasks.includes(LabelTaskType.FreeformText);
+    },
+    classesNotEmpty(): boolean {
+      return this.classes.length !== 0;
+    },
+    mouseOperationButtons(): {
+      title: string,
+      icon: any,
+      mouseOperation: MouseOperationType,
+      disabled: boolean,
+      }[] {
       return [
         {
           title: 'pan & zoom',
@@ -378,106 +259,12 @@ export default Vue.extend({
         },
       ];
     },
-    objectShapeButtons() {
-      return [
-        {
-          title: 'bounding polygon',
-          icon: this.$vuetify.icons.values.drawPolygon,
-          mouseOperation: MouseOperationType.ClickCreatePolygon,
-          disabled: !this.classesNotEmpty,
-        },
-        {
-          title: 'bounding box',
-          icon: this.$vuetify.icons.values.drawSquare,
-          mouseOperation: MouseOperationType.ClickCreateRect,
-          disabled: !this.classesNotEmpty,
-        },
-        {
-          title: 'critical point',
-          icon: this.$vuetify.icons.values.drawCircle,
-          mouseOperation: MouseOperationType.ClickCreatePoint,
-          disabled: !this.classesNotEmpty,
-        },
-        {
-          title: 'free-form contour',
-          icon: this.$vuetify.icons.values.pen,
-          mouseOperation: MouseOperationType.LassoCreatePolygon,
-          disabled: !this.classesNotEmpty,
-        },
-        {
-          title: 'intellignet scissors',
-          icon: this.$vuetify.icons.values.scissors,
-          mouseOperation: MouseOperationType.ScissorsCreatePolygon,
-          disabled: !this.classesNotEmpty,
-        },
-      ];
-    },
-    enableObjectDetection(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.ObjectDetection,
-      ) >= 0;
-    },
-    enableImageSegmentation(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.Segmentation,
-      ) >= 0;
-    },
-    classesNotEmpty(): boolean {
-      return this.classes.length !== 0;
-    },
     mouseOperationIndex(): number | null {
       const { mouseOperation, mouseOperationButtons } = this;
       const index = mouseOperationButtons
         .findIndex((d) => d.mouseOperation === mouseOperation);
       if (index === -1) return null;
       return index;
-    },
-    objectShapeIndex(): number | null {
-      const { mouseOperation, objectShapeButtons } = this;
-      const index = objectShapeButtons
-        .findIndex((d) => d.mouseOperation === mouseOperation);
-      if (index === -1) return null;
-      return index;
-    },
-    strokeShapeIndex(): number {
-      const { strokeShape, strokeShapeMenu } = this;
-      const index = strokeShapeMenu.options.findIndex((d) => d === strokeShape);
-      return index;
-    },
-    strokeLabelIndex(): number {
-      const { strokeLabel, strokeLabelMenu } = this;
-      const index = strokeLabelMenu.findIndex((d) => d.category === strokeLabel);
-      return index;
-    },
-    strokeLabelMenu() {
-      const { classes, label2color } = this;
-      return classes.map((d: Category) => ({
-        category: d,
-        color: label2color(d),
-      }));
-    },
-  },
-  methods: {
-    onResetImageSize() {
-      this.$emit('reset:image-size');
-    },
-    onSetMouseOperation(mouseOperation: MouseOperationType) {
-      this.$emit('set:mouse-operation', mouseOperation);
-    },
-    onSetStrokeShape(strokeShape: StrokeShapeType) {
-      this.$emit('set:stroke-shape', strokeShape);
-    },
-    onSetStrokeWidth(strokeWidth: number) {
-      this.$emit('set:stroke-width', strokeWidth);
-    },
-    onSetStrokeLabel(strokeLabel: Category) {
-      this.$emit('set:stroke-label', strokeLabel);
-    },
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
     },
   },
 });

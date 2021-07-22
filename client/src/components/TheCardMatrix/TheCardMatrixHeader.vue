@@ -1,7 +1,7 @@
 <template>
   <VToolbar
-    @window:minimize="onClickMinimize"
-    @window:pin="onClickPin"
+    @window:minimize="$emit('window:minimize')"
+    @window:pin="$emit('window:pin')"
   >
     <template #title>
       <v-icon
@@ -21,13 +21,13 @@
       Sampled Objects
     </template>
     <template #tools>
-      <template v-if="enableClassification">
+      <template v-if="includesClassification">
         <!-- The data object label menu. -->
         <VCategoryBatchTool
           :classes="classes"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
-          @set:category="onSetLabelBatchCategory"
+          @set:category="$emit('set:label-batch-category', $event)"
         />
       </template>
     </template>
@@ -76,21 +76,8 @@ export default Vue.extend({
     return { DataType };
   },
   computed: {
-    enableClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.Classification,
-      ) >= 0;
-    },
-  },
-  methods: {
-    onSetLabelBatchCategory(category: Category): void {
-      this.$emit('set:label-batch-category', category);
-    },
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
+    includesClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Classification);
     },
   },
 });

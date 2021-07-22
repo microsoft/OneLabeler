@@ -1,7 +1,7 @@
 <template>
   <VToolbar
-    @window:minimize="onClickMinimize"
-    @window:pin="onClickPin"
+    @window:minimize="$emit('window:minimize')"
+    @window:pin="$emit('window:pin')"
   >
     <template #title>
       <v-icon
@@ -14,7 +14,7 @@
       Video
     </template>
     <template #tools>
-      <template v-if="enableClassification">
+      <template v-if="includesClassification">
         <v-divider
           class="mx-2"
           vertical
@@ -25,11 +25,11 @@
           :classes="classes"
           :button-color="label === null ? null : label2color(label.category)"
           :disabled="label === null"
-          @set:label-category="onSetLabelCategory"
+          @set:label-category="$emit('set:label-category', $event)"
         />
       </template>
 
-      <template v-if="enableMultiLabelClassification">
+      <template v-if="includesMultiLabelClassification">
         <v-divider
           class="mx-2"
           vertical
@@ -39,11 +39,11 @@
           :label-multi-category="label === null ? null : label.multiCategory"
           :classes="classes"
           :disabled="label === null"
-          @set:label-multi-category="onSetLabelMultiCategory"
+          @set:label-multi-category="$emit('set:label-multi-category', $event)"
         />
       </template>
 
-      <template v-if="enableFreeformText">
+      <template v-if="includesFreeformText">
         <v-divider
           class="mx-2"
           vertical
@@ -52,7 +52,7 @@
         <VFreeformTextSingleTool
           :label-text="label === null ? null : label.text"
           :disabled="label === null"
-          @set:label-text="onSetLabelText"
+          @set:label-text="$emit('set:label-text', $event)"
         />
       </template>
     </template>
@@ -64,9 +64,6 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
-  ILabelText,
   LabelTaskType,
 } from '@/commons/types';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
@@ -101,37 +98,14 @@ export default Vue.extend({
     },
   },
   computed: {
-    enableClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.Classification,
-      ) >= 0;
+    includesClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.Classification);
     },
-    enableMultiLabelClassification(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.MultiLabelClassification,
-      ) >= 0;
+    includesMultiLabelClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
     },
-    enableFreeformText(): boolean {
-      return this.labelTasks.findIndex(
-        (d: LabelTaskType) => d === LabelTaskType.FreeformText,
-      ) >= 0;
-    },
-  },
-  methods: {
-    onSetLabelCategory(category: ILabelCategory): void {
-      this.$emit('set:label-category', category);
-    },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      this.$emit('set:label-multi-category', multiCategory);
-    },
-    onSetLabelText(text: ILabelText): void {
-      this.$emit('set:label-text', text);
-    },
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
+    includesFreeformText(): boolean {
+      return this.labelTasks.includes(LabelTaskType.FreeformText);
     },
   },
 });
