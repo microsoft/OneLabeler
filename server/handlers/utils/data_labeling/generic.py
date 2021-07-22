@@ -3,7 +3,7 @@ The implementation of the generic MI3 pipeline.
 """
 
 from abc import abstractmethod, ABCMeta
-from typing import List, NoReturn, Optional, Tuple
+from typing import List
 
 import numpy as np
 
@@ -149,12 +149,4 @@ class GenericPipeline(metaclass=ABCMeta):
         should_stop : bool
             Whether the active learning process should stop.
         """
-
-    @staticmethod
-    @abstractmethod
-    def update_labeled_dataset():
-        """
-        The module for adding user labeling to labeled dataset.
-        """
-        return
     '''
