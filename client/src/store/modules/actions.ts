@@ -59,12 +59,20 @@ export const setStop = (
   commit(types.SET_STOP, stop);
 };
 
-export const pushClasses = (
+export const addCategory = (
   { commit, state }: ActionContext<IState, IState>,
   category: Category,
 ): void => {
   const { classes } = state;
   commit(types.SET_CLASSES, [...classes, category]);
+};
+
+export const removeCategory = (
+  { commit, state }: ActionContext<IState, IState>,
+  category: Category,
+): void => {
+  const { classes } = state;
+  commit(types.SET_CLASSES, classes.filter((d) => d !== category));
 };
 
 export const pushCommandHistory = (
