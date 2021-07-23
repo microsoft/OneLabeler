@@ -97,12 +97,18 @@ export default Vue.extend({
     return {
       maxWidth: '600px',
       buttonText: 'note',
-      buttonTitle: 'note',
       buttonIcon: this.$vuetify.icons.values.text,
       dialogTitle: 'Freeform Text Annotation',
       dialog: false,
       text: null as string | null,
     };
+  },
+  computed: {
+    buttonTitle(): string {
+      const { labelText } = this;
+      if (labelText === null) return 'note';
+      return `note: ${labelText.content}`;
+    },
   },
   watch: {
     labelText() {
