@@ -4,14 +4,8 @@
     @window:pin="$emit('window:pin')"
   >
     <template #title>
-      <v-icon
-        class="px-2"
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.fileText
-      </v-icon>
-      Text
+      <VDataTypeIcon :data-type="dataType" />
+      Sampled Object
     </template>
     <template #tools>
       <template v-if="includesClassification">
@@ -22,7 +16,7 @@
         <!-- The data object label menu. -->
         <VCategorySingleTool
           :label-category="label === null ? null : label.category"
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
           :button-color="label === null ? null : label2color(label.category)"
           :disabled="label === null"
           @set:label-category="$emit('set:label-category', $event)"
@@ -36,8 +30,8 @@
         />
         <!-- The data object label menu. -->
         <VMultiCategorySingleTool
-          :classes="classes"
           :label-multi-category="label === null ? null : label.multiCategory"
+          :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
           :disabled="label === null"
           @set:label-multi-category="$emit('set:label-multi-category', $event)"
         />
@@ -62,7 +56,7 @@
           vertical
         />
         <VSpanSingleTool
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.SpanClassification)"
           :brush-category="brushCategory"
           :label2color="label2color"
           @set:brush-category="$emit('set:brush-category', $event)"
@@ -76,9 +70,11 @@
 import Vue, { PropType } from 'vue';
 import {
   Category,
+  DataType,
   ILabel,
   LabelTaskType,
 } from '@/commons/types';
+import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
 import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
@@ -88,6 +84,7 @@ import VSpanSingleTool from '@/components/VLabelSpan/VSingleTool.vue';
 export default Vue.extend({
   name: 'TheTextSpanBoardHeader',
   components: {
+    VDataTypeIcon,
     VToolbar,
     VCategorySingleTool,
     VMultiCategorySingleTool,
@@ -95,12 +92,20 @@ export default Vue.extend({
     VSpanSingleTool,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     brushCategory: {
@@ -116,6 +121,9 @@ export default Vue.extend({
       default: null,
     },
   },
+  data() {
+    return { DataType, LabelTaskType };
+  },
   computed: {
     includesClassification(): boolean {
       return this.labelTasks.includes(LabelTaskType.Classification);
@@ -128,6 +136,17 @@ export default Vue.extend({
     },
     includesSpanClassification(): boolean {
       return this.labelTasks.includes(LabelTaskType.SpanClassification);
+    },
+  },
+  methods: {
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

@@ -7,7 +7,7 @@
         x-small
         v-on="on"
       >
-        {{ 'Multi-Label' }}
+        Multi-Label
       </v-btn>
     </template>
     <v-list dense>
@@ -33,10 +33,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
-  Category,
-  ILabelMultiCategory,
-} from '@/commons/types';
+import { Category, ILabelMultiCategory } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VSingleTool',
@@ -70,7 +67,7 @@ export default Vue.extend({
     isCategorySelected(category: Category): boolean {
       const { labelMultiCategory } = this;
       if (labelMultiCategory === null) return false;
-      return labelMultiCategory.find((d) => d === category) !== undefined;
+      return labelMultiCategory.includes(category);
     },
   },
 });

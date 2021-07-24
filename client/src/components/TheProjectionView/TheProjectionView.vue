@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <div style="display: flex; flex-direction: column;">
     <TheProjectionViewHeader
       :n-rows="nRows"
       :n-columns="nColumns"
@@ -10,7 +10,7 @@
     <v-divider />
     <div
       ref="container"
-      style="height: calc(100% - 30px); display: flex; align-items: center;"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
     >
       <div
         v-if="nTotal >= 2 && isFeatureValuesValid"
@@ -59,7 +59,7 @@
         Feature Values not Computed
       </p>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

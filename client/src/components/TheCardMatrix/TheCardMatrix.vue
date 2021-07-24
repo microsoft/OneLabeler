@@ -1,9 +1,10 @@
 <template>
-  <v-card>
+  <v-card style="display: flex; flex-direction: column;">
     <TheCardMatrixHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       @set:label-batch-category="onSetLabelBatchCategory"
@@ -11,7 +12,7 @@
       @window:pin="onWindowPin"
     />
     <v-divider />
-    <div style="height: calc(100% - 30px); display: flex; align-items: center;">
+    <div style="flex: 1 1 auto; display: flex; align-items: center;">
       <VCardMatrix
         v-if="dataObjects.length !== 0"
         style="height: 100%; width: 100%;"
@@ -21,6 +22,7 @@
         :labels="labels"
         :statuses="statuses"
         :classes="classes"
+        :category-tasks="categoryTasks"
         :selected-uuids="selectedUuids"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
@@ -90,6 +92,10 @@ export default Vue.extend({
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     unlabeledMark: {

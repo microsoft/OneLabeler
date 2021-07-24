@@ -28,15 +28,15 @@
               font-size: 0.875rem; height: 20px;
               border: thin solid rgba(0,0,0,.12); border-radius: 2px;"
           >
-            {{ labelSpan.category }}
             <v-icon
-              class="pl-1"
+              class="pr-1"
               aria-hidden="true"
               small
               :style="{ color: label2color(labelSpan.category) }"
             >
               $vuetify.icons.values.square
             </v-icon>
+            {{ labelSpan.category }}
           </div>
           <v-spacer />
           <v-btn

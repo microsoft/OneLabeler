@@ -22,15 +22,16 @@
           :label="labels[i]"
           :status="statuses[i]"
           :classes="classes"
+          :category-tasks="categoryTasks"
           :title="''"
           :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
           :button-color="getColor(labels[i])"
           :height="Math.max(cardHeight - 2 * padding, 0)"
           :width="Math.max(cardWidth - 2 * padding, 0)"
-          @click:card="onClickCard"
-          @set:label-category="onSetLabelCategory"
-          @set:label-multi-category="onSetLabelMultiCategory"
-          @set:label-text="onSetLabelText"
+          @click:card="$emit('click:card', dataObjects[i], $event)"
+          @set:label-category="$emit('set:label-category', dataObjects[i], $event)"
+          @set:label-multi-category="$emit('set:label-multi-category', dataObjects[i], $event)"
+          @set:label-text="$emit('set:label-text', dataObjects[i], $event)"
         />
       </div>
     </div>
@@ -58,9 +59,6 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
-  ILabelText,
   LabelTaskType,
   StatusType,
 } from '@/commons/types';
@@ -68,9 +66,7 @@ import VDataObjectCard from './VDataObjectCard.vue';
 
 export default Vue.extend({
   name: 'VCardMatrix',
-  components: {
-    VDataObjectCard,
-  },
+  components: { VDataObjectCard },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -96,6 +92,10 @@ export default Vue.extend({
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     selectedUuids: {
@@ -162,28 +162,10 @@ export default Vue.extend({
     this.updateCardSize();
   },
   methods: {
-    onSetLabelCategory(dataObject: IDataObject, category: ILabelCategory) {
-      this.$emit('set:label-category', dataObject, category);
-    },
-    onSetLabelMultiCategory(dataObject: IDataObject, multiCategory: ILabelMultiCategory) {
-      this.$emit('set:label-multi-category', dataObject, multiCategory);
-    },
-    onSetLabelText(dataObject: IDataObject, text: ILabelText) {
-      this.$emit('set:label-text', dataObject, text);
-    },
-    onClickCard(dataObject: IDataObject, e: MouseEvent) {
-      this.$emit('click:card', dataObject, e);
-    },
     updateCardSize() {
-      const {
-        container,
-        pagination,
-        labelCards,
-      } = this.$refs as {
-        container: HTMLElement,
-        pagination: HTMLElement,
-        labelCards: HTMLElement,
-      };
+      const container = this.$refs.container as HTMLElement;
+      const pagination = this.$refs.pagination as HTMLElement;
+      const labelCards = this.$refs.labelCards as HTMLElement;
       const height = container.clientHeight;
       const width = container.clientWidth;
       const paginationHeight = this.enablePagination ? pagination.clientHeight : 0;

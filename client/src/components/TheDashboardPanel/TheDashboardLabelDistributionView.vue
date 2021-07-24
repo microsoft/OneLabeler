@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    width="300"
-    height="400"
-  >
+  <div style="width: 300px; height: 400px; display: flex; flex-direction: column;">
     <div class="view-header">
       <v-icon
         class="px-2"
@@ -16,10 +13,10 @@
     <v-divider />
     <div
       class="px-4"
-      style="height: calc(100% - 30px); overflow-y: scroll"
+      style="flex: 1 1 auto; overflow-y: scroll;"
     >
       <div
-        v-for="category in classes"
+        v-for="category in classesFiltered"
         :key="category"
         style="min-height: 40px"
       >
@@ -56,18 +53,24 @@
         </div>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import {
   Category,
   ILabelStorage,
   IStatusStorage,
+  LabelTaskType,
   StatusType,
 } from '@/commons/types';
+
+const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
+  const delta = new Set([...a, ...b]).size - a.size - b.size;
+  return delta !== 0;
+};
 
 export default Vue.extend({
   name: 'TheDashboardLabelDistributionView',
@@ -78,10 +81,29 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState(['classes', 'labels', 'statuses']),
+    ...mapState([
+      'classes',
+      'categoryTasks',
+      'labels',
+      'statuses',
+    ]),
+    ...mapGetters('workflow', ['labelTasks']),
+    classesFiltered(): Category[] {
+      const classes = this.classes as Category[];
+      const categoryTasks = this.categoryTasks as Record<Category, LabelTaskType[]>;
+      const { labelTasks } = this;
+      const classesFiltered: Category[] = [];
+      classes.forEach((category) => {
+        if (!(category in categoryTasks)) return;
+        const usedInTasks = categoryTasks[category];
+        const overlaps = isOverlapping(new Set(usedInTasks), new Set(labelTasks));
+        if (usedInTasks === null || overlaps) classesFiltered.push(category);
+      });
+      return classesFiltered;
+    },
   },
   watch: {
-    async classes() {
+    async classesFiltered() {
       this.nLabeledByCategory = await this.getNLabeledByCategory();
     },
     async labels() {
@@ -116,7 +138,7 @@ export default Vue.extend({
     },
     async getNLabeledByCategory(): Promise<Record<Category, number>> {
       const nLabeledByCategory: Record<Category, number> = {};
-      await Promise.all(this.classes.map(async (category: Category) => {
+      await Promise.all(this.classesFiltered.map(async (category: Category) => {
         const n = await this.getNLabeledOf(category);
         nLabeledByCategory[category] = n;
       }));

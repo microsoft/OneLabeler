@@ -4,27 +4,14 @@
     @window:pin="$emit('window:pin')"
   >
     <template #title>
-      <v-icon
-        class="px-2"
-        aria-hidden="true"
-        small
-      >
-        {{
-          {
-            [DataType.Audio]: $vuetify.icons.values.fileAudio,
-            [DataType.Video]: $vuetify.icons.values.fileVideo,
-            [DataType.Text]: $vuetify.icons.values.fileText,
-            [DataType.Image]: $vuetify.icons.values.fileImage,
-          }[dataType] || $vuetify.icons.values.file
-        }}
-      </v-icon>
+      <VDataTypeIcon :data-type="dataType" />
       Sampled Objects
     </template>
     <template #tools>
       <template v-if="includesClassification">
         <!-- The data object label menu. -->
         <VCategoryBatchTool
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
           @set:category="$emit('set:label-batch-category', $event)"
@@ -41,12 +28,14 @@ import {
   DataType,
   LabelTaskType,
 } from '@/commons/types';
+import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import VCategoryBatchTool from '@/components/VLabelCategory/VBatchTool.vue';
 
 export default Vue.extend({
   name: 'TheCardMatrixHeader',
   components: {
+    VDataTypeIcon,
     VToolbar,
     VCategoryBatchTool,
   },
@@ -63,6 +52,10 @@ export default Vue.extend({
       type: Array as PropType<Category[]>,
       default: () => [],
     },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      required: true,
+    },
     unlabeledMark: {
       type: String as PropType<Category>,
       required: true,
@@ -73,11 +66,22 @@ export default Vue.extend({
     },
   },
   data() {
-    return { DataType };
+    return { DataType, LabelTaskType };
   },
   computed: {
     includesClassification(): boolean {
       return this.labelTasks.includes(LabelTaskType.Classification);
+    },
+  },
+  methods: {
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

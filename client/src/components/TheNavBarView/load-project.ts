@@ -11,6 +11,7 @@ export type ProjectData = {
   labels: ILabel[];
   statuses: IStatus[];
   classes: Category[];
+  categoryTasks: Record<Category, LabelTaskType[] | null>,
   unlabeledMark: Category;
   featureNames?: string[];
 }
@@ -68,6 +69,10 @@ const schema: JSONSchemaType<ProjectData> = {
         uuid: { type: 'string' },
         value: { type: 'string' },
       },
+    },
+    categoryTasks: {
+      type: 'object',
+      // TODO: complete the specification for categoryTasks
     },
   },
   type: 'object',

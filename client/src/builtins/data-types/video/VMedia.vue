@@ -17,7 +17,7 @@
       :is="component"
       ref="media"
       :src="src"
-      :style="{ height: `calc(100% - ${controlHeight}px)` }"
+      style="flex: 1 1 auto"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
       @ended="onEnded"

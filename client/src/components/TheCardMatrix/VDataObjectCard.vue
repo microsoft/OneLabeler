@@ -5,9 +5,9 @@
       'opacity': isLabeled ? '0.5' : undefined,
     }"
     :ripple="false"
-    @click="onClickCard"
-    @mouseenter="onHoverCard(dataObject)"
-    @mouseleave="onLeaveCard(dataObject)"
+    @click="$emit('click:card', $event)"
+    @mouseenter="$emit('hover:card')"
+    @mouseleave="$emit('leave:card')"
   >
     <!-- set pointer events none so that
       hover the child will not trigger mouse out of the parent -->
@@ -18,14 +18,13 @@
       :label="label"
       :status="status"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :title="title"
       :button-color="buttonColor"
-      :style="{
-        'height': `${headerHeight}px`
-      }"
-      @set:label-category="onSetLabelCategory"
-      @set:label-multi-category="onSetLabelMultiCategory"
-      @set:label-text="onSetLabelText"
+      :style="{ 'height': `${headerHeight}px` }"
+      @set:label-category="$emit('set:label-category', $event)"
+      @set:label-multi-category="$emit('set:label-multi-category', $event)"
+      @set:label-text="$emit('set:label-text', $event)"
     />
     <div
       pointer-events="none"
@@ -54,9 +53,6 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
-  ILabelText,
   LabelTaskType,
   StatusType,
 } from '@/commons/types';
@@ -65,9 +61,7 @@ import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
 
 export default Vue.extend({
   name: 'VDataObjectCard',
-  components: {
-    VDataObjectCardHeader,
-  },
+  components: { VDataObjectCardHeader },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -92,6 +86,10 @@ export default Vue.extend({
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     title: {
@@ -134,30 +132,6 @@ export default Vue.extend({
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
-    },
-  },
-  methods: {
-    onSetLabelCategory(category: ILabelCategory): void {
-      const { dataObject } = this;
-      this.$emit('set:label-category', dataObject, category);
-    },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      const { dataObject } = this;
-      this.$emit('set:label-multi-category', dataObject, multiCategory);
-    },
-    onSetLabelText(text: ILabelText): void {
-      const { dataObject } = this;
-      this.$emit('set:label-text', dataObject, text);
-    },
-    onClickCard(e: MouseEvent): void {
-      const { dataObject } = this;
-      this.$emit('click:card', dataObject, e);
-    },
-    onHoverCard(dataObject: IDataObject): void {
-      this.$emit('hover:card', dataObject);
-    },
-    onLeaveCard(dataObject: IDataObject): void {
-      this.$emit('leave:card', dataObject);
     },
   },
 });

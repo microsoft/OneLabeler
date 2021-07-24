@@ -1,8 +1,10 @@
 <template>
   <v-card style="display: flex; flex-direction: column">
     <TheTimeSpanBoardHeader
+      :data-type="dataType"
       :label-tasks="labelTasks"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :label2color="label2color"
       :label="label"
       @set:label-category="onSetLabelCategory"
@@ -21,6 +23,7 @@
             :data-object="dataObject"
             :label="label"
             :classes="classes"
+            :category-tasks="categoryTasks"
             :selected-slot="selectedSlot"
             :selected-span="selectedSpan"
             :label2color="label2color"
@@ -97,6 +100,10 @@ export default Vue.extend({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      required: true,
+    },
     label2color: {
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
@@ -110,7 +117,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    showDataObject() {
+    showDataObject(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;
     },
@@ -176,7 +183,7 @@ export default Vue.extend({
       const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(labelSpan: ILabelTimeSpan | null) {
+    onSelectLabelSpan(labelSpan: ILabelTimeSpan | null): void {
       this.selectedSpan = labelSpan;
     },
     onSelectSlot(category: Category | null): void {
@@ -191,7 +198,7 @@ export default Vue.extend({
       spans[index] = newValue;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onRemoveLabelSpan(labelSpan: ILabelTimeSpan) {
+    onRemoveLabelSpan(labelSpan: ILabelTimeSpan): void {
       const {
         dataObject,
         labelSpans,
@@ -225,11 +232,11 @@ export default Vue.extend({
       const newValue: Partial<ILabel> = { text };
       this.$emit('user-edit-label', uuid, newValue);
     },
-    onWindowMinimize() {
+    onWindowMinimize(): void {
       const newValue: Partial<TaskWindow> = { isMinimized: true };
       this.$emit('edit-task-window', newValue);
     },
-    onWindowPin() {
+    onWindowPin(): void {
       const newValue: Partial<TaskWindow> = { isPinned: true };
       this.$emit('edit-task-window', newValue);
     },

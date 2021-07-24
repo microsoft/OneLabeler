@@ -8,6 +8,7 @@ import {
   IMessage,
   IStatus,
   IStorageStore,
+  LabelTaskType,
   SourceService,
   StorageService,
   StatusType,
@@ -63,16 +64,27 @@ export const addCategory = (
   { commit, state }: ActionContext<IState, IState>,
   category: Category,
 ): void => {
-  const { classes } = state;
+  const { classes, categoryTasks } = state;
   commit(types.SET_CLASSES, [...classes, category]);
+  commit(types.SET_CATEGORY_TASKS, { ...categoryTasks, [category]: null });
 };
 
 export const removeCategory = (
   { commit, state }: ActionContext<IState, IState>,
   category: Category,
 ): void => {
-  const { classes } = state;
+  const { classes, categoryTasks } = state;
   commit(types.SET_CLASSES, classes.filter((d) => d !== category));
+  const updatedCategoryTasks = { ...categoryTasks };
+  if (category in updatedCategoryTasks) delete updatedCategoryTasks[category];
+  commit(types.SET_CATEGORY_TASKS, updatedCategoryTasks);
+};
+
+export const setCategoryTasks = (
+  { commit }: ActionContext<IState, IState>,
+  categoryTasks: Record<Category, LabelTaskType[] | null>,
+): void => {
+  commit(types.SET_CATEGORY_TASKS, categoryTasks);
 };
 
 export const pushCommandHistory = (
@@ -123,6 +135,7 @@ export const resetState = (
   const {
     dataObjects,
     classes,
+    categoryTasks,
     labels,
     statuses,
     unlabeledMark,
@@ -133,6 +146,7 @@ export const resetState = (
   } = createInitialState();
   commit(types.SET_DATA_OBJECTS, dataObjects);
   commit(types.SET_CLASSES, classes);
+  commit(types.SET_CATEGORY_TASKS, categoryTasks);
   commit(types.SET_LABELS, labels);
   commit(types.SET_STATUSES, statuses);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
@@ -147,6 +161,7 @@ type ProjectData = {
   labels: ILabel[];
   statuses: IStatus[];
   classes: Category[];
+  categoryTasks: Record<Category, LabelTaskType[] | null>,
   unlabeledMark: Category;
   featureNames?: string[];
 }
@@ -161,11 +176,13 @@ export const setProject = async (
     labels,
     statuses,
     classes,
+    categoryTasks,
     unlabeledMark,
     featureNames,
   } = projectData;
 
   commit(types.SET_CLASSES, classes);
+  commit(types.SET_CATEGORY_TASKS, categoryTasks);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES,
     featureNames === undefined ? [] : featureNames);

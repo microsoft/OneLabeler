@@ -1,8 +1,7 @@
 <template>
-  <v-card-title
-    class="pt-1 pl-1"
-    style="position: absolute;"
-  >
+  <!-- set position absolute to allow
+    the header buttons to overlap with projection points. -->
+  <div style="position: absolute">
     <!-- The feature space configuration menu. -->
     <v-menu
       :close-on-content-click="false"
@@ -299,7 +298,7 @@
         </v-card>
       </v-card>
     </v-menu>
-  </v-card-title>
+  </div>
 </template>
 
 <script lang="ts">

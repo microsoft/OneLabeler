@@ -248,6 +248,7 @@ export default Vue.extend({
       'labels',
       'statuses',
       'classes',
+      'categoryTasks',
       'unlabeledMark',
       'featureNames',
       'commandHistory',
@@ -383,6 +384,7 @@ export default Vue.extend({
       const {
         dataObjects,
         classes,
+        categoryTasks,
         labels,
         statuses,
         unlabeledMark,
@@ -391,6 +393,7 @@ export default Vue.extend({
       const projectData: ProjectData = {
         dataObjects: await dataObjects.getAll(),
         classes,
+        categoryTasks,
         labels: await labels.getAll(),
         statuses: await statuses.getAll(),
         unlabeledMark,

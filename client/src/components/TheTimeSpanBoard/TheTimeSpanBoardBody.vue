@@ -23,16 +23,17 @@
       :current-time="currentTime"
       :slot-client-x-range="slotClientXRange"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :selected-slot="selectedSlot"
       :spans="spans"
       :selected-span="selectedSpan"
       :label2color="label2color"
       class="ma-2"
       style="flex: 1 1 auto"
-      @create:span="onCreateSpan"
+      @create:span="$emit('create:span', $event)"
       @select:span="onSelectSpan"
-      @update:span="onUpdateSpan"
-      @select:slot="onSelectSlot"
+      @update:span="$emit('update:span', $event)"
+      @select:slot="$emit('select:slot', $event)"
     />
   </div>
 </template>
@@ -45,6 +46,7 @@ import {
   IMedia,
   ILabel,
   ILabelTimeSpan,
+  LabelTaskType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
@@ -67,6 +69,10 @@ export default Vue.extend({
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     selectedSlot: {
@@ -115,18 +121,9 @@ export default Vue.extend({
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
-    onUpdateSpan(newValue: ILabelTimeSpan): void {
-      this.$emit('update:span', newValue);
-    },
-    onCreateSpan(span: ILabelTimeSpan): void {
-      this.$emit('create:span', span);
-    },
     onSelectSpan(span: ILabelTimeSpan | null): void {
       this.$emit('select:span', span);
       if (span !== null) this.setMediaCurrentTime(span.start);
-    },
-    onSelectSlot(category: Category | null): void {
-      this.$emit('select:slot', category);
     },
     onTimeUpdate(e: Event): void {
       const media = e.target as HTMLMediaElement;

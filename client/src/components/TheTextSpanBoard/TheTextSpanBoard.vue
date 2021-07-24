@@ -1,8 +1,10 @@
 <template>
   <v-card style="display: flex; flex-direction: column">
     <TheTextSpanBoardHeader
+      :data-type="dataType"
       :label-tasks="labelTasks"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :brush-category="brushCategory"
       :label2color="label2color"
       :label="label"
@@ -98,6 +100,10 @@ export default Vue.extend({
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     label2color: {

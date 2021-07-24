@@ -9,6 +9,7 @@
     :label-tasks="labelTasks"
     :data-type="dataType"
     :classes="classes"
+    :category-tasks="categoryTasks"
     :unlabeled-mark="unlabeledMark"
     :label2color="label2color"
     style="height: 100%;"
@@ -41,6 +42,7 @@ import TheTextSpanBoard from '@/components/TheTextSpanBoard/TheTextSpanBoard.vue
 import TheTimeSpanBoard from '@/components/TheTimeSpanBoard/TheTimeSpanBoard.vue';
 
 const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Object.entries(d).filter(([_, v]) => v != null),
 ) as (typeof d);
 
@@ -66,6 +68,7 @@ export default Vue.extend({
       'statuses',
       'queryUuids',
       'classes',
+      'categoryTasks',
       'unlabeledMark',
     ]),
     ...mapGetters(['label2color']),

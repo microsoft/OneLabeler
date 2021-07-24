@@ -1,8 +1,10 @@
 <template>
-  <v-card>
+  <v-card style="display: flex; flex-direction: column;">
     <ThePaintBoardHeader
+      :data-type="dataType"
       :label-tasks="labelTasks"
       :classes="classes"
+      :category-tasks="categoryTasks"
       :stroke-label="strokeLabel"
       :stroke-shape="strokeShape"
       :stroke-width="strokeWidth"
@@ -22,14 +24,13 @@
       @window:pin="onWindowPin"
     />
     <v-divider />
-    <v-card-actions
+    <div
       ref="container"
-      class="pa-0"
-      style="height: calc(100% - 31px)"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
     >
       <div
         v-if="showCanvas"
-        style="height: 100%; width: 100%;"
+        style="flex: 1 1 auto;"
       >
         <div :style="`height: ${canvasHeight}px`">
           <ThePaintBoardCanvas
@@ -64,7 +65,7 @@
       >
         No Data Objects Queried
       </p>
-    </v-card-actions>
+    </div>
   </v-card>
 </template>
 
@@ -73,6 +74,7 @@ import Vue, { PropType } from 'vue';
 import { getBase64 } from '@/plugins/file';
 import {
   Category,
+  DataType,
   IDataObject,
   IImage,
   ILabel,
@@ -95,6 +97,14 @@ export default Vue.extend({
     ThePaintBoardCanvas,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataObjects: {
       type: Array as PropType<IDataObject[]>,
       required: true,
@@ -107,12 +117,12 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-    labelTasks: {
-      type: Array as PropType<LabelTaskType[]>,
-      required: true,
-    },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     unlabeledMark: {

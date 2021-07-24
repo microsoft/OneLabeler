@@ -5,7 +5,7 @@
     style="overflow-y: scroll; border-radius: 0;"
   >
     <div
-      v-for="(category, i) in classes"
+      v-for="(category, i) in filterClassesByLabelTask(LabelTaskType.SpanClassification)"
       :key="`slot-${i}`"
       class="my-1"
       :style="{
@@ -97,7 +97,7 @@
 import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
-import { Category, ILabelTimeSpan } from '@/commons/types';
+import { Category, ILabelTimeSpan, LabelTaskType } from '@/commons/types';
 
 interface Point {
   x: number;
@@ -141,6 +141,10 @@ export default Vue.extend({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      required: true,
+    },
     selectedSlot: {
       type: String as PropType<Category | null>,
       default: null,
@@ -167,6 +171,7 @@ export default Vue.extend({
       margin: 5,
       containerClientX: null as number | null,
       HandleDirection,
+      LabelTaskType,
     };
   },
   computed: {
@@ -323,6 +328,15 @@ export default Vue.extend({
       if (color === null) return 'black';
       const { r, g, b } = color.rgb();
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
+    },
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

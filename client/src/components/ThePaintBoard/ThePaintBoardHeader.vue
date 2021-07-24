@@ -4,14 +4,8 @@
     @window:pin="$emit('window:pin')"
   >
     <template #title>
-      <v-icon
-        class="px-2"
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.fileImage
-      </v-icon>
-      Image
+      <VDataTypeIcon :data-type="dataType" />
+      Sampled Object
     </template>
     <template #tools>
       <!-- reset image size button -->
@@ -68,7 +62,7 @@
           vertical
         />
         <VShapes2DSingleTool
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.ObjectDetection)"
           :mouse-operation="mouseOperation"
           :stroke-label="strokeLabel"
           :label2color="label2color"
@@ -84,7 +78,7 @@
           vertical
         />
         <VSegment2DSingleTool
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.Segmentation)"
           :mouse-operation="mouseOperation"
           :stroke-label="strokeLabel"
           :stroke-shape="strokeShape"
@@ -104,7 +98,7 @@
         <!-- The data object label menu. -->
         <VCategorySingleTool
           :label-category="label === null ? null : label.category"
-          :classes="classes"
+          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
           :button-color="label === null ? null : label2color(label.category)"
           :disabled="label === null"
           @set:label-category="$emit('set:label-category', $event)"
@@ -118,8 +112,8 @@
         />
         <!-- The data object label menu. -->
         <VMultiCategorySingleTool
-          :classes="classes"
           :label-multi-category="label === null ? null : label.multiCategory"
+          :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
           :disabled="label === null"
           @set:label-multi-category="$emit('set:label-multi-category', $event)"
         />
@@ -143,7 +137,13 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, ILabel, LabelTaskType } from '@/commons/types';
+import {
+  Category,
+  DataType,
+  ILabel,
+  LabelTaskType,
+} from '@/commons/types';
+import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import VSegment2DSingleTool, {
   MouseOperationType as LabelMaskMouseOperationType,
@@ -166,6 +166,7 @@ type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperatio
 export default Vue.extend({
   name: 'ThePaintBoardHeader',
   components: {
+    VDataTypeIcon,
     VToolbar,
     VSegment2DSingleTool,
     VShapes2DSingleTool,
@@ -174,12 +175,20 @@ export default Vue.extend({
     VFreeformTextSingleTool,
   },
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     strokeLabel: {
@@ -206,6 +215,9 @@ export default Vue.extend({
       type: Object as PropType<ILabel | null>,
       default: null,
     },
+  },
+  data() {
+    return { DataType, LabelTaskType };
   },
   computed: {
     includesObjectDetection(): boolean {
@@ -265,6 +277,17 @@ export default Vue.extend({
         .findIndex((d) => d.mouseOperation === mouseOperation);
       if (index === -1) return null;
       return index;
+    },
+  },
+  methods: {
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

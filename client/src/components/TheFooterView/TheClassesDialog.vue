@@ -19,20 +19,29 @@
             font-size: 0.875rem; height: 20px;
             border: thin solid rgba(0,0,0,.12); border-radius: 2px;"
         >
-          {{ category }}
           <v-icon
-            class="pl-1"
+            class="pr-1"
             aria-hidden="true"
             small
             :style="{ color: label2color(category) }"
           >
             $vuetify.icons.values.square
           </v-icon>
+          {{ category }}
         </div>
         <v-spacer />
+
+        <!-- The menu of setting the applicable label task of the category. -->
+        <TheLabelTaskMenu
+          :label-tasks="labelTasks"
+          :selected-label-tasks="categoryTasks[category]"
+          @set:selected-label-tasks="onSetSelectedLabelTasks(category, $event)"
+        />
+
+        <!-- The button for removing the label category. -->
         <v-btn
           title="remove"
-          class="view-header-button elevation-0"
+          class="view-header-button elevation-0 ml-1"
           style="border-color: #bbb"
           x-small
           icon
@@ -74,17 +83,26 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
+import { Category, LabelTaskType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
+import TheLabelTaskMenu from './TheLabelTaskMenu.vue';
 
 type InputValidator = (input: unknown) => true | string;
 
 export default Vue.extend({
   name: 'TheClassesDialog',
-  components: { VDialogButton },
+  components: { VDialogButton, TheLabelTaskMenu },
   props: {
     classes: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
     unlabeledMark: {
@@ -133,6 +151,14 @@ export default Vue.extend({
       this.className = null;
       const form = this.$refs.form as HTMLFormElement;
       form.resetValidation();
+    },
+    onSetSelectedLabelTasks(
+      category: Category,
+      labelTasks: LabelTaskType[] | null,
+    ): void {
+      const updatedCategoryTasks = { ...this.categoryTasks };
+      updatedCategoryTasks[category] = labelTasks;
+      this.$emit('set:category-tasks', updatedCategoryTasks);
     },
   },
 });

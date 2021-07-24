@@ -9,6 +9,7 @@ export enum DataType {
   Video = 'Video',
   YoutubeVideo = 'YoutubeVideo',
   PointCloud = 'PointCloud',
+  Webpage = 'Webpage',
 }
 
 /** The types of label tasks. */
@@ -76,6 +77,12 @@ export interface IVideo extends IMedia {
   height: number;
   /** The duration of the video. */
   duration?: number;
+}
+
+/** The interface of a webpage data object. */
+export interface IWebpage extends IDataObject {
+  /** The webpage url. */
+  content?: string | null;
 }
 
 export type Vector3d = [number, number, number];

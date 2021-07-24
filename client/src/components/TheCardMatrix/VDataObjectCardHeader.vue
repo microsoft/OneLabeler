@@ -21,7 +21,7 @@
       <!-- The data object label menu. -->
       <VCategorySingleTool
         :label-category="label === null ? null : label.category"
-        :classes="classes"
+        :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
         :button-color="buttonColor"
         :disabled="label === null"
         @set:label-category="$emit('set:label-category', $event)"
@@ -36,7 +36,7 @@
       <!-- The data object label menu. -->
       <VMultiCategorySingleTool
         :label-multi-category="label === null ? null : label.multiCategory"
-        :classes="classes"
+        :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
         :disabled="label === null"
         @set:label-multi-category="$emit('set:label-multi-category', $event)"
       />
@@ -94,6 +94,10 @@ export default Vue.extend({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      required: true,
+    },
     title: {
       type: String,
       default: '',
@@ -102,6 +106,9 @@ export default Vue.extend({
       type: String as PropType<string | null>,
       default: null,
     },
+  },
+  data() {
+    return { LabelTaskType };
   },
   computed: {
     includesClassification(): boolean {
@@ -115,6 +122,17 @@ export default Vue.extend({
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
+    },
+  },
+  methods: {
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

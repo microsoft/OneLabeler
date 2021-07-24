@@ -5,6 +5,7 @@ import {
   ILabelStorage,
   IMessage,
   IStatusStorage,
+  LabelTaskType,
   SourceService,
   StorageService,
   TaskWindow,
@@ -28,6 +29,8 @@ export interface IState {
   stop: boolean;
   /** The label category options. */
   classes: Category[];
+  /** The applicable label task for each label category (null denotes applicable to every task). */
+  categoryTasks: Record<Category, LabelTaskType[] | null>,
   /** The label mark of unlabeled data objects. */
   unlabeledMark: Category;
   /** The names of data object features. */
@@ -60,6 +63,7 @@ export const createInitialState = (): IState => ({
   queryUuids: [],
   stop: false,
   classes: [],
+  categoryTasks: {},
   unlabeledMark: 'UNLABELED',
   featureNames: [],
   scopeUuids: null,

@@ -10,10 +10,10 @@
       :binning-n-columns="binningNColumns"
       :enable-subsampling="enableSubsampling"
       :subsampling-n-samples="subsamplingNSamples"
-      @update:feature-indices="onUpdateSelectedFeatureIndices"
-      @click:projection-method="onClickProjectionMethod"
-      @update:binning="onUpdateBinning"
-      @update:subsampling="onUpdateSubsampling"
+      @update:feature-indices="$emit('update:feature-indices', $event)"
+      @click:projection-method="$emit('click:projection-method', $event)"
+      @update:binning="$emit('update:binning', $event)"
+      @update:subsampling="$emit('update:subsampling', $event)"
     />
 
     <!-- The dataset overview display. -->
@@ -28,7 +28,7 @@
       :x-extent="xExtent"
       :y-extent="yExtent"
       :label2color="label2color"
-      @select:uuids="onSelectUuids"
+      @select:uuids="$emit('select:uuids', $event)"
     />
     <VHeatmap
       v-else
@@ -42,7 +42,7 @@
       :y-extent="yExtent"
       :n-rows="binningNRows"
       :n-columns="binningNColumns"
-      @select:uuids="onSelectUuids"
+      @select:uuids="$emit('select:uuids', $event)"
     />
   </div>
 </template>
@@ -51,12 +51,8 @@
 import { xor4096 } from 'seedrandom';
 import Vue, { PropType } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
-import {
-  ILabelCategory,
-  ProjectionMethodType,
-} from '@/commons/types';
+import { ILabelCategory, ProjectionMethodType } from '@/commons/types';
 import { randomShuffle } from '@/plugins/random';
-import { Binning, Subsampling } from './types';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
@@ -122,15 +118,13 @@ export default Vue.extend({
       required: true,
     },
   },
-  data(): {
-    points: number[][] | null,
-    } {
+  data() {
     return {
-      points: null,
+      points: null as number[][] | null,
     };
   },
   computed: {
-    xAxis(): null | { label: string, tickNum: number } {
+    xAxis(): { label: string, tickNum: number } | null {
       const { selectedFeatureIndices, featureNames } = this;
       if (selectedFeatureIndices.length === 2) {
         return {
@@ -140,7 +134,7 @@ export default Vue.extend({
       }
       return null;
     },
-    yAxis(): null | { label: string, tickNum: number } {
+    yAxis(): { label: string, tickNum: number } | null {
       const { selectedFeatureIndices, featureNames } = this;
       if (selectedFeatureIndices.length === 2) {
         return {
@@ -150,7 +144,7 @@ export default Vue.extend({
       }
       return null;
     },
-    xExtent(): null | [number, number] {
+    xExtent(): [number, number] | null {
       const { points } = this;
       if (points === null || points.length === 0) {
         return null;
@@ -163,7 +157,7 @@ export default Vue.extend({
       }
       return [xMin, xMax];
     },
-    yExtent(): null | [number, number] {
+    yExtent(): [number, number] | null {
       const { points } = this;
       if (points === null || points.length === 0) {
         return null;
@@ -182,7 +176,7 @@ export default Vue.extend({
         selectedFeatureIndices.map((i: number) => d[i])
       ));
     },
-    subsampleIndices(): null | number[] {
+    subsampleIndices(): number[] | null {
       const { points, enableSubsampling, subsamplingNSamples } = this;
       if (points === null
         || enableSubsampling === false
@@ -199,19 +193,13 @@ export default Vue.extend({
     },
     pointsSampled(): number[][] | null {
       const { points, subsampleIndices } = this;
-      if (points === null) {
-        return null;
-      }
-      if (subsampleIndices === null) {
-        return points;
-      }
+      if (points === null) return null;
+      if (subsampleIndices === null) return points;
       return subsampleIndices.map((d: number) => (points as number[][])[d]);
     },
     uuidsSampled(): string[] {
       const { uuids, subsampleIndices } = this;
-      if (subsampleIndices === null) {
-        return uuids;
-      }
+      if (subsampleIndices === null) return uuids;
       return subsampleIndices.map((d: number) => uuids[d]);
     },
     labelsSampled(): ILabelCategory[] | null {
@@ -269,21 +257,6 @@ export default Vue.extend({
         return projectionAPI.TSNE(selectedFeatureValues, 2);
       }
       return null;
-    },
-    onUpdateSelectedFeatureIndices(selectedFeatureIndices: number[]) {
-      this.$emit('update:feature-indices', selectedFeatureIndices);
-    },
-    onClickProjectionMethod(projectionMethod: ProjectionMethodType) {
-      this.$emit('click:projection-method', projectionMethod);
-    },
-    onUpdateBinning(binning: Binning) {
-      this.$emit('update:binning', binning);
-    },
-    onUpdateSubsampling(subsampling: Subsampling) {
-      this.$emit('update:subsampling', subsampling);
-    },
-    onSelectUuids(selectedUuids: string[]) {
-      this.$emit('select:uuids', selectedUuids);
     },
   },
 });

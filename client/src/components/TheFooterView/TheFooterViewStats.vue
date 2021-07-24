@@ -16,10 +16,13 @@
     <!-- The create new class option button. -->
     <TheClassesDialog
       :classes="classes"
+      :category-tasks="categoryTasks"
+      :label-tasks="labelTasks"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       @add:category="addCategory($event)"
       @remove:category="removeCategory($event)"
+      @set:category-tasks="setCategoryTasks($event)"
     />
   </div>
 </template>
@@ -48,9 +51,11 @@ export default Vue.extend({
       'dataObjects',
       'statuses',
       'classes',
+      'categoryTasks',
       'unlabeledMark',
     ]),
     ...mapGetters(['label2color']),
+    ...mapGetters('workflow', ['labelTasks']),
   },
   watch: {
     async statuses(): Promise<void> {
@@ -61,7 +66,7 @@ export default Vue.extend({
     await this.setData();
   },
   methods: {
-    ...mapActions(['addCategory', 'removeCategory']),
+    ...mapActions(['addCategory', 'removeCategory', 'setCategoryTasks']),
     async setData(): Promise<void> {
       this.nLabeled = await this.getNLabeled();
       this.nTotal = await this.getNTotal();
