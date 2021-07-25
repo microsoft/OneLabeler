@@ -72,29 +72,20 @@ export default Vue.extend({
       'unlabeledMark',
     ]),
     ...mapGetters(['label2color']),
-    ...mapGetters('workflow', [
-      'dataType',
-      'labelTasks',
-    ]),
+    ...mapGetters('workflow', ['dataType', 'labelTasks']),
     component(): VueConstructor | null {
       const { dataType, labelTasks } = this;
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
-      if (process.api === 'SingleObjectDisplay'
-        && dataType === DataType.Image) return ThePaintBoard;
-      if (process.api === 'SingleObjectDisplay'
-        && dataType === DataType.Text) return TheTextSpanBoard;
-      if (process.api === 'SingleObjectDisplay'
-        && dataType === DataType.Video) return TheTimeSpanBoard;
-      if (process.api === 'SingleObjectDisplay'
-        && dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
-      if (process.api === 'SingleObjectDisplay'
-        && dataType === DataType.Audio) return TheTimeSpanBoard;
+      if (process.api === 'SingleObjectDisplay') {
+        if (dataType === DataType.Image) return ThePaintBoard;
+        if (dataType === DataType.Text) return TheTextSpanBoard;
+        if (dataType === DataType.Video) return TheTimeSpanBoard;
+        if (dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
+        if (dataType === DataType.Audio) return TheTimeSpanBoard;
+        if (labelTasks.includes(LabelTaskType.SpanClassification)) return TheTextSpanBoard;
+      }
       if (process.api === 'GridMatrix') return TheCardMatrix;
-      if (
-        process.api === 'SingleObjectDisplay'
-        && labelTasks.includes(LabelTaskType.SpanClassification)
-      ) return TheTextSpanBoard;
       if (process.api === 'SingleObjectDisplay') return TheTextSpanBoard;
       return null;
     },

@@ -1,16 +1,9 @@
 <template>
-  <div
-    :style="{
-      width: widthStr,
-      height: heightStr,
-      'overflow-y': 'scroll',
-      'font-size': '24px',
-      'line-height': 'initial',
-    }"
-    @scroll="onScroll"
-  >
-    <iframe :src="dataObject.content" />
-  </div>
+  <iframe
+    :width="width"
+    :height="height"
+    :src="dataObject.content"
+  />
 </template>
 
 <script lang="ts">
@@ -48,18 +41,6 @@ export default Vue.extend({
         return typeof val === 'number'
           || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
       },
-    },
-  },
-  computed: {
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
     },
   },
 });

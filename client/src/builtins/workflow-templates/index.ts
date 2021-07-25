@@ -7,6 +7,7 @@ import videoClassificationMinimal from './video-classification-minimal';
 import videoTemporalSegmentationMinimal from './video-temporal-segmentation-minimal';
 import youtubeVideoTemporalSegmentationMinimal from './youtube-video-temporal-segmentation-minimal';
 import pointCloudClassificationMinimal from './point-cloud-classification-minimal';
+import webpageClassificationMinimal from './webpage-classification-minimal';
 import textClassificationMinimal from './text-classification-minimal';
 import textNamedEntityRecognitionMinimal from './text-named-entity-recognition-minimal';
 import textWithTableClassificationNamedEntityRecognitionMinimal from './text-with-table-classification-named-entity-recognition-minimal';
@@ -21,6 +22,7 @@ export default [
   { label: 'Audio Classification Minimal', value: audioClassificationMinimal },
   { label: 'Audio Temporal Segmentation Minimal', value: audioTemporalSegmentationMinimal },
   { label: 'Point Cloud Classification Minimal', value: pointCloudClassificationMinimal },
+  { label: 'Webpage Classification Minimal', value: webpageClassificationMinimal },
   { label: 'Text Classification Minimal', value: textClassificationMinimal },
   { label: 'Text Named Entity Recognition Minimal', value: textNamedEntityRecognitionMinimal },
   { label: 'Text with Table Classification & Named Entity Recognition Minimal', value: textWithTableClassificationNamedEntityRecognitionMinimal },
