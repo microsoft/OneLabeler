@@ -13,11 +13,22 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import {
+  computed,
+  defineComponent,
+  ref,
+  toRefs,
+  onMounted,
+  watch,
+  ComputedRef,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import * as BABYLON from 'babylonjs';
 import { IPointCloud, Vector3d } from '@/commons/types';
+import useResizeObserver from '@/components/composables/useResizeObserver';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VDisplay',
   props: {
     /** @description The data object to be rendered. */
@@ -44,58 +55,33 @@ export default Vue.extend({
       },
     },
   },
-  data() {
-    return {
-      resizeObserver: null as ResizeObserver | null,
-    };
-  },
-  computed: {
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
-    },
-    points(): Vector3d[] | null {
-      if (this.dataObject === null) return null;
-      return this.dataObject.content;
-    },
-  },
-  watch: {
-    widthStr() {
-      this.render();
-    },
-    heightStr() {
-      this.render();
-    },
-  },
-  beforeDestroy(): void {
-    (this.resizeObserver as ResizeObserver).disconnect();
-  },
-  mounted() {
-    const container = this.$refs.container as HTMLDivElement;
-    this.resizeObserver = new ResizeObserver(this.onResize);
-    this.resizeObserver.observe(container);
-    this.render();
-  },
-  methods: {
-    onResize(): void {
-      this.render();
-    },
-    render(): void {
-      const { points } = this;
-      if (points === null) return;
+  setup(props) {
+    const { dataObject, width, height } = toRefs(props);
 
-      const canvas = this.$refs.canvas as HTMLCanvasElement;
+    const container: Ref<HTMLElement | null> = ref(null);
+    const canvas: Ref<HTMLCanvasElement | null> = ref(null);
 
-      canvas.style.width = this.widthStr;
-      canvas.style.height = this.heightStr;
+    const points: ComputedRef<Vector3d[] | null> = computed(() => {
+      if (dataObject.value === null) return null;
+      return dataObject.value.content;
+    });
+    const widthStr: ComputedRef<string> = computed((): string => {
+      if (typeof width.value === 'number') return `${width.value}px`;
+      return width.value;
+    });
+    const heightStr: ComputedRef<string> = computed((): string => {
+      if (typeof height.value === 'number') return `${height.value}px`;
+      return height.value;
+    });
 
-      const engine = new BABYLON.Engine(canvas);
+    const render = (): void => {
+      if (points.value === null) return;
+      if (canvas.value === null) return;
+
+      canvas.value.style.width = widthStr.value;
+      canvas.value.style.height = heightStr.value;
+
+      const engine = new BABYLON.Engine(canvas.value);
       const scene = new BABYLON.Scene(engine);
       scene.clearColor = new BABYLON.Color4(0.8, 0.8, 0.8, 1.0);
 
@@ -118,15 +104,28 @@ export default Vue.extend({
       const cloudColor = new BABYLON.Color4(1, 1, 1, 1);
 
       const pointFunc = (particle: BABYLON.CloudPoint) => {
+        if (points.value === null) return;
         const { idx } = particle;
-        const point = points[idx];
+        const point = points.value[idx];
         const [x, y, z] = point;
         pcs.particles[idx].position = new BABYLON.Vector3(x, y, z);
         pcs.particles[idx].color = cloudColor;
       };
-      pcs.addPoints(points.length, pointFunc);
+      pcs.addPoints(points.value.length, pointFunc);
       pcs.buildMeshAsync();
-    },
+    };
+
+    onMounted(render);
+    watch(width, render);
+    watch(height, render);
+    useResizeObserver(container, render);
+
+    return {
+      container,
+      canvas,
+      widthStr,
+      heightStr,
+    };
   },
 });
 </script>

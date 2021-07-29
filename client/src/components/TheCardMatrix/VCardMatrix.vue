@@ -1,48 +1,52 @@
 <template>
   <div ref="container">
-    <!-- Note: need align-content: flex-start
-      to let the cards float to top left when the number of cards
-      is less than the allocated grids. -->
-    <div
-      ref="labelCards"
-      style="display: flex; flex-wrap: wrap; align-content: flex-start"
-    >
+    <!-- Note: use position absolute to allow container to have responsive size. -->
+    <div style="position: absolute;">
+      <!-- Note: need align-content: flex-start
+        to let the cards float to top left when the number of cards
+        is less than the allocated grids. -->
       <div
-        v-for="i in indicesInPage"
-        :key="dataObjects[i].uuid"
-        :style="{
-          'padding': `${padding}px`,
-          'width': `${100/itemsPerRow}%`,
-        }"
+        ref="labelCards"
+        style="display: flex; flex-wrap: wrap; align-content: flex-start;"
       >
-        <VDataObjectCard
-          :data-type="dataType"
-          :label-tasks="labelTasks"
-          :data-object="dataObjects[i]"
-          :label="labels[i]"
-          :status="statuses[i]"
-          :classes="classes"
-          :category-tasks="categoryTasks"
-          :title="''"
-          :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
-          :button-color="getColor(labels[i])"
-          :height="Math.max(cardHeight - 2 * padding, 0)"
-          :width="Math.max(cardWidth - 2 * padding, 0)"
-          @click:card="$emit('click:card', dataObjects[i], $event)"
-          @set:label-category="$emit('set:label-category', dataObjects[i], $event)"
-          @set:label-multi-category="$emit('set:label-multi-category', dataObjects[i], $event)"
-          @set:label-text="$emit('set:label-text', dataObjects[i], $event)"
-        />
+        <div
+          v-for="i in indicesInPage"
+          :key="dataObjects[i].uuid"
+          :style="{
+            'padding': `${padding}px`,
+            'width': `${100/itemsPerRow}%`,
+            'height': `${100/itemsPerCol}%`,
+          }"
+        >
+          <VDataObjectCard
+            :data-type="dataType"
+            :label-tasks="labelTasks"
+            :data-object="dataObjects[i]"
+            :label="labels[i]"
+            :status="statuses[i]"
+            :classes="classes"
+            :category-tasks="categoryTasks"
+            :title="''"
+            :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
+            :button-color="getColor(labels[i])"
+            :height="Math.max(cardHeight - 2 * padding, 0)"
+            :width="Math.max(cardWidth - 2 * padding, 0)"
+            @click:card="$emit('click:card', dataObjects[i], $event)"
+            @set:label-category="$emit('set:label-category', dataObjects[i], $event)"
+            @set:label-multi-category="$emit('set:label-multi-category', dataObjects[i], $event)"
+            @set:label-text="$emit('set:label-text', dataObjects[i], $event)"
+          />
+        </div>
       </div>
-    </div>
-    <div v-if="enablePagination">
-      <div ref="pagination">
-        <v-pagination
-          v-model="page"
-          :length="nPages"
-          :total-visible="Math.min(5, nPages)"
-        />
-      </div>
+      <template v-if="enablePagination">
+        <div ref="pagination">
+          <v-pagination
+            v-model="page"
+            :length="nPages"
+            :total-visible="Math.min(5, nPages)"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -58,6 +62,7 @@ import {
   defineComponent,
   ref,
   toRefs,
+  onMounted,
   watch,
   ComputedRef,
   PropType,
@@ -150,7 +155,7 @@ export default defineComponent({
       () => nPages.value >= 2,
     );
 
-    const updateCardSize = () => {
+    const updateCardSize = (): void => {
       if (container.value === null) return;
       if (labelCards.value === null) return;
       const height = container.value.clientHeight;
@@ -159,12 +164,14 @@ export default defineComponent({
       if (enablePagination.value && pagination.value !== null) {
         paginationHeight = pagination.value.clientHeight;
       }
-      labelCards.value.style.height = `${height - paginationHeight}px`;
       cardHeight.value = (height - paginationHeight) / itemsPerCol.value;
       cardWidth.value = width / itemsPerRow.value;
     };
 
+    onMounted(updateCardSize);
     useResizeObserver(container, updateCardSize);
+    watch(itemsPerRow, updateCardSize);
+    watch(itemsPerCol, updateCardSize);
     watch(dataObjects, () => { page.value = 1; });
 
     const indicesInPage: ComputedRef<number[]> = computed(() => (
@@ -180,6 +187,8 @@ export default defineComponent({
       labelCards,
       cardHeight,
       cardWidth,
+      page,
+      nPages,
       indicesInPage,
       enablePagination,
     };

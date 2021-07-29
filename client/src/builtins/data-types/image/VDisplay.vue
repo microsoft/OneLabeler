@@ -16,7 +16,18 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUpdated,
+  ref,
+  toRefs,
+  watch,
+  ComputedRef,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import { IImage } from '@/commons/types';
 
 /**
@@ -54,19 +65,39 @@ const calFittingTransform = (
   return strCenterBackground + strScale + strCenterItem;
 };
 
-export default Vue.extend({
+/** Compute the transform for moving the image to the convas center. */
+const useSvgSize = (
+  svg: Ref<HTMLElement | null>,
+  width: Ref<number | string | null>,
+  height: Ref<number | string | null>,
+) => {
+  const svgWidth: Ref<number | null> = ref(null);
+  const svgHeight: Ref<number | null> = ref(null);
+
+  // Store the size of the svg.
+  const getSvgSize = (): void => {
+    if (svg.value === null) return;
+    svgWidth.value = svg.value.clientWidth;
+    svgHeight.value = svg.value.clientHeight;
+  };
+
+  onMounted(getSvgSize);
+  onUpdated(getSvgSize);
+  watch(width, getSvgSize);
+  watch(height, getSvgSize);
+
+  return { svgWidth, svgHeight };
+};
+
+export default defineComponent({
   name: 'VDisplay',
   props: {
-    /**
-     * @description The data object to be rendered.
-     */
+    /** @description The data object to be rendered. */
     dataObject: {
       type: Object as PropType<IImage>,
       required: true,
     },
-    /**
-     * @description The width of the svg as a number or string of form '...%'
-     */
+    /** @description The width of the svg as a number or string of form '...%'. */
     width: {
       type: [Number, String],
       default: undefined,
@@ -75,9 +106,7 @@ export default Vue.extend({
           || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
       },
     },
-    /**
-     * @description The height of the svg as a number or string of form '...%'
-     */
+    /** @description The height of the svg as a number or string of form '...%'. */
     height: {
       type: [Number, String],
       default: undefined,
@@ -87,17 +116,25 @@ export default Vue.extend({
       },
     },
   },
-  data(): {
-  svgWidth: number | null,
-  svgHeight: number | null,
-  } {
-    return {
-      /**
-       * @description The width and height of svg as a number or undefined.
-       */
-      svgWidth: null,
-      svgHeight: null,
-    };
+  setup(props) {
+    const { width, height, dataObject } = toRefs(props);
+    const svg: Ref<HTMLElement | null> = ref(null);
+    const { svgWidth, svgHeight } = useSvgSize(svg, width, height);
+
+    // Compute the scaling of the image to fit the svg.
+    const transform: ComputedRef<string> = computed(() => {
+      if (svgWidth.value === null || svgHeight.value === null) return '';
+      if (dataObject.value === null || dataObject.value.width === null) return '';
+      if (dataObject.value === null || dataObject.value.height === null) return '';
+      return calFittingTransform({
+        xMin: 0,
+        xMax: dataObject.value.width,
+        yMin: 0,
+        yMax: dataObject.value.height,
+      }, svgWidth.value, svgHeight.value);
+    });
+
+    return { svg, transform };
   },
   computed: {
     src(): string {
@@ -105,44 +142,6 @@ export default Vue.extend({
       if (content !== null && content !== undefined) return content;
       if (url !== null && url !== undefined) return url;
       return '';
-    },
-    transform(): string {
-      // Compute the scaling of the image to fit the svg.
-      const { dataObject, svgWidth, svgHeight } = this;
-
-      if (svgWidth === null || svgHeight === null) {
-        return '';
-      }
-
-      return calFittingTransform({
-        xMin: 0,
-        xMax: dataObject.width as number,
-        yMin: 0,
-        yMax: dataObject.height as number,
-      }, svgWidth, svgHeight);
-    },
-  },
-  watch: {
-    width(): void {
-      // When the size of the svg is to be changed, recompute the transform.
-      this.setSvgSize();
-    },
-    height(): void {
-      // When the size of the svg is to be changed, recompute the transform.
-      this.setSvgSize();
-    },
-  },
-  mounted() {
-    this.setSvgSize();
-  },
-  updated() {
-    this.setSvgSize();
-  },
-  methods: {
-    setSvgSize(): void {
-      const { svg } = this.$refs as { svg: HTMLElement };
-      this.svgWidth = svg.clientWidth;
-      this.svgHeight = (typeof this.height === 'number') ? this.height : svg.clientHeight;
     },
   },
 });
