@@ -53,7 +53,16 @@
  * as a matrix of cells in cards.
  */
 
-import Vue, { PropType } from 'vue';
+import {
+  computed,
+  defineComponent,
+  ref,
+  toRefs,
+  watch,
+  ComputedRef,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import {
   Category,
   DataType,
@@ -62,9 +71,10 @@ import {
   LabelTaskType,
   StatusType,
 } from '@/commons/types';
+import useResizeObserver from '@/components/composables/useResizeObserver';
 import VDataObjectCard from './VDataObjectCard.vue';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VCardMatrix',
   components: { VDataObjectCard },
   props: {
@@ -105,11 +115,7 @@ export default Vue.extend({
     itemsPerRow: {
       type: Number,
       default: 2,
-      validator(value) {
-        // itemsPerRow must be factor of 12
-        // return Number.isInteger(value) && value >= 1 && 12 % value === 0;
-        return Number.isInteger(value) && value >= 1;
-      },
+      validator: (value: number) => Number.isInteger(value) && value >= 1,
     },
     itemsPerCol: {
       type: Number,
@@ -120,59 +126,68 @@ export default Vue.extend({
       default: null,
     },
   },
-  data() {
+  setup(props) {
+    const { dataObjects, itemsPerCol, itemsPerRow } = toRefs(props);
+
+    const container: Ref<HTMLElement | null> = ref(null);
+    const pagination: Ref<HTMLElement | null> = ref(null);
+    const labelCards: Ref<HTMLElement | null> = ref(null);
+
+    const cardHeight: Ref<number> = ref(0);
+    const cardWidth: Ref<number> = ref(0);
+    const page: Ref<number> = ref(1);
+
+    const itemsPerPage: ComputedRef<number> = computed(
+      () => itemsPerRow.value * itemsPerCol.value,
+    );
+    const nDataObjects: ComputedRef<number> = computed(
+      () => dataObjects.value.length,
+    );
+    const nPages: ComputedRef<number> = computed(
+      () => Math.ceil(nDataObjects.value / itemsPerPage.value),
+    );
+    const enablePagination: ComputedRef<boolean> = computed(
+      () => nPages.value >= 2,
+    );
+
+    const updateCardSize = () => {
+      if (container.value === null) return;
+      if (labelCards.value === null) return;
+      const height = container.value.clientHeight;
+      const width = container.value.clientWidth;
+      let paginationHeight = 0;
+      if (enablePagination.value && pagination.value !== null) {
+        paginationHeight = pagination.value.clientHeight;
+      }
+      labelCards.value.style.height = `${height - paginationHeight}px`;
+      cardHeight.value = (height - paginationHeight) / itemsPerCol.value;
+      cardWidth.value = width / itemsPerRow.value;
+    };
+
+    useResizeObserver(container, updateCardSize);
+    watch(dataObjects, () => { page.value = 1; });
+
+    const indicesInPage: ComputedRef<number[]> = computed(() => (
+      [...Array(nDataObjects.value).keys()].filter((i: number) => (
+        ((page.value - 1) * itemsPerPage.value <= i)
+        && (i < page.value * itemsPerPage.value)
+      ))
+    ));
+
     return {
-      padding: 4,
-      page: 1,
-      cardHeight: 0,
-      cardWidth: 0,
+      container,
+      pagination,
+      labelCards,
+      cardHeight,
+      cardWidth,
+      indicesInPage,
+      enablePagination,
     };
   },
-  computed: {
-    itemsPerPage(): number {
-      return this.itemsPerRow * this.itemsPerCol;
-    },
-    nDataObjects(): number {
-      return this.dataObjects.length;
-    },
-    nPages(): number {
-      return Math.ceil(this.nDataObjects / this.itemsPerPage);
-    },
-    enablePagination(): boolean {
-      return this.nPages >= 2;
-    },
-    indicesInPage(): number[] {
-      const { nDataObjects, itemsPerPage, page } = this;
-      return [...Array(nDataObjects).keys()].filter((i: number) => (
-        ((page - 1) * itemsPerPage <= i) && (i < page * itemsPerPage)
-      ));
-    },
-  },
-  watch: {
-    dataObjects() {
-      // Reset the page number to the first page when
-      // the data objects to be shown are changed.
-      this.page = 1;
-    },
-  },
-  mounted() {
-    this.updateCardSize();
-  },
-  updated() {
-    this.updateCardSize();
+  data() {
+    return { padding: 4 };
   },
   methods: {
-    updateCardSize() {
-      const container = this.$refs.container as HTMLElement;
-      const pagination = this.$refs.pagination as HTMLElement;
-      const labelCards = this.$refs.labelCards as HTMLElement;
-      const height = container.clientHeight;
-      const width = container.clientWidth;
-      const paginationHeight = this.enablePagination ? pagination.clientHeight : 0;
-      labelCards.style.height = `${height - paginationHeight}px`;
-      this.cardHeight = (height - paginationHeight) / this.itemsPerCol;
-      this.cardWidth = width / this.itemsPerRow;
-    },
     getColor(label: ILabel): string | null {
       const { label2color } = this;
       if (label === undefined

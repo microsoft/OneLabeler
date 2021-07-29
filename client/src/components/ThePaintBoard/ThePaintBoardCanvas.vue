@@ -1,13 +1,16 @@
 <template>
   <div
     ref="container"
-    style="height: 100%; width: 100%; background-color: #D0DAE8"
+    style="background-color: #D0DAE8"
     @mouseout="onMouseOutStage"
   >
+    <!-- Set position absolute to allow container to have responsive resize
+      (when a suitable style is set, e.g., flex layout),
+      instead of having to be the same size as the stage. -->
     <v-stage
       ref="stage"
-      :config="{ draggable: draggable }"
-      :style="{ cursor: cursor }"
+      :config="{ draggable }"
+      :style="{ cursor, position: 'absolute' }"
       @dragend="onDragEndStage"
       @wheel="onWheelStage"
       @mousedown="onMouseDownStage"

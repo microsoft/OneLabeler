@@ -17,9 +17,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import Konva from 'konva';
-import {
-  ILabelMask,
-} from '@/commons/types';
+import { ILabelMask } from '@/commons/types';
 
 type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
 

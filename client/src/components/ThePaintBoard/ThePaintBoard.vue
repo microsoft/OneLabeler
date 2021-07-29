@@ -24,32 +24,25 @@
       @window:pin="onWindowPin"
     />
     <v-divider />
-    <div
-      ref="container"
-      style="flex: 1 1 auto; display: flex; align-items: center;"
-    >
-      <div
-        v-if="showCanvas"
-        style="flex: 1 1 auto;"
-      >
-        <div :style="`height: ${canvasHeight}px`">
-          <ThePaintBoardCanvas
-            ref="canvas"
-            :data-object="dataObject"
-            :label-shapes="labelShapes"
-            :label-mask="labelMask"
-            :unlabeled-mark="unlabeledMark"
-            :stroke-shape="strokeShape"
-            :stroke-width="strokeWidth"
-            :stroke-label="strokeLabel"
-            :label2color="label2color"
-            :mouse-operation="mouseOperation"
-            @create:shape="onAddLabelShape"
-            @update:shape="onUpdateLabelShape"
-            @delete:shape="onRemoveLabelShape"
-            @update:mask="onSetLabelMask"
-          />
-        </div>
+    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;">
+      <template v-if="showCanvas">
+        <ThePaintBoardCanvas
+          ref="canvas"
+          :data-object="dataObject"
+          :label-shapes="labelShapes"
+          :label-mask="labelMask"
+          :unlabeled-mark="unlabeledMark"
+          :stroke-shape="strokeShape"
+          :stroke-width="strokeWidth"
+          :stroke-label="strokeLabel"
+          :label2color="label2color"
+          :mouse-operation="mouseOperation"
+          style="flex: 1 1 auto; width: 100%;"
+          @create:shape="onAddLabelShape"
+          @update:shape="onUpdateLabelShape"
+          @delete:shape="onRemoveLabelShape"
+          @update:mask="onSetLabelMask"
+        />
         <template v-if="enablePagination">
           <v-divider />
           <v-pagination
@@ -58,10 +51,11 @@
             :total-visible="Math.min(5, nPages)"
           />
         </template>
-      </div>
+      </template>
       <p
         v-else
-        class="mx-auto subtitle-1"
+        class="subtitle-1"
+        style="flex: 1 1 auto; display: flex; align-items: center;"
       >
         No Data Objects Queried
       </p>
@@ -76,7 +70,6 @@ import {
   Category,
   DataType,
   IDataObject,
-  IImage,
   ILabel,
   ILabelCategory,
   ILabelMultiCategory,
@@ -89,6 +82,21 @@ import {
 import { MouseOperationType, StrokeShapeType } from './types';
 import ThePaintBoardHeader from './ThePaintBoardHeader.vue';
 import ThePaintBoardCanvas from './ThePaintBoardCanvas.vue';
+
+const canvasToFile = async (
+  canvas: HTMLCanvasElement,
+  filename: string,
+): Promise<File> => new Promise((resolve) => {
+  canvas.toBlob(async (blob: Blob | null) => {
+    if (blob === null) return;
+    const file = new File(
+      [blob],
+      filename,
+      { type: blob.type },
+    );
+    resolve(file);
+  });
+});
 
 export default Vue.extend({
   name: 'ThePaintBoard',
@@ -139,8 +147,6 @@ export default Vue.extend({
       strokeLabel: null as Category | null,
       strokeShape: StrokeShapeType.Square,
       strokeWidth: 1,
-      paginationHeight: 43.6,
-      canvasHeight: 0,
       mouseOperation: MouseOperationType.PanAndZoom,
       page: 1,
     };
@@ -184,7 +190,6 @@ export default Vue.extend({
     dataObjects() {
       // reset page number
       this.page = 1;
-      this.setCanvasHeight();
     },
     classes() {
       this.initializeStrokeLabel();
@@ -192,7 +197,6 @@ export default Vue.extend({
   },
   mounted() {
     this.page = 1;
-    this.setCanvasHeight();
     this.initializeStrokeLabel();
   },
   methods: {
@@ -201,22 +205,13 @@ export default Vue.extend({
         [this.strokeLabel] = this.classes;
       }
     },
-    onSetLabelMask(labelMaskCanvas: HTMLCanvasElement): void {
+    async onSetLabelMask(labelMaskCanvas: HTMLCanvasElement): Promise<void> {
       if (this.dataObject === null) return;
-      const { uuid } = this.dataObject as IImage;
-      const filename = uuid;
-
-      labelMaskCanvas.toBlob(async (blob: Blob | null) => {
-        if (blob === null) return;
-        const file = new File(
-          [blob],
-          `${filename}-mask.png`,
-          { type: blob.type },
-        );
-        const mask: ILabelMask = { content: (await getBase64(file)) };
-        const newValue: Partial<ILabel> = { mask };
-        this.$emit('user-edit-label', uuid, newValue);
-      });
+      const { uuid } = this.dataObject;
+      const file = await canvasToFile(labelMaskCanvas, `${uuid}-mask.png`);
+      const mask: ILabelMask = { content: (await getBase64(file)) };
+      const newValue: Partial<ILabel> = { mask };
+      this.$emit('user-edit-label', uuid, newValue);
     },
     onAddLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
@@ -290,19 +285,6 @@ export default Vue.extend({
     onWindowPin(): void {
       const newValue: Partial<TaskWindow> = { isPinned: true };
       this.$emit('edit-task-window', newValue);
-    },
-    setCanvasHeight(): void {
-      // update canvas size according to whether pagination is needed
-      if (!this.showCanvas) {
-        this.canvasHeight = 0;
-      } else if (!this.enablePagination) {
-        const containerHeight = (this.$refs.container as HTMLElement).clientHeight;
-        this.canvasHeight = containerHeight;
-      } else {
-        const containerHeight = (this.$refs.container as HTMLElement).clientHeight;
-        const { paginationHeight } = this;
-        this.canvasHeight = containerHeight - paginationHeight;
-      }
     },
   },
 });
