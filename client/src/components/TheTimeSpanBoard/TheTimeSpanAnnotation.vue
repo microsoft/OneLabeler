@@ -231,6 +231,7 @@ export default Vue.extend({
       const {
         dragLastPoint,
         draggedSpanHandle,
+        duration,
         spans,
       } = this;
       const mousePoisition = { x: e.clientX, y: e.clientY };
@@ -244,9 +245,9 @@ export default Vue.extend({
           const dx = mousePoisition.x - dragLastPoint.x;
           const dt = (this.duration * dx) / this.slotXRange.width;
           if (draggedSpanHandle.direction === HandleDirection.Left) {
-            newValue.start += dt;
+            newValue.start = Math.max(newValue.start + dt, 0);
           } else if (draggedSpanHandle.direction === HandleDirection.Right) {
-            newValue.end += dt;
+            newValue.end = Math.min(newValue.end + dt, duration);
           }
           this.$emit('update:span', newValue);
         }
