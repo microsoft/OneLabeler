@@ -20,6 +20,7 @@ import Konva from 'konva';
 
 type VueKonvaImage = Vue & { getNode: () => Konva.Image };
 
+// Create an image element given the image url.
 const createImage = async (
   url: string,
 ): Promise<HTMLImageElement> => new Promise((resolve) => {
@@ -35,6 +36,7 @@ const createImage = async (
 export default Vue.extend({
   name: 'TheLayerImage',
   props: {
+    /** The image url. */
     src: {
       type: String as PropType<string | null>,
       default: null,
@@ -72,7 +74,6 @@ export default Vue.extend({
     setImageBlur(): void {
       const image = this.getImage();
       const { blur } = this;
-
       image.shadowBlur(blur);
       image.shadowOffset({ x: blur, y: blur });
     },

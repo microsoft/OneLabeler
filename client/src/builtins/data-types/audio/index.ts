@@ -24,6 +24,20 @@ const getAudioSize = (content: string) => new Promise((resolve) => {
   video.src = content;
 }) as Promise<{ duration: number }>;
 
+const handleFile = async (
+  file: File,
+  storage: IDataObjectStorage,
+): Promise<void> => {
+  const content = await getBase64(file);
+  const { duration } = await getAudioSize(content);
+  const dataObject: IAudio = {
+    uuid: uuidv4(),
+    content,
+    duration,
+  };
+  storage.upsert(dataObject);
+};
+
 export default {
   type: DataType.Audio,
   tasks: [
@@ -38,16 +52,12 @@ export default {
     files: FileList,
     storage: IDataObjectStorage,
   ): Promise<void> => {
-    await Promise.all([...files].map(async (file) => {
-      const content = await getBase64(file);
-      const { duration } = await getAudioSize(content);
-      const dataObject: IAudio = {
-        uuid: uuidv4(),
-        content,
-        duration,
-      };
-      storage.upsert(dataObject);
-    }));
+    // Note: chrome allow maximum 75 media elements to coexist,
+    // thus a maximal 75 concurrent calls to getVideoSize can exist
+    const concurrency = 50;
+    const fs: (() => Promise<void>)[] = [...files]
+      .map((file) => (() => handleFile(file, storage)));
+    while (fs.length) await Promise.all(fs.splice(0, concurrency).map(f => f()));
   },
   handleExport: <T extends IDataObject>(
     dataObjects: T[],

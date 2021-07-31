@@ -19,11 +19,13 @@ type IExport<T extends IDataObject> = (
 const getVideoSize = (content: string) => new Promise((resolve) => {
   const video = document.createElement('video');
   video.addEventListener('loadedmetadata', function () {
-    resolve({
-      height: this.videoHeight,
-      width: this.videoWidth,
-      duration: this.duration,
-    });
+    const height = this.videoHeight;
+    const width = this.videoWidth;
+    const { duration } = this;
+    // Force the video element to be cleaned up.
+    video.src = '';
+    video.remove();
+    resolve({ height, width, duration });
   }, false);
   video.src = content;
 }) as Promise<{
@@ -31,6 +33,26 @@ const getVideoSize = (content: string) => new Promise((resolve) => {
   height: number,
   duration: number,
 }>;
+
+const handleFile = async (
+  file: File,
+  storage: IDataObjectStorage,
+): Promise<void> => {
+  const content = await getBase64(file);
+  const {
+    width,
+    height,
+    duration,
+  } = await getVideoSize(content);
+  const dataObject: IVideo = {
+    uuid: uuidv4(),
+    content,
+    width,
+    height,
+    duration,
+  };
+  storage.upsert(dataObject);
+};
 
 export default {
   type: DataType.Video,
@@ -46,22 +68,12 @@ export default {
     files: FileList,
     storage: IDataObjectStorage,
   ): Promise<void> => {
-    await Promise.all([...files].map(async (file) => {
-      const content = await getBase64(file);
-      const {
-        width,
-        height,
-        duration,
-      } = await getVideoSize(content);
-      const dataObject: IVideo = {
-        uuid: uuidv4(),
-        content,
-        width,
-        height,
-        duration,
-      };
-      storage.upsert(dataObject);
-    }));
+    // Note: chrome allow maximum 75 media elements to coexist,
+    // thus a maximal 75 concurrent calls to getVideoSize can exist
+    const concurrency = 50;
+    const fs: (() => Promise<void>)[] = [...files]
+      .map((file) => (() => handleFile(file, storage)));
+    while (fs.length) await Promise.all(fs.splice(0, concurrency).map(f => f()));
   },
   handleExport: <T extends IDataObject>(
     dataObjects: T[],
