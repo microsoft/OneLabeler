@@ -266,8 +266,7 @@ export default Vue.extend({
       const node = this.nodes.find(
         (d: FlowchartNode) => d.id === this.draggedNodeId,
       );
-      if (node === undefined) return null;
-      return node;
+      return node ?? null;
     },
     selectedNodes(): FlowchartNode[] {
       return this.nodes.filter((d) => this.isNodeSelected(d));

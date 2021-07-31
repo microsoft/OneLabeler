@@ -107,14 +107,10 @@ export default Vue.extend({
     component(): VueConstructor | null {
       const { dataType } = this;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
-      if (dataTypeSetup === undefined) return null;
-      return dataTypeSetup.display;
+      return dataTypeSetup?.display ?? null;
     },
     spans(): ILabelTimeSpan[] | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.spans === null || label.spans === undefined) return null;
-      return label.spans;
+      return this.label?.spans ?? null;
     },
     duration(): number {
       if (this.dataObject.duration) return this.dataObject.duration;
@@ -158,8 +154,7 @@ export default Vue.extend({
       const component = this.$refs.dataObject as Vue & {
         getProgress: () => HTMLProgressElement,
       } | undefined;
-      if (component === undefined) return null;
-      return component.getProgress();
+      return component?.getProgress() ?? null;
     },
     getSlotClientXRange(): { left: number, width: number } | null {
       const progress = this.getProgress();

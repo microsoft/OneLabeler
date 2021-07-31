@@ -11,7 +11,7 @@ export const startNode = (state: IState): WorkflowNode | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.Initialization;
   const node = nodes.find((d) => d.type === type) as WorkflowNode;
-  return node === undefined ? null : node;
+  return node ?? null;
 };
 
 export const nextNodes = (state: IState): WorkflowNode[] | null => {

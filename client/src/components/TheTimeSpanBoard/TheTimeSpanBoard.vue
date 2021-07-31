@@ -132,10 +132,7 @@ export default Vue.extend({
       return this.labels[this.page - 1];
     },
     labelSpans(): ILabelTimeSpan[] | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.spans === null || label.spans === undefined) return null;
-      return label.spans;
+      return this.label?.spans ?? null;
     },
     enablePagination(): boolean {
       if (!this.showDataObject) return false;

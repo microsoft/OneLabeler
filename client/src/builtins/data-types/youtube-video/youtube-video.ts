@@ -204,8 +204,7 @@ class YoutubeVideoElement extends HTMLElement {
   }
 
   get src(): string {
-    const src = this.getAttribute('src');
-    return src === null ? '' : src;
+    return this.getAttribute('src') ?? '';
   }
 
   get volume(): number {

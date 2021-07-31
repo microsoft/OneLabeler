@@ -133,16 +133,10 @@ export default Vue.extend({
       return this.labels[this.page - 1];
     },
     labelSpans(): ILabelTextSpan[] | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.spans === null || label.spans === undefined) return null;
-      return label.spans;
+      return this.label?.spans ?? null;
     },
     labelRelations(): ILabelRelation[] | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.relations === null || label.relations === undefined) return null;
-      return label.relations;
+      return this.label?.relations ?? null;
     },
     enablePagination(): boolean {
       if (!this.showDataObject) return false;

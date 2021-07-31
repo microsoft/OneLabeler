@@ -123,8 +123,7 @@ import dataTypeSetups from '@/builtins/data-types/index';
 
 const getValidLabelTasks = (dataType: DataType): LabelTaskType[] => {
   const setup = dataTypeSetups.find((d) => d.type === dataType);
-  if (setup === undefined) return [];
-  return setup.tasks;
+  return setup?.tasks ?? [];
 };
 
 export default Vue.extend({

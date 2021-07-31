@@ -164,12 +164,10 @@ export default Vue.extend({
       return 'crosshair';
     },
     imgWidth(): number | null {
-      if (this.dataObject === null) return null;
-      return this.dataObject.width as number;
+      return this.dataObject?.width ?? null;
     },
     imgHeight(): number | null {
-      if (this.dataObject === null) return null;
-      return this.dataObject.height as number;
+      return this.dataObject?.height ?? null;
     },
   },
   watch: {

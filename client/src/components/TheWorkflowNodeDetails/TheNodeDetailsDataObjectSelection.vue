@@ -233,9 +233,7 @@ export default Vue.extend({
     model(): ModelService | undefined {
       const modelBasedMethod = (this.node.value as Process[])
         .find((d) => d.model !== undefined);
-      return modelBasedMethod === undefined
-        ? undefined
-        : modelBasedMethod.model;
+      return modelBasedMethod?.model;
     },
     menuOfMethods() {
       return {

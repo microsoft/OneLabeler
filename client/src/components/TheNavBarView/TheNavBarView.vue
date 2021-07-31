@@ -284,8 +284,7 @@ export default Vue.extend({
     uploadType(): UploadTarget | null {
       const dataType = this.dataType as DataType | null;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
-      if (dataTypeSetup === undefined) return null;
-      return dataTypeSetup.importType;
+      return dataTypeSetup?.importType ?? null;
     },
     lastCommand(): ICommand | null {
       if (this.commandHistory.length === 0) {

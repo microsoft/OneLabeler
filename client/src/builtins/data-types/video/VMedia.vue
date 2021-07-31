@@ -332,7 +332,7 @@ export default Vue.extend({
     },
     getMedia(): HTMLMediaElement | null {
       const media = this.$refs.media as HTMLMediaElement | undefined;
-      return media === undefined ? null : media;
+      return media ?? null;
     },
     getProgress(): HTMLProgressElement {
       return this.$refs.progress as HTMLProgressElement;

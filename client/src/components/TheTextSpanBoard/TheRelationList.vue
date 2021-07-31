@@ -110,7 +110,7 @@ export default Vue.extend({
     },
   },
   computed: {
-    uuid2span() {
+    uuid2span(): Record<string, ILabelTextSpan> {
       const { labelSpans } = this;
       const uuid2span: Record<string, ILabelTextSpan> = {};
       if (labelSpans === null) return uuid2span;

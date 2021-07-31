@@ -166,16 +166,10 @@ export default Vue.extend({
       return this.labels[this.page - 1];
     },
     labelShapes(): ILabelShape[] | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.shapes === null || label.shapes === undefined) return null;
-      return label.shapes;
+      return this.label?.shapes ?? null;
     },
     labelMask(): ILabelMask | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.mask === null || label.mask === undefined) return null;
-      return label.mask;
+      return this.label?.mask ?? null;
     },
     enablePagination(): boolean {
       if (!this.showCanvas) return false;

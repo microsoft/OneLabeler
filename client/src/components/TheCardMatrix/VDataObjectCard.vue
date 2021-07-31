@@ -121,8 +121,7 @@ export default Vue.extend({
     component(): VueConstructor | null {
       const { dataType } = this;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
-      if (dataTypeSetup === undefined) return null;
-      return dataTypeSetup.display;
+      return dataTypeSetup?.display ?? null;
     },
     bodyHeight(): number {
       return Math.max(this.height - this.headerHeight, 0);

@@ -65,9 +65,7 @@ export default Vue.extend({
       this.$emit('set:label-multi-category', newValue);
     },
     isCategorySelected(category: Category): boolean {
-      const { labelMultiCategory } = this;
-      if (labelMultiCategory === null) return false;
-      return labelMultiCategory.find((d) => d === category) !== undefined;
+      return this.labelMultiCategory?.includes(category) ?? false;
     },
   },
 });

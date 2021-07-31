@@ -61,10 +61,9 @@ export default defineComponent({
     const container: Ref<HTMLElement | null> = ref(null);
     const canvas: Ref<HTMLCanvasElement | null> = ref(null);
 
-    const points: ComputedRef<Vector3d[] | null> = computed(() => {
-      if (dataObject.value === null) return null;
-      return dataObject.value.content;
-    });
+    const points: ComputedRef<Vector3d[] | null> = computed(() => (
+      dataObject.value?.content ?? null
+    ));
     const widthStr: ComputedRef<string> = computed((): string => {
       if (typeof width.value === 'number') return `${width.value}px`;
       return width.value;

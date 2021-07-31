@@ -131,11 +131,7 @@ export default Vue.extend({
       this.$emit('click:close');
     },
     syncLabel(): void {
-      if (this.labelText === null || this.labelText === undefined) {
-        this.text = null;
-      } else {
-        this.text = this.labelText.content;
-      }
+      this.text = this.labelText?.content ?? null;
     },
   },
 });

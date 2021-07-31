@@ -16,14 +16,9 @@ interface Tuple {
 
 const useLabel = (label: Ref<ILabel | null>) => {
   /** Computed label spans. */
-  const spans: ComputedRef<ILabelTextSpan[] | null> = computed(
-    (): ILabelTextSpan[] | null => {
-      if (label.value === null) return null;
-      if (label.value.spans === null
-        || label.value.spans === undefined) return null;
-      return label.value.spans;
-    },
-  );
+  const spans: ComputedRef<ILabelTextSpan[] | null> = computed(() => (
+    label.value?.spans ?? null
+  ));
 
   /** Get all the spans that belongs to the category. */
   const getSpansByCategory = (category: Category): ILabelTextSpan[] => {
@@ -68,14 +63,9 @@ const useLabel = (label: Ref<ILabel | null>) => {
   };
 
   /** Computed label span relations. */
-  const relations: ComputedRef<ILabelRelation[] | null> = computed(
-    (): ILabelRelation[] | null => {
-      if (label.value === null) return null;
-      if (label.value.relations === null
-        || label.value.relations === undefined) return null;
-      return label.value.relations;
-    },
-  );
+  const relations: ComputedRef<ILabelRelation[] | null> = computed(() => (
+    label.value?.relations ?? null
+  ));
 
   /** Get all the spans that connects to the given span by the relations. */
   const getRelatedSpans = (span: ILabelTextSpan): ILabelTextSpan[] => {

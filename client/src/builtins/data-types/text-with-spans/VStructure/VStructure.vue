@@ -13,10 +13,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
-  ILabel,
-  ILabelCategory,
-} from '@/commons/types';
+import { ILabel, ILabelCategory } from '@/commons/types';
 import VStructureAggregation from './VStructureAggregation.vue';
 import VStructureAssociation from './VStructureAssociation.vue';
 import VStructureCategorization from './VStructureCategorization.vue';
@@ -60,10 +57,7 @@ export default Vue.extend({
   },
   computed: {
     labelCategory(): ILabelCategory | null {
-      const { label } = this;
-      if (label === null) return null;
-      if (label.category === null || label.category === undefined) return null;
-      return label.category;
+      return this.label?.category ?? null;
     },
     component(): Vue.VueConstructor | null {
       const category = this.labelCategory;

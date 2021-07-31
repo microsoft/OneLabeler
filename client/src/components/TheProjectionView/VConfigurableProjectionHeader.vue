@@ -363,9 +363,7 @@ export default Vue.extend({
   },
   computed: {
     disableSingleFeatureNameAddition(): boolean {
-      if (this.singleFeatureNameModel === null) {
-        return true;
-      }
+      if (this.singleFeatureNameModel === null) return true;
       return !(this.featureNames.findIndex((d) => d === this.singleFeatureNameModel) >= 0);
     },
     disableProjectionMethodMenu(): boolean {
