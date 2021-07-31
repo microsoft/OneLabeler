@@ -36,8 +36,9 @@
     >
       <div
         class="px-2"
-        style="display: flex; flex-direction: row; align-items: center; width: 15%;"
+        style="display: flex; flex-direction: row; align-items: center;"
       >
+        <!-- Play/Pause button -->
         <v-btn
           :title="paused ? 'Play' : 'Pause'"
           icon
@@ -55,6 +56,7 @@
             }}
           </v-icon>
         </v-btn>
+        <!-- Stop button (clear the playing progress) -->
         <v-btn
           title="Stop"
           icon
@@ -69,9 +71,9 @@
             $vuetify.icons.values.stop
           </v-icon>
         </v-btn>
+        <!-- Mute/Unmute button -->
         <v-btn
           :title="muted ? 'Unmute' : 'Mute'"
-          class="mr-1"
           icon
           tile
           small
@@ -87,13 +89,42 @@
             }}
           </v-icon>
         </v-btn>
+        <!-- Playback rate menu -->
+        <v-menu offset-y>
+          <template #activator="{ on }">
+            <v-btn
+              class="subtitle-2 mr-1 text-none"
+              style="font-weight: bold"
+              width="60"
+              title="Playback Rate"
+              icon
+              tile
+              small
+              v-on="on"
+            >
+              {{ `X ${playbackRate}` }}
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item
+              v-for="option in playbackRateOptions"
+              :key="option"
+              class="subtitle-2"
+              style="min-height: 30px"
+              @click="onSetPlaybackRate(option)"
+            >
+              {{ `X ${option}` }}
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- The playing progress string -->
         <span class="subtitle-2">
           {{ `${getTimeStr(currentTime)} / ${getTimeStr(duration)}` }}
         </span>
       </div>
       <div
         class="px-4"
-        style="display: flex; align-items: center; width: 85%;"
+        style="flex: 1 1 auto; display: flex; align-items: center;"
       >
         <progress
           ref="progress"
@@ -101,7 +132,7 @@
           :value="currentTime"
           :max="duration"
           min="0"
-          style="width: 100%; height: 25px; border-radius: 0;"
+          style="flex: 1 1 auto; height: 25px; border-radius: 0;"
           @click="onClickProgress"
         />
       </div>
@@ -150,9 +181,9 @@ export default Vue.extend({
       duration: 0,
       // The currentTime of the media (synced when timeupdate is fired).
       currentTime: 0,
-      // Wether the play/pause button is in pause state.
+      // Whether the play/pause button is in pause state.
       paused: true,
-      // Wether the mute/unmute button is in mute state.
+      // Whether the mute/unmute button is in mute state.
       muted: false,
       // The rate for the media to dispatch timeupdate
       fps: 40,
@@ -160,6 +191,10 @@ export default Vue.extend({
       controlHeight: 40,
       // The timer for manually firing timeupdate.
       timer: null as ReturnType<typeof setTimeout> | null,
+      // The current playback rate.
+      playbackRate: 1,
+      // The playback rate options.
+      playbackRateOptions: [0.25, 0.5, 1, 2, 4],
     };
   },
   computed: {
@@ -242,6 +277,12 @@ export default Vue.extend({
       this.muted = !this.muted;
       media.muted = this.muted;
     },
+    onSetPlaybackRate(playbackRate: number): void {
+      const media = this.getMedia();
+      if (media === null) return;
+      this.playbackRate = playbackRate;
+      media.playbackRate = playbackRate;
+    },
     onClickProgress(e: MouseEvent): void {
       const media = this.getMedia();
       if (media === null) return;
@@ -287,7 +328,7 @@ export default Vue.extend({
     getTimeStr(duration: number): string {
       const date = new Date(0);
       date.setSeconds(duration);
-      return date.toISOString().substr(11, 8);
+      return date.toISOString().substr(14, 5);
     },
     getMedia(): HTMLMediaElement | null {
       const media = this.$refs.media as HTMLMediaElement | undefined;

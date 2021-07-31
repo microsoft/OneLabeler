@@ -20,6 +20,7 @@
           <TheTimeSpanBoardBody
             ref="canvas"
             :data-type="dataType"
+            :label-tasks="labelTasks"
             :data-object="dataObject"
             :label="label"
             :classes="classes"
@@ -80,6 +81,10 @@ export default Vue.extend({
       type: String as PropType<DataType>,
       required: true,
     },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
+    },
     dataObjects: {
       type: Array as PropType<IDataObject[]>,
       required: true,
@@ -90,10 +95,6 @@ export default Vue.extend({
     },
     taskWindow: {
       type: Object as PropType<TaskWindow>,
-      required: true,
-    },
-    labelTasks: {
-      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     classes: {

@@ -1,6 +1,7 @@
 <template>
   <div
     ref="container"
+    class="px-2 pb-2"
     style="width: 100%; display: flex; flex-direction: column"
   >
     <!-- The data object display. -->
@@ -10,15 +11,15 @@
       :data-object="dataObject"
       :label="label"
       :label2color="label2color"
-      :height="'70%'"
+      :height="includesSpanClassification ? '70%' : '100%'"
       :width="'100%'"
-      class="px-2"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
     />
 
     <!-- The annotated time spans. -->
     <TheTimeSpanAnnotation
+      v-if="includesSpanClassification"
       :duration="duration"
       :current-time="currentTime"
       :slot-client-x-range="slotClientXRange"
@@ -28,7 +29,6 @@
       :spans="spans"
       :selected-span="selectedSpan"
       :label2color="label2color"
-      class="ma-2"
       style="flex: 1 1 auto"
       @create:span="$emit('create:span', $event)"
       @select:span="onSelectSpan"
@@ -57,6 +57,10 @@ export default Vue.extend({
   props: {
     dataType: {
       type: String as PropType<DataType>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     dataObject: {
@@ -97,6 +101,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    includesSpanClassification(): boolean {
+      return this.labelTasks.includes(LabelTaskType.SpanClassification);
+    },
     component(): VueConstructor | null {
       const { dataType } = this;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);

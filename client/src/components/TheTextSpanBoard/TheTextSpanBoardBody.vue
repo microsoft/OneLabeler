@@ -46,9 +46,9 @@
         :selected-span="selectedSpan"
         class="ma-2"
         style="flex: 1 1 30%"
-        @remove:span="onRemoveLabelSpan"
+        @remove:span="$emit('remove:span', $event)"
         @select:span="onSelectLabelSpan"
-        @create:relation="onCreateLabelRelation"
+        @create:relation="$emit('create:relation', $event)"
       />
       <TheRelationList
         v-if="includesAnnotationRelation"
@@ -59,7 +59,7 @@
         class="ma-2 ml-0"
         style="flex: 1 1 30%"
         @select:span="onSelectLabelSpan"
-        @remove:relation="onRemoveLabelRelation"
+        @remove:relation="$emit('remove:relation', $event)"
       />
     </div>
   </div>
@@ -223,15 +223,6 @@ export default Vue.extend({
     onSelectLabelSpan(labelSpan: ILabelTextSpan | null): void {
       this.$emit('select:span', labelSpan);
       this.selectedSpan = labelSpan;
-    },
-    onRemoveLabelSpan(labelSpan: ILabelTextSpan): void {
-      this.$emit('remove:span', labelSpan);
-    },
-    onCreateLabelRelation(labelRelation: ILabelRelation): void {
-      this.$emit('create:relation', labelRelation);
-    },
-    onRemoveLabelRelation(labelRelation: ILabelRelation): void {
-      this.$emit('remove:relation', labelRelation);
     },
     onScroll(): void {
       this.boxes = this.getBoxes();
