@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex-direction: column;">
+  <v-card style="display: flex; flex-direction: column;">
     <TheProjectionViewHeader
       :n-rows="nRows"
       :n-columns="nColumns"
@@ -59,7 +59,7 @@
         Feature Values not Computed
       </p>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script lang="ts">

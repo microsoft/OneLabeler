@@ -341,13 +341,7 @@ export default Vue.extend({
       required: true,
     },
   },
-  data(): {
-    projectionMethodMenu: { options: ProjectionMethodType[], optionsText: string[] },
-    singleFeatureNameModel: string | null,
-    binningNRowsRange: [number, number],
-    binningNColumnsRange: [number, number],
-    subsamplingNSamplesRange: [number, number],
-    } {
+  data() {
     return {
       projectionMethodMenu: {
         options: [
@@ -360,11 +354,11 @@ export default Vue.extend({
           ProjectionMethodType.MDS,
           ProjectionMethodType.TSNE,
         ],
-      },
-      singleFeatureNameModel: null,
-      binningNRowsRange: [5, 50],
-      binningNColumnsRange: [5, 50],
-      subsamplingNSamplesRange: [50, 500],
+      } as { options: ProjectionMethodType[], optionsText: string[] },
+      singleFeatureNameModel: null as string | null,
+      binningNRowsRange: [5, 50] as [number, number],
+      binningNColumnsRange: [5, 50] as [number, number],
+      subsamplingNSamplesRange: [50, 500] as [number, number],
     };
   },
   computed: {

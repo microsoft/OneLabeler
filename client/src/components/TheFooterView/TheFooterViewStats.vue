@@ -1,15 +1,15 @@
 <template>
   <div style="display: flex; align-items: center;">
     <v-divider vertical />
-    <span class="mx-2 subtitle-2 grey--text text--lighten-2">
+    <span class="mx-2 footer-text">
       {{ `${nTotal} data objects` }}
     </span>
     <v-divider vertical />
-    <span class="mx-2 subtitle-2 grey--text text--lighten-2">
+    <span class="mx-2 footer-text">
       {{ `${nLabeled} / ${nTotal} labeled` }}
     </span>
     <v-divider vertical />
-    <span class="ml-2 mr-1 subtitle-2 grey--text text--lighten-2">
+    <span class="ml-2 mr-1 footer-text">
       {{ `${classes.length} classes` }}
     </span>
 
@@ -36,6 +36,30 @@ import {
   StatusType,
 } from '@/commons/types';
 import TheClassesDialog from './TheClassesDialog.vue';
+
+/*
+const useDataObjects = (dataObjects: Ref<IDataObjectStorage | null>) => {
+  const nTotal: Ref<number> = ref(0);
+  const updateNLabeled = async (): Promise<void> => {
+    if (dataObjects.value === null) nTotal.value = 0;
+    else nTotal.value = await dataObjects.value.count();
+  };
+  onMounted(updateNLabeled);
+  watch(dataObjects, updateNLabeled);
+  return { nTotal };
+};
+
+const useStatuses = (statuses: Ref<IStatusStorage | null>) => {
+  const nLabeled: Ref<number> = ref(0);
+  const updateNLabeled = async (): Promise<void> => {
+    if (statuses.value === null) nLabeled.value = 0;
+    else nLabeled.value = await statuses.value.count({ value: StatusType.Labeled });
+  };
+  onMounted(updateNLabeled);
+  watch(statuses, updateNLabeled);
+  return { nLabeled };
+};
+*/
 
 export default Vue.extend({
   name: 'TheFooterView',
@@ -84,3 +108,13 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+
+.footer-text {
+  @extend .subtitle-2;
+  @extend .grey--text;
+  @extend .text--lighten-2;
+}
+</style>

@@ -9,7 +9,7 @@
     <button
       v-for="(taskWindow, i) in taskWindows"
       :key="i"
-      class="mx-1 subtitle-2 grey--text text--lighten-2 window-bar"
+      class="mx-1 window-bar"
       :class="{ 'active': !taskWindow.isMinimized }"
       :style="{
         'background': isNodeCurrent(taskWindow.node)
@@ -17,7 +17,7 @@
       }"
       @click="onClickBar(taskWindow)"
     >
-      <div class="mx-2">
+      <div class="mx-2 footer-text">
         {{ `${taskWindow.node.label} - ${taskWindow.process.label}` }}
       </div>
     </button>
@@ -36,9 +36,7 @@ import TheFooterViewStats from './TheFooterViewStats.vue';
 
 export default Vue.extend({
   name: 'TheFooterView',
-  components: {
-    TheFooterViewStats,
-  },
+  components: { TheFooterViewStats },
   props: {
     height: {
       default: 30,
@@ -66,7 +64,14 @@ export default Vue.extend({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+
+.footer-text {
+  @extend .subtitle-2;
+  @extend .grey--text;
+  @extend .text--lighten-2;
+}
 .window-bar {
   display: inline-flex;
   align-items: center;

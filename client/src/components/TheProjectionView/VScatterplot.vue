@@ -60,14 +60,10 @@ export default Vue.extend({
       required: true,
     },
   },
-  data(): {
-    chart: Scatterplot | null,
-    lassoInstance: Lasso | null,
-    dotRadius: number,
-    } {
+  data() {
     return {
-      chart: null,
-      lassoInstance: null,
+      chart: null as Scatterplot | null,
+      lassoInstance: null as Lasso | null,
       dotRadius: 3,
     };
   },

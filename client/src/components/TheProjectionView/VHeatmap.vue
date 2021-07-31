@@ -60,14 +60,10 @@ export default Vue.extend({
       default: null,
     },
   },
-  data(): {
-    chart: Heatmap | null,
-    lassoInstance: Lasso | null,
-    dotRadius: number,
-    } {
+  data() {
     return {
-      chart: null,
-      lassoInstance: null,
+      chart: null as Heatmap | null,
+      lassoInstance: null as Lasso | null,
       dotRadius: 3,
     };
   },

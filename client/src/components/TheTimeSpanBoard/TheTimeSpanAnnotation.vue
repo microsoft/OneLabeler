@@ -5,7 +5,7 @@
     style="overflow-y: scroll; border-radius: 0;"
   >
     <div
-      v-for="(category, i) in filterClassesByLabelTask(LabelTaskType.SpanClassification)"
+      v-for="(category, i) in classesFiltered"
       :key="`slot-${i}`"
       class="my-1"
       :style="{
@@ -183,12 +183,23 @@ export default Vue.extend({
         width: this.slotClientXRange.width,
       };
     },
+    classesFiltered(): Category[] {
+      return this.filterClassesByLabelTask(LabelTaskType.SpanClassification);
+    },
   },
   watch: {
     currentTime() {
       const { currentTime } = this;
       if (this.newSpan !== null) {
         this.newSpan.end = Math.max(this.newSpan.start, currentTime);
+      }
+    },
+    classesFiltered() {
+      // If the category the new span belongs to has been deleted,
+      // remove the new span.
+      if (this.newSpan !== null
+        && !this.classesFiltered.includes(this.newSpan.category)) {
+        this.newSpan = null;
       }
     },
   },
