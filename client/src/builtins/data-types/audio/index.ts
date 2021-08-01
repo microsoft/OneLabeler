@@ -17,11 +17,15 @@ type IExport<T extends IDataObject> = (
 )[];
 
 const getAudioSize = (content: string) => new Promise((resolve) => {
-  const video = document.createElement('video');
-  video.addEventListener('loadedmetadata', function () {
-    resolve({ duration: this.duration });
+  const audio = document.createElement('audio');
+  audio.addEventListener('loadedmetadata', function () {
+    const { duration } = this;
+    // Force the audio element to be cleaned up.
+    audio.src = '';
+    audio.remove();
+    resolve({ duration });
   }, false);
-  video.src = content;
+  audio.src = content;
 }) as Promise<{ duration: number }>;
 
 const handleFile = async (
