@@ -42,10 +42,6 @@ export default Vue.extend({
       },
     },
   },
-  mounted() {
-    const media = this.getMedia();
-    media.volume = 0.2;
-  },
   methods: {
     onTimeUpdate(e: Event): void {
       this.$emit('timeupdate', e);

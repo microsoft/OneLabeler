@@ -1,8 +1,7 @@
 <template>
   <div
     ref="container"
-    class="px-2 pb-2"
-    style="width: 100%; display: flex; flex-direction: column"
+    style="display: flex; flex-direction: column"
   >
     <!-- The data object display. -->
     <component

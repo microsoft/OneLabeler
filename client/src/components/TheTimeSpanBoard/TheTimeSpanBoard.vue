@@ -16,6 +16,8 @@
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; flex-direction: column">
       <template v-if="showDataObject">
+        <!-- Note: not setting height: 0px will make the component not responsive
+          when the window height is small. -->
         <div style="height: 0px; flex: 1 1 auto; display: flex">
           <TheTimeSpanBoardBody
             ref="canvas"
@@ -28,6 +30,8 @@
             :selected-slot="selectedSlot"
             :selected-span="selectedSpan"
             :label2color="label2color"
+            class="px-2 pb-2"
+            style="width: 100%"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
             @select:slot="onSelectSlot"

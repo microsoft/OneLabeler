@@ -8,24 +8,13 @@
       'flex-direction': 'column',
     }"
   >
-    <div
-      ref="spectrogram"
-      class="spectrogram-container"
-      :style="{
-        flex: '1 1 80%',
-        'min-width': 0,
-        'min-height': 0,
-        'margin-left': slotXRange === null ? undefined : `${slotXRange.left}px`,
-        width: slotXRange === null ? undefined : `${slotXRange.width}px`,
-      }"
-    />
     <!-- Note: flex item by default is not allowed to be smaller than its content
       unless min-width and/or min-height is set. -->
     <div
       ref="waveform"
       class="waveform-container"
       :style="{
-        flex: '1 1 20%',
+        flex: '1 1 auto',
         'min-width': 0,
         'min-height': 0,
         'margin-left': slotXRange === null ? undefined : `${slotXRange.left}px`,
@@ -55,36 +44,13 @@ import {
   Ref,
 } from '@vue/composition-api';
 import WaveSurfer from 'wavesurfer.js';
-import SpectrogramPlugin from 'wavesurfer.js/src/plugin/spectrogram';
 import { IAudio } from '@/commons/types';
 import useResizeObserver from '@/components/composables/useResizeObserver';
 import VMedia from '../video/VMedia.vue';
 
-const fitSpectrogramToContainer = (
-  spectrogram: HTMLDivElement,
-): void => {
-  const observer = new MutationObserver(() => {
-    if (spectrogram.getElementsByTagName('canvas')[0] !== undefined) {
-      const spectrogramCanvas = spectrogram.getElementsByTagName('canvas')[0];
-      spectrogramCanvas.style.height = `${spectrogram.clientHeight}px`;
-      observer.disconnect();
-    }
-  });
-  observer.observe(
-    spectrogram,
-    {
-      attributes: false,
-      childList: true,
-      characterData: false,
-      subtree: true,
-    },
-  );
-};
-
 const useWaveform = (
   waveform: Ref<HTMLDivElement | null>,
   media: Ref<HTMLMediaElement | null>,
-  spectrogram: Ref<HTMLDivElement | null>,
   responsive: boolean,
 ) => {
   const wavesurfer: Ref<WaveSurfer | null> = ref(null);
@@ -92,7 +58,6 @@ const useWaveform = (
   const render = (): void => {
     if (waveform.value === null) return;
     if (media.value === null) return;
-    if (spectrogram.value === null) return;
 
     // Clear the canvas.
     wavesurfer.value?.destroy();
@@ -104,14 +69,8 @@ const useWaveform = (
       responsive,
       fillParent: true,
       interact: false,
-      plugins: [SpectrogramPlugin.create({
-        container: spectrogram.value,
-        fftSamples: 1024,
-      })],
     });
     wavesurfer.value.load(media.value);
-
-    fitSpectrogramToContainer(spectrogram.value);
   };
 
   const setCurrentTime = (seconds: number): void => {
@@ -125,7 +84,6 @@ const useWaveform = (
 const useResponsive = (
   waveform: Ref<HTMLElement | null>,
   wavesurfer: Ref<WaveSurfer | null>,
-  spectrogram: Ref<HTMLDivElement | null>,
 ) => {
   const onResize = (): void => {
     if (wavesurfer.value === null) return;
@@ -133,13 +91,6 @@ const useResponsive = (
 
     // Resize waveform
     wavesurfer.value.setHeight(waveform.value.clientHeight);
-
-    // Resize spectrogram
-    if (spectrogram.value === null) return;
-    const spectrogramCanvas = spectrogram.value.getElementsByTagName('canvas')[0];
-    if (spectrogramCanvas === undefined) return;
-    spectrogramCanvas.style.height = `${spectrogram.value.clientHeight}px`;
-    spectrogramCanvas.style.width = `${spectrogram.value.clientWidth}px`;
   };
   useResizeObserver(waveform, onResize);
 };
@@ -176,7 +127,6 @@ export default defineComponent({
     const { dataObject, width, height } = toRefs(props);
 
     const container: Ref<HTMLDivElement | null> = ref(null);
-    const spectrogram: Ref<HTMLDivElement | null> = ref(null);
     const waveform: Ref<HTMLDivElement | null> = ref(null);
     const vmedia: Ref<Vue & {
       getMedia: () => HTMLMediaElement | null,
@@ -186,7 +136,7 @@ export default defineComponent({
     const media: Ref<HTMLMediaElement | null> = ref(null);
     const progress: Ref<HTMLProgressElement | null> = ref(null);
 
-    const waveformChart = useWaveform(waveform, media, spectrogram, false);
+    const waveformChart = useWaveform(waveform, media, false);
     const slotXRange: Ref<{ left: number, width: number } | null> = ref(null);
 
     const getMedia = (): HTMLMediaElement | null => vmedia.value?.getMedia() ?? null;
@@ -224,7 +174,7 @@ export default defineComponent({
       waveformChart.render();
     });
 
-    useResponsive(waveform, waveformChart.wavesurfer, spectrogram);
+    useResponsive(waveform, waveformChart.wavesurfer);
 
     useResizeObserver(container, () => {
       slotXRange.value = getSlotXRange();
@@ -232,7 +182,6 @@ export default defineComponent({
 
     return {
       container,
-      spectrogram,
       waveform,
       vmedia,
       widthStr,
@@ -249,8 +198,5 @@ export default defineComponent({
 <style lang="scss">
 .waveform-container > wave {
   overflow: hidden !important;
-}
-.spectrogram-container > spectrogram {
-  height: 100% !important;
 }
 </style>

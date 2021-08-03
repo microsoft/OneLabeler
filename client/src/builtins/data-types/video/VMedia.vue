@@ -228,6 +228,8 @@ export default Vue.extend({
   },
   mounted() {
     this.paused = true;
+    const media = this.getMedia();
+    if (media !== null) media.volume = 0.2;
   },
   methods: {
     onKey(e: KeyboardEvent): void {

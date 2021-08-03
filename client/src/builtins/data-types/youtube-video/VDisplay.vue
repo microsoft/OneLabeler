@@ -48,10 +48,6 @@ export default Vue.extend({
       },
     },
   },
-  mounted() {
-    const media = this.getMedia();
-    media.volume = 0.2;
-  },
   methods: {
     onLoadedMetadata(e: Event): void {
       this.$emit('loadedmetadata', e);
