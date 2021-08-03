@@ -31,11 +31,19 @@
             :selected-span="selectedSpan"
             :label2color="label2color"
             class="px-2 pb-2"
-            style="width: 100%"
+            style="flex: 1 1 auto"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
             @select:slot="onSelectSlot"
             @update:span="onUpdateLabelSpan"
+            @set:label-text="onSetLabelText"
+          />
+          <VFreeformTextSingleToolPanel
+            v-if="includesFreeformText"
+            :label-text="label.text"
+            class="my-2 mr-2 pa-2"
+            style="flex: 1 1 25%"
+            @set:label-text="onSetLabelText"
           />
         </div>
         <template v-if="enablePagination">
@@ -71,12 +79,14 @@ import {
   LabelTaskType,
   TaskWindow,
 } from '@/commons/types';
+import VFreeformTextSingleToolPanel from '@/components/VLabelFreeformText/VSingleToolPanel.vue';
 import TheTimeSpanBoardHeader from './TheTimeSpanBoardHeader.vue';
 import TheTimeSpanBoardBody from './TheTimeSpanBoardBody.vue';
 
 export default Vue.extend({
   name: 'TheTimeSpanBoard',
   components: {
+    VFreeformTextSingleToolPanel,
     TheTimeSpanBoardHeader,
     TheTimeSpanBoardBody,
   },
@@ -122,6 +132,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    includesFreeformText(): boolean {
+      return this.labelTasks.includes(LabelTaskType.FreeformText);
+    },
     showDataObject(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;

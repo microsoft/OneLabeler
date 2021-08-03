@@ -10,8 +10,8 @@ import {
   UploadTarget,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
-// import VDisplay from './VDisplay.vue';
-import VDisplay from './VDisplay-simplified.vue';
+import VDisplay from './VDisplay.vue';
+// import VDisplay from './VDisplay-simplified.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }

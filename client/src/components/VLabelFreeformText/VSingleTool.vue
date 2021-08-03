@@ -33,7 +33,7 @@
       <div style="display: flex; flex-direction: row;">
         <slot name="dialog-header">
           <span
-            class="title"
+            class="subtitle-1"
             style="user-select: none"
           >
             {{ dialogTitle }}
