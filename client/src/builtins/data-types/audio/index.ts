@@ -62,7 +62,8 @@ export default {
     const concurrency = 50;
     const fs: (() => Promise<void>)[] = [...files]
       .map((file) => (() => handleFile(file, storage)));
-    while (fs.length) await Promise.all(fs.splice(0, concurrency).map(f => f()));
+    // eslint-disable-next-line no-await-in-loop
+    while (fs.length) await Promise.all(fs.splice(0, concurrency).map((f) => f()));
   },
   handleExport: <T extends IDataObject>(
     dataObjects: T[],

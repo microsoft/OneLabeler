@@ -8,6 +8,7 @@ import videoTypeSetup from './video';
 import youtubeVideoTypeSetup from './youtube-video';
 import pointCloudTypeSetup from './point-cloud';
 import webpageTypeSetup from './webpage';
+// import webpageTypeSetup from './webpage/index-minimal';
 import textTypeSetup from './text';
 import textWithSpansTypeSetup from './text-with-spans';
 import textWithTableTypeSetup from './text-with-table';

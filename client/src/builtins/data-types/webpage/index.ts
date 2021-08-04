@@ -5,7 +5,7 @@ import {
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  IText,
+  IWebpage,
   LabelTaskType,
   UploadTarget,
 } from '@/commons/types';
@@ -30,7 +30,7 @@ export default {
     storage: IDataObjectStorage,
   ): Promise<void> => {
     (await parseJsonFile(file) as string[]).forEach((content) => {
-      const dataObject: IText = {
+      const dataObject: IWebpage = {
         uuid: uuidv4(),
         content,
       };
