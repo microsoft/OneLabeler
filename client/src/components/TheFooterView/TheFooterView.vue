@@ -18,7 +18,7 @@
       @click="onClickBar(taskWindow)"
     >
       <div class="mx-2 footer-text">
-        {{ `${taskWindow.node.label} - ${taskWindow.process.label}` }}
+        {{ `${taskWindow.node.label}` }}
       </div>
     </button>
 
