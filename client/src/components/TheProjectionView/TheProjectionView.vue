@@ -66,6 +66,7 @@
 import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
+  Category,
   IDataObjectStorage,
   ILabelCategory,
   ILabelStorage,
@@ -137,6 +138,7 @@ export default Vue.extend({
       'featureNames',
       'queryUuids',
       'scopeUuids',
+      'unlabeledMark',
     ]),
     ...mapState('workflow', ['currentNode']),
     ...mapGetters(['label2color']),
@@ -201,14 +203,14 @@ export default Vue.extend({
       'executeDataObjectSelectionManual',
       'executeWorkflow',
     ]),
-    onWindowMinimize() {
+    onWindowMinimize(): void {
       const { taskWindow } = this;
       this.editTaskWindow({
         ...taskWindow,
         isMinimized: true,
       });
     },
-    onWindowPin() {
+    onWindowPin(): void {
       const { taskWindow } = this;
       this.editTaskWindow({
         ...taskWindow,
@@ -224,7 +226,7 @@ export default Vue.extend({
       // await this.executeWorkflow(this.nextNodes[0]);
       await this.executeWorkflow(taskWindow.node);
     },
-    onSetMatrixShape(nRows: number, nColumns: number) {
+    onSetMatrixShape(nRows: number, nColumns: number): void {
       this.nRows = nRows;
       this.nColumns = nColumns;
       if (this.views.length > nRows * nColumns) {
@@ -241,53 +243,52 @@ export default Vue.extend({
       // change the id to force view update
       this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
-    onUpdateSelectedFeatureIndices(selectedFeatureIndices: number[], i: number) {
+    onUpdateSelectedFeatureIndices(selectedFeatureIndices: number[], i: number): void {
       const updatedViews = [...this.views];
       updatedViews[i].featureSpace.selectedFeatureIndices = selectedFeatureIndices;
       this.views = updatedViews;
     },
-    onClickProjectionMethod(projectionMethod: ProjectionMethodType, i: number) {
+    onClickProjectionMethod(projectionMethod: ProjectionMethodType, i: number): void {
       const updatedViews = [...this.views];
       updatedViews[i].featureSpace.projectionMethod = projectionMethod;
       this.views = updatedViews;
     },
-    onUpdateBinning(binning: Binning, i: number) {
+    onUpdateBinning(binning: Binning, i: number): void {
       const updatedViews = [...this.views];
       updatedViews[i].binning = binning;
       this.views = updatedViews;
     },
-    onUpdateSubsampling(subsampling: Subsampling, i: number) {
+    onUpdateSubsampling(subsampling: Subsampling, i: number): void {
       const updatedViews = [...this.views];
       updatedViews[i].subsampling = subsampling;
       this.views = updatedViews;
     },
-    forceViewsUpdate() {
+    forceViewsUpdate(): void {
       // change the id to force view update
       this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
     async getFeatureValues(): Promise<(number[] | undefined)[]> {
-      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
+      const scopeUuids = this.scopeUuids as string[] | null;
+      const dataObjects = this.dataObjects as IDataObjectStorage | null;
       if (dataObjects === null) return [];
-      const promiseDataObjects = this.scopeUuids === null
+      const promiseDataObjects = scopeUuids === null
         ? dataObjects.getAll()
-        : dataObjects.getBulk(this.scopeUuids);
-      return (await promiseDataObjects)
-        .map((d) => (d === undefined ? undefined : d.features));
+        : dataObjects.getBulk(scopeUuids);
+      return (await promiseDataObjects).map((d) => d?.features);
     },
     async getUuids(): Promise<string[]> {
-      const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
-      if (dataObjects === null) return [];
-      if (this.scopeUuids !== null) {
-        return this.scopeUuids as string[];
-      }
-      return dataObjects.uuids();
+      const scopeUuids = this.scopeUuids as string[] | null;
+      if (scopeUuids !== null) return scopeUuids;
+      const dataObjects = this.dataObjects as IDataObjectStorage | null;
+      return dataObjects?.uuids() ?? [];
     },
-    async getLabelCategories(): Promise<(ILabelCategory | undefined)[]> {
+    async getLabelCategories(): Promise<ILabelCategory[]> {
       const { uuids } = this;
-      const { labels } = this as { labels: ILabelStorage | null };
+      const labels = this.labels as ILabelStorage | null;
+      const unlabeledMark = this.unlabeledMark as Category;
       if (labels === null) return [];
-      const labelCategories = (await ((labels).getBulk(uuids)))
-        .map((d) => (d === undefined ? undefined : d.category));
+      const labelCategories = (await labels.getBulk(uuids))
+        .map((d) => d?.category ?? unlabeledMark);
       return labelCategories;
     },
   },
