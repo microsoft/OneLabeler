@@ -43,7 +43,7 @@
           @click:projection-method="onClickProjectionMethod($event, i)"
           @update:binning="onUpdateBinning($event, i)"
           @update:subsampling="onUpdateSubsampling($event, i)"
-          @select:uuids="onSelectUuids"
+          @select:uuids="$emit('user-select-uuids', $event)"
         />
       </div>
       <p
@@ -64,12 +64,11 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   Category,
-  IDataObjectStorage,
+  IDataObject,
+  ILabel,
   ILabelCategory,
-  ILabelStorage,
   ProjectionMethodType,
   TaskWindow,
 } from '@/commons/types';
@@ -115,16 +114,33 @@ export default Vue.extend({
     VConfigurableProjection,
   },
   props: {
-    taskWindow: {
-      type: Object as PropType<TaskWindow>,
+    dataObjects: {
+      type: Array as PropType<IDataObject[]>,
+      required: true,
+    },
+    labels: {
+      type: Array as PropType<ILabel[]>,
+      required: true,
+    },
+    queryUuids: {
+      type: Array as PropType<string[]>,
+      required: true,
+    },
+    unlabeledMark: {
+      type: String as PropType<Category>,
+      required: true,
+    },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
+    },
+    featureNames: {
+      type: Array as PropType<string[]>,
       required: true,
     },
   },
   data() {
     return {
-      featureValues: [] as number[][],
-      uuids: [] as string[],
-      labelCategories: [] as ILabelCategory[],
       resizeObserver: null as ResizeObserver | null,
       nRows: 1,
       nColumns: 1,
@@ -132,17 +148,6 @@ export default Vue.extend({
     };
   },
   computed: {
-    ...mapState([
-      'dataObjects',
-      'labels',
-      'featureNames',
-      'queryUuids',
-      'scopeUuids',
-      'unlabeledMark',
-    ]),
-    ...mapState('workflow', ['currentNode']),
-    ...mapGetters(['label2color']),
-    ...mapGetters('workflow', ['nextNodes']),
     nTotal(): number {
       return this.featureValues.length;
     },
@@ -151,22 +156,21 @@ export default Vue.extend({
       return Array.isArray(featureValues)
         && featureValues.every((d) => Array.isArray(d));
     },
+    featureValues(): (number[] | undefined)[] {
+      const { dataObjects } = this;
+      return dataObjects.map((d) => d?.features);
+    },
+    uuids(): string[] {
+      const { dataObjects } = this;
+      return dataObjects.map((d) => d.uuid);
+    },
+    labelCategories(): ILabelCategory[] {
+      const { labels, unlabeledMark } = this;
+      if (labels === null) return [];
+      return labels.map((d) => d?.category ?? unlabeledMark);
+    },
   },
   watch: {
-    async dataObjects() {
-      this.featureValues = await this.getFeatureValues() as number[][];
-      this.uuids = await this.getUuids();
-    },
-    async scopeUuids() {
-      this.featureValues = await this.getFeatureValues() as number[][];
-      this.uuids = await this.getUuids();
-    },
-    async uuids() {
-      this.labelCategories = await this.getLabelCategories() as ILabelCategory[];
-    },
-    async labels() {
-      this.labelCategories = await this.getLabelCategories() as ILabelCategory[];
-    },
     featureValues() {
       this.forceViewsUpdate();
     },
@@ -198,33 +202,13 @@ export default Vue.extend({
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
-    ...mapActions(['editTaskWindow']),
-    ...mapActions('workflow', [
-      'executeDataObjectSelectionManual',
-      'executeWorkflow',
-    ]),
     onWindowMinimize(): void {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        isMinimized: true,
-      });
+      const newValue: Partial<TaskWindow> = { isMinimized: true };
+      this.$emit('edit-task-window', newValue);
     },
     onWindowPin(): void {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        isPinned: true,
-      });
-    },
-    async onSelectUuids(uuids: string[]): Promise<void> {
-      if (uuids.length === 0) return;
-      const { taskWindow } = this;
-      await this.executeDataObjectSelectionManual(uuids);
-      if (this.nextNodes === null || this.nextNodes.length !== 1) return;
-
-      // await this.executeWorkflow(this.nextNodes[0]);
-      await this.executeWorkflow(taskWindow.node);
+      const newValue: Partial<TaskWindow> = { isPinned: true };
+      this.$emit('edit-task-window', newValue);
     },
     onSetMatrixShape(nRows: number, nColumns: number): void {
       this.nRows = nRows;
@@ -266,30 +250,6 @@ export default Vue.extend({
     forceViewsUpdate(): void {
       // change the id to force view update
       this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
-    },
-    async getFeatureValues(): Promise<(number[] | undefined)[]> {
-      const scopeUuids = this.scopeUuids as string[] | null;
-      const dataObjects = this.dataObjects as IDataObjectStorage | null;
-      if (dataObjects === null) return [];
-      const promiseDataObjects = scopeUuids === null
-        ? dataObjects.getAll()
-        : dataObjects.getBulk(scopeUuids);
-      return (await promiseDataObjects).map((d) => d?.features);
-    },
-    async getUuids(): Promise<string[]> {
-      const scopeUuids = this.scopeUuids as string[] | null;
-      if (scopeUuids !== null) return scopeUuids;
-      const dataObjects = this.dataObjects as IDataObjectStorage | null;
-      return dataObjects?.uuids() ?? [];
-    },
-    async getLabelCategories(): Promise<ILabelCategory[]> {
-      const { uuids } = this;
-      const labels = this.labels as ILabelStorage | null;
-      const unlabeledMark = this.unlabeledMark as Category;
-      if (labels === null) return [];
-      const labelCategories = (await labels.getBulk(uuids))
-        .map((d) => d?.category ?? unlabeledMark);
-      return labelCategories;
     },
   },
 });

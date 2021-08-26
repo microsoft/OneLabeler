@@ -30,7 +30,7 @@ import {
 } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheLabelView from '@/components/TheLabelView/TheLabelView.vue';
-import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
+import TheSelectionView from '@/components/TheSelectionView/TheSelectionView.vue';
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 
@@ -48,21 +48,15 @@ export default Vue.extend({
       return this.taskWindowsDisplayed.length;
     },
     taskWindowsDisplayed(): TaskWindow[] {
-      return this.taskWindows.filter((d) => !d.isMinimized);
+      const taskWindows = this.taskWindows as TaskWindow[];
+      return taskWindows.filter((d) => !d.isMinimized);
     },
   },
   methods: {
     getComponent(taskWindow: TaskWindow): VueConstructor | null {
-      const { node, process } = taskWindow;
-      if (node.type === WorkflowNodeType.DataObjectSelection) {
-        if (process.api === 'Projection') {
-          return TheProjectionView;
-        }
-        return null;
-      }
-      if (node.type === WorkflowNodeType.InteractiveLabeling) {
-        return TheLabelView;
-      }
+      const { node } = taskWindow;
+      if (node.type === WorkflowNodeType.DataObjectSelection) return TheSelectionView;
+      if (node.type === WorkflowNodeType.InteractiveLabeling) return TheLabelView;
       return null;
     },
   },

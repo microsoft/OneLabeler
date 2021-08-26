@@ -26,6 +26,16 @@ const dataObjectSelectionMethods: Process[] = [{
   api: 'Projection',
 }, {
   type: ProcessType.DataObjectSelection,
+  label: 'Overview (User Sampling)',
+  id: 'ImageOverview',
+  inputs: ['dataObjects', 'labels'],
+  isAlgorithmic: false,
+  isBuiltIn: true,
+  isModelBased: false,
+  isServerless: true,
+  api: 'ImageOverview',
+}, {
+  type: ProcessType.DataObjectSelection,
   label: 'DatasetOrder (Dummy)',
   id: 'DatasetOrder',
   inputs: ['labels'],

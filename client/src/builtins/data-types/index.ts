@@ -13,6 +13,7 @@ import textTypeSetup from './text';
 import textWithSpansTypeSetup from './text-with-spans';
 import textWithTableTypeSetup from './text-with-table';
 import textWithVideoTypeSetup from './text-with-video';
+import MI3BlockTypeSetup from './discrete-bar-chart-block';
 
 export default [
   audioTypeSetup,
@@ -25,4 +26,5 @@ export default [
   textWithSpansTypeSetup,
   textWithTableTypeSetup,
   textWithVideoTypeSetup,
+  MI3BlockTypeSetup,
 ] as IDataTypeSetup<UploadTarget>[];

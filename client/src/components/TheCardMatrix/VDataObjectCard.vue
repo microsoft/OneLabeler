@@ -20,7 +20,7 @@
       :classes="classes"
       :category-tasks="categoryTasks"
       :title="title"
-      :button-color="buttonColor"
+      :button-color="getColor(label)"
       :style="{ 'height': `${headerHeight}px` }"
       @set:label-category="$emit('set:label-category', $event)"
       @set:label-multi-category="$emit('set:label-multi-category', $event)"
@@ -33,6 +33,8 @@
       <component
         :is="component"
         :data-object="dataObject"
+        :label="label"
+        :label2color="label2color"
         :height="bodyHeight"
         :width="bodyWidth"
       />
@@ -80,6 +82,10 @@ export default Vue.extend({
       default: undefined,
       required: false,
     },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
+    },
     status: {
       type: String as PropType<StatusType>,
       required: true,
@@ -99,10 +105,6 @@ export default Vue.extend({
     isSelected: {
       type: Boolean,
       default: false,
-    },
-    buttonColor: {
-      type: String as PropType<string | null>,
-      default: null,
     },
     height: {
       type: Number,
@@ -131,6 +133,15 @@ export default Vue.extend({
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
+    },
+  },
+  methods: {
+    getColor(label: ILabel): string | null {
+      const { label2color } = this;
+      if (label === undefined
+        || label.category === undefined
+        || label2color === null) return null;
+      return label2color(label.category);
     },
   },
 });

@@ -9,19 +9,13 @@ import {
   LabelTaskType,
   UploadTarget,
 } from '@/commons/types';
+import { getImgSize } from '@/commons/utils';
 import { getBase64 } from '@/plugins/file';
 import VDisplay from './VDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
 )[];
-
-const getImgSize = (content: string) => new Promise((resolve, reject) => {
-  const img = new Image();
-  img.onload = () => resolve({ width: img.width, height: img.height });
-  img.onerror = (error) => reject(error);
-  img.src = content;
-}) as Promise<{ width: number, height: number }>;
 
 export default {
   type: DataType.Image,

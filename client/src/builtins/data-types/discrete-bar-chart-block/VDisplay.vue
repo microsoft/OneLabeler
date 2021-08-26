@@ -8,8 +8,12 @@
       <image
         style="image-rendering: pixelated"
         :href="src"
-        :width="dataObject.width"
-        :height="dataObject.height"
+      />
+      <polygon
+        stroke-width="1"
+        fill-opacity="0.5"
+        :stroke="stroke"
+        :points="dataObject.contour.map((d) => d.map((x) => x + 0.5).join(',')).join(' ')"
       />
     </g>
   </svg>
@@ -29,7 +33,15 @@ import {
   Ref,
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
-import { IImage } from '@/commons/types';
+import { IDataObject, ILabel } from '@/commons/types';
+
+interface IBlock extends IDataObject {
+  contour: [number, number][];
+  xMin: number;
+  yMin: number;
+  width: number;
+  height: number;
+}
 
 /** Compute the transform for moving the image to the convas center. */
 const useSvgSize = (
@@ -60,8 +72,17 @@ export default defineComponent({
   props: {
     /** @description The data object to be rendered. */
     dataObject: {
-      type: Object as PropType<IImage>,
+      type: Object as PropType<IBlock>,
       required: true,
+    },
+    /** @description The label of data object to be rendered. */
+    label: {
+      type: Object as PropType<ILabel | undefined>,
+      required: true,
+    },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
     },
     /** @description The width of the svg as a number or string of form '...%'. */
     width: {
@@ -93,10 +114,10 @@ export default defineComponent({
       if (dataObject.value === null || dataObject.value.width === null) return '';
       if (dataObject.value === null || dataObject.value.height === null) return '';
       return calFittingTransform({
-        xMin: 0,
-        xMax: dataObject.value.width,
-        yMin: 0,
-        yMax: dataObject.value.height,
+        xMin: dataObject.value.xMin,
+        xMax: dataObject.value.xMin + dataObject.value.width,
+        yMin: dataObject.value.yMin,
+        yMax: dataObject.value.yMin + dataObject.value.height,
       }, svgWidth.value, svgHeight.value);
     });
 
@@ -104,10 +125,14 @@ export default defineComponent({
   },
   computed: {
     src(): string {
-      const { content, url } = this.dataObject;
-      if (content !== null && content !== undefined) return content;
-      if (url !== null && url !== undefined) return url;
-      return '';
+      return this.dataObject.src ?? '';
+    },
+    stroke(): string {
+      const { label, label2color, unlabeledMark } = this;
+      if (label2color === null || label2color === undefined) return 'black';
+      if (label === null || label === undefined) return label2color(unlabeledMark);
+      if (label.category !== undefined) return label2color(label.category);
+      return label2color(unlabeledMark);
     },
   },
 });

@@ -4,6 +4,13 @@ import {
   WorkflowNodeType,
 } from '@/commons/types';
 
+export const getImgSize = (content: string) => new Promise((resolve, reject) => {
+  const img = new Image();
+  img.onload = () => resolve({ width: img.width, height: img.height });
+  img.onerror = (error) => reject(error);
+  img.src = content;
+}) as Promise<{ width: number, height: number }>;
+
 export const isNodeProcess = (node: WorkflowNode): boolean => (
   (node.type === WorkflowNodeType.LabelIdeation)
   || (node.type === WorkflowNodeType.FeatureExtraction)

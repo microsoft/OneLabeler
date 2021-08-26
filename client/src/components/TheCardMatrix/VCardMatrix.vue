@@ -26,9 +26,9 @@
             :status="statuses[i]"
             :classes="classes"
             :category-tasks="categoryTasks"
+            :label2color="label2color"
             :title="''"
             :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
-            :button-color="getColor(labels[i])"
             :height="Math.max(cardHeight - 2 * padding, 0)"
             :width="Math.max(cardWidth - 2 * padding, 0)"
             @click:card="$emit('click:card', dataObjects[i], $event)"
@@ -195,15 +195,6 @@ export default defineComponent({
   },
   data() {
     return { padding: 4 };
-  },
-  methods: {
-    getColor(label: ILabel): string | null {
-      const { label2color } = this;
-      if (label === undefined
-        || label.category === undefined
-        || label2color === null) return null;
-      return label2color(label.category);
-    },
   },
 });
 </script>

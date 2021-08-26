@@ -11,6 +11,7 @@ import webpageClassificationMinimal from './webpage-classification-minimal';
 import textClassificationMinimal from './text-classification-minimal';
 import textNamedEntityRecognitionMinimal from './text-named-entity-recognition-minimal';
 import textWithTableClassificationNamedEntityRecognitionMinimal from './text-with-table-classification-named-entity-recognition-minimal';
+import MI3Block from './mi3-block';
 
 export default [
   { label: 'Image Classification Minimal', value: imageClassificationMinimal },
@@ -26,4 +27,5 @@ export default [
   { label: 'Text Classification Minimal', value: textClassificationMinimal },
   { label: 'Text Named Entity Recognition Minimal', value: textNamedEntityRecognitionMinimal },
   { label: 'Text with Table Classification & Named Entity Recognition Minimal', value: textWithTableClassificationNamedEntityRecognitionMinimal },
+  { label: 'MI3 Block', value: MI3Block },
 ];
