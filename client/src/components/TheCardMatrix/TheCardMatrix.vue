@@ -114,10 +114,10 @@ export default Vue.extend({
   },
   computed: {
     itemsPerRow(): number {
-      return this.taskWindow.process.params?.nRows.value as number;
+      return this.taskWindow.process.params?.nColumns.value as number;
     },
     itemsPerCol(): number {
-      return this.taskWindow.process.params?.nColumns.value as number;
+      return this.taskWindow.process.params?.nRows.value as number;
     },
   },
   methods: {
