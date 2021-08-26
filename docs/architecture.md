@@ -80,7 +80,7 @@ The unit tests.
 
 ## `db`
 
-The database resource server of the system.
+The database proxy server of the system.
 
 ## `docs`
 

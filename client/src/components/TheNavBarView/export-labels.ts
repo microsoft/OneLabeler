@@ -17,11 +17,12 @@ const exportLabels = async (
 ): Promise<void> => {
   const dataObjects = (await dataObjectStorage.getAll()) as IDataObject[];
   const labels = (await labelStorage.getAll()) as ILabel[];
+  /*
   const uuid2idxInLabels: Record<string, number> = {};
   labels.forEach((d: ILabel, i) => {
     uuid2idxInLabels[d.uuid] = i;
   });
-
+  */
   const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
   if (dataTypeSetup === undefined) return;
   const labeledData = dataTypeSetup.handleExport(dataObjects, labels);
