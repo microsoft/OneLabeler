@@ -55,6 +55,7 @@
         "mongodb",
         "ndarray",
         "nlogn",
+        "nltk",
         "nocookie",
         "nprogress",
         "numpy",

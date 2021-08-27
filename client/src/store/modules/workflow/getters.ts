@@ -45,8 +45,12 @@ export const dataType = (state: IState): DataType | null => {
 export const processesValid = (state: IState): Process[] => {
   const { processes } = state;
   const dataTypeValue = dataType(state);
+  const labelTasksValue = labelTasks(state);
   return processes.filter((d) => {
-    if (d.dataTypes === undefined) return true;
-    return d.dataTypes.findIndex((type) => type === dataTypeValue) >= 0;
+    if (d.dataTypes === undefined && d.labelTasks === undefined) return true;
+    const dataTypeMatch = dataTypeValue === null || d.dataTypes?.includes(dataTypeValue);
+    const union = (d.labelTasks ?? []).filter((t) => labelTasksValue.includes(t));
+    const labelTasksMatch = union.length >= 1;
+    return dataTypeMatch && labelTasksMatch;
   });
 };

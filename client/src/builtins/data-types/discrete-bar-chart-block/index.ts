@@ -42,6 +42,7 @@ export default {
       const yMin = d.y_min;
       const width = d.w_axis_aligned;
       const height = d.h_axis_aligned;
+      // TODO: the image src is duplicated in all the data object, which is unnecessary
       return {
         uuid,
         contour,

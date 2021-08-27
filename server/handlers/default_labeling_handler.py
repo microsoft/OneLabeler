@@ -1,7 +1,9 @@
 import json
 from typing import List
+import uuid
 
 from bson.objectid import ObjectId
+import nltk
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.exceptions import NotFittedError
@@ -65,6 +67,44 @@ def default_label_random(classes: List[str],
     return np.random.choice(classes, size=n_samples, replace=True)
 
 
+def default_label_pos_tag(sentence: str) -> List[dict]:
+    pos_tag = nltk.pos_tag(sentence.split())
+    start = 0
+    end = 0
+    spans = []
+    for i, (segment, tag) in enumerate(pos_tag):
+        start = end + 1 if i != 0 else end
+        end = start + len(segment)
+        if tag != 'CD':
+            continue
+        spans.append({
+            'text': segment,
+            'start': start,
+            'end': end,
+            'category': tag,
+            'uuid': str(uuid.uuid4()),
+        })
+    return spans
+
+def default_label_pos_tag_value(sentence: str) -> List[dict]:
+    pos_tag = nltk.pos_tag(sentence.split())
+    start = 0
+    end = 0
+    spans = []
+    for i, (segment, tag) in enumerate(pos_tag):
+        start = end + 1 if i != 0 else end
+        end = start + len(segment)
+        if tag != 'CD':
+            continue
+        spans.append({
+            'text': segment,
+            'start': start,
+            'end': end,
+            'category': 'value',
+            'uuid': str(uuid.uuid4()),
+        })
+    return spans
+
 class DefaultLabelingHandler(tornado.web.RequestHandler):
     """
     The handler for default labeling.
@@ -74,7 +114,7 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        if key not in ['Null', 'Random', 'ModelPrediction']:
+        if key not in ['Null', 'Random', 'ModelPrediction', 'POS-tagging']:
             # The service is not found.
             self.send_error(404)
             return
@@ -90,14 +130,18 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
             if 'unlabeledMark' in json_data else None
 
         # data structure transformation
-        features = np.array([data_object['features']
-                             for data_object in data_objects])
+        features = np.array([(d['features'] if 'features' in d else None)
+                             for d in data_objects])
         n_samples = len(features)
 
         if key == 'Null':
             labels = default_label_null(unlabeled_mark, n_samples)
+            labels = labels.tolist()
+            labels = [{ 'category': d } for d in labels]
         if key == 'Random':
             labels = default_label_random(classes, n_samples)
+            labels = labels.tolist()
+            labels = [{ 'category': d } for d in labels]
         if key == 'ModelPrediction':
             predictor = load_estimator(model)
             try:
@@ -109,8 +153,17 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
                     labels = default_label_null(unlabeled_mark, n_samples)
                 else:
                     labels = None
-
-        if labels is not None:
-            labels = labels.tolist()
+            if labels is not None:
+                labels = labels.tolist()
+                labels = [{ 'category': d } for d in labels]
+        
+        if key == 'POS-tagging':
+            labels = [default_label_pos_tag_value(d['content'])
+                      for d in data_objects]
+            '''
+            labels = [default_label_pos_tag(d['content'])
+                      for d in data_objects]
+            '''
+            labels = [{ 'spans': d } for d in labels]
 
         self.write({'labels': labels})

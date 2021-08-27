@@ -1,5 +1,6 @@
 import {
   DataType,
+  LabelTaskType,
   Process,
   ProcessType,
 } from '@/commons/types';
@@ -304,6 +305,18 @@ const defaultLabelingMethods: Process[] = [{
   api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/ModelPrediction`,
 }, {
   type: ProcessType.DefaultLabeling,
+  label: 'POS-tagging',
+  id: 'POS-tagging-438546',
+  inputs: ['dataObjects', 'features'],
+  isAlgorithmic: true,
+  isBuiltIn: true,
+  isModelBased: false,
+  isServerless: false,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/POS-tagging`,
+  dataTypes: [DataType.Text],
+  labelTasks: [LabelTaskType.SpanClassification],
+}, {
+  type: ProcessType.DefaultLabeling,
   label: 'Null (Dummy)',
   id: 'Null-35514905',
   inputs: ['features'],
@@ -312,6 +325,7 @@ const defaultLabelingMethods: Process[] = [{
   isModelBased: false,
   isServerless: true,
   api: 'Null',
+  labelTasks: [LabelTaskType.Classification],
 }, {
   type: ProcessType.DefaultLabeling,
   label: 'Random (Dummy)',
@@ -322,6 +336,7 @@ const defaultLabelingMethods: Process[] = [{
   isModelBased: false,
   isServerless: true,
   api: 'Random',
+  labelTasks: [LabelTaskType.Classification],
 }];
 
 const featureExtractionMethods: Process[] = [{

@@ -341,9 +341,9 @@ export const executeDefaultLabeling = showProgressBar(async (
     .getBulk(queryUuids)) as IDataObject[];
   const model = method.model as ModelService;
 
-  let labelCategories: ILabelCategory[];
+  let defaultLabels: Partial<ILabel>[];
   try {
-    labelCategories = (await API.defaultLabeling(
+    defaultLabels = (await API.defaultLabeling(
       method,
       queriedDataObjects,
       model,
@@ -358,12 +358,8 @@ export const executeDefaultLabeling = showProgressBar(async (
   await Promise.all(queryUuids.map(async (uuid, i) => {
     const label: ILabel | undefined = await labels.get(uuid);
     const labelUpdated: ILabel = label === undefined
-      ? {
-        uuid,
-        category: labelCategories[i],
-        shapes: undefined,
-        mask: undefined,
-      } : { ...label, category: labelCategories[i] };
+      ? { uuid, ...defaultLabels[i] }
+      : { ...label, ...defaultLabels[i] };
     await labels.upsert(labelUpdated);
   }));
   commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });

@@ -156,7 +156,7 @@ export interface ILabelTextSpan extends ILabelSpan {
   text: string | null;
   /** The index of the entity's first character in the original text. */
   start: number;
-  /** The index of the entity's last character in the original text. */
+  /** The index of the entity's first character after the original text. */
   end: number;
   /** The category of the entity. */
   category: Category;
@@ -339,6 +339,9 @@ export interface Process {
   // The restriction on data types that the process can handle.
   // If not given, the process is regarded agnostic of data types.
   dataTypes?: DataType[];
+  // The restriction on label tasks that the process can handle.
+  // If not given, the process is regarded agnostic of label tasks.
+  labelTasks?: LabelTaskType[];
   model?: ModelService;
   params?: MethodParams;
 }

@@ -13,6 +13,7 @@ import {
   IDataObjectStorage,
   IStatus,
   IStatusStorage,
+  ILabel,
   ILabelStorage,
   ILabelCategory,
   StatusType,
@@ -129,13 +130,13 @@ export const defaultLabeling = async (
   model: ModelService,
   classes: Category[] | null = null,
   unlabeledMark: Category | null = null,
-): Promise<ILabelCategory[]> => {
+): Promise<Partial<ILabel>[]> => {
   if (method.isServerless && (method.api === 'Null')) {
     if (unlabeledMark === null) throw new TypeError('unlabeled mark not given');
 
     const nDataObjects = dataObjects.length;
-    const labels = Array(nDataObjects).fill(null).map(() => unlabeledMark);
-
+    const labelCategories = Array(nDataObjects).fill(null).map(() => unlabeledMark);
+    const labels = labelCategories.map((d) => ({ category: d }));
     return labels;
   }
   if (method.isServerless && (method.api === 'Random')) {
@@ -144,12 +145,12 @@ export const defaultLabeling = async (
     const SEED = '20';
     const random = xor4096(SEED);
     const nClasses = classes.length;
-    const labels = dataObjects.map(() => classes[Math.floor(random() * nClasses)]);
-
+    const labelCategories = dataObjects.map(() => classes[Math.floor(random() * nClasses)]);
+    const labels = labelCategories.map((d) => ({ category: d }));
     return labels;
   }
 
-  let labels: ILabelCategory[];
+  let labels: Partial<ILabel>[];
 
   try {
     const data = (await axios.post(
@@ -160,7 +161,7 @@ export const defaultLabeling = async (
         classes,
         unlabeledMark,
       }),
-    )).data as { labels: ILabelCategory[] };
+    )).data as { labels: Partial<ILabel>[] };
     labels = data.labels;
   } catch (e) {
     if (e.request !== undefined && e.response === undefined) {
