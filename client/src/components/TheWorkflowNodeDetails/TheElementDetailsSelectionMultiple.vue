@@ -11,12 +11,12 @@
       >
         $vuetify.icons.values.parameter
       </v-icon>
-      Element Setting
+      Module Setting
     </div>
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; align-items: center">
       <p class="mx-auto subtitle-1">
-        Multiple Workflow Elements Selected
+        Multiple Modules Selected
       </p>
     </div>
   </v-card>

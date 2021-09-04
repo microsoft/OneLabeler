@@ -7,15 +7,6 @@
       'height': `${height}px`,
     }"
   >
-    <div class="app-header-logo px-2">
-      Generic Labeler
-    </div>
-
-    <v-divider
-      class="app-header-divider"
-      vertical
-    />
-
     <!-- The new project button. -->
     <VUploadButton
       v-if="showFileUploadButton && uploadType !== null"
@@ -25,6 +16,7 @@
       :keyboard-trigger="(showFileUploadButton && !disableNewProjectButton)
         ? keyboardTriggerNewProject
         : null"
+      class="ml-1"
       title="New Label Project (Ctrl + P)"
       color="white"
       small

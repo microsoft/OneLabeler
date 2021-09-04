@@ -5,7 +5,7 @@
       style="display: flex; align-items: center; height: 35px;"
     >
       <div class="app-header-logo px-2">
-        Workflow Configuration
+        OneLabeler
       </div>
 
       <v-divider
