@@ -14,6 +14,7 @@ import textWithSpansTypeSetup from './text-with-spans';
 import textWithTableTypeSetup from './text-with-table';
 import textWithVideoTypeSetup from './text-with-video';
 import MI3BlockTypeSetup from './discrete-bar-chart-block';
+// import MI3BlockTypeSetup from './discrete-bar-chart-block/index-minimal';
 
 export default [
   audioTypeSetup,
