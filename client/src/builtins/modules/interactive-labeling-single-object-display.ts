@@ -10,4 +10,4 @@ export default {
   isModelBased: false,
   isServerless: true,
   api: 'SingleObjectDisplay',
-}
+};

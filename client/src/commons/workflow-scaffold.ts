@@ -32,7 +32,7 @@ const getDefaultNodeSize = (
     [width, height] = [EXIT_NODE_WIDTH, EXIT_NODE_HEIGHT];
   }
   return { width, height };
-}
+};
 
 /** Get default { x, y } for a node given node index. */
 const getDefaultNodePosition = (idx: number) => {
@@ -64,7 +64,13 @@ export const parseNodeLayout = (
   const x = layout?.x ?? defaultX;
   const y = layout?.y ?? defaultY;
 
-  return { ...layout, width, height, x, y };
+  return {
+    ...layout,
+    width,
+    height,
+    x,
+    y,
+  };
 };
 
 /**

@@ -17,7 +17,7 @@
         :key="i"
         class="subtitle-2 px-4"
         style="min-height: 30px"
-        @click="onSetLabelCategory(category)"
+        @click="$emit('set:label-category', category)"
       >
         {{ category }}
       </v-list-item>
@@ -50,11 +50,6 @@ export default Vue.extend({
     disabled: {
       type: Boolean,
       default: false,
-    },
-  },
-  methods: {
-    onSetLabelCategory(category: ILabelCategory): void {
-      this.$emit('set:label-category', category);
     },
   },
 });

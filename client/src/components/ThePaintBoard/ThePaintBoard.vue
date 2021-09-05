@@ -13,15 +13,15 @@
       :label2color="label2color"
       :label="label"
       @reset:image-size="onResetImageSize"
-      @set:stroke-label="onSetStrokeLabel"
-      @set:stroke-shape="onSetStrokeShape"
-      @set:stroke-width="onSetStrokeWidth"
-      @set:mouse-operation="onSetMouseOperation"
+      @set:stroke-label="strokeLabel = $event"
+      @set:stroke-shape="strokeShape = $event"
+      @set:stroke-width="strokeWidth = $event"
+      @set:mouse-operation="mouseOperation = $event"
       @set:label-category="onSetLabelCategory"
       @set:label-multi-category="onSetLabelMultiCategory"
       @set:label-text="onSetLabelText"
-      @window:minimize="onWindowMinimize"
-      @window:pin="onWindowPin"
+      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
+      @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;">
@@ -259,26 +259,6 @@ export default Vue.extend({
     },
     onResetImageSize(): void {
       (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();
-    },
-    onSetStrokeLabel(strokeLabel: Category): void {
-      this.strokeLabel = strokeLabel;
-    },
-    onSetStrokeShape(strokeShape: StrokeShapeType): void {
-      this.strokeShape = strokeShape;
-    },
-    onSetStrokeWidth(strokeWidth: number): void {
-      this.strokeWidth = strokeWidth;
-    },
-    onSetMouseOperation(mouseOperation: MouseOperationType): void {
-      this.mouseOperation = mouseOperation;
-    },
-    onWindowMinimize(): void {
-      const newValue: Partial<TaskWindow> = { isMinimized: true };
-      this.$emit('edit-task-window', newValue);
-    },
-    onWindowPin(): void {
-      const newValue: Partial<TaskWindow> = { isPinned: true };
-      this.$emit('edit-task-window', newValue);
     },
   },
 });

@@ -5,7 +5,7 @@
       :stroke-shape="strokeShape"
       :disabled="mouseOperation !== MouseOperationType.PaintBrush
         && mouseOperation !== MouseOperationType.PaintErase"
-      @set:stroke-shape="onSetStrokeShape"
+      @set:stroke-shape="$emit('set:stroke-shape', $event)"
     />
 
     <v-divider
@@ -18,7 +18,7 @@
       :stroke-width="strokeWidth"
       :disabled="mouseOperation !== MouseOperationType.PaintBrush
         && mouseOperation !== MouseOperationType.PaintErase"
-      @set:stroke-width="onSetStrokeWidth"
+      @set:stroke-width="$emit('set:stroke-width', $event)"
     />
 
     <v-divider
@@ -34,7 +34,7 @@
       :disabled="mouseOperation === MouseOperationType.PanAndZoom
         || mouseOperation === MouseOperationType.EditShape
         || mouseOperation === MouseOperationType.PaintErase"
-      @set:stroke-label="onSetStrokeLabel"
+      @set:stroke-label="$emit('set:stroke-label', $event)"
     />
   </div>
 </template>
@@ -93,17 +93,6 @@ export default Vue.extend({
   },
   data() {
     return { MouseOperationType };
-  },
-  methods: {
-    onSetStrokeShape(strokeShape: StrokeShapeType): void {
-      this.$emit('set:stroke-shape', strokeShape);
-    },
-    onSetStrokeWidth(strokeWidth: number): void {
-      this.$emit('set:stroke-width', strokeWidth);
-    },
-    onSetStrokeLabel(strokeLabel: Category): void {
-      this.$emit('set:stroke-label', strokeLabel);
-    },
   },
 });
 </script>

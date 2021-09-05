@@ -34,7 +34,7 @@ export default parseWorkflowGraph({
             value: 1000,
             options: [{ value: 1000, label: '1000' }],
           },
-        }
+        },
       })],
       layout: { x: 160, y: 40 },
     },

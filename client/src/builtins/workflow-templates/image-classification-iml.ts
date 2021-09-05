@@ -37,7 +37,7 @@ export default parseWorkflowGraph({
       label: 'clustering',
       type: WorkflowNodeType.DataObjectSelection,
       value: [merge(cloneDeep(DOSCluster), {
-        params: { nBatch: { value: 16 } }
+        params: { nBatch: { value: 16 } },
       })],
       layout: { x: 280, y: 40 },
     },
@@ -104,7 +104,7 @@ export default parseWorkflowGraph({
         params: {
           nRows: { value: 4 },
           nColumns: { value: 4 },
-        }
+        },
       })],
       layout: { x: 400, y: 140 },
     },

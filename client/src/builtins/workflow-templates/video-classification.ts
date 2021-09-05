@@ -26,9 +26,7 @@ export default parseWorkflowGraph({
       label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
       value: [merge(cloneDeep(DOSRandom), {
-        params: {
-          nBatch: { value: 1 },
-        }
+        params: { nBatch: { value: 1 } },
       })],
       layout: { x: 160, y: 40 },
     },
@@ -39,7 +37,7 @@ export default parseWorkflowGraph({
         params: {
           nRows: { value: 1 },
           nColumns: { value: 1 },
-        }
+        },
       })],
       layout: { x: 280, y: 40 },
     },
