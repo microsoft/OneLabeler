@@ -1,8 +1,6 @@
 <template>
   <svg
     ref="svg"
-    :width="isNaN(width) ? width : `${width}px`"
-    :height="isNaN(height) ? height : `${height}px`"
     :cursor="selectionBox === null ? undefined : 'crosshair'"
     @mousedown="onMouseDownCanvas"
     @mousemove="onMouseMoveCanvas"
@@ -219,14 +217,6 @@ export default Vue.extend({
     edges: {
       type: Array as PropType<FlowchartEdge[]>,
       default: () => [] as FlowchartEdge[],
-    },
-    width: {
-      type: [String, Number],
-      default: 800,
-    },
-    height: {
-      type: [String, Number],
-      default: 600,
     },
     enableGuideline: {
       type: Boolean,

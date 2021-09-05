@@ -2,7 +2,7 @@
   <div style="display: flex">
     <v-card
       class="mr-1"
-      style="flex-basis: 60%;"
+      style="flex-basis: 60%; display: flex; flex-direction: column;"
       tile
     >
       <div class="view-header">
@@ -16,19 +16,20 @@
         Workflow
       </div>
       <v-divider />
-      <div>
+      <div style="display: flex; flex: 1 1 auto;">
         <!-- The graph canvas. -->
         <TheWorkflowGraphViewCanvas
           :graph="{ nodes, edges }"
           :current-node="currentNode"
-          @create:node="onCreateNode"
-          @edit:node="onEditNode"
+          style="flex: 1 1 auto"
+          @create:node="pushNodes($event)"
+          @edit:node="editNode($event)"
           @remove:node="onRemoveNode"
           @select:nodes="onSelectNodes"
-          @jumpto:node="onJumpToNode"
+          @jumpto:node="setCurrentNode($event)"
           @flowfrom:node="onFlowFromNode"
-          @create:edge="onCreateEdge"
-          @remove:edge="onRemoveEdge"
+          @create:edge="pushEdges($event)"
+          @remove:edge="removeEdge($event)"
           @select:edges="onSelectEdges"
         />
         <!-- The graph grammar checking console. -->
@@ -39,7 +40,7 @@
             bottom: '8px',
             left: '8px',
             right: '8px',
-            height: '200px',
+            height: '35%',
           }"
           @select:nodes="onSelectNodes"
           @select:edges="onSelectEdges"
@@ -53,11 +54,11 @@
           :methods="processesValid"
           :models="modelServices"
           :selection="selection"
-          @edit:node="onEditNode"
-          @create:method="onCreateMethod"
-          @edit:method="onEditMethod"
-          @create:model="onCreateModel"
-          @edit:model="onEditModel"
+          @edit:node="editNode($event)"
+          @create:method="pushProcesses($event)"
+          @edit:method="editProcess($event)"
+          @create:model="pushModelServices($event)"
+          @edit:model="editModelService($event)"
         />
       </div>
     </div>
@@ -68,8 +69,6 @@
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
-  ModelService,
-  Process,
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
@@ -135,12 +134,6 @@ export default Vue.extend({
       'editProcess',
       'executeWorkflow',
     ]),
-    onCreateNode(node: WorkflowNode) {
-      this.pushNodes(node);
-    },
-    onEditNode(newValue: WorkflowNode) {
-      this.editNode(newValue);
-    },
     onRemoveNode(node: WorkflowNode) {
       const { edges } = this;
       edges.forEach((edge: WorkflowEdge) => {
@@ -153,33 +146,12 @@ export default Vue.extend({
     onSelectNodes(ids: string[]) {
       this.selectedNodeIds = ids;
     },
-    onJumpToNode(node: WorkflowNode) {
-      this.setCurrentNode(node);
-    },
     onFlowFromNode(node: WorkflowNode) {
       this.setCurrentNode(node);
       this.executeWorkflow(node);
     },
-    onCreateEdge(edge: WorkflowEdge) {
-      this.pushEdges(edge);
-    },
-    onRemoveEdge(edge: WorkflowEdge) {
-      this.removeEdge(edge);
-    },
     onSelectEdges(ids: string[]) {
       this.selectedEdgeIds = ids;
-    },
-    onEditMethod(newValue: Process) {
-      this.editProcess(newValue);
-    },
-    onCreateMethod(newValue: Process) {
-      this.pushProcesses(newValue);
-    },
-    onEditModel(newValue: ModelService) {
-      this.editModelService(newValue);
-    },
-    onCreateModel(newValue: ModelService) {
-      this.pushModelServices(newValue);
     },
   },
 });

@@ -1,5 +1,8 @@
 <template>
-  <v-card class="rounded-0">
+  <v-card
+    class="rounded-0"
+    style="display: flex; flex-direction: column;"
+  >
     <div
       class="app-header"
       style="display: flex; align-items: center; height: 35px;"
@@ -123,9 +126,10 @@
         </v-icon>
       </v-btn>
     </div>
-    <div class="pa-2 subtitle-2">
-      <TheWorkflowGraphView />
-    </div>
+    <TheWorkflowGraphView
+      class="pa-2 subtitle-2"
+      style="flex: 1 1 auto"
+    />
   </v-card>
 </template>
 

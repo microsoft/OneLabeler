@@ -63,7 +63,7 @@
             <v-row>
               <v-col
                 class="pr-0"
-                style="width: 75%; max-width: 75%; flex-basis: 75%;"
+                style="width: 70%; max-width: 70%; flex-basis: 70%;"
               >
                 <!-- The input box for process input parameters. -->
                 <VNodeEditableInput
@@ -74,7 +74,7 @@
                   @edit:list="onEditInstanceInputList(method, $event)"
                 />
               </v-col>
-              <v-col style="width: 25%; max-width: 25%; flex-basis: 25%">
+              <v-col style="width: 30%; max-width: 30%; flex-basis: 30%">
                 <!-- The display of process output parameters. -->
                 <VNodeOutput :process-output="processOutput" />
               </v-col>

@@ -147,11 +147,11 @@
     <!-- The data management dialog button -->
     <TheNavBarViewDataManagementDialogButton />
 
-    <!-- The workflow dialog button. -->
-    <TheNavBarViewWorkflowDialogButton />
-
     <!-- The dashboard dialog button. -->
     <TheNavBarViewDashboardDialogButton />
+
+    <!-- The workflow dialog button. -->
+    <TheNavBarViewWorkflowDialogButton />
   </div>
 </template>
 

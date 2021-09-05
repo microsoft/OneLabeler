@@ -53,7 +53,7 @@
         class="pt-2 px-4"
         style="display: flex"
       >
-        <div style="width: 75%">
+        <div style="width: 70%">
           <!-- The input box for process input parameters. -->
           <VNodeEditableInput
             :process-input-list="processInputList"
@@ -65,7 +65,7 @@
         </div>
         <div
           class="pl-3"
-          style="width: 25%"
+          style="width: 30%"
         >
           <!-- The display of process output parameters. -->
           <VNodeOutput :process-output="processOutput" />
