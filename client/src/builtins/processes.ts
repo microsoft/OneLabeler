@@ -1,23 +1,37 @@
 import {
-  DataType,
-  LabelTaskType,
   Process,
-  ProcessType,
 } from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
-import DOSClustering from '@/builtins/modules/data-object-selection-clustering';
+// data object selection modules
+import DOSCluster from '@/builtins/modules/data-object-selection-cluster';
+import DOSClusterCentroids from '@/builtins/modules/data-object-selection-cluster-centroids';
+import DOSDenseAreas from '@/builtins/modules/data-object-selection-dense-areas';
+import DOSDummy from '@/builtins/modules/data-object-selection-dummy';
+import DOSEntropy from '@/builtins/modules/data-object-selection-entropy';
+import DOSEntropyDiversity from '@/builtins/modules/data-object-selection-entropy-diversity';
+import DOSEntropyDiversityDensity from '@/builtins/modules/data-object-selection-entropy-diversity-density';
 import DOSImageOverview from '@/builtins/modules/data-object-selection-image-overview';
+import DOSLeastConfident from '@/builtins/modules/data-object-selection-least-confident';
 import DOSProjection from '@/builtins/modules/data-object-selection-projection';
 import DOSRandom from '@/builtins/modules/data-object-selection-random';
-import FEImageSVD from '@/builtins/modules/feature-extraction-image-svd';
+import DOSSmallestMargin from '@/builtins/modules/data-object-selection-smallest-margin';
+// default labeling modules
+import DLModelPrediction from '@/builtins/modules/default-labeling-model-prediction';
+import DLNull from '@/builtins/modules/default-labeling-null';
+import DLPosTagging from '@/builtins/modules/default-labeling-pos-tagging';
+import DLRandom from '@/builtins/modules/default-labeling-random';
+// feature extraction modules
+import FEImageBow from '@/builtins/modules/feature-extraction-image-bow';
+import FEImageLda from '@/builtins/modules/feature-extraction-image-lda';
+import FEImageSvd from '@/builtins/modules/feature-extraction-image-svd';
+import FERandom3d from '@/builtins/modules/feature-extraction-random3d';
+import FETextNmf from '@/builtins/modules/feature-extraction-text-nmf';
+// interactive labeling modules
 import ILGridMatrix from '@/builtins/modules/interactive-labeling-grid-matrix';
 import ILSingleObjectDisplay from '@/builtins/modules/interactive-labeling-single-object-display';
+// model training modules
 import MTRetrain from '@/builtins/modules/model-training-retrain';
 import MTStatic from '@/builtins/modules/model-training-static';
+// stoppage analysis modules
 import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
 
 /**
@@ -25,313 +39,31 @@ import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
  * so that given a customized data type, the existing processes can still be reused.
  */
 
-const dataObjectSelectionMethods: Process[] = [
-  DOSProjection, 
-  DOSImageOverview, {
-  type: ProcessType.DataObjectSelection,
-  label: 'DatasetOrder (Dummy)',
-  id: 'DatasetOrder',
-  inputs: ['labels'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: true,
-  api: 'DatasetOrder',
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, DOSRandom,
-  DOSClustering, {
-  type: ProcessType.DataObjectSelection,
-  label: 'DenseAreas (Clustering)',
-  id: 'DenseAreas-67390401',
-  inputs: ['features', 'labels'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/DenseAreas`,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'ClusterCentroids (Clustering)',
-  id: 'ClusterCentroids-60587176',
-  inputs: ['features', 'labels'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/ClusterCentroids`,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'Entropy (Active Learning)',
-  id: 'Entropy-49394355',
-  inputs: ['features', 'labels', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/Entropy`,
-  model: undefined,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'LeastConfident (Active Learning)',
-  id: 'LeastConfident-12520162',
-  inputs: ['features', 'labels', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/LeastConfident`,
-  model: undefined,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'SmallestMargin (Active Learning)',
-  id: 'SmallestMargin-74021796',
-  inputs: ['features', 'labels', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/SmallestMargin`,
-  model: undefined,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'EntropyDiversity (Active Learning)',
-  id: 'EntropyDiversity-98931757',
-  inputs: ['features', 'labels', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/EntropyDiversity`,
-  model: undefined,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}, {
-  type: ProcessType.DataObjectSelection,
-  label: 'EntropyDiversityDensity (Active Learning)',
-  id: 'EntropyDiversityDensity-60957928',
-  inputs: ['features', 'labels', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/EntropyDiversityDensity`,
-  model: undefined,
-  params: {
-    nBatch: {
-      value: 48,
-      label: 'Selection Batch Size',
-      options: [
-        { value: 1, label: '1' },
-        { value: 4, label: '4' },
-        { value: 16, label: '16' },
-        { value: 32, label: '32' },
-        { value: 48, label: '48' },
-        { value: 64, label: '64' },
-        { value: 96, label: '96' },
-      ],
-    },
-  },
-}];
-
-const defaultLabelingMethods: Process[] = [{
-  type: ProcessType.DefaultLabeling,
-  label: 'ModelPrediction',
-  id: 'ModelPrediction-29967546',
-  inputs: ['features', 'model'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: true,
-  isServerless: false,
-  model: undefined,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/ModelPrediction`,
-}, {
-  type: ProcessType.DefaultLabeling,
-  label: 'POS-tagging',
-  id: 'POS-tagging-438546',
-  inputs: ['dataObjects', 'features'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/POS-tagging`,
-  dataTypes: [DataType.Text],
-  labelTasks: [LabelTaskType.SpanClassification],
-}, {
-  type: ProcessType.DefaultLabeling,
-  label: 'Null (Dummy)',
-  id: 'Null-35514905',
-  inputs: ['features'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: true,
-  api: 'Null',
-  labelTasks: [LabelTaskType.Classification],
-}, {
-  type: ProcessType.DefaultLabeling,
-  label: 'Random (Dummy)',
-  id: 'Random-38398168',
-  inputs: ['features'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: true,
-  api: 'Random',
-  labelTasks: [LabelTaskType.Classification],
-}];
-
-const featureExtractionMethods: Process[] = [
-  FEImageSVD, {
-  type: ProcessType.FeatureExtraction,
-  label: 'BoW (Handcrafted)',
-  id: 'image-BoW-6989392',
-  inputs: ['dataObjects'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/BoW`,
-  dataTypes: [DataType.Image],
-}, {
-  type: ProcessType.FeatureExtraction,
-  label: 'LDA (Supervised)',
-  id: 'image-LDA-45100847',
-  inputs: ['dataObjects', 'labels'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/LDA`,
-  dataTypes: [DataType.Image],
-}, {
-  type: ProcessType.FeatureExtraction,
-  label: 'NMF (Unsupervised)',
-  id: 'text-NMF-78139065',
-  inputs: ['dataObjects'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/text/NMF`,
-  dataTypes: [DataType.Text],
-}, {
-  type: ProcessType.FeatureExtraction,
-  label: 'Random3D (Dummy)',
-  id: 'Random-87333124',
-  inputs: ['dataObjects'],
-  isAlgorithmic: true,
-  isBuiltIn: true,
-  isModelBased: false,
-  isServerless: true,
-  api: 'Random3D',
-}];
-
 const processes: Process[] = [
-  ...dataObjectSelectionMethods,
-  ...defaultLabelingMethods,
-  ...featureExtractionMethods,
+  // data object selection modules:
+  DOSCluster,
+  DOSClusterCentroids,
+  DOSDenseAreas,
+  DOSDummy,
+  DOSEntropy,
+  DOSEntropyDiversity,
+  DOSEntropyDiversityDensity,
+  DOSImageOverview,
+  DOSLeastConfident,
+  DOSProjection,
+  DOSRandom,
+  DOSSmallestMargin,
+  // default labeling modules:
+  DLModelPrediction,
+  DLPosTagging,
+  DLNull,
+  DLRandom,
+  // feature extraction modules:
+  FEImageSvd,
+  FEImageBow,
+  FEImageLda,
+  FERandom3d,
+  FETextNmf,
   // interactive labeling modules:
   ILGridMatrix,
   ILSingleObjectDisplay,

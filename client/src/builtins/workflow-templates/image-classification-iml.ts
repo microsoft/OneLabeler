@@ -9,9 +9,9 @@ import {
   WorkflowNodeType,
 } from '@/commons/types';
 import { parseWorkflowGraph } from '@/commons/workflow-scaffold';
-import DOSClustering from '@/builtins/modules/data-object-selection-clustering';
+import DOSCluster from '@/builtins/modules/data-object-selection-cluster';
 import DOSProjection from '@/builtins/modules/data-object-selection-projection';
-import FEImageSVD from '@/builtins/modules/feature-extraction-image-svd';
+import FEImageSvd from '@/builtins/modules/feature-extraction-image-svd';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling-grid-matrix';
 import MTRetrain from '@/builtins/modules/model-training-retrain';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
@@ -30,13 +30,13 @@ export default parseWorkflowGraph({
     {
       label: 'SVD features',
       type: WorkflowNodeType.FeatureExtraction,
-      value: FEImageSVD,
+      value: FEImageSvd,
       layout: { x: 160, y: 40 },
     },
     {
       label: 'clustering',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [merge(cloneDeep(DOSClustering), {
+      value: [merge(cloneDeep(DOSCluster), {
         params: { nBatch: { value: 16 } }
       })],
       layout: { x: 280, y: 40 },

@@ -10,14 +10,13 @@ import {
 
 export default {
   type: ProcessType.FeatureExtraction,
-  label: 'SVD (Unsupervised)',
-  id: 'image-SVD-25940167',
+  label: 'BoW (Handcrafted)',
+  id: 'image-BoW-6989392',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  // api: 'http://localhost:8005/features/image/SVD',
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/SVD`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/BoW`,
   dataTypes: [DataType.Image],
 };

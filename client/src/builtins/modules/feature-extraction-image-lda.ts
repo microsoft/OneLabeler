@@ -10,14 +10,13 @@ import {
 
 export default {
   type: ProcessType.FeatureExtraction,
-  label: 'SVD (Unsupervised)',
-  id: 'image-SVD-25940167',
-  inputs: ['dataObjects'],
+  label: 'LDA (Supervised)',
+  id: 'image-LDA-45100847',
+  inputs: ['dataObjects', 'labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  // api: 'http://localhost:8005/features/image/SVD',
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/SVD`,
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/LDA`,
   dataTypes: [DataType.Image],
 };

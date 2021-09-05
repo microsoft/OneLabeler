@@ -10,14 +10,13 @@ import {
 
 export default {
   type: ProcessType.FeatureExtraction,
-  label: 'SVD (Unsupervised)',
-  id: 'image-SVD-25940167',
+  label: 'NMF (Unsupervised)',
+  id: 'text-NMF-78139065',
   inputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  // api: 'http://localhost:8005/features/image/SVD',
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/SVD`,
-  dataTypes: [DataType.Image],
+  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/text/NMF`,
+  dataTypes: [DataType.Text],
 };
