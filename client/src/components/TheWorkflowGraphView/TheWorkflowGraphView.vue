@@ -13,7 +13,7 @@
         >
           $vuetify.icons.values.flowChart
         </v-icon>
-        Workflow Graph
+        Workflow
       </div>
       <v-divider />
       <div>

@@ -5,11 +5,11 @@
     :models="modelsFiltered"
     :node="node"
     :edge="edge"
-    @edit:node="onEditNode"
+    @edit:node="$emit('edit:node', $event)"
     @create:method="onCreateMethod"
-    @edit:method="onEditMethod"
+    @edit:method="$emit('edit:method', $event)"
     @create:model="onCreateModel"
-    @edit:model="onEditModel"
+    @edit:model="$emit('edit:model', $event)"
   />
 </template>
 
@@ -33,11 +33,10 @@ import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
 import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
 import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
 import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
-import TheNodeDetailsInterimModelTraining from './TheNodeDetailsInterimModelTraining.vue';
+import TheNodeDetailsModelTraining from './TheNodeDetailsModelTraining.vue';
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
-import TheNodeDetailsTaskTransformation from './TheNodeDetailsTaskTransformation.vue';
-import TheNodeDetailsTerminal from './TheNodeDetailsTerminal.vue';
+import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
 const isElementNode = (
   element: WorkflowNode | WorkflowEdge,
@@ -45,21 +44,6 @@ const isElementNode = (
 
 export default Vue.extend({
   name: 'TheElementDetails',
-  components: {
-    TheEdgeDetails,
-    TheElementDetailsSelectionEmpty,
-    TheElementDetailsSelectionMultiple,
-    TheNodeDetailsDataObjectSelection,
-    TheNodeDetailsDecision,
-    TheNodeDetailsDefaultLabeling,
-    TheNodeDetailsFeatureExtraction,
-    TheNodeDetailsInteractiveLabeling,
-    TheNodeDetailsInterimModelTraining,
-    TheNodeDetailsInitialization,
-    TheNodeDetailsStoppageAnalysis,
-    TheNodeDetailsTaskTransformation,
-    TheNodeDetailsTerminal,
-  },
   props: {
     methods: {
       type: Array as PropType<Process[]>,
@@ -97,11 +81,10 @@ export default Vue.extend({
         [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsDefaultLabeling,
         [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsFeatureExtraction,
         [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsInteractiveLabeling,
-        [WorkflowNodeType.InterimModelTraining]: TheNodeDetailsInterimModelTraining,
+        [WorkflowNodeType.ModelTraining]: TheNodeDetailsModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsStoppageAnalysis,
-        [WorkflowNodeType.TaskTransformation]: TheNodeDetailsTaskTransformation,
         [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
-        [WorkflowNodeType.Terminal]: TheNodeDetailsTerminal,
+        [WorkflowNodeType.Exit]: TheNodeDetailsExit,
       } as Partial<Record<WorkflowNodeType, VueConstructor>>;
       if (node !== null && node.type in mapper) return mapper[node.type] as VueConstructor;
       if (edge !== null) return TheEdgeDetails as VueConstructor;
@@ -115,9 +98,8 @@ export default Vue.extend({
         [WorkflowNodeType.DefaultLabeling]: ProcessType.DefaultLabeling,
         [WorkflowNodeType.FeatureExtraction]: ProcessType.FeatureExtraction,
         [WorkflowNodeType.InteractiveLabeling]: ProcessType.InteractiveLabeling,
-        [WorkflowNodeType.InterimModelTraining]: ProcessType.InterimModelTraining,
+        [WorkflowNodeType.ModelTraining]: ProcessType.ModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: ProcessType.StoppageAnalysis,
-        [WorkflowNodeType.TaskTransformation]: ProcessType.TaskTransformation,
       } as Record<WorkflowNodeType, ProcessType>;
       if (!(node.type in mapper)) return [];
       const processType = mapper[node.type];
@@ -131,7 +113,7 @@ export default Vue.extend({
         return this.models.filter((d: ModelService) => d.isValidSampler);
       }
       if (node.type === WorkflowNodeType.DefaultLabeling
-        || node.type === WorkflowNodeType.InterimModelTraining
+        || node.type === WorkflowNodeType.ModelTraining
       ) {
         return this.models;
       }
@@ -139,12 +121,6 @@ export default Vue.extend({
     },
   },
   methods: {
-    onEditNode(newValue: WorkflowNode): void {
-      this.$emit('edit:node', newValue);
-    },
-    onEditMethod(newValue: Process): void {
-      this.$emit('edit:method', newValue);
-    },
     onCreateMethod(): void {
       const { node } = this;
       if (node === null) return;
@@ -179,10 +155,10 @@ export default Vue.extend({
           inputs: ['dataObjects'],
         };
       }
-      if (nodeType === WorkflowNodeType.InterimModelTraining) {
+      if (nodeType === WorkflowNodeType.ModelTraining) {
         method = {
           ...method,
-          type: ProcessType.InterimModelTraining,
+          type: ProcessType.ModelTraining,
           inputs: ['model'],
         };
       }
@@ -194,9 +170,6 @@ export default Vue.extend({
         };
       }
       this.$emit('create:method', method);
-    },
-    onEditModel(newValue: ModelService): void {
-      this.$emit('edit:model', newValue);
     },
     onCreateModel(): void {
       const model: ModelService = {

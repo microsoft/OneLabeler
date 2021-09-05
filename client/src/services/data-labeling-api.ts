@@ -279,7 +279,7 @@ export const dataObjectSelection = async (
  * @param model The model to be updated.
  * @returns modelUpdated - the updated model.
  */
-export const interimModelTraining = async (
+export const modelTraining = async (
   method: Process,
   model: ModelService,
   unlabeledMark: Category,

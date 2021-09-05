@@ -75,7 +75,7 @@ export const validateWorkflow = (graph: {
 
   // 1.2. one exit node
   const exitNodes = nodes.filter((d) => (
-    d.type === WorkflowNodeType.Terminal
+    d.type === WorkflowNodeType.Exit
   ));
   if (exitNodes.length !== 1) {
     notifications.push({
@@ -184,7 +184,7 @@ export const validateWorkflow = (graph: {
           category: 'Grammar Error',
         });
       }
-    } else if (type === WorkflowNodeType.Terminal) {
+    } else if (type === WorkflowNodeType.Exit) {
       if (indegree === 0) {
         notifications.push({
           subject: node,
@@ -293,7 +293,7 @@ export const validateInstantiations = (graph: {
   nodes.forEach((node) => {
     if (node.type === WorkflowNodeType.Initialization) return;
     if (node.type === WorkflowNodeType.Decision) return;
-    if (node.type === WorkflowNodeType.Terminal) return;
+    if (node.type === WorkflowNodeType.Exit) return;
     const hasSingleInstance = !Array.isArray(node.value)
       && node.value !== undefined
       && node.value !== null;

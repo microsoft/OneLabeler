@@ -12,6 +12,10 @@ import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import {
+  parseNodeLayout,
+  parseEdgeLayout,
+} from '@/commons/workflow-scaffold';
 import processes from '@/builtins/processes';
 
 type MethodParam = MethodParams[keyof MethodParams];
@@ -143,29 +147,6 @@ const schema: JSONSchemaType<JsonGraph> = {
 /** Validate the schema of the json. */
 export const validate = ajv.compile(schema);
 
-const parseNodeLayout = (
-  layout: WorkflowNode['layout'] | undefined,
-  idx: number,
-): WorkflowNode['layout'] => {
-  if (layout !== undefined) return layout;
-
-  const DEFAULT_NODE_WIDTH = 60;
-  const DEFAULT_NODE_HEIGHT = 60;
-  const DEFAULT_CANVAS_WIDTH = 600;
-  const DEFAULT_MARGIN = 40;
-  const DEFAULT_NODES_PER_ROW = Math.floor((DEFAULT_CANVAS_WIDTH - DEFAULT_MARGIN)
-    / (DEFAULT_NODE_WIDTH + DEFAULT_MARGIN));
-
-  const rowIdx = Math.floor(idx / DEFAULT_NODES_PER_ROW);
-  const columnIdx = idx - DEFAULT_NODES_PER_ROW * rowIdx;
-  return {
-    x: columnIdx * DEFAULT_NODE_WIDTH + (columnIdx + 1) * DEFAULT_MARGIN,
-    y: rowIdx * DEFAULT_NODE_HEIGHT + (rowIdx + 1) * DEFAULT_MARGIN,
-    width: DEFAULT_NODE_WIDTH,
-    height: DEFAULT_NODE_HEIGHT,
-  };
-};
-
 const parseProcess = (
   process: JsonProcess,
   node: JsonNode,
@@ -283,10 +264,10 @@ const parseNodeValue = (
   value: JsonNode['value'],
   node: JsonNode,
 ): WorkflowNode['value'] => {
-  // Decision and terminal nodes have no value attributes.
+  // Decision and exit nodes have no value attributes.
   if (
     node.type === WorkflowNodeType.Decision
-    || node.type === WorkflowNodeType.Terminal
+    || node.type === WorkflowNodeType.Exit
   ) return undefined;
 
   // If value is not passed, return empty setting of the value.
@@ -321,7 +302,7 @@ const parseNode = (node: JsonNode, idx: number): WorkflowNode => {
   const id = node.id !== undefined ? node.id : node.label;
 
   // Create node.layout if layout doesn't exist.
-  const layout = parseNodeLayout(node.layout, idx);
+  const layout = parseNodeLayout(node.layout, node.type, idx);
 
   // Edit node.value
   const value = parseNodeValue(node.value, node);
@@ -331,88 +312,6 @@ const parseNode = (node: JsonNode, idx: number): WorkflowNode => {
     id,
     layout,
     value,
-  };
-};
-
-const parseEdgeLayout = (
-  layout: WorkflowEdge['layout'] | undefined,
-  sourceNode: WorkflowNode,
-  targetNode: WorkflowNode,
-): WorkflowEdge['layout'] => {
-  const getAngle = (
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-  ): number => {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const radian = Math.atan2(dy, dx);
-    const degree = (180 * radian) / Math.PI;
-    return (360 + Math.round(degree)) % 360;
-  };
-
-  if (layout !== undefined) return layout;
-
-  const x1 = sourceNode.layout.x;
-  const y1 = sourceNode.layout.y;
-  const x2 = targetNode.layout.x;
-  const y2 = targetNode.layout.y;
-  const angle = getAngle(x1, -y1, x2, -y2);
-  if (angle <= 45 || angle > 315) {
-    return {
-      source: {
-        direction: PortDirection.Right,
-        dx: sourceNode.layout.width,
-        dy: sourceNode.layout.height / 2,
-      },
-      target: {
-        direction: PortDirection.Left,
-        dx: 0,
-        dy: targetNode.layout.height / 2,
-      },
-    };
-  }
-  if (angle <= 135 && angle > 45) {
-    return {
-      source: {
-        direction: PortDirection.Top,
-        dx: sourceNode.layout.width / 2,
-        dy: 0,
-      },
-      target: {
-        direction: PortDirection.Bottom,
-        dx: targetNode.layout.width / 2,
-        dy: targetNode.layout.height,
-      },
-    };
-  }
-  if (angle <= 225 && angle >= 135) {
-    return {
-      source: {
-        direction: PortDirection.Left,
-        dx: 0,
-        dy: sourceNode.layout.height / 2,
-      },
-      target: {
-        direction: PortDirection.Right,
-        dx: targetNode.layout.width,
-        dy: targetNode.layout.height / 2,
-      },
-    };
-  }
-  // if (angle <= 315 && angle > 225)
-  return {
-    source: {
-      direction: PortDirection.Bottom,
-      dx: sourceNode.layout.width / 2,
-      dy: sourceNode.layout.height,
-    },
-    target: {
-      direction: PortDirection.Top,
-      dx: sourceNode.layout.width / 2,
-      dy: 0,
-    },
   };
 };
 

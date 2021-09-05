@@ -317,10 +317,9 @@ export enum ProcessType {
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
   DefaultLabeling = 'DefaultLabeling',
-  TaskTransformation = 'TaskTransformation',
   InteractiveLabeling = 'InteractiveLabeling',
   StoppageAnalysis = 'StoppageAnalysis',
-  InterimModelTraining = 'InterimModelTraining',
+  ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
 }
 
@@ -403,13 +402,12 @@ export enum WorkflowNodeType {
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
   DefaultLabeling = 'DefaultLabeling',
-  TaskTransformation = 'TaskTransformation',
   InteractiveLabeling = 'InteractiveLabeling',
   StoppageAnalysis = 'StoppageAnalysis',
-  InterimModelTraining = 'InterimModelTraining',
+  ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
   Decision = 'Decision',
-  Terminal = 'Terminal',
+  Exit = 'Exit',
 }
 
 export type InitializationParams = {
@@ -425,7 +423,7 @@ export type WorkflowNode = {
     | Process[] // for node with multiple concurrent instantiations
     | InitializationParams // for initialization node
     | null // for node with a single instantiation not yet chosen
-    | undefined; // for decision and terminal nodes
+    | undefined; // for decision and exit nodes
   layout: {
     x: number;
     y: number;

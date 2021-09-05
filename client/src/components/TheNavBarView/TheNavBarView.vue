@@ -1,6 +1,6 @@
 <template>
   <div
-    class="app-header"
+    class="app-header pl-1"
     :style="{
       'display': 'flex',
       'align-items': 'center',
@@ -16,7 +16,6 @@
       :keyboard-trigger="(showFileUploadButton && !disableNewProjectButton)
         ? keyboardTriggerNewProject
         : null"
-      class="ml-1"
       title="New Label Project (Ctrl + P)"
       color="white"
       small

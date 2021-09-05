@@ -388,14 +388,14 @@ export const executeFeatureExtraction = showProgressBar(async (
   }
 });
 
-export const executeInterimModelTraining = showProgressBar(async (
+export const executeModelTraining = showProgressBar(async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
   const isProcessNode = (node: WorkflowNode): boolean => (
     node.type !== WorkflowNodeType.Initialization
     && node.type !== WorkflowNodeType.Decision
-    && node.type !== WorkflowNodeType.Terminal
+    && node.type !== WorkflowNodeType.Exit
   );
   const {
     dataObjects,
@@ -416,7 +416,7 @@ export const executeInterimModelTraining = showProgressBar(async (
         const model = nodeMethod.model as ModelService;
 
         try {
-          (await API.interimModelTraining(
+          (await API.modelTraining(
             method,
             model,
             unlabeledMark,
@@ -475,7 +475,7 @@ export const executeWorkflow = async (
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
-  if (node.type === WorkflowNodeType.Terminal) {
+  if (node.type === WorkflowNodeType.Exit) {
     return;
   }
 
@@ -525,10 +525,6 @@ export const executeWorkflow = async (
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
-  if (node.type === WorkflowNodeType.TaskTransformation) {
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
   if (node.type === WorkflowNodeType.InteractiveLabeling) {
     return;
   }
@@ -539,9 +535,9 @@ export const executeWorkflow = async (
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
-  if (node.type === WorkflowNodeType.InterimModelTraining) {
+  if (node.type === WorkflowNodeType.ModelTraining) {
     const method = node.value as Process;
-    await executeInterimModelTraining(store, method);
+    await executeModelTraining(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 

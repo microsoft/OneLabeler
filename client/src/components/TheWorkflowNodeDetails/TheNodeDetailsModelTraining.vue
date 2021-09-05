@@ -114,7 +114,7 @@ import VNodeOutput from './VNodeOutput.vue';
 import VNodeSelectMethodSingle from './VNodeSelectMethodSingle.vue';
 
 export default Vue.extend({
-  name: 'TheNodeDetailsInterimModelTraining',
+  name: 'TheNodeDetailsModelTraining',
   components: {
     VNodeEditableInput,
     VNodeEditableMethodLabel,

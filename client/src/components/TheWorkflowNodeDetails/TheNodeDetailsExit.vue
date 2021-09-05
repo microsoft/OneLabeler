@@ -15,7 +15,7 @@
     </div>
     <v-divider />
     <div class="py-2 px-4 subtitle-2">
-      The Terminal Node
+      The Exit Node
     </div>
   </v-card>
 </template>
@@ -25,7 +25,7 @@ import Vue, { PropType } from 'vue';
 import { WorkflowNode } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'TheNodeDetailsTerminal',
+  name: 'TheNodeDetailsExit',
   props: {
     node: {
       type: Object as PropType<WorkflowNode>,
@@ -34,7 +34,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      viewTitle: 'Terminal',
+      viewTitle: 'Exit',
     };
   },
 });

@@ -99,7 +99,7 @@
               stroke-width="1"
             />
           </template>
-          <template v-else-if="isNodeTerminal(props.node)">
+          <template v-else-if="isNodeExit(props.node)">
             <circle
               :r="props.node.height / 2"
               :cx="props.node.width / 2"
@@ -237,7 +237,6 @@
 import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  Process,
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
@@ -283,10 +282,6 @@ const createNodeMenu = [
     value: WorkflowNodeType.DefaultLabeling,
   },
   {
-    label: 'create task transformation node',
-    value: WorkflowNodeType.TaskTransformation,
-  },
-  {
     label: 'create interactive labeling node',
     value: WorkflowNodeType.InteractiveLabeling,
   },
@@ -295,16 +290,16 @@ const createNodeMenu = [
     value: WorkflowNodeType.StoppageAnalysis,
   },
   {
-    label: 'create interim model training node',
-    value: WorkflowNodeType.InterimModelTraining,
+    label: 'create model training node',
+    value: WorkflowNodeType.ModelTraining,
   },
   {
     label: 'create decision node',
     value: WorkflowNodeType.Decision,
   },
   {
-    label: 'create terminal node',
-    value: WorkflowNodeType.Terminal,
+    label: 'create exit node',
+    value: WorkflowNodeType.Exit,
   },
 ];
 
@@ -398,38 +393,8 @@ export default Vue.extend({
     isNodeDecision(node: WorkflowNode): boolean {
       return node.type === WorkflowNodeType.Decision;
     },
-    isNodeTerminal(node: WorkflowNode): boolean {
-      return node.type === WorkflowNodeType.Terminal;
-    },
-    isNodeImplemented(node: WorkflowNode): boolean {
-      if (!this.isNodeProcess(node)) return true;
-      if (node.value === undefined || node.value === null) return false;
-      if (Array.isArray(node.value) && node.value.length === 0) return false;
-      return true;
-    },
-    isNodeDummyImplemented(node: WorkflowNode): boolean {
-      if (!this.isNodeProcess(node)) return false;
-      if (node.value === undefined || node.value === null) return false;
-
-      if (node.type === WorkflowNodeType.FeatureExtraction) {
-        return (node.value as Process).api === 'Random3D';
-      }
-      if (node.type === WorkflowNodeType.DataObjectSelection) {
-        if (!Array.isArray(node.value)) return false;
-        if (node.value.length === 0) return false;
-        return node.value.length === 1 && node.value[0].api === 'Random';
-      }
-      if (node.type === WorkflowNodeType.DefaultLabeling) {
-        return (node.value as Process).api === 'Null';
-      }
-      if (node.type === WorkflowNodeType.InteractiveLabeling) {
-        return node.value === undefined
-          || (node.value as Process[]).length === 0;
-      }
-      if (node.type === WorkflowNodeType.InterimModelTraining) {
-        return (node.value as Process).api === 'Static';
-      }
-      return false;
+    isNodeExit(node: WorkflowNode): boolean {
+      return node.type === WorkflowNodeType.Exit;
     },
     isNodeInteractive(node: FlowchartNode): boolean {
       const match = this.graph.nodes.find((d) => d.id === node.id);
@@ -487,24 +452,22 @@ export default Vue.extend({
         [WorkflowNodeType.FeatureExtraction]: 'feature extraction',
         [WorkflowNodeType.DataObjectSelection]: 'data object selection',
         [WorkflowNodeType.DefaultLabeling]: 'default labeling',
-        [WorkflowNodeType.TaskTransformation]: 'task transform',
         [WorkflowNodeType.InteractiveLabeling]: 'interactive labeling',
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
-        [WorkflowNodeType.InterimModelTraining]: 'interim model training',
+        [WorkflowNodeType.ModelTraining]: 'model training',
         [WorkflowNodeType.Decision]: 'decision',
-        [WorkflowNodeType.Terminal]: 'terminal',
+        [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {
         [WorkflowNodeType.Initialization]: { dataType: null, labelTasks: [] },
         [WorkflowNodeType.FeatureExtraction]: null,
         [WorkflowNodeType.DataObjectSelection]: [],
         [WorkflowNodeType.DefaultLabeling]: null,
-        [WorkflowNodeType.TaskTransformation]: null,
         [WorkflowNodeType.InteractiveLabeling]: [],
         [WorkflowNodeType.StoppageAnalysis]: null,
-        [WorkflowNodeType.InterimModelTraining]: null,
+        [WorkflowNodeType.ModelTraining]: null,
         [WorkflowNodeType.Decision]: undefined,
-        [WorkflowNodeType.Terminal]: undefined,
+        [WorkflowNodeType.Exit]: undefined,
       } as Record<WorkflowNodeType, unknown>;
       const node = {
         id: uuidv4(),
@@ -514,7 +477,7 @@ export default Vue.extend({
         layout: {
           x: this.rightClickCanvasX,
           y: this.rightClickCanvasY,
-          width: type === WorkflowNodeType.Terminal ? 60 : 80,
+          width: type === WorkflowNodeType.Exit ? 60 : 80,
           height: 60,
         },
       } as WorkflowNode;
