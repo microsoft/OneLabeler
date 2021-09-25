@@ -176,5 +176,6 @@ const parseEdge = (
 export const parseWorkflowGraph = (graph: WorkflowGraph): WorkflowGraph => {
   const nodes = graph.nodes.map((node, i) => parseNode(node, i));
   const edges = graph.edges.map((edge) => parseEdge(edge, nodes));
-  return { nodes, edges };
+  const { label } = graph;
+  return { nodes, edges, label };
 };

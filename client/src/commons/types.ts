@@ -461,6 +461,8 @@ export type WorkflowEdge = {
 export type WorkflowGraph = {
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
+  /** The name of the workflow as appear in the menu. */
+  label?: string;
 }
 
 export type TaskWindow = {

@@ -17,6 +17,7 @@ import MTRetrain from '@/builtins/modules/model-training-retrain';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
 
 export default parseWorkflowGraph({
+  label: 'Image Classification with IML',
   nodes: [
     {
       label: 'initialization',
