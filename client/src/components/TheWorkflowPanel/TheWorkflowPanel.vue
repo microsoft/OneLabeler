@@ -43,7 +43,7 @@
         </v-icon>
       </v-btn>
 
-      <!-- The export labeling result button. -->
+      <!-- The export compilation result button. -->
       <v-btn
         title="Compile Labeling Tool Installer (takes a few minutes!)"
         color="white"
@@ -57,6 +57,23 @@
           small
         >
           $vuetify.icons.values.hammer
+        </v-icon>
+      </v-btn>
+
+      <!-- The export source code button. -->
+      <v-btn
+        title="Export source code"
+        color="white"
+        icon
+        tile
+        small
+        @click="onClickSourceCode"
+      >
+        <v-icon
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.fileZip
         </v-icon>
       </v-btn>
 
@@ -219,7 +236,7 @@ import {
 } from '@/commons/types';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
-import compile from '@/services/compile-api';
+import { compileInstaller, compileZip } from '@/services/compile-api';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
@@ -281,7 +298,7 @@ export default Vue.extend({
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
     async onClickCompile(): Promise<void> {
-      await compile(this.workflow);
+      await compileInstaller(this.workflow);
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
@@ -300,6 +317,9 @@ export default Vue.extend({
         const message = computeErrorMessage(errors[0]);
         this.setMessage(message);
       }
+    },
+    async onClickSourceCode(): Promise<void> {
+      await compileZip(this.workflow);
     },
   },
 });

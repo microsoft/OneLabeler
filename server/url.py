@@ -8,7 +8,7 @@ from handlers import (CompileHandler,
 
 url = [
     # request for compiled exe package
-    (r'/compile', CompileHandler),
+    (r'/compile/(.*)', CompileHandler),
     # request for projection computed with dimension reduction algorithms
     (r'/projection/(\w+)', ProjectionHandler),
     # request for image processing algorithms
