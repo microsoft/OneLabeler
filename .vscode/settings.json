@@ -27,6 +27,7 @@
         "cytoscape",
         "devtools",
         "dexie",
+        "dotenv",
         "downsample",
         "dragmove",
         "dtype",

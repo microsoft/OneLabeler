@@ -151,7 +151,7 @@
     <TheNavBarViewDashboardDialogButton />
 
     <!-- The workflow dialog button. -->
-    <TheNavBarViewWorkflowDialogButton />
+    <TheNavBarViewWorkflowDialogButton v-if="isDeveloperMode" />
   </div>
 </template>
 
@@ -177,6 +177,8 @@ import TheNavBarViewDataManagementDialogButton from './TheNavBarViewDataManageme
 import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
 import { ProjectData, validate } from './load-project';
 import exportLabels from './export-labels';
+
+const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -217,6 +219,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      isDeveloperMode,
       nDataObjects: 0,
       DataType,
       // Ctrl + P: create new project

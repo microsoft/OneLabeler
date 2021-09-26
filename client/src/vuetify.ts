@@ -9,6 +9,7 @@ import IconDrawSquare from '@/plugins/IconDrawSquare.vue';
 Vue.use(Vuetify);
 
 const icons = {
+  hammer: 'fas fa-hammer',
   file: 'far fa-file',
   fileAudio: 'far fa-file-audio',
   fileImage: 'far fa-file-image',

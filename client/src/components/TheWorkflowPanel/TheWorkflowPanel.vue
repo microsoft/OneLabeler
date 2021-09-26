@@ -43,6 +43,23 @@
         </v-icon>
       </v-btn>
 
+      <!-- The export labeling result button. -->
+      <v-btn
+        title="Compile Labeling Tool Installer (takes a few minutes!)"
+        color="white"
+        icon
+        tile
+        small
+        @click="onClickCompile"
+      >
+        <v-icon
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.hammer
+        </v-icon>
+      </v-btn>
+
       <!-- The configuration reset button. -->
       <v-btn
         title="Reset Settings"
@@ -50,7 +67,7 @@
         icon
         tile
         small
-        @click="onClickReset"
+        @click="resetGraph()"
       >
         <v-icon
           aria-hidden="true"
@@ -86,17 +103,17 @@
         </template>
         <v-list dense>
           <v-list-item
-            v-for="({ label, value }, i) in templates"
+            v-for="(template, i) in templates"
             :key="i"
             style="min-height: 30px"
-            @click="onClickTemplate(value)"
+            @click="setGraph(template)"
           >
             <v-list-item-title
               height="20"
               class="subtitle-2 pa-0 ma-0"
               style="height: 20px"
             >
-              {{ label }}
+              {{ template.label }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -116,7 +133,7 @@
         icon
         tile
         small
-        @click="onClickClose"
+        @click="$emit('click:close')"
       >
         <v-icon
           aria-hidden="true"
@@ -144,6 +161,7 @@ import {
 } from '@/commons/types';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
+import compile from '@/services/compile-api';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
@@ -186,6 +204,10 @@ export default Vue.extend({
   },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
+    workflow(): WorkflowGraph {
+      const { nodes, edges } = this;
+      return { nodes, edges };
+    },
   },
   methods: {
     ...mapActions(['setMessage']),
@@ -194,18 +216,10 @@ export default Vue.extend({
       'resetGraph',
     ]),
     onClickExport(): void {
-      const { nodes, edges } = this;
-      saveJsonFile({ nodes, edges }, 'workflow.config.json');
+      saveJsonFile(this.workflow, 'workflow.config.json');
     },
-    onClickReset(): void {
-      // reset workflow configurations
-      this.resetGraph();
-    },
-    onClickTemplate(template: WorkflowGraph): void {
-      this.setGraph(template);
-    },
-    onClickClose(): void {
-      this.$emit('click:close');
+    async onClickCompile(): Promise<void> {
+      await compile(this.workflow);
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
