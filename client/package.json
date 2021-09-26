@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
+    "@iconify/vue2": "^1.0.0",
     "@types/chai": "^4.2.11",
     "@types/cytoscape": "^3.14.14",
     "@types/d3": "^6.2.0",

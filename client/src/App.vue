@@ -1,7 +1,36 @@
 <template>
   <v-app>
-    <div style="flex: 1 1 auto; display: flex; flex-direction: row;">
-      <div style="flex: 1 1 auto; display: flex; flex-direction: column;">
+    <div
+      :style="{
+        flex: '1 1 auto',
+        display: 'flex',
+        'flex-direction': dockSide === DockSideType.BOTTOM ? 'column' : 'row',
+      }"
+    >
+      <template v-if="dockSide === DockSideType.WINDOW">
+        <v-dialog
+          :value="true"
+          persistent
+          width="fit-content"
+          content-class="rounded-0"
+        >
+          <TheWorkflowPanel
+            style="height: 600px; width: 1700px;"
+            @click:close="onClickClosePanel"
+          />
+        </v-dialog>
+      </template>
+      <template v-if="dockSide === DockSideType.LEFT">
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
+        />
+        <v-divider
+          style="border-width: 2px;"
+          vertical
+        />
+      </template>
+      <div style="flex: 1 1 50%; display: flex; flex-direction: column;">
         <TheNavBarView />
         <div style="display: flex; flex: 1 1 auto;">
           <div
@@ -21,13 +50,26 @@
         <TheFooterView />
         <TheMessageView />
       </div>
-      <!--
-      <v-divider
-        style="border-width: 2px;"
-        vertical
-      />
-      <TheWorkflowPanel style="flex: 1 1 50%" />
-      -->
+      <template v-if="dockSide === DockSideType.BOTTOM">
+        <v-divider
+          style="border-width: 2px;"
+          horizontal
+        />
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
+        />
+      </template>
+      <template v-if="dockSide === DockSideType.RIGHT">
+        <v-divider
+          style="border-width: 2px;"
+          vertical
+        />
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
+        />
+      </template>
     </div>
   </v-app>
 </template>
@@ -38,6 +80,7 @@ import { mapActions, mapState } from 'vuex';
 import {
   TaskWindow,
   WorkflowNodeType,
+  DockSideType,
 } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheLabelView from '@/components/TheLabelView/TheLabelView.vue';
@@ -54,8 +97,11 @@ export default Vue.extend({
     TheMessageView,
     TheWorkflowPanel,
   },
+  data() {
+    return { DockSideType };
+  },
   computed: {
-    ...mapState(['taskWindows']),
+    ...mapState(['taskWindows', 'dockSide']),
     ...mapState('workflow', ['nodes']),
     nWindows(): number {
       return this.taskWindowsDisplayed.length;
@@ -69,12 +115,15 @@ export default Vue.extend({
     this.updatedTaskWindowsByNodes(this.nodes);
   },
   methods: {
-    ...mapActions(['updatedTaskWindowsByNodes']),
+    ...mapActions(['updatedTaskWindowsByNodes', 'setDockSide']),
     getComponent(taskWindow: TaskWindow): VueConstructor | null {
       const { node } = taskWindow;
       if (node.type === WorkflowNodeType.DataObjectSelection) return TheSelectionView;
       if (node.type === WorkflowNodeType.InteractiveLabeling) return TheLabelView;
       return null;
+    },
+    onClickClosePanel(): void {
+      this.setDockSide(DockSideType.HIDE);
     },
   },
 });

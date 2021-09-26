@@ -41,6 +41,7 @@
         "hann",
         "heatmap",
         "hstack",
+        "iconify",
         "imdecode",
         "imgproc",
         "imgs",

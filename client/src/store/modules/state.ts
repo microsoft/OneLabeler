@@ -9,6 +9,7 @@ import {
   SourceService,
   StorageService,
   TaskWindow,
+  DockSideType,
 } from '@/commons/types';
 import {
   storageServices,
@@ -45,6 +46,8 @@ export interface IState {
   message: IMessage | null;
   /** The task windows in the interface. */
   taskWindows: TaskWindow[];
+  /** The location the workflow panel docks. */
+  dockSide: DockSideType;
 
   /** The service for transferring dataset to the client. */
   sourceService: SourceService;
@@ -70,6 +73,7 @@ export const createInitialState = (): IState => ({
   commandHistory: [],
   message: null,
   taskWindows: [],
+  dockSide: DockSideType.HIDE,
   sourceService: sourceServices[0],
   sourceServices,
   storageService: storageServices[0],

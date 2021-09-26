@@ -9,6 +9,7 @@ import {
   SourceService,
   StorageService,
   TaskWindow,
+  DockSideType,
 } from '@/commons/types';
 import { IState } from './state';
 import * as types from './mutation-types';
@@ -55,6 +56,9 @@ export default {
   },
   [types.SET_SCOPE_UUIDS](state: IState, scopeUuids: string[]): void {
     state.scopeUuids = scopeUuids;
+  },
+  [types.SET_DOCK_SIDE](state: IState, dockSide: DockSideType): void {
+    state.dockSide = dockSide;
   },
   [types.SET_SOURCE_SERVICE](state: IState, service: SourceService): void {
     state.sourceService = service;

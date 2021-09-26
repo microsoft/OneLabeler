@@ -127,6 +127,62 @@
       <v-spacer />
 
       <v-btn
+        title="Undock into separate window"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.WINDOW)"
+      >
+        <Icon
+          icon="mdi:dock-window"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to left"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.LEFT)"
+      >
+        <Icon
+          icon="mdi:dock-left"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to bottom"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.BOTTOM)"
+      >
+        <Icon
+          icon="mdi:dock-bottom"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to right"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.RIGHT)"
+      >
+        <Icon
+          icon="mdi:dock-right"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
         class="mr-1"
         title="Close"
         color="white"
@@ -154,10 +210,12 @@
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
+import { Icon } from '@iconify/vue2';
 import {
   IMessage,
   MessageType,
   WorkflowGraph,
+  DockSideType,
 } from '@/commons/types';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
@@ -196,11 +254,15 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
 export default Vue.extend({
   name: 'TheWorkflowPanel',
   components: {
+    Icon,
     VUploadButton,
     TheWorkflowGraphView,
   },
   data() {
-    return { templates };
+    return {
+      DockSideType,
+      templates,
+    };
   },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
@@ -210,7 +272,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    ...mapActions(['setMessage']),
+    ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
       'resetGraph',

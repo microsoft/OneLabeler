@@ -15,6 +15,7 @@ import {
   StatusType,
   TaskWindow,
   WorkflowNode,
+  DockSideType,
 } from '@/commons/types';
 import { isNodeInteractive } from '@/commons/utils';
 import * as types from './mutation-types';
@@ -236,6 +237,13 @@ export const setProject = async (
   commit(types.SET_LABELS, storage.labels);
   commit(types.SET_STATUSES, storage.statuses);
   commit(types.SET_QUERY_UUIDS, queryUuids);
+};
+
+export const setDockSide = (
+  { commit }: ActionContext<IState, IState>,
+  dockSide: DockSideType,
+): void => {
+  commit(types.SET_DOCK_SIDE, dockSide);
 };
 
 export const setSourceService = (
