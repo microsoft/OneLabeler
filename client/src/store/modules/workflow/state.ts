@@ -3,9 +3,15 @@ import {
   Process,
   WorkflowNode,
   WorkflowEdge,
+  WorkflowGraph,
 } from '@/commons/types';
 import modelServices from '@/builtins/model-services';
 import processes from '@/builtins/processes';
+
+const DEFAULT_WORKFLOW = process.env.VUE_APP_DEFAULT_WORKFLOW;
+const { nodes, edges } = DEFAULT_WORKFLOW !== undefined
+  ? JSON.parse(DEFAULT_WORKFLOW) as WorkflowGraph
+  : { nodes: [], edges: [] };
 
 export interface IState {
   /** The node currently being processed. */
@@ -22,8 +28,8 @@ export interface IState {
 
 export const createInitialState = (): IState => ({
   currentNode: null,
-  nodes: [],
-  edges: [],
+  nodes,
+  edges,
   modelServices,
   processes,
 });

@@ -9,11 +9,15 @@ import {
   IStatus,
   IStorageStore,
   LabelTaskType,
+  Process,
   SourceService,
   StorageService,
   StatusType,
   TaskWindow,
+  WorkflowNode,
+  DockSideType,
 } from '@/commons/types';
+import { isNodeInteractive } from '@/commons/utils';
 import * as types from './mutation-types';
 import { IState, createInitialState } from './state';
 
@@ -115,6 +119,34 @@ export const setMessage = (
   commit(types.SET_MESSAGE, message);
 };
 
+export const updatedTaskWindowsByNodes = (
+  { commit, state }: ActionContext<IState, IState>,
+  nodes: WorkflowNode[],
+): void => {
+  const { taskWindows } = state;
+  const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
+  const updatedTaskWindows: TaskWindow[] = [];
+  nodesWithInterface.forEach((node) => {
+    const processes = Array.isArray(node.value)
+      ? node.value as Process[]
+      : [node.value as Process];
+    processes.forEach((process) => {
+      if (process.isAlgorithmic) return;
+      // Check if the task window is already created.
+      const match = taskWindows.find((d) => (
+        d.node.id === node.id && d.process.id === process.id
+      ));
+      updatedTaskWindows.push({
+        node,
+        process,
+        isPinned: match?.isPinned ?? false,
+        isMinimized: match?.isMinimized ?? false,
+      });
+    });
+  });
+  commit(types.SET_TASK_WINDOWS, updatedTaskWindows);
+};
+
 export const editTaskWindow = (
   { commit, state }: ActionContext<IState, IState>,
   newValue: TaskWindow,
@@ -205,6 +237,13 @@ export const setProject = async (
   commit(types.SET_LABELS, storage.labels);
   commit(types.SET_STATUSES, storage.statuses);
   commit(types.SET_QUERY_UUIDS, queryUuids);
+};
+
+export const setDockSide = (
+  { commit }: ActionContext<IState, IState>,
+  dockSide: DockSideType,
+): void => {
+  commit(types.SET_DOCK_SIDE, dockSide);
 };
 
 export const setSourceService = (

@@ -43,6 +43,40 @@
         </v-icon>
       </v-btn>
 
+      <!-- The export compilation result button. -->
+      <v-btn
+        title="Compile Labeling Tool Installer (takes a few minutes!)"
+        color="white"
+        icon
+        tile
+        small
+        @click="onClickCompile"
+      >
+        <v-icon
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.hammer
+        </v-icon>
+      </v-btn>
+
+      <!-- The export source code button. -->
+      <v-btn
+        title="Export source code"
+        color="white"
+        icon
+        tile
+        small
+        @click="onClickSourceCode"
+      >
+        <v-icon
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.fileZip
+        </v-icon>
+      </v-btn>
+
       <!-- The configuration reset button. -->
       <v-btn
         title="Reset Settings"
@@ -50,7 +84,7 @@
         icon
         tile
         small
-        @click="onClickReset"
+        @click="resetGraph()"
       >
         <v-icon
           aria-hidden="true"
@@ -86,17 +120,17 @@
         </template>
         <v-list dense>
           <v-list-item
-            v-for="({ label, value }, i) in templates"
+            v-for="(template, i) in templates"
             :key="i"
             style="min-height: 30px"
-            @click="onClickTemplate(value)"
+            @click="setGraph(template)"
           >
             <v-list-item-title
               height="20"
               class="subtitle-2 pa-0 ma-0"
               style="height: 20px"
             >
-              {{ label }}
+              {{ template.label }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
@@ -110,13 +144,69 @@
       <v-spacer />
 
       <v-btn
+        title="Undock into separate window"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.WINDOW)"
+      >
+        <Icon
+          icon="mdi:dock-window"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to left"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.LEFT)"
+      >
+        <Icon
+          icon="mdi:dock-left"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to bottom"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.BOTTOM)"
+      >
+        <Icon
+          icon="mdi:dock-bottom"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
+        title="Dock to right"
+        color="white"
+        icon
+        tile
+        small
+        @click="setDockSide(DockSideType.RIGHT)"
+      >
+        <Icon
+          icon="mdi:dock-right"
+          style="font-size: 16px"
+        />
+      </v-btn>
+
+      <v-btn
         class="mr-1"
         title="Close"
         color="white"
         icon
         tile
         small
-        @click="onClickClose"
+        @click="$emit('click:close')"
       >
         <v-icon
           aria-hidden="true"
@@ -137,13 +227,16 @@
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
+import { Icon } from '@iconify/vue2';
 import {
   IMessage,
   MessageType,
   WorkflowGraph,
+  DockSideType,
 } from '@/commons/types';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
+import { compileInstaller, compileZip } from '@/services/compile-api';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheWorkflowGraphView from '../TheWorkflowGraphView/TheWorkflowGraphView.vue';
 import {
@@ -178,34 +271,34 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
 export default Vue.extend({
   name: 'TheWorkflowPanel',
   components: {
+    Icon,
     VUploadButton,
     TheWorkflowGraphView,
   },
   data() {
-    return { templates };
+    return {
+      DockSideType,
+      templates,
+    };
   },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
+    workflow(): WorkflowGraph {
+      const { nodes, edges } = this;
+      return { nodes, edges };
+    },
   },
   methods: {
-    ...mapActions(['setMessage']),
+    ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
       'resetGraph',
     ]),
     onClickExport(): void {
-      const { nodes, edges } = this;
-      saveJsonFile({ nodes, edges }, 'workflow.config.json');
+      saveJsonFile(this.workflow, 'workflow.config.json');
     },
-    onClickReset(): void {
-      // reset workflow configurations
-      this.resetGraph();
-    },
-    onClickTemplate(template: WorkflowGraph): void {
-      this.setGraph(template);
-    },
-    onClickClose(): void {
-      this.$emit('click:close');
+    async onClickCompile(): Promise<void> {
+      await compileInstaller(this.workflow);
     },
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
@@ -224,6 +317,9 @@ export default Vue.extend({
         const message = computeErrorMessage(errors[0]);
         this.setMessage(message);
       }
+    },
+    async onClickSourceCode(): Promise<void> {
+      await compileZip(this.workflow);
     },
   },
 });

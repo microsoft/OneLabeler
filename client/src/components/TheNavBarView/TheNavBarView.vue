@@ -151,7 +151,21 @@
     <TheNavBarViewDashboardDialogButton />
 
     <!-- The workflow dialog button. -->
-    <TheNavBarViewWorkflowDialogButton />
+    <v-btn
+      v-if="isDeveloperMode"
+      class="app-header-button mr-1 text-none subtitle-1"
+      title="Workflow"
+      @click="onClickWorkflowButton"
+    >
+      <v-icon
+        class="pr-1"
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.config
+      </v-icon>
+      Workflow
+    </v-btn>
   </div>
 </template>
 
@@ -167,6 +181,7 @@ import {
   MessageType,
   SourceType,
   UploadTarget,
+  DockSideType,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -174,9 +189,10 @@ import dataTypeSetups from '@/builtins/data-types/index';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
 import TheNavBarViewDashboardDialogButton from './TheNavBarViewDashboardDialogButton.vue';
 import TheNavBarViewDataManagementDialogButton from './TheNavBarViewDataManagementDialogButton.vue';
-import TheNavBarViewWorkflowDialogButton from './TheNavBarViewWorkflowDialogButton.vue';
 import { ProjectData, validate } from './load-project';
 import exportLabels from './export-labels';
+
+const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -207,7 +223,6 @@ export default Vue.extend({
     VUploadButton,
     TheNavBarViewDashboardDialogButton,
     TheNavBarViewDataManagementDialogButton,
-    TheNavBarViewWorkflowDialogButton,
   },
   props: {
     height: {
@@ -217,6 +232,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      isDeveloperMode,
       nDataObjects: 0,
       DataType,
       // Ctrl + P: create new project
@@ -244,6 +260,7 @@ export default Vue.extend({
       'featureNames',
       'commandHistory',
       'sourceService',
+      'dockSide',
     ]),
     disableNewProjectButton(): boolean {
       const dataType = this.dataType as DataType | null;
@@ -319,6 +336,7 @@ export default Vue.extend({
       'resetState',
       'setMessage',
       'setProject',
+      'setDockSide',
     ]),
     ...mapActions('workflow', [
       'executeRegisterStorage',
@@ -421,6 +439,12 @@ export default Vue.extend({
         this.labels,
         this.dataType,
       );
+    },
+    onClickWorkflowButton(): void {
+      const updatedDockSide = this.dockSide === DockSideType.HIDE
+        ? DockSideType.WINDOW
+        : DockSideType.HIDE;
+      this.setDockSide(updatedDockSide);
     },
   },
 });

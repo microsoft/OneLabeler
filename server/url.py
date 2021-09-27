@@ -1,4 +1,5 @@
-from handlers import (FeatureExtractionHandler,
+from handlers import (CompileHandler,
+                      FeatureExtractionHandler,
                       DataObjectSelectionHandler,
                       DefaultLabelingHandler,
                       InterimModelTrainingHandler,
@@ -6,6 +7,8 @@ from handlers import (FeatureExtractionHandler,
                       ProjectionHandler)
 
 url = [
+    # request for compiled exe package
+    (r'/compile/(.*)', CompileHandler),
     # request for projection computed with dimension reduction algorithms
     (r'/projection/(\w+)', ProjectionHandler),
     # request for image processing algorithms

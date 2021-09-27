@@ -9,11 +9,13 @@ import IconDrawSquare from '@/plugins/IconDrawSquare.vue';
 Vue.use(Vuetify);
 
 const icons = {
+  hammer: 'fas fa-hammer',
   file: 'far fa-file',
   fileAudio: 'far fa-file-audio',
   fileImage: 'far fa-file-image',
   fileText: 'far fa-file-alt',
   fileVideo: 'far fa-file-video',
+  fileZip: 'fas fa-file-archive',
   text: 'fas fa-paragraph',
   new: 'fas fa-folder-plus',
   open: 'fas fa-folder-open',

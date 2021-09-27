@@ -49,7 +49,8 @@ export const processesValid = (state: IState): Process[] => {
   return processes.filter((d) => {
     if (d.dataTypes === undefined && d.labelTasks === undefined) return true;
     const dataTypeMatch = dataTypeValue === null || d.dataTypes?.includes(dataTypeValue);
-    const union = (d.labelTasks ?? []).filter((t) => labelTasksValue.includes(t));
+    if (d.labelTasks === undefined || d.labelTasks === null) return dataTypeMatch;
+    const union = d.labelTasks.filter((t) => labelTasksValue.includes(t));
     const labelTasksMatch = union.length >= 1;
     return dataTypeMatch && labelTasksMatch;
   });

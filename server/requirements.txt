@@ -1,7 +1,0 @@
-opencv-contrib-python==4.5.1.48
-numpy==1.16.4
-scikit-image==0.17.2
-scikit-learn==0.22.2
-tornado==5.1.1
-pymongo==3.11.3
-modAL==0.4.1

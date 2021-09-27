@@ -16,6 +16,7 @@
     "types": [
       "webpack-env",
       "mocha",
+      "node",
       "chai",
       "vuetify"
     ],
@@ -34,6 +35,9 @@
       "src/types"
     ]
   },
+  "_include": [
+    "src/**/vuetify.ts",
+  ],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",

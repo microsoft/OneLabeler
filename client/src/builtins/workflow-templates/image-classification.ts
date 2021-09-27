@@ -12,6 +12,7 @@ import ILGridMatrix from '@/builtins/modules/interactive-labeling-grid-matrix';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
 
 export default parseWorkflowGraph({
+  label: 'Image Classification',
   nodes: [
     {
       label: 'initialization',

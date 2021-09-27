@@ -15,6 +15,7 @@
     - [`tests`](#tests)
       - [`e2e`](#e2e)
       - [`unit`](#unit)
+    - [`.env`](#env)
   - [`db`](#db)
   - [`docs`](#docs)
   - [`server`](#server)
@@ -77,6 +78,12 @@ The end to end tests.
 #### `unit`
 
 The unit tests.
+
+### `.env`
+
+The environment variables.
+
+See reference at Vue CLI <https://cli.vuejs.org/guide/mode-and-env.html#environment-variables>.
 
 ## `db`
 

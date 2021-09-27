@@ -1,38 +1,93 @@
 <template>
   <v-app>
-    <TheNavBarView />
-    <div style="display: flex; flex: 1 1 auto;">
-      <div
-        v-for="(taskWindow, i) in taskWindowsDisplayed"
-        :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
-        :style="{ width: `${100 / nWindows}%` }"
-        class="pa-1"
-        :class="{ 'pl-0': (taskWindows.length !== 1 && i !== 0) }"
-      >
-        <component
-          :is="getComponent(taskWindow)"
-          :task-window="taskWindow"
-          style="height: 100%;"
+    <div
+      :style="{
+        flex: '1 1 auto',
+        display: 'flex',
+        'flex-direction': dockSide === DockSideType.BOTTOM ? 'column' : 'row',
+      }"
+    >
+      <template v-if="dockSide === DockSideType.WINDOW">
+        <v-dialog
+          :value="true"
+          persistent
+          width="fit-content"
+          content-class="rounded-0"
+        >
+          <TheWorkflowPanel
+            style="height: 600px; width: 1700px;"
+            @click:close="onClickClosePanel"
+          />
+        </v-dialog>
+      </template>
+      <template v-if="dockSide === DockSideType.LEFT">
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
         />
+        <v-divider
+          style="border-width: 2px;"
+          vertical
+        />
+      </template>
+      <div style="flex: 1 1 50%; display: flex; flex-direction: column;">
+        <TheNavBarView />
+        <div style="display: flex; flex: 1 1 auto;">
+          <div
+            v-for="(taskWindow, i) in taskWindowsDisplayed"
+            :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
+            :style="{ width: `${100 / nWindows}%` }"
+            class="pa-1"
+            :class="{ 'pl-0': (taskWindows.length !== 1 && i !== 0) }"
+          >
+            <component
+              :is="getComponent(taskWindow)"
+              :task-window="taskWindow"
+              style="height: 100%;"
+            />
+          </div>
+        </div>
+        <TheFooterView />
+        <TheMessageView />
       </div>
+      <template v-if="dockSide === DockSideType.BOTTOM">
+        <v-divider
+          style="border-width: 2px;"
+          horizontal
+        />
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
+        />
+      </template>
+      <template v-if="dockSide === DockSideType.RIGHT">
+        <v-divider
+          style="border-width: 2px;"
+          vertical
+        />
+        <TheWorkflowPanel
+          style="flex: 1 1 50%"
+          @click:close="onClickClosePanel"
+        />
+      </template>
     </div>
-    <TheFooterView />
-    <TheMessageView />
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue, { VueConstructor } from 'vue';
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import {
   TaskWindow,
   WorkflowNodeType,
+  DockSideType,
 } from '@/commons/types';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';
 import TheLabelView from '@/components/TheLabelView/TheLabelView.vue';
 import TheSelectionView from '@/components/TheSelectionView/TheSelectionView.vue';
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
+import TheWorkflowPanel from '@/components/TheWorkflowPanel/TheWorkflowPanel.vue';
 
 export default Vue.extend({
   name: 'App',
@@ -40,9 +95,13 @@ export default Vue.extend({
     TheNavBarView,
     TheFooterView,
     TheMessageView,
+    TheWorkflowPanel,
+  },
+  data() {
+    return { DockSideType };
   },
   computed: {
-    ...mapState(['taskWindows']),
+    ...mapState(['taskWindows', 'dockSide']),
     ...mapState('workflow', ['nodes']),
     nWindows(): number {
       return this.taskWindowsDisplayed.length;
@@ -52,12 +111,19 @@ export default Vue.extend({
       return taskWindows.filter((d) => !d.isMinimized);
     },
   },
+  mounted() {
+    this.updatedTaskWindowsByNodes(this.nodes);
+  },
   methods: {
+    ...mapActions(['updatedTaskWindowsByNodes', 'setDockSide']),
     getComponent(taskWindow: TaskWindow): VueConstructor | null {
       const { node } = taskWindow;
       if (node.type === WorkflowNodeType.DataObjectSelection) return TheSelectionView;
       if (node.type === WorkflowNodeType.InteractiveLabeling) return TheLabelView;
       return null;
+    },
+    onClickClosePanel(): void {
+      this.setDockSide(DockSideType.HIDE);
     },
   },
 });

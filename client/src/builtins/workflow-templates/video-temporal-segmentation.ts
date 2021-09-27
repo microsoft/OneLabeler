@@ -12,6 +12,7 @@ import ILSingleObjectDisplay from '@/builtins/modules/interactive-labeling-singl
 import SAAllChecked from '@/builtins/modules/stoppage-analysis-all-checked';
 
 export default parseWorkflowGraph({
+  label: 'Video Temporal Segmentation',
   nodes: [
     {
       label: 'initialization',
