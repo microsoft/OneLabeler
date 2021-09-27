@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+opencv-contrib-python = "*"
+scikit-image = "*"
+scikit-learn = "*"
+pymongo = "*"
+python-dotenv = "*"
+nltk = "*"
+tornado = "*"
+modal = "*"
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+
+[requires]
+python_version = "3.9"

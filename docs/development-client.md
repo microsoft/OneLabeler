@@ -8,6 +8,7 @@
     - [Run unit tests](#run-unit-tests)
     - [Run end-to-end tests](#run-end-to-end-tests)
     - [Lints and fixes files](#lints-and-fixes-files)
+    - [Install a new dependency](#install-a-new-dependency)
     - [Customize configuration](#customize-configuration)
     - [Note](#note)
 
@@ -102,6 +103,24 @@ Automatic code formatting with eslint:
 cd .\client\
 
 eslint --fix "client/src/**/*.{js,vue}"
+```
+
+### Install a new dependency
+
+Install a deployment dependency:
+
+```bash
+cd .\client\
+
+npm install packagename --save
+```
+
+Install a development dependency:
+
+```bash
+cd .\client\
+
+npm install packagename --save-dev
 ```
 
 ### Customize configuration
