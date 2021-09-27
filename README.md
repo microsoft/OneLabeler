@@ -1,3 +1,3 @@
-# Generic Labeler
+# OneLabeler
 
-- A system for multiple data labeling tasks
+- A system for building data labeling tools

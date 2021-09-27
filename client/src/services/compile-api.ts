@@ -45,7 +45,6 @@ export const compileInstaller = showProgressBar(async (
 export const compileZip = showProgressBar(async (
   workflow: WorkflowGraph,
 ): Promise<void> => {
-  console.log('compile zip', workflow);
   const response = await axios.post(
     formatter('zip'),
     JSON.stringify({ workflow }),
