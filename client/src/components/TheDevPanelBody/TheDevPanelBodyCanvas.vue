@@ -326,7 +326,7 @@ const edgeAdaptor = (edge: WorkflowEdge): FlowchartEdge => ({
 });
 
 export default Vue.extend({
-  name: 'TheWorkflowGraphViewCanvas',
+  name: 'TheDevPanelBodyCanvas',
   components: {
     VFlowchart,
   },

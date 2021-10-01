@@ -18,7 +18,7 @@
       <v-divider />
       <div style="display: flex; flex: 1 1 auto;">
         <!-- The graph canvas. -->
-        <TheWorkflowGraphViewCanvas
+        <TheDevPanelBodyCanvas
           :graph="{ nodes, edges }"
           :current-node="currentNode"
           style="flex: 1 1 auto"
@@ -33,7 +33,7 @@
           @select:edges="onSelectEdges"
         />
         <!-- The graph grammar checking console. -->
-        <TheWorkflowGraphViewConsole
+        <TheDevPanelBodyConsole
           :graph="{ nodes, edges }"
           :style="{
             position: 'absolute',
@@ -72,18 +72,16 @@ import {
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
-// import TheDataManagementView from '../TheDataManagementView/TheDataManagementView.vue';
-import TheElementDetails from '../TheWorkflowNodeDetails/TheElementDetails.vue';
-import TheWorkflowGraphViewCanvas from './TheWorkflowGraphViewCanvas.vue';
-import TheWorkflowGraphViewConsole from './TheWorkflowGraphViewConsole.vue';
+import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
+import TheDevPanelBodyCanvas from './TheDevPanelBodyCanvas.vue';
+import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
 
 export default Vue.extend({
-  name: 'TheWorkflowGraphView',
+  name: 'TheDevPanelBody',
   components: {
-    // TheDataManagementView,
     TheElementDetails,
-    TheWorkflowGraphViewCanvas,
-    TheWorkflowGraphViewConsole,
+    TheDevPanelBodyCanvas,
+    TheDevPanelBodyConsole,
   },
   data() {
     return {

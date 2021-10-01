@@ -14,14 +14,14 @@
           width="fit-content"
           content-class="rounded-0"
         >
-          <TheWorkflowPanel
+          <TheDevPanel
             style="height: 600px; width: 1700px;"
             @click:close="onClickClosePanel"
           />
         </v-dialog>
       </template>
       <template v-if="dockSide === DockSideType.LEFT">
-        <TheWorkflowPanel
+        <TheDevPanel
           style="flex: 1 1 50%"
           @click:close="onClickClosePanel"
         />
@@ -55,7 +55,7 @@
           style="border-width: 2px;"
           horizontal
         />
-        <TheWorkflowPanel
+        <TheDevPanel
           style="flex: 1 1 50%"
           @click:close="onClickClosePanel"
         />
@@ -65,7 +65,7 @@
           style="border-width: 2px;"
           vertical
         />
-        <TheWorkflowPanel
+        <TheDevPanel
           style="flex: 1 1 50%"
           @click:close="onClickClosePanel"
         />
@@ -87,7 +87,7 @@ import TheLabelView from '@/components/TheLabelView/TheLabelView.vue';
 import TheSelectionView from '@/components/TheSelectionView/TheSelectionView.vue';
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
-import TheWorkflowPanel from '@/components/TheWorkflowPanel/TheWorkflowPanel.vue';
+import TheDevPanel from '@/components/TheDevPanel/TheDevPanel.vue';
 
 export default Vue.extend({
   name: 'App',
@@ -95,7 +95,7 @@ export default Vue.extend({
     TheNavBarView,
     TheFooterView,
     TheMessageView,
-    TheWorkflowPanel,
+    TheDevPanel,
   },
   data() {
     return { DockSideType };

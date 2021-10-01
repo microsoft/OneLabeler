@@ -65,16 +65,13 @@ import {
   validateWorkflow,
   validateInstantiations,
 } from '@/commons/graph-validate';
-import {
-  WorkflowEdge,
-  WorkflowNode,
-} from '@/commons/types';
+import { WorkflowGraph } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'TheWorkflowGraphViewConsole',
+  name: 'TheDevPanelBodyConsole',
   props: {
     graph: {
-      type: Object as PropType<{ nodes: WorkflowNode[], edges: WorkflowEdge[] }>,
+      type: Object as PropType<WorkflowGraph>,
       default: null,
     },
   },
@@ -115,6 +112,7 @@ export default Vue.extend({
   },
 });
 </script>
+
 <style scoped>
 .shadow:hover {
   -moz-box-shadow: inset 0px 0px 5px #aaa;
