@@ -48,9 +48,10 @@
       </div>
     </v-card>
     <div style="display: flex; flex-direction: column; flex-basis: 40%;">
-      <div style="flex: 1 1 100%;">
+      <div style="flex: 1 1 100%; display: flex">
         <!-- The process parameter panel. -->
         <TheElementDetails
+          v-if="!showInspector"
           :methods="processesValid"
           :models="modelServices"
           :selection="selection"
@@ -60,13 +61,17 @@
           @create:model="pushModelServices($event)"
           @edit:model="editModelService($event)"
         />
+        <TheVariableInspector
+          v-else
+          style="flex: 1 1 auto"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
   WorkflowEdge,
@@ -75,6 +80,7 @@ import {
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
 import TheDevPanelBodyCanvas from './TheDevPanelBodyCanvas.vue';
 import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
+import TheVariableInspector from './TheVariableInspector.vue';
 
 export default Vue.extend({
   name: 'TheDevPanelBody',
@@ -82,6 +88,13 @@ export default Vue.extend({
     TheElementDetails,
     TheDevPanelBodyCanvas,
     TheDevPanelBodyConsole,
+    TheVariableInspector,
+  },
+  props: {
+    showInspector: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    }
   },
   data() {
     return {

@@ -30,6 +30,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^5.12.10",
     "nprogress": "^0.2.0",
+    "object-visualizer": "^4.1.0",
     "seedrandom": "^3.0.5",
     "sift": "^13.5.4",
     "uuid": "^8.3.2",

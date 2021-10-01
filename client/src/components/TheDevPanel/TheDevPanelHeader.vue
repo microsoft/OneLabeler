@@ -109,7 +109,7 @@
       icon
       tile
       small
-      @click="showVariableInspector = true"
+      @click="$emit('toggle:inspect')"
     >
       <Icon
         icon="mdi:application-variable"
@@ -123,23 +123,6 @@
     />
 
     <VDockSideButtons @set:dock-side="setDockSide($event)" />
-
-    <v-btn
-      class="mr-1"
-      title="Close"
-      color="white"
-      icon
-      tile
-      small
-      @click="$emit('click:close')"
-    >
-      <v-icon
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.close
-      </v-icon>
-    </v-btn>
   </div>
 </template>
 
@@ -154,7 +137,6 @@ import {
 import { saveJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
 import { compileInstaller, compileZip } from '@/services/compile-api';
-import TheDevPanelBody from '../TheDevPanelBody/TheDevPanelBody.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
 import VDockSideButtons from './VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
@@ -164,7 +146,6 @@ export default Vue.extend({
   components: {
     Icon,
     VTemplateMenu,
-    TheDevPanelBody,
     VDockSideButtons,
     VUploadWorkflowButton,
   },
@@ -172,7 +153,6 @@ export default Vue.extend({
     return {
       DockSideType,
       templates,
-      showVariableInspector: true,
     };
   },
   computed: {

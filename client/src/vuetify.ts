@@ -64,6 +64,8 @@ const icons = {
   mute: 'fas fa-volume-mute',
   link: 'fas fa-link',
   arrowRight: 'fas fa-arrow-right',
+  samples: 'fas fa-vials',
+  labels: 'fas fa-tags',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

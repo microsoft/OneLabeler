@@ -55,6 +55,23 @@
         style="font-size: 16px"
       />
     </v-btn>
+
+    <v-btn
+      class="mr-1"
+      title="Close"
+      color="white"
+      icon
+      tile
+      small
+      @click="$emit('set:dock-side', DockSideType.HIDE)"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.close
+      </v-icon>
+    </v-btn>
   </div>
 </template>
 
