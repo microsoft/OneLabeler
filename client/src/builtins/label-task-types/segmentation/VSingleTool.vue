@@ -9,7 +9,7 @@
     />
 
     <v-divider
-      class="mx-2"
+      class="mx-1"
       vertical
     />
 
@@ -22,13 +22,13 @@
     />
 
     <v-divider
-      class="mx-2"
+      class="mx-1"
       vertical
     />
 
     <!-- stroke color menu -->
     <VStrokeColorMenu
-      :classes="classes"
+      :categories="categories"
       :stroke-label="strokeLabel"
       :label2color="label2color"
       :disabled="mouseOperation === MouseOperationType.PanAndZoom
@@ -66,8 +66,12 @@ export default Vue.extend({
     VStrokeColorMenu,
   },
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
+      required: true,
+    },
+    label2color: {
+      type: Function as PropType<(label: string) => string>,
       required: true,
     },
     mouseOperation: {
@@ -84,10 +88,6 @@ export default Vue.extend({
     },
     strokeWidth: {
       type: Number as PropType<number>,
-      required: true,
-    },
-    label2color: {
-      type: Function as PropType<(label: string) => string>,
       required: true,
     },
   },

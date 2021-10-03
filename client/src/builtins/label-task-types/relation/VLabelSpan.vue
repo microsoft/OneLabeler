@@ -26,9 +26,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
-  ILabelTextSpan,
-} from '@/commons/types';
+import { ILabelTextSpan } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VLabelSpan',

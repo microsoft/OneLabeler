@@ -17,9 +17,7 @@
       @set:stroke-shape="strokeShape = $event"
       @set:stroke-width="strokeWidth = $event"
       @set:mouse-operation="mouseOperation = $event"
-      @set:label-category="onSetLabelCategory"
-      @set:label-multi-category="onSetLabelMultiCategory"
-      @set:label-text="onSetLabelText"
+      @upsert:label="onUpsertLabel"
       @window:minimize="$emit('edit-task-window', { isMinimized: true })"
       @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
@@ -71,11 +69,8 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
   ILabelShape,
   ILabelMask,
-  ILabelText,
   LabelTaskType,
   TaskWindow,
 } from '@/commons/types';
@@ -236,26 +231,11 @@ export default Vue.extend({
         : labelShapes.filter((d) => d.uuid !== labelShape.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
     },
-    onSetLabelCategory(category: ILabelCategory): void {
+    onUpsertLabel(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { category };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { multiCategory };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelText(text: ILabelText): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { text };
-      this.$emit('user-edit-label', uuid, newValue);
+      this.$emit('user-edit-label', uuid, partialLabel);
     },
     onResetImageSize(): void {
       (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();

@@ -17,43 +17,25 @@
 
     <div style="flex-grow: 1" />
 
-    <template v-if="includesClassification">
-      <!-- The data object label menu. -->
-      <VCategorySingleTool
-        :label-category="label === null ? null : label.category"
-        :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
-        :button-color="buttonColor"
-        :disabled="label === null"
-        @set:label-category="$emit('set:label-category', $event)"
-      />
-    </template>
-
-    <template v-if="includesMultiLabelClassification">
+    <div
+      v-for="(setup, i) in taskSetups"
+      :key="i"
+      style="display: flex"
+    >
       <v-divider
-        class="mx-2"
+        v-if="i !== 0"
+        class="mx-1"
         vertical
       />
-      <!-- The data object label menu. -->
-      <VMultiCategorySingleTool
-        :label-multi-category="label === null ? null : label.multiCategory"
-        :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
+      <component
+        :is="setup.singleTool"
+        :label="label"
+        :categories="filterClassesByLabelTask(setup.type)"
+        :label2color="label2color"
         :disabled="label === null"
-        @set:label-multi-category="$emit('set:label-multi-category', $event)"
+        @upsert:label="$emit('upsert:label', $event)"
       />
-    </template>
-
-    <template v-if="includesFreeformText">
-      <v-divider
-        class="mx-2"
-        vertical
-      />
-      <!-- The create/edit freeform text annotation button. -->
-      <VFreeformTextSingleTool
-        :label-text="label === null ? null : label.text"
-        :disabled="label === null"
-        @set:label-text="$emit('set:label-text', $event)"
-      />
-    </template>
+    </div>
   </div>
 </template>
 
@@ -63,19 +45,13 @@ import {
   Category,
   ILabel,
   LabelTaskType,
+  ILabelTaskTypeSetup,
   StatusType,
 } from '@/commons/types';
-import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
-import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
-import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 export default Vue.extend({
   name: 'VDataObjectCardHeader',
-  components: {
-    VCategorySingleTool,
-    VMultiCategorySingleTool,
-    VFreeformTextSingleTool,
-  },
   props: {
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
@@ -90,35 +66,28 @@ export default Vue.extend({
       type: String as PropType<StatusType>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
     },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
+    },
     title: {
       type: String,
       default: '',
-    },
-    buttonColor: {
-      type: String as PropType<string | null>,
-      default: null,
     },
   },
   data() {
     return { LabelTaskType };
   },
   computed: {
-    includesClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.Classification);
-    },
-    includesMultiLabelClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
-    },
-    includesFreeformText(): boolean {
-      return this.labelTasks.includes(LabelTaskType.FreeformText);
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.singleTool !== undefined);
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;

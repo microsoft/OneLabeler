@@ -26,7 +26,7 @@
       </v-btn>
 
       <v-divider
-        class="mx-2"
+        class="mx-1"
         vertical
       />
 
@@ -56,81 +56,33 @@
         </v-btn>
       </v-btn-toggle>
 
-      <template v-if="includesObjectDetection">
+      <div
+        v-for="(setup, i) in taskSetups"
+        :key="i"
+        style="display: flex"
+      >
         <v-divider
-          class="mx-2"
+          class="mx-1"
           vertical
         />
-        <VShapes2DSingleTool
-          :classes="filterClassesByLabelTask(LabelTaskType.ObjectDetection)"
-          :mouse-operation="mouseOperation"
-          :stroke-label="strokeLabel"
+        <component
+          :is="setup.singleTool"
+          :label="label"
+          :categories="filterClassesByLabelTask(setup.type)"
           :label2color="label2color"
+          :disabled="label === null"
           :label-tasks="labelTasks"
-          @set:mouse-operation="$emit('set:mouse-operation', $event)"
-          @set:stroke-label="$emit('set:stroke-label', $event)"
-        />
-      </template>
-
-      <template v-if="includesSegmentation">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <VSegment2DSingleTool
-          :classes="filterClassesByLabelTask(LabelTaskType.Segmentation)"
           :mouse-operation="mouseOperation"
           :stroke-label="strokeLabel"
           :stroke-shape="strokeShape"
           :stroke-width="strokeWidth"
-          :label2color="label2color"
+          @upsert:label="$emit('upsert:label', $event)"
+          @set:mouse-operation="$emit('set:mouse-operation', $event)"
+          @set:stroke-label="$emit('set:stroke-label', $event)"
           @set:stroke-shape="$emit('set:stroke-shape', $event)"
           @set:stroke-width="$emit('set:stroke-width', $event)"
-          @set:stroke-label="$emit('set:stroke-label', $event)"
         />
-      </template>
-
-      <template v-if="includesClassification">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <!-- The data object label menu. -->
-        <VCategorySingleTool
-          :label-category="label === null ? null : label.category"
-          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
-          :button-color="label === null ? null : label2color(label.category)"
-          :disabled="label === null"
-          @set:label-category="$emit('set:label-category', $event)"
-        />
-      </template>
-
-      <template v-if="includesMultiLabelClassification">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <!-- The data object label menu. -->
-        <VMultiCategorySingleTool
-          :label-multi-category="label === null ? null : label.multiCategory"
-          :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
-          :disabled="label === null"
-          @set:label-multi-category="$emit('set:label-multi-category', $event)"
-        />
-      </template>
-
-      <template v-if="includesFreeformText">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <!-- The create/edit freeform text annotation button. -->
-        <VFreeformTextSingleTool
-          :label-text="label === null ? null : label.text"
-          :disabled="label === null"
-          @set:label-text="$emit('set:label-text', $event)"
-        />
-      </template>
+      </div>
     </template>
   </VToolbar>
 </template>
@@ -142,19 +94,18 @@ import {
   DataType,
   ILabel,
   LabelTaskType,
+  ILabelTaskTypeSetup,
 } from '@/commons/types';
 import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import VSegment2DSingleTool, {
+import {
   MouseOperationType as LabelMaskMouseOperationType,
   StrokeShapeType,
-} from '@/components/VLabelMask2D/VSingleTool.vue';
-import VShapes2DSingleTool, {
+} from '@/builtins/label-task-types/segmentation/VSingleTool.vue';
+import {
   MouseOperationType as LabelShapesMouseOperationType,
-} from '@/components/VLabelShapes2D/VSingleTool.vue';
-import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
-import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
-import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
+} from '@/builtins/label-task-types/object-detection/VSingleTool.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 const MouseOperationType = {
   ...LabelMaskMouseOperationType,
@@ -168,11 +119,6 @@ export default Vue.extend({
   components: {
     VDataTypeIcon,
     VToolbar,
-    VSegment2DSingleTool,
-    VShapes2DSingleTool,
-    VCategorySingleTool,
-    VMultiCategorySingleTool,
-    VFreeformTextSingleTool,
   },
   props: {
     dataType: {
@@ -216,24 +162,15 @@ export default Vue.extend({
       default: null,
     },
   },
-  data() {
-    return { DataType, LabelTaskType };
-  },
   computed: {
-    includesObjectDetection(): boolean {
-      return this.labelTasks.includes(LabelTaskType.ObjectDetection);
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.singleTool !== undefined);
     },
     includesSegmentation(): boolean {
       return this.labelTasks.includes(LabelTaskType.Segmentation);
-    },
-    includesClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.Classification);
-    },
-    includesMultiLabelClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
-    },
-    includesFreeformText(): boolean {
-      return this.labelTasks.includes(LabelTaskType.FreeformText);
     },
     classesNotEmpty(): boolean {
       return this.classes.length !== 0;

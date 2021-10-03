@@ -4,8 +4,8 @@
       :n-rows="nRows"
       :n-columns="nColumns"
       @set:matrix-shape="onSetMatrixShape"
-      @window:minimize="onWindowMinimize"
-      @window:pin="onWindowPin"
+      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
+      @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
     <div
@@ -70,7 +70,6 @@ import {
   ILabel,
   ILabelCategory,
   ProjectionMethodType,
-  TaskWindow,
 } from '@/commons/types';
 import { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
@@ -202,14 +201,6 @@ export default Vue.extend({
     this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
-    onWindowMinimize(): void {
-      const newValue: Partial<TaskWindow> = { isMinimized: true };
-      this.$emit('edit-task-window', newValue);
-    },
-    onWindowPin(): void {
-      const newValue: Partial<TaskWindow> = { isPinned: true };
-      this.$emit('edit-task-window', newValue);
-    },
     onSetMatrixShape(nRows: number, nColumns: number): void {
       this.nRows = nRows;
       this.nColumns = nColumns;

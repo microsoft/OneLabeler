@@ -38,27 +38,21 @@
         :width="'100%'"
         @scroll="onScroll"
       />
-      <TheTextSpanList
-        v-if="includesSpanClassification"
-        :label-tasks="labelTasks"
-        :label-spans="labelSpans"
+      <component
+        v-for="(setup, i) in taskSetups"
+        :key="i"
+        :is="setup.panel"
+        :label="label"
         :label2color="label2color"
+        :label-tasks="labelTasks"
         :selected-span="selectedSpan"
+        :class="{ 'ml-0': i !== 0 }"
         class="ma-2"
         style="flex: 1 1 30%"
+        @upsert:label="$emit('upsert:label', $event)"
+        @select:span="onSelectLabelSpan"
         @remove:span="$emit('remove:span', $event)"
-        @select:span="onSelectLabelSpan"
         @create:relation="$emit('create:relation', $event)"
-      />
-      <TheRelationList
-        v-if="includesAnnotationRelation"
-        :label-relations="labelRelations"
-        :label-spans="labelSpans"
-        :label2color="label2color"
-        :selected-span="selectedSpan"
-        class="ma-2 ml-0"
-        style="flex: 1 1 30%"
-        @select:span="onSelectLabelSpan"
         @remove:relation="$emit('remove:relation', $event)"
       />
     </div>
@@ -74,13 +68,12 @@ import {
   DataType,
   IText,
   ILabel,
-  ILabelRelation,
   ILabelTextSpan,
+  ILabelTaskTypeSetup,
   LabelTaskType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
-import TheRelationList from './TheRelationList.vue';
-import TheTextSpanList from './TheTextSpanList.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 type Box = {
   top: number;
@@ -92,10 +85,6 @@ type Box = {
 
 export default Vue.extend({
   name: 'TheTextSpanBoardBody',
-  components: {
-    TheRelationList,
-    TheTextSpanList,
-  },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -130,6 +119,12 @@ export default Vue.extend({
     };
   },
   computed: {
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.panel !== undefined);
+    },
     component(): VueConstructor | null {
       const { dataType } = this;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
@@ -138,15 +133,6 @@ export default Vue.extend({
     },
     labelSpans(): ILabelTextSpan[] | null {
       return this.label?.spans ?? null;
-    },
-    labelRelations(): ILabelRelation[] | null {
-      return this.label?.relations ?? null;
-    },
-    includesSpanClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.SpanClassification);
-    },
-    includesAnnotationRelation(): boolean {
-      return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
     },
   },
   watch: {

@@ -4,6 +4,7 @@ import {
   IDataObject,
   ILabel,
   IStatus,
+  LabelTaskType,
 } from '@/commons/types';
 
 export type ProjectData = {

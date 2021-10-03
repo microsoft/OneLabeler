@@ -8,11 +8,11 @@
       v-for="btn in objectShapeButtons"
       :key="btn.mouseOperation"
       :title="btn.title"
-      :disabled="classesEmpty"
+      :disabled="categoriesEmpty"
       class="px-1"
       icon
       x-small
-      @click="onSetMouseOperation(btn.mouseOperation)"
+      @click="$emit('set:mouse-operation', btn.mouseOperation)"
     >
       <v-icon
         v-if="btn.icon === $vuetify.icons.values.drawPolygon"
@@ -59,9 +59,9 @@ export enum MouseOperationType {
 }
 
 export default Vue.extend({
-  name: 'VSingleTool',
+  name: 'VObjectShapeButtonToggle',
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
     },
@@ -102,8 +102,8 @@ export default Vue.extend({
     };
   },
   computed: {
-    classesEmpty(): boolean {
-      return this.classes.length === 0;
+    categoriesEmpty(): boolean {
+      return this.categories.length === 0;
     },
     objectShapeIndex(): number | null {
       const { mouseOperation, objectShapeButtons } = this;
@@ -111,11 +111,6 @@ export default Vue.extend({
         .findIndex((d) => d.mouseOperation === mouseOperation);
       if (index === -1) return null;
       return index;
-    },
-  },
-  methods: {
-    onSetMouseOperation(mouseOperation: MouseOperationType): void {
-      this.$emit('set:mouse-operation', mouseOperation);
     },
   },
 });

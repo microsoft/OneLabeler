@@ -2,30 +2,32 @@ import {
   IDataTypeSetup,
   UploadTarget,
 } from '@/commons/types';
-import audioTypeSetup from './audio';
-import imageTypeSetup from './image';
-import videoTypeSetup from './video';
-import youtubeVideoTypeSetup from './youtube-video';
-import pointCloudTypeSetup from './point-cloud';
-import webpageTypeSetup from './webpage';
-// import webpageTypeSetup from './webpage/index-minimal';
-import textTypeSetup from './text';
-// import textWithSpansTypeSetup from './text-with-spans';
-// import textWithTableTypeSetup from './text-with-table';
-// import textWithVideoTypeSetup from './text-with-video';
-// import MI3BlockTypeSetup from './discrete-bar-chart-block';
-// import MI3BlockTypeSetup from './discrete-bar-chart-block/index-minimal';
+import audio from './audio';
+import image from './image';
+import video from './video';
+import youtubeVideo from './youtube-video';
+import pointCloud from './point-cloud';
+import webpage from './webpage';
+// import webpage from './webpage/index-minimal';
+import text from './text';
+// import textWithSpans from './text-with-spans';
+// import textWithTable from './text-with-table';
+// import textWithVideo from './text-with-video';
+// import MI3Block from './discrete-bar-chart-block';
+// import MI3Block from './discrete-bar-chart-block/index-minimal';
+import table from './table';
 
 export default [
-  audioTypeSetup,
-  imageTypeSetup,
-  videoTypeSetup,
-  youtubeVideoTypeSetup,
-  pointCloudTypeSetup,
-  webpageTypeSetup,
-  textTypeSetup,
-  // textWithSpansTypeSetup,
-  // textWithTableTypeSetup,
-  // textWithVideoTypeSetup,
-  // MI3BlockTypeSetup,
+  audio,
+  image,
+  video,
+  youtubeVideo,
+  pointCloud,
+  webpage,
+  text,
+  // textWithSpans,
+  // textWithTable,
+  // textWithVideo,
+  // MI3Block,
+  table,
 ] as IDataTypeSetup<UploadTarget>[];

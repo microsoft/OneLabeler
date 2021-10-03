@@ -21,7 +21,7 @@
         Dashboard
       </v-btn>
     </template>
-    <TheDashboardPanel @click:close="onClickClose" />
+    <TheDashboardPanel @click:close="dialog = false" />
   </v-dialog>
 </template>
 
@@ -31,18 +31,9 @@ import TheDashboardPanel from '../TheDashboardPanel/TheDashboardPanel.vue';
 
 export default Vue.extend({
   name: 'TheNavBarViewDashboardDialogButton',
-  components: {
-    TheDashboardPanel,
-  },
+  components: { TheDashboardPanel },
   data() {
-    return {
-      dialog: false,
-    };
-  },
-  methods: {
-    onClickClose(): void {
-      this.dialog = false;
-    },
+    return { dialog: false };
   },
 });
 </script>

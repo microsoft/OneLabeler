@@ -3,15 +3,12 @@
     <TheTimeSpanBoardHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
-      :classes="classes"
       :category-tasks="categoryTasks"
       :label2color="label2color"
       :label="label"
-      @set:label-category="onSetLabelCategory"
-      @set:label-multi-category="onSetLabelMultiCategory"
-      @set:label-text="onSetLabelText"
-      @window:minimize="onWindowMinimize"
-      @window:pin="onWindowPin"
+      @upsert:label="onUpsertLabel"
+      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
+      @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; flex-direction: column">
@@ -25,7 +22,6 @@
             :label-tasks="labelTasks"
             :data-object="dataObject"
             :label="label"
-            :classes="classes"
             :category-tasks="categoryTasks"
             :selected-slot="selectedSlot"
             :selected-span="selectedSpan"
@@ -33,17 +29,21 @@
             class="px-2 pb-2"
             style="flex: 1 1 auto"
             @create:span="onCreateLabelSpan"
-            @select:span="onSelectLabelSpan"
-            @select:slot="onSelectSlot"
+            @select:span="selectedSpan = $event"
+            @select:slot="selectedSlot = $event"
             @update:span="onUpdateLabelSpan"
-            @set:label-text="onSetLabelText"
           />
-          <VFreeformTextSingleToolPanel
-            v-if="includesFreeformText"
-            :label-text="label.text"
-            class="my-2 mr-2 pa-2"
+          <component
+            v-for="(setup, i) in taskSetups"
+            :key="i"
+            :is="setup.panel"
+            :label="label"
+            :categories="filterClassesByLabelTask(setup.type)"
+            :label2color="label2color"
+            :disabled="label === null"
+            class="pr-2 ma-2"
             style="flex: 1 1 25%"
-            @set:label-text="onSetLabelText"
+            @upsert:label="onUpsertLabel"
           />
         </div>
         <template v-if="enablePagination">
@@ -72,21 +72,18 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
   ILabelTimeSpan,
-  ILabelText,
   LabelTaskType,
   TaskWindow,
+  ILabelTaskTypeSetup,
 } from '@/commons/types';
-import VFreeformTextSingleToolPanel from '@/components/VLabelFreeformText/VSingleToolPanel.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import TheTimeSpanBoardHeader from './TheTimeSpanBoardHeader.vue';
 import TheTimeSpanBoardBody from './TheTimeSpanBoardBody.vue';
 
 export default Vue.extend({
   name: 'TheTimeSpanBoard',
   components: {
-    VFreeformTextSingleToolPanel,
     TheTimeSpanBoardHeader,
     TheTimeSpanBoardBody,
   },
@@ -111,10 +108,6 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -132,8 +125,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    includesFreeformText(): boolean {
-      return this.labelTasks.includes(LabelTaskType.FreeformText);
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.panel !== undefined);
     },
     showDataObject(): boolean {
       const { dataObjects } = this;
@@ -198,12 +194,6 @@ export default Vue.extend({
       const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(labelSpan: ILabelTimeSpan | null): void {
-      this.selectedSpan = labelSpan;
-    },
-    onSelectSlot(category: Category | null): void {
-      this.selectedSlot = category;
-    },
     onUpdateLabelSpan(newValue: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
@@ -226,34 +216,20 @@ export default Vue.extend({
       const spans = labelSpans.filter((d) => d.uuid !== labelSpan.uuid);
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSetLabelCategory(category: ILabelCategory): void {
+    onUpsertLabel(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { category };
-      this.$emit('user-edit-label', uuid, newValue);
+      this.$emit('user-edit-label', uuid, partialLabel);
     },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { multiCategory };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelText(text: ILabelText): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { text };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onWindowMinimize(): void {
-      const newValue: Partial<TaskWindow> = { isMinimized: true };
-      this.$emit('edit-task-window', newValue);
-    },
-    onWindowPin(): void {
-      const newValue: Partial<TaskWindow> = { isPinned: true };
-      this.$emit('edit-task-window', newValue);
+    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const classesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return classesFiltered;
     },
   },
 });

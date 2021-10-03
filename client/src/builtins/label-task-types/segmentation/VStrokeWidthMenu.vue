@@ -11,14 +11,14 @@
         <div style="display: flex; flex-direction: row; align-items: center">
           Size
           <svg
-            class="pl-1"
-            width="30px"
             :height="`${strokeWidth + 1}px`"
+            width="30px"
+            class="pl-1"
           >
             <rect
               :height="strokeWidth"
-              width="30"
               :fill="!disabled ? 'black' : 'rgba(0,0,0,.26)'"
+              width="30"
             />
           </svg>
         </div>
@@ -26,18 +26,18 @@
     </template>
     <v-list dense>
       <v-list-item
-        v-for="(entry, i) in strokeWidthMenu.options"
+        v-for="(width, i) in widths"
         :key="i"
         style="min-height: 30px"
-        @click="onSetStrokeWidth(entry)"
+        @click="$emit('set:stroke-width', width)"
       >
         <svg
           width="60px"
           height="18px"
         >
           <rect
-            :y="9 - strokeWidthMenu.options[i]/2"
-            :height="strokeWidthMenu.options[i]"
+            :y="9 - width/2"
+            :height="width"
             width="60"
             fill="black"
           />
@@ -64,16 +64,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      strokeWidthMenu: {
-        options: [1, 5, 15],
-        optionsText: ['1', '5', '15'],
-      },
+      widths: [1, 5, 15],
     };
-  },
-  methods: {
-    onSetStrokeWidth(strokeWidth: number): void {
-      this.$emit('set:stroke-width', strokeWidth);
-    },
   },
 });
 </script>

@@ -25,7 +25,7 @@
         :key="i"
         class="subtitle-2"
         style="min-height: 30px"
-        @click="onSetStrokeShape(option)"
+        @click="$emit('set:stroke-shape', option)"
       >
         {{ strokeShapeMenu.optionsText[i] }}
         <div style="flex-grow: 1" />
@@ -75,11 +75,6 @@ export default Vue.extend({
       const { strokeShape, strokeShapeMenu } = this;
       const index = strokeShapeMenu.options.findIndex((d) => d === strokeShape);
       return index;
-    },
-  },
-  methods: {
-    onSetStrokeShape(strokeShape: StrokeShapeType): void {
-      this.$emit('set:stroke-shape', strokeShape);
     },
   },
 });

@@ -2,9 +2,9 @@
   <div style="display: flex">
     <!-- object shape toggle -->
     <VObjectShapeButtonToggle
-      :classes="classes"
+      :categories="categories"
       :mouse-operation="mouseOperation"
-      @set:mouse-operation="onSetMouseOperation"
+      @set:mouse-operation="$emit('set:mouse-operation', $event)"
     />
 
     <!-- If segmentation is enabled, use the color menu of the segmentation toolbar. -->
@@ -16,13 +16,13 @@
 
       <!-- stroke color menu -->
       <VStrokeColorMenu
-        :classes="classes"
+        :categories="categories"
         :stroke-label="strokeLabel"
         :label2color="label2color"
         :disabled="mouseOperation === MouseOperationType.PanAndZoom
           || mouseOperation === MouseOperationType.EditShape
           || mouseOperation === MouseOperationType.PaintErase"
-        @set:stroke-label="onSetStrokeLabel"
+        @set:stroke-label="$emit('set:stroke-label', $event)"
       />
     </template>
   </div>
@@ -32,10 +32,9 @@
 import Vue, { PropType } from 'vue';
 import {
   Category,
-  ILabelCategory,
   LabelTaskType,
 } from '@/commons/types';
-import VStrokeColorMenu from '@/components/VLabelMask2D/VStrokeColorMenu.vue';
+import VStrokeColorMenu from '@/builtins/label-task-types/segmentation/VStrokeColorMenu.vue';
 import VObjectShapeButtonToggle from './VObjectShapeButtonToggle.vue';
 
 export enum MouseOperationType {
@@ -53,17 +52,9 @@ export default Vue.extend({
     VObjectShapeButtonToggle,
   },
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
-    },
-    mouseOperation: {
-      type: String as PropType<MouseOperationType>,
-      required: true,
-    },
-    strokeLabel: {
-      type: String as PropType<ILabelCategory | null>,
-      default: null,
     },
     label2color: {
       type: Function as PropType<(label: string) => string>,
@@ -73,6 +64,14 @@ export default Vue.extend({
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
+    mouseOperation: {
+      type: String as PropType<MouseOperationType>,
+      required: true,
+    },
+    strokeLabel: {
+      type: String as PropType<Category | null>,
+      default: null,
+    },
   },
   data() {
     return { MouseOperationType };
@@ -80,14 +79,6 @@ export default Vue.extend({
   computed: {
     includesSegmentation(): boolean {
       return this.labelTasks.includes(LabelTaskType.Segmentation);
-    },
-  },
-  methods: {
-    onSetMouseOperation(mouseOperation: MouseOperationType): void {
-      this.$emit('set:mouse-operation', mouseOperation);
-    },
-    onSetStrokeLabel(strokeLabel: Category): void {
-      this.$emit('set:stroke-label', strokeLabel);
     },
   },
 });

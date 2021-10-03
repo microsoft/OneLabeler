@@ -1,4 +1,5 @@
 <template>
+  <!-- The create/edit freeform text annotation button. -->
   <v-dialog
     v-model="dialog"
     persistent
@@ -79,13 +80,13 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { ILabelText } from '@/commons/types';
+import { ILabel, ILabelText } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VSingleTool',
   props: {
-    labelText: {
-      type: Object as PropType<ILabelText | null>,
+    label: {
+      type: Object as PropType<ILabel | null>,
       default: null,
     },
     disabled: {
@@ -105,13 +106,13 @@ export default Vue.extend({
   },
   computed: {
     buttonTitle(): string {
-      const { labelText } = this;
-      if (labelText === null) return 'note';
-      return `note: ${labelText.content}`;
+      const { label } = this;
+      if (label === null) return 'note';
+      return `note: ${label?.text?.content}`;
     },
   },
   watch: {
-    labelText() {
+    label() {
       this.syncLabel();
     },
   },
@@ -121,9 +122,10 @@ export default Vue.extend({
   methods: {
     onSetLabelText(): void {
       const text: ILabelText = { content: this.text };
+      const partialLabel: Partial<ILabel> = { text };
       this.dialog = false;
       this.syncLabel();
-      this.$emit('set:label-text', text);
+      this.$emit('upsert:label', partialLabel);
     },
     onClickCloseDialog(): void {
       this.dialog = false;
@@ -131,7 +133,7 @@ export default Vue.extend({
       this.$emit('click:close');
     },
     syncLabel(): void {
-      this.text = this.labelText?.content ?? null;
+      this.text = this.label?.text?.content ?? null;
     },
   },
 });

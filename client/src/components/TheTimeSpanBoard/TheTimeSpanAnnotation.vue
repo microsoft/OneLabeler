@@ -137,10 +137,6 @@ export default Vue.extend({
       type: Object as PropType<{ left: number, width: number } | null>,
       default: null,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,

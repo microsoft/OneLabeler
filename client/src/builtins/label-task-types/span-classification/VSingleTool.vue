@@ -1,13 +1,16 @@
 <template>
   <div style="display: flex">
     <v-btn
-      v-for="category in classes"
+      v-for="(category, i) in categories"
       :key="category"
-      class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
-      :class="{ 'white--text': category === brushCategory }"
+      class="view-header-button subtitle-2 elevation-0 text-none"
+      :class="{
+        'white--text': isCategorySelected(category),
+        'ml-1': i !== 0,
+      }"
       :style="{
         'border-color': '#bbb',
-        'background-color': category === brushCategory
+        'background-color': isCategorySelected(category)
           ? label2color(category)
           : undefined,
       }"
@@ -20,7 +23,7 @@
         class="pl-2"
         aria-hidden="true"
         small
-        :style="`color: ${label2color(category)}`"
+        :style="{ color: label2color(category) }"
       >
         $vuetify.icons.values.square
       </v-icon>
@@ -30,31 +33,32 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
-  Category,
-  ILabelCategory,
-} from '@/commons/types';
+import { Category } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VSingleTool',
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
-    },
-    brushCategory: {
-      type: String as PropType<ILabelCategory | null>,
-      default: null,
     },
     label2color: {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+    brushCategory: {
+      type: String as PropType<Category | null>,
+      default: null,
+    },
   },
   methods: {
-    onSetBrushCategory(category: ILabelCategory): void {
+    onSetBrushCategory(category: Category): void {
       const brush = category === this.brushCategory ? null : category;
+      // TODO: make the component emit unified message format used by all the label tasks
       this.$emit('set:brush-category', brush);
+    },
+    isCategorySelected(category: Category): boolean {
+      return this.brushCategory === category;
     },
   },
 });

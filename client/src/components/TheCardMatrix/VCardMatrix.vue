@@ -23,18 +23,15 @@
             :label-tasks="labelTasks"
             :data-object="dataObjects[i]"
             :label="labels[i]"
-            :status="statuses[i]"
-            :classes="classes"
-            :category-tasks="categoryTasks"
             :label2color="label2color"
+            :status="statuses[i]"
+            :category-tasks="categoryTasks"
             :title="''"
             :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
             :height="Math.max(cardHeight - 2 * padding, 0)"
             :width="Math.max(cardWidth - 2 * padding, 0)"
             @click:card="$emit('click:card', dataObjects[i], $event)"
-            @set:label-category="$emit('set:label-category', dataObjects[i], $event)"
-            @set:label-multi-category="$emit('set:label-multi-category', dataObjects[i], $event)"
-            @set:label-text="$emit('set:label-text', dataObjects[i], $event)"
+            @upsert:label="$emit('upsert:label', dataObjects[i].uuid, $event)"
           />
         </div>
       </div>
@@ -103,10 +100,6 @@ export default defineComponent({
     },
     statuses: {
       type: Array as PropType<StatusType[]>,
-      required: true,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
       required: true,
     },
     categoryTasks: {

@@ -60,9 +60,7 @@ import VEditableService from './VEditableService.vue';
 
 export default Vue.extend({
   name: 'TheDataManagementView',
-  components: {
-    VEditableService,
-  },
+  components: { VEditableService },
   data() {
     return {
       classNameOfPanel: 'parameter-panel',

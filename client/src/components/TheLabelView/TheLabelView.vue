@@ -23,7 +23,6 @@
 import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
-  Category,
   DataType,
   IDataObject,
   IDataObjectStorage,
@@ -192,21 +191,6 @@ export default Vue.extend({
         ...newValue,
       });
     },
-    getDefaultLabel(): Omit<ILabel, 'uuid'> {
-      const unlabeledMark = this.unlabeledMark as Category;
-      const labelTasks = this.labelTasks as LabelTaskType[];
-      return {
-        category: labelTasks.includes(LabelTaskType.Classification)
-          ? unlabeledMark
-          : undefined,
-        shapes: labelTasks.includes(LabelTaskType.ObjectDetection)
-          ? []
-          : undefined,
-        mask: labelTasks.includes(LabelTaskType.Segmentation)
-          ? { content: null }
-          : undefined,
-      };
-    },
     async getQueriedDataObjects(): Promise<IDataObject[]> {
       const queryUuids = this.queryUuids as string[];
       const dataObjects = this.dataObjects as IDataObjectStorage | null;
@@ -220,9 +204,8 @@ export default Vue.extend({
 
       const queriedLabels: ILabel[] = (await labels.getBulk(queryUuids))
         .map((d, i) => {
-          const defaultLabel = this.getDefaultLabel();
-          if (d === undefined) return { uuid: queryUuids[i], ...defaultLabel };
-          return { ...clean(defaultLabel), ...clean(d) };
+          if (d === undefined) return { uuid: queryUuids[i] };
+          return { ...clean(d) };
         });
       return queriedLabels;
     },

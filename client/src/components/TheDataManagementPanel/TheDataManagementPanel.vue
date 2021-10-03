@@ -17,7 +17,7 @@
         icon
         tile
         small
-        @click="onClickClose"
+        @click="$emit('click:close')"
       >
         <v-icon
           aria-hidden="true"
@@ -42,13 +42,6 @@ import TheDataManagementView from './TheDataManagementView.vue';
 
 export default Vue.extend({
   name: 'TheDashboardPanel',
-  components: {
-    TheDataManagementView,
-  },
-  methods: {
-    onClickClose(): void {
-      this.$emit('click:close');
-    },
-  },
+  components: { TheDataManagementView },
 });
 </script>

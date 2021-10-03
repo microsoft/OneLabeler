@@ -88,24 +88,25 @@
 import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import {
+  ILabel,
   ILabelRelation,
   ILabelTextSpan,
   LabelTaskType,
 } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'TheTextSpanList',
+  name: 'VPanel',
   props: {
-    labelTasks: {
-      type: Array as PropType<LabelTaskType[]>,
-      required: true,
-    },
-    labelSpans: {
-      type: Array as PropType<ILabelTextSpan[] | null>,
+    label: {
+      type: Object as PropType<ILabel | null>,
       default: null,
     },
     label2color: {
       type: Function as PropType<(label: string) => string>,
+      required: true,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
     selectedSpan: {
@@ -119,6 +120,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    labelSpans(): ILabelTextSpan[] | null {
+      return this.label?.spans ?? null;
+    },
     includesAnnotationRelation(): boolean {
       return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
     },

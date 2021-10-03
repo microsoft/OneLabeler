@@ -83,6 +83,7 @@
                 <v-chip
                   v-bind="data.attrs"
                   :input-value="data.selected"
+                  style="text-transform: capitalized"
                   small
                   label
                   outlined
@@ -120,6 +121,7 @@ import {
   WorkflowNode,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 const getValidLabelTasks = (dataType: DataType): LabelTaskType[] => {
   const setup = dataTypeSetups.find((d) => d.type === dataType);
@@ -157,30 +159,15 @@ export default Vue.extend({
       if (this.node === null) return [];
       return (this.node.value as { labelTasks: LabelTaskType[] }).labelTasks;
     },
-    validLabelTasks(): LabelTaskType[] {
+    validLabelTasks(): (LabelTaskType | string)[] {
       const dataType = this.selectedDataType;
-      const tasks = [
-        LabelTaskType.Classification,
-        LabelTaskType.MultiLabelClassification,
-        LabelTaskType.FreeformText,
-        LabelTaskType.ObjectDetection,
-        LabelTaskType.Segmentation,
-        LabelTaskType.SpanClassification,
-        LabelTaskType.AnnotationRelation,
-      ];
-      return dataType === null ? tasks : getValidLabelTasks(dataType);
+      const labelTaskTypes = labelTaskTypeSetups.map((d) => d.type);
+      return dataType === null ? labelTaskTypes : getValidLabelTasks(dataType);
     },
     menuOfLabelTask() {
       const { validLabelTasks } = this;
-      const options = [
-        { value: LabelTaskType.Classification, label: 'Classification' },
-        { value: LabelTaskType.MultiLabelClassification, label: 'Multi Label Classification' },
-        { value: LabelTaskType.FreeformText, label: 'Freeform Text' },
-        { value: LabelTaskType.ObjectDetection, label: 'Object Detection' },
-        { value: LabelTaskType.Segmentation, label: 'Segmentation' },
-        { value: LabelTaskType.SpanClassification, label: 'Span Tagging' },
-        { value: LabelTaskType.AnnotationRelation, label: 'Relation' },
-      ];
+      const options = labelTaskTypeSetups
+        .map((d) => ({ value: d.type, label: d.label }));
       return {
         label: 'Label Tasks',
         options: options.filter((d) => validLabelTasks.indexOf(d.value) >= 0),

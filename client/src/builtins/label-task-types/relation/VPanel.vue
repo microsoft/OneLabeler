@@ -20,6 +20,7 @@
         style="display: flex; flex-direction: row; font-size: 10px;"
         outlined
       >
+        <!-- The source span on the left. -->
         <div
           class="pa-1"
           :style="{
@@ -36,6 +37,7 @@
             :label2color="label2color"
           />
         </div>
+
         <v-icon
           class="px-1"
           aria-hidden="true"
@@ -43,6 +45,8 @@
         >
           $vuetify.icons.values.arrowRight
         </v-icon>
+
+        <!-- The target span on the right. -->
         <div
           class="pa-1"
           :style="{
@@ -59,6 +63,8 @@
             :label2color="label2color"
           />
         </div>
+
+        <!-- Delete relation button. -->
         <v-btn
           title="remove"
           class="view-header-button elevation-0 ml-1"
@@ -66,7 +72,7 @@
           x-small
           icon
           outlined
-          @click="onRemoveLabelRelation(labelRelation)"
+          @click="$emit('remove:relation', labelRelation)"
         >
           <v-icon
             aria-hidden="true"
@@ -83,21 +89,18 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import {
+  ILabel,
   ILabelRelation,
   ILabelTextSpan,
 } from '@/commons/types';
 import VLabelSpan from './VLabelSpan.vue';
 
 export default Vue.extend({
-  name: 'TheTextSpanList',
+  name: 'VPanel',
   components: { VLabelSpan },
   props: {
-    labelRelations: {
-      type: Array as PropType<ILabelRelation[] | null>,
-      default: null,
-    },
-    labelSpans: {
-      type: Array as PropType<ILabelTextSpan[] | null>,
+    label: {
+      type: Object as PropType<ILabel | null>,
       default: null,
     },
     label2color: {
@@ -110,6 +113,12 @@ export default Vue.extend({
     },
   },
   computed: {
+    labelSpans(): ILabelTextSpan[] | null {
+      return this.label?.spans ?? null;
+    },
+    labelRelations(): ILabelRelation[] | null {
+      return this.label?.relations ?? null;
+    },
     uuid2span(): Record<string, ILabelTextSpan> {
       const { labelSpans } = this;
       const uuid2span: Record<string, ILabelTextSpan> = {};
@@ -123,9 +132,6 @@ export default Vue.extend({
   methods: {
     onSelectLabelSpan(labelSpan: ILabelTextSpan): void {
       this.$emit('select:span', labelSpan);
-    },
-    onRemoveLabelRelation(labelRelation: ILabelRelation): void {
-      this.$emit('remove:relation', labelRelation);
     },
     getSpanByUuid(uuid: string): ILabelTextSpan | null {
       const { uuid2span } = this;

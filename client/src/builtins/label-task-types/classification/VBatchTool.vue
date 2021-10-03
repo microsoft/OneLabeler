@@ -1,9 +1,11 @@
 <template>
+  <!-- The data object label category menu. -->
   <v-menu offset-y>
     <template #activator="{ on }">
       <v-btn
+        :disabled="disabled"
+        class="view-header-button subtitle-2 text-none"
         x-small
-        class="view-header-button subtitle-2 ml-2"
         v-on="on"
       >
         Set Batch Labels
@@ -11,18 +13,18 @@
     </template>
     <v-list dense>
       <v-list-item
-        v-for="(category, i) in [...classes, unlabeledMark]"
+        v-for="(category, i) in [...categories, unlabeledMark]"
         :key="i"
         class="subtitle-2"
         style="min-height: 30px"
-        @click="onSetCategory(category)"
+        @click="$emit('upsert-bulk:label', { category })"
       >
         {{ category }}
         <div style="flex-grow: 1" />
         <v-icon
           aria-hidden="true"
           small
-          :style="`color: ${label2color(category)}`"
+          :style="{ color: label2color(category) }"
         >
           $vuetify.icons.values.square
         </v-icon>
@@ -38,7 +40,7 @@ import { Category } from '@/commons/types';
 export default Vue.extend({
   name: 'VBatchTool',
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
     },
@@ -53,11 +55,6 @@ export default Vue.extend({
     disabled: {
       type: Boolean,
       default: false,
-    },
-  },
-  methods: {
-    onSetCategory(category: Category): void {
-      this.$emit('set:category', category);
     },
   },
 });

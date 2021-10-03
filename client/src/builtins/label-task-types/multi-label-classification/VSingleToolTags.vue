@@ -1,39 +1,42 @@
 <template>
-  <v-menu offset-y>
-    <template #activator="{ on }">
-      <v-btn
-        :disabled="disabled"
-        class="view-header-button subtitle-2 text-none"
-        x-small
-        v-on="on"
+  <div style="display: flex">
+    <v-btn
+      v-for="(category, i) in categories"
+      :key="category"
+      class="view-header-button subtitle-2 elevation-0 text-none"
+      :class="{
+        'white--text': isCategorySelected(category),
+        'ml-1': i !== 0,
+      }"
+      :style="{
+        'border-color': '#bbb',
+        'background-color': isCategorySelected(category)
+          ? '#bbb'
+          : undefined,
+      }"
+      x-small
+      outlined
+      @click="onClickLabelCategory(category)"
+    >
+      {{ category }}
+      <v-icon
+        class="pl-2"
+        aria-hidden="true"
+        small
+        style="color: #bbb"
       >
-        Multi-Label
-      </v-btn>
-    </template>
-    <v-list dense>
-      <v-list-item
-        v-for="(category, i) in classes"
-        :key="i"
-        class="subtitle-2 pr-4 pl-2"
-        style="min-height: 30px"
-        @click.stop="onClickLabelCategory(category)"
-      >
-        <v-checkbox
-          :value="isCategorySelected(category)"
-          :input-value="isCategorySelected(category)"
-          class="py-0 ma-0"
-          dense
-          hide-details
-        />
-        {{ category }}
-      </v-list-item>
-    </v-list>
-  </v-menu>
+        $vuetify.icons.values.square
+      </v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, ILabelMultiCategory } from '@/commons/types';
+import {
+  Category,
+  ILabelMultiCategory,
+} from '@/commons/types';
 
 export default Vue.extend({
   name: 'VSingleTool',
@@ -42,7 +45,7 @@ export default Vue.extend({
       type: Array as PropType<ILabelMultiCategory | null>,
       default: null,
     },
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
     },

@@ -22,7 +22,6 @@
       :duration="duration"
       :current-time="currentTime"
       :slot-client-x-range="slotClientXRange"
-      :classes="classes"
       :category-tasks="categoryTasks"
       :selected-slot="selectedSlot"
       :spans="spans"
@@ -69,10 +68,6 @@ export default Vue.extend({
     label: {
       type: Object as PropType<ILabel | null>,
       default: null,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
     },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,

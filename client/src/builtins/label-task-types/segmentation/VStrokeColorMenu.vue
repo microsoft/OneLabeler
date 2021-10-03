@@ -12,14 +12,12 @@
         x-small
         v-on="on"
       >
-        {{ `${strokeLabelMenu.length !== 0
-          ? strokeLabelMenu[strokeLabelIndex].category : ''}` }}
+        {{ strokeLabel }}
         <v-spacer />
         <v-icon
-          v-if="strokeLabelMenu.length !== 0"
           aria-hidden="true"
           small
-          :style="`color: ${strokeLabelMenu[strokeLabelIndex].color}`"
+          :style="{ color: label2color(strokeLabel) }"
         >
           $vuetify.icons.values.square
         </v-icon>
@@ -27,20 +25,20 @@
     </template>
     <v-list dense>
       <v-list-item
-        v-for="option in strokeLabelMenu"
-        :key="option.category"
+        v-for="category in categories"
+        :key="category"
         class="subtitle-2"
         style="min-height: 30px"
-        @click="onSetStrokeLabel(option.category)"
+        @click="$emit('set:stroke-label', category)"
       >
-        {{ `${option.category}` }}
+        {{ category }}
         <div style="flex-grow: 1" />
         <v-icon
           class="pl-1"
           style="float: right"
           aria-hidden="true"
           small
-          :style="`color: ${option.color}`"
+          :style="{ color: label2color(category) }"
         >
           $vuetify.icons.values.square
         </v-icon>
@@ -62,45 +60,26 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { Category, ILabelCategory } from '@/commons/types';
+import { Category } from '@/commons/types';
 
 export default Vue.extend({
   name: 'VStrokeColorMenu',
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
-    },
-    strokeLabel: {
-      type: String as PropType<ILabelCategory | null>,
-      default: null,
     },
     label2color: {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+    strokeLabel: {
+      type: String as PropType<Category | null>,
+      default: null,
+    },
     disabled: {
       type: Boolean as PropType<boolean>,
       default: false,
-    },
-  },
-  computed: {
-    strokeLabelMenu(): { category: Category, color: string }[] {
-      const { classes, label2color } = this;
-      return classes.map((d: Category) => ({
-        category: d,
-        color: label2color(d),
-      }));
-    },
-    strokeLabelIndex(): number {
-      const { strokeLabel, strokeLabelMenu } = this;
-      const index = strokeLabelMenu.findIndex((d) => d.category === strokeLabel);
-      return index;
-    },
-  },
-  methods: {
-    onSetStrokeLabel(strokeLabel: Category): void {
-      this.$emit('set:stroke-label', strokeLabel);
     },
   },
 });

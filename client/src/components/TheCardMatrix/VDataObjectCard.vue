@@ -17,14 +17,11 @@
       :label-tasks="labelTasks"
       :label="label"
       :status="status"
-      :classes="classes"
       :category-tasks="categoryTasks"
+      :label2color="label2color"
       :title="title"
-      :button-color="getColor(label)"
       :style="{ 'height': `${headerHeight}px` }"
-      @set:label-category="$emit('set:label-category', $event)"
-      @set:label-multi-category="$emit('set:label-multi-category', $event)"
-      @set:label-text="$emit('set:label-text', $event)"
+      @upsert:label="$emit('upsert:label', $event)"
     />
     <div
       pointer-events="none"
@@ -90,10 +87,6 @@ export default Vue.extend({
       type: String as PropType<StatusType>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -133,15 +126,6 @@ export default Vue.extend({
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;
-    },
-  },
-  methods: {
-    getColor(label: ILabel): string | null {
-      const { label2color } = this;
-      if (label === undefined
-        || label.category === undefined
-        || label2color === null) return null;
-      return label2color(label.category);
     },
   },
 });

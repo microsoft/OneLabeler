@@ -3,13 +3,12 @@
     <TheCardMatrixHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
-      :classes="classes"
       :category-tasks="categoryTasks"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
-      @set:label-batch-category="onSetLabelBatchCategory"
-      @window:minimize="onWindowMinimize"
-      @window:pin="onWindowPin"
+      @upsert-bulk:label="onUpsertBulkLabel"
+      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
+      @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; align-items: center;">
@@ -21,15 +20,12 @@
         :data-objects="dataObjects"
         :labels="labels"
         :statuses="statuses"
-        :classes="classes"
         :category-tasks="categoryTasks"
         :selected-uuids="selectedUuids"
         :items-per-row="itemsPerRow"
         :items-per-col="itemsPerCol"
         :label2color="label2color"
-        @set:label-category="onSetLabelCategory"
-        @set:label-multi-category="onSetLabelMultiCategory"
-        @set:label-text="onSetLabelText"
+        @upsert:label="onUpsertLabel"
         @click:card="onClickCard"
       />
       <p
@@ -44,17 +40,15 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
+import { cloneDeep } from 'lodash';
 import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelText,
   LabelTaskType,
   StatusType,
   TaskWindow,
   Category,
-  ILabelMultiCategory,
 } from '@/commons/types';
 import VCardMatrix from './VCardMatrix.vue';
 import TheCardMatrixHeader from './TheCardMatrixHeader.vue';
@@ -90,10 +84,6 @@ export default Vue.extend({
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -121,30 +111,18 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSetLabelBatchCategory(category: Category): void {
+    onUpsertBulkLabel(partialLabel: Partial<ILabel>): void {
       const { selectedUuids, dataObjects } = this;
       // If multi-selection is applied, set the labels for the selected objects.
       const uuids = selectedUuids.length !== 0
         ? selectedUuids
         : dataObjects.map((d) => d.uuid);
       const newValues: Partial<ILabel>[] = new Array(uuids.length)
-        .fill(null).map(() => ({ category }));
+        .fill(null).map(() => cloneDeep(partialLabel));
       this.$emit('user-edit-labels', uuids, newValues);
     },
-    onSetLabelCategory(dataObject: IDataObject, category: ILabelCategory): void {
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { category };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelMultiCategory(dataObject: IDataObject, multiCategory: ILabelMultiCategory): void {
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { multiCategory };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelText(dataObject: IDataObject, text: ILabelText): void {
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { text };
-      this.$emit('user-edit-label', uuid, newValue);
+    onUpsertLabel(uuid: string, partialLabel: Partial<ILabel>): void {
+      this.$emit('user-edit-label', uuid, partialLabel);
     },
     onClickCard(dataObject: IDataObject, e: MouseEvent): void {
       const { uuid } = dataObject;
@@ -158,14 +136,6 @@ export default Vue.extend({
       this.selectedUuids = idx >= 0
         ? [...selectedUuids.slice(0, idx), ...selectedUuids.slice(idx + 1)]
         : [...selectedUuids, uuid];
-    },
-    onWindowMinimize(): void {
-      const newValue: Partial<TaskWindow> = { isMinimized: true };
-      this.$emit('edit-task-window', newValue);
-    },
-    onWindowPin(): void {
-      const newValue: Partial<TaskWindow> = { isPinned: true };
-      this.$emit('edit-task-window', newValue);
     },
   },
 });

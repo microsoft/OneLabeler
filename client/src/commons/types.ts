@@ -396,6 +396,18 @@ export interface IDataTypeSetup<T extends UploadTarget> {
   display: VueConstructor;
 }
 
+/** The label task type setup. */
+export interface ILabelTaskTypeSetup {
+  type: LabelTaskType | string;
+  label: string;
+  /** The UI widget for single object labeling. */
+  singleTool?: VueConstructor;
+  /** The UI widget for batch labeling. */
+  batchTool?: VueConstructor;
+  /** The UI widget for displaying single object label in a dedicated panel. */
+  panel?: VueConstructor;
+}
+
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
   LabelIdeation = 'LabelIdeation',

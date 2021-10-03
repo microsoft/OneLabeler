@@ -63,12 +63,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapState } from 'vuex';
-import { Icon } from '@iconify/vue2';
 import { mount } from 'object-visualizer';
 
 export default Vue.extend({
   name: 'TheVariableInspector',
-  components: { Icon },
   computed: {
     ...mapState([
       'dataObjects',

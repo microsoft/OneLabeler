@@ -94,7 +94,7 @@ export default Vue.extend({
     showInspector: {
       type: Boolean as PropType<boolean>,
       required: true,
-    }
+    },
   },
   data() {
     return {

@@ -8,15 +8,23 @@
       Sampled Objects
     </template>
     <template #tools>
-      <template v-if="includesClassification">
-        <!-- The data object label menu. -->
-        <VCategoryBatchTool
-          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
+      <div
+        v-for="(setup, i) in taskSetups"
+        :key="i"
+        style="display: flex"
+      >
+        <v-divider
+          class="mx-1"
+          vertical
+        />
+        <component
+          :is="setup.batchTool"
+          :categories="filterClassesByLabelTask(setup.type)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
-          @set:category="$emit('set:label-batch-category', $event)"
+          @upsert-bulk:label="$emit('upsert-bulk:label', $event)"
         />
-      </template>
+      </div>
     </template>
   </VToolbar>
 </template>
@@ -27,18 +35,15 @@ import {
   Category,
   DataType,
   LabelTaskType,
+  ILabelTaskTypeSetup,
 } from '@/commons/types';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import VCategoryBatchTool from '@/components/VLabelCategory/VBatchTool.vue';
 
 export default Vue.extend({
   name: 'TheCardMatrixHeader',
-  components: {
-    VDataTypeIcon,
-    VToolbar,
-    VCategoryBatchTool,
-  },
+  components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -47,10 +52,6 @@ export default Vue.extend({
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
       required: true,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
-      default: () => [],
     },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
@@ -65,12 +66,12 @@ export default Vue.extend({
       required: true,
     },
   },
-  data() {
-    return { DataType, LabelTaskType };
-  },
   computed: {
-    includesClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.Classification);
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.batchTool !== undefined);
     },
   },
   methods: {

@@ -21,7 +21,7 @@
         Data Management
       </v-btn>
     </template>
-    <TheDataManagementPanel @click:close="onClickClose" />
+    <TheDataManagementPanel @click:close="dialog = false" />
   </v-dialog>
 </template>
 
@@ -31,18 +31,9 @@ import TheDataManagementPanel from '../TheDataManagementPanel/TheDataManagementP
 
 export default Vue.extend({
   name: 'TheNavBarViewDashboardDialogButton',
-  components: {
-    TheDataManagementPanel,
-  },
+  components: { TheDataManagementPanel },
   data() {
-    return {
-      dialog: false,
-    };
-  },
-  methods: {
-    onClickClose(): void {
-      this.dialog = false;
-    },
+    return { dialog: false };
   },
 });
 </script>

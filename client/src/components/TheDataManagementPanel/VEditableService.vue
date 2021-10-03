@@ -8,8 +8,8 @@
         :menu="menuOfServices"
         :disabled="disabled"
         append-create-option
-        @update:selection="onSelectService"
-        @create:option="onCreateService"
+        @update:selection="$emit('select:service', $event)"
+        @create:option="$emit('create:service', $event)"
       />
     </div>
     <div
@@ -47,9 +47,7 @@ interface IService {
 
 export default Vue.extend({
   name: 'VEditableService',
-  components: {
-    VNodeSelectMethodSingle,
-  },
+  components: { VNodeSelectMethodSingle },
   props: {
     label: {
       type: String,
@@ -80,16 +78,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    onSelectService(option: IService): void {
-      this.$emit('select:service', option);
-    },
     onInputServiceAPI(api: string): void {
       const service = this.service as IService;
       const newValue: IService = { ...service, api };
       this.$emit('edit:service', newValue);
-    },
-    onCreateService(): void {
-      this.$emit('create:service');
     },
   },
 });

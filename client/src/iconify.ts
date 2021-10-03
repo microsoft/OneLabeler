@@ -1,6 +1,6 @@
 import { addCollection } from '@iconify/vue2';
 
-const init = () => {
+const init = (): void => {
   addCollection({
     prefix: 'mdi',
     icons: {
@@ -23,6 +23,6 @@ const init = () => {
     width: 24,
     height: 24,
   });
-}
+};
 
 export default init;

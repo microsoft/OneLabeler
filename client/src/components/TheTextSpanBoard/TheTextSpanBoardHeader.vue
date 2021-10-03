@@ -8,60 +8,26 @@
       Sampled Object
     </template>
     <template #tools>
-      <template v-if="includesClassification">
+      <div
+        v-for="(setup, i) in taskSetups"
+        :key="i"
+        style="display: flex"
+      >
         <v-divider
-          class="mx-2"
+          class="mx-1"
           vertical
         />
-        <!-- The data object label menu. -->
-        <VCategorySingleTool
-          :label-category="label === null ? null : label.category"
-          :classes="filterClassesByLabelTask(LabelTaskType.Classification)"
-          :button-color="label === null ? null : label2color(label.category)"
-          :disabled="label === null"
-          @set:label-category="$emit('set:label-category', $event)"
-        />
-      </template>
-
-      <template v-if="includesMultiLabelClassification">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <!-- The data object label menu. -->
-        <VMultiCategorySingleTool
-          :label-multi-category="label === null ? null : label.multiCategory"
-          :classes="filterClassesByLabelTask(LabelTaskType.MultiLabelClassification)"
-          :disabled="label === null"
-          @set:label-multi-category="$emit('set:label-multi-category', $event)"
-        />
-      </template>
-
-      <template v-if="includesFreeformText">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <!-- The create/edit freeform text annotation button. -->
-        <VFreeformTextSingleTool
-          :label-text="label === null ? null : label.text"
-          :disabled="label === null"
-          @set:label-text="$emit('set:label-text', $event)"
-        />
-      </template>
-
-      <template v-if="includesSpanClassification">
-        <v-divider
-          class="mx-2"
-          vertical
-        />
-        <VSpanSingleTool
-          :classes="filterClassesByLabelTask(LabelTaskType.SpanClassification)"
-          :brush-category="brushCategory"
+        <component
+          :is="setup.singleTool"
+          :label="label"
+          :categories="filterClassesByLabelTask(setup.type)"
           :label2color="label2color"
+          :disabled="label === null"
+          :brush-category="brushCategory"
+          @upsert:label="$emit('upsert:label', $event)"
           @set:brush-category="$emit('set:brush-category', $event)"
         />
-      </template>
+      </div>
     </template>
   </VToolbar>
 </template>
@@ -73,24 +39,15 @@ import {
   DataType,
   ILabel,
   LabelTaskType,
+  ILabelTaskTypeSetup,
 } from '@/commons/types';
 import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import VCategorySingleTool from '@/components/VLabelCategory/VSingleTool.vue';
-import VMultiCategorySingleTool from '@/components/VLabelMultiCategory/VSingleTool.vue';
-import VFreeformTextSingleTool from '@/components/VLabelFreeformText/VSingleTool.vue';
-import VSpanSingleTool from '@/components/VLabelSpan/VSingleTool.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 export default Vue.extend({
   name: 'TheTextSpanBoardHeader',
-  components: {
-    VDataTypeIcon,
-    VToolbar,
-    VCategorySingleTool,
-    VMultiCategorySingleTool,
-    VFreeformTextSingleTool,
-    VSpanSingleTool,
-  },
+  components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -98,10 +55,6 @@ export default Vue.extend({
     },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
-      required: true,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
       required: true,
     },
     categoryTasks: {
@@ -121,21 +74,12 @@ export default Vue.extend({
       default: null,
     },
   },
-  data() {
-    return { DataType, LabelTaskType };
-  },
   computed: {
-    includesClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.Classification);
-    },
-    includesMultiLabelClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.MultiLabelClassification);
-    },
-    includesFreeformText(): boolean {
-      return this.labelTasks.includes(LabelTaskType.FreeformText);
-    },
-    includesSpanClassification(): boolean {
-      return this.labelTasks.includes(LabelTaskType.SpanClassification);
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.singleTool !== undefined);
     },
   },
   methods: {

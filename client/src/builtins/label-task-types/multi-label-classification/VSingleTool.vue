@@ -2,18 +2,15 @@
   <component
     :is="element"
     :label-multi-category="labelMultiCategory"
-    :classes="classes"
+    :categories="categories"
     :disabled="disabled"
-    @set:label-multi-category="onSetLabelMultiCategory"
+    @set:label-multi-category="$emit('upsert:label', { multiCategory: $event })"
   />
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
-  Category,
-  ILabelMultiCategory,
-} from '@/commons/types';
+import Vue, { PropType, VueConstructor } from 'vue';
+import { Category, ILabel, ILabelMultiCategory } from '@/commons/types';
 import VSingleToolMenu from './VSingleToolMenu.vue';
 import VSingleToolTags from './VSingleToolTags.vue';
 
@@ -25,11 +22,11 @@ enum Component {
 export default Vue.extend({
   name: 'VSingleTool',
   props: {
-    labelMultiCategory: {
-      type: Array as PropType<ILabelMultiCategory | null>,
+    label: {
+      type: Object as PropType<ILabel | null>,
       default: null,
     },
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
     },
@@ -43,17 +40,17 @@ export default Vue.extend({
     },
   },
   computed: {
-    element() {
-      const mapper: Record<Component, Vue.VueConstructor> = {
+    element(): VueConstructor {
+      const mapper: Record<Component, VueConstructor> = {
         [Component.Menu]: VSingleToolMenu,
         [Component.Tags]: VSingleToolTags,
       };
       return mapper[this.component];
     },
-  },
-  methods: {
-    onSetLabelMultiCategory(newValue: ILabelMultiCategory): void {
-      this.$emit('set:label-multi-category', newValue);
+    labelMultiCategory(): ILabelMultiCategory | null {
+      const { label } = this;
+      if (label === null) return null;
+      return label.multiCategory ?? null;
     },
   },
 });

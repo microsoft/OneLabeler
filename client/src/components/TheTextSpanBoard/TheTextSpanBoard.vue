@@ -3,17 +3,14 @@
     <TheTextSpanBoardHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
-      :classes="classes"
       :category-tasks="categoryTasks"
       :brush-category="brushCategory"
       :label2color="label2color"
       :label="label"
-      @set:label-category="onSetLabelCategory"
-      @set:label-multi-category="onSetLabelMultiCategory"
-      @set:label-text="onSetLabelText"
       @set:brush-category="onSetBrushCategory"
-      @window:minimize="onWindowMinimize"
-      @window:pin="onWindowPin"
+      @upsert:label="onUpsertLabel"
+      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
+      @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; flex-direction: column">
@@ -27,6 +24,7 @@
             :label="label"
             :brush-category="brushCategory"
             :label2color="label2color"
+            @upsert:label="onUpsertLabel"
             @create:span="onCreateLabelSpan"
             @select:span="onSelectLabelSpan"
             @remove:span="onRemoveLabelSpan"
@@ -60,10 +58,7 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelCategory,
-  ILabelMultiCategory,
   ILabelRelation,
-  ILabelText,
   ILabelTextSpan,
   LabelTaskType,
   TaskWindow,
@@ -119,7 +114,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    showDataObject() {
+    showDataObject(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;
     },
@@ -174,7 +169,7 @@ export default Vue.extend({
     this.initializeBrushCategory();
   },
   methods: {
-    initializeBrushCategory() {
+    initializeBrushCategory(): void {
       if (this.brushCategory === null && this.classes.length !== 0) {
         [this.brushCategory] = this.classes;
       }
@@ -209,13 +204,13 @@ export default Vue.extend({
       const spans = labelSpans === null ? [span] : [...labelSpans, span];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(span: ILabelTextSpan | null) {
+    onSelectLabelSpan(span: ILabelTextSpan | null): void {
       this.selectedSpan = span;
       if (span !== null) {
         this.brushCategory = span.category;
       }
     },
-    onUpdateLabelSpan(span: ILabelTextSpan) {
+    onUpdateLabelSpan(span: ILabelTextSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
       const index = labelSpans.findIndex(
@@ -225,7 +220,7 @@ export default Vue.extend({
       spans[index] = span;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onRemoveLabelSpan(span: ILabelTextSpan) {
+    onRemoveLabelSpan(span: ILabelTextSpan): void {
       const {
         dataObject,
         labelSpans,
@@ -245,40 +240,17 @@ export default Vue.extend({
 
       this.$emit('user-edit-label', dataObject.uuid, { relations, spans } as Partial<ILabel>);
     },
-    onSetLabelCategory(category: ILabelCategory): void {
+    onUpsertLabel(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { category };
-      this.$emit('user-edit-label', uuid, newValue);
+      this.$emit('user-edit-label', uuid, partialLabel);
     },
-    onSetLabelMultiCategory(multiCategory: ILabelMultiCategory): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { multiCategory };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetLabelText(text: ILabelText): void {
-      const { dataObject } = this;
-      if (dataObject === null) return;
-      const { uuid } = dataObject;
-      const newValue: Partial<ILabel> = { text };
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onSetBrushCategory(category: Category | null) {
+    onSetBrushCategory(category: Category | null): void {
       this.brushCategory = category;
       const { selectedSpan } = this;
       if (selectedSpan === null || category === null) return;
       this.onUpdateLabelSpan({ ...selectedSpan, category });
-    },
-    onWindowMinimize() {
-      const newValue: Partial<TaskWindow> = { isMinimized: true };
-      this.$emit('edit-task-window', newValue);
-    },
-    onWindowPin() {
-      const newValue: Partial<TaskWindow> = { isPinned: true };
-      this.$emit('edit-task-window', newValue);
     },
   },
 });
