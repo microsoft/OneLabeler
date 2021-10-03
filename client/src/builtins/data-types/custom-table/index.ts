@@ -15,9 +15,7 @@ import {
 } from '@/plugins/file';
 import VDisplay from './VDisplay.vue';
 
-type IExport<T extends IDataObject> = (
-  Partial<ILabel> & { content: T['content'] }
-)[];
+type IExport = (Partial<ILabel>)[];
 
 interface ITable extends IDataObject {
   /** The content of the data object. */
@@ -43,7 +41,7 @@ type Table = Record<string, string | number>[];
 export default {
   type: 'Table',
   tasks: [
-    LabelTaskType.Classification,
+    'CustomMultiLabelClassification',
     LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
   ],
@@ -79,16 +77,13 @@ export default {
   handleExport: <T extends IDataObject>(
     dataObjects: T[],
     labels: ILabel[],
-  ): IExport<T> => {
+  ): IExport => {
     const uuid2idxInLabels: Record<string, number> = {};
     labels.forEach((d: ILabel, i) => {
       uuid2idxInLabels[d.uuid] = i;
     });
     return dataObjects.map((d) => {
-      const partial = {
-        uuid: d.uuid,
-        content: d.content,
-      };
+      const partial = { uuid: d.uuid };
       const idx = uuid2idxInLabels[d.uuid];
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });

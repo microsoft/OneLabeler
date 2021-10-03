@@ -6,6 +6,7 @@ import objectDetection from './object-detection';
 import relation from './relation';
 import segmentation from './segmentation';
 import spanClassification from './span-classification';
+import customClassification from './custom-multi-label-classification';
 
 export default [
   classification,
@@ -15,4 +16,5 @@ export default [
   segmentation,
   spanClassification,
   relation,
+  customClassification,
 ] as ILabelTaskTypeSetup[];
