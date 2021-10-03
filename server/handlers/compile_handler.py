@@ -17,7 +17,7 @@ class CompileHandler(tornado.web.RequestHandler):
         json_data = json.loads(self.request.body)
         workflow = json_data['workflow']
 
-        if key not in ['exe', 'zip']:
+        if key not in ['exe', 'zip/bundle', 'zip/source']:
             # The service is not found.
             self.send_error(404)
             return
@@ -42,7 +42,18 @@ class CompileHandler(tornado.web.RequestHandler):
             with open(path, 'rb') as f:
                 self.write(f.read())
         
-        if key == 'zip':
+        if key == 'zip/bundle':
+            try:
+                subprocess.check_call('npm run build',
+                                      shell=True, cwd=CLIENT_CODEBASE_PATH)
+            except:
+                print('compile failed')
+            path = f'{CLIENT_CODEBASE_PATH}/dist'
+            shutil.make_archive('bundle', 'zip', path)
+            with open('bundle.zip', 'rb') as f:
+                self.write(f.read())
+
+        if key == 'zip/source':
             filename = 'source'
             extname = 'zip'
             try:

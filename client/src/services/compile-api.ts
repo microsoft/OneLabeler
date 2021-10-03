@@ -46,7 +46,7 @@ export const compileZip = showProgressBar(async (
   workflow: WorkflowGraph,
 ): Promise<void> => {
   const response = await axios.post(
-    formatter('zip'),
+    formatter('zip/source'),
     JSON.stringify({ workflow }),
     // Parse the response data as blob
     // instead of the default as a string
