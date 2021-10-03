@@ -17,7 +17,7 @@
         :key="i"
         class="subtitle-2 pr-4 pl-2"
         style="min-height: 30px"
-        @click.stop="onClickLabelCategory(category)"
+        @click.stop="onClickCategory(category)"
       >
         <v-checkbox
           :value="isCategorySelected(category)"
@@ -37,7 +37,7 @@ import Vue, { PropType } from 'vue';
 import { Category, ILabelMultiCategory } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'VSingleTool',
+  name: 'VSingleToolMenu',
   props: {
     labelMultiCategory: {
       type: Array as PropType<ILabelMultiCategory | null>,
@@ -53,7 +53,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    onClickLabelCategory(category: Category): void {
+    onClickCategory(category: Category): void {
       const { labelMultiCategory } = this;
       if (labelMultiCategory === null) {
         this.$emit('set:label-multi-category', [category]);

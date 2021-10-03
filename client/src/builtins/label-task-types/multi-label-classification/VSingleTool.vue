@@ -49,8 +49,7 @@ export default Vue.extend({
     },
     labelMultiCategory(): ILabelMultiCategory | null {
       const { label } = this;
-      if (label === null) return null;
-      return label.multiCategory ?? null;
+      return label?.multiCategory ?? null;
     },
   },
 });

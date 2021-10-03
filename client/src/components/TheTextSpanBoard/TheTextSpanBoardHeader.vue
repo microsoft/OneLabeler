@@ -19,6 +19,7 @@
         />
         <component
           :is="setup.singleTool"
+          :data-object="dataObject"
           :label="label"
           :categories="filterClassesByLabelTask(setup.type)"
           :label2color="label2color"
@@ -57,21 +58,25 @@ export default Vue.extend({
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
-    categoryTasks: {
-      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
-      required: true,
+    dataObject: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
+    },
+    label: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
     },
     brushCategory: {
       type: String as PropType<Category | null>,
       default: null,
     },
+    categoryTasks: {
+      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      required: true,
+    },
     label2color: {
       type: Function as PropType<(category: string) => string>,
       required: true,
-    },
-    label: {
-      type: Object as PropType<ILabel | null>,
-      default: null,
     },
   },
   computed: {

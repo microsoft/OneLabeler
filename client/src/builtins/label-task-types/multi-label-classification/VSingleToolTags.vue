@@ -39,7 +39,7 @@ import {
 } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'VSingleTool',
+  name: 'VSingleToolTags',
   props: {
     labelMultiCategory: {
       type: Array as PropType<ILabelMultiCategory | null>,
