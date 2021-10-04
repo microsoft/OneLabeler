@@ -23,6 +23,7 @@
       @add:category="addCategory($event)"
       @remove:category="removeCategory($event)"
       @set:category-tasks="setCategoryTasks($event)"
+      @upsert:color-mapper="upsertColorMapper($event)"
     />
   </div>
 </template>
@@ -90,7 +91,12 @@ export default Vue.extend({
     await this.setData();
   },
   methods: {
-    ...mapActions(['addCategory', 'removeCategory', 'setCategoryTasks']),
+    ...mapActions([
+      'addCategory',
+      'removeCategory',
+      'setCategoryTasks',
+      'upsertColorMapper',
+    ]),
     async setData(): Promise<void> {
       this.nLabeled = await this.getNLabeled();
       this.nTotal = await this.getNTotal();

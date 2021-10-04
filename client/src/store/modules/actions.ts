@@ -246,6 +246,15 @@ export const setDockSide = (
   commit(types.SET_DOCK_SIDE, dockSide);
 };
 
+export const upsertColorMapper = (
+  { commit, state }: ActionContext<IState, IState>,
+  mapper: Record<string, string>,
+): void => {
+  const { colorMapper } = state;
+  const updatedColorMapper = { ...colorMapper, ...mapper };
+  commit(types.SET_COLOR_MAPPER, updatedColorMapper);
+};
+
 export const setSourceService = (
   { commit }: ActionContext<IState, IState>,
   service: SourceService,

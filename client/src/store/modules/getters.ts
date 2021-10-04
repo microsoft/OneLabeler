@@ -1,7 +1,6 @@
 import {
   scaleOrdinal,
   schemeCategory10,
-  ScaleOrdinal,
 } from 'd3';
 import { IState } from './state';
 
@@ -28,14 +27,21 @@ const schemeCategory20: string[] = [
   '#9edae5',
 ];
 
+type Mapper = (category: string) => string;
+
 /** The color scale for labels used in the system.  */
 // eslint-disable-next-line import/prefer-default-export
 export const label2color = (
   state: IState,
-): ScaleOrdinal<string, string, never> => {
-  const { classes, unlabeledMark } = state;
+): Mapper => {
+  const { classes, unlabeledMark, colorMapper } = state;
   const scheme = classes.length <= 9 ? schemeCategory10 : schemeCategory20;
-  const mapper = scaleOrdinal(['#bbbbbb', ...scheme])
+
+  const scale = scaleOrdinal(['#bbbbbb', ...scheme])
     .domain([unlabeledMark, ...classes]);
+  const mapper = (category: string): string => {
+    if (category in colorMapper) return colorMapper[category];
+    return scale(category);
+  };
   return mapper;
 };

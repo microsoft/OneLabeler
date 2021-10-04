@@ -48,6 +48,8 @@ export interface IState {
   taskWindows: TaskWindow[];
   /** The location the workflow panel docks. */
   dockSide: DockSideType;
+  /** The mapping from a label category to a hex color string. */
+  colorMapper: Record<string, string>;
 
   /** The service for transferring dataset to the client. */
   sourceService: SourceService;
@@ -74,6 +76,7 @@ export const createInitialState = (): IState => ({
   message: null,
   taskWindows: [],
   dockSide: DockSideType.HIDE,
+  colorMapper: {},
   sourceService: sourceServices[0],
   sourceServices,
   storageService: storageServices[0],

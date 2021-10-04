@@ -30,7 +30,9 @@ import VQueryMenu from './VQueryMenu.vue';
 
 type Query = {
   text: string;
+  // eslint-disable-next-line camelcase
   back_text: string;
+  // eslint-disable-next-line camelcase
   related_attr: string[];
   type: string;
 }

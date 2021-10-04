@@ -60,6 +60,9 @@ export default {
   [types.SET_DOCK_SIDE](state: IState, dockSide: DockSideType): void {
     state.dockSide = dockSide;
   },
+  [types.SET_COLOR_MAPPER](state: IState, colorMapper: Record<string, string>): void {
+    state.colorMapper = colorMapper;
+  },
   [types.SET_SOURCE_SERVICE](state: IState, service: SourceService): void {
     state.sourceService = service;
   },

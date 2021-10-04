@@ -38,6 +38,36 @@
           @set:selected-label-tasks="onSetSelectedLabelTasks(category, $event)"
         />
 
+        <v-menu
+          :close-on-content-click="false"
+          offset-y
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn
+              title="set color"
+              class="view-header-button elevation-0 ml-1"
+              style="border-color: #bbb"
+              x-small
+              icon
+              outlined
+              v-on="on"
+            >
+              <v-icon
+                aria-hidden="true"
+                small
+                :style="{ color: label2color(category) }"
+              >
+                $vuetify.icons.values.square
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-color-picker
+            dot-size="6"
+            :value="label2color(category)"
+            @input="$emit('upsert:color-mapper', { [category]: $event })"
+          />
+        </v-menu>
+
         <!-- The button for removing the label category. -->
         <v-btn
           title="remove"
@@ -156,8 +186,10 @@ export default Vue.extend({
       category: Category,
       labelTasks: LabelTaskType[] | null,
     ): void {
-      const updatedCategoryTasks = { ...this.categoryTasks };
-      updatedCategoryTasks[category] = labelTasks;
+      const updatedCategoryTasks = {
+        ...this.categoryTasks,
+        [category]: labelTasks,
+      };
       this.$emit('set:category-tasks', updatedCategoryTasks);
     },
   },
