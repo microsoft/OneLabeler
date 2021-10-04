@@ -5,13 +5,13 @@
       'opacity': isLabeled ? '0.5' : undefined,
     }"
     :ripple="false"
-    @click="$emit('click:card', $event)"
-    @mouseenter="$emit('hover:card')"
-    @mouseleave="$emit('leave:card')"
+    @click="$emit('click:grid', $event)"
+    @mouseenter="$emit('hover:grid')"
+    @mouseleave="$emit('leave:grid')"
   >
     <!-- set pointer events none so that
       hover the child will not trigger mouse out of the parent -->
-    <VDataObjectCardHeader
+    <VGridHeader
       class="px-1 py-0 white--text"
       pointer-events="none"
       :label-tasks="labelTasks"
@@ -56,11 +56,11 @@ import {
   StatusType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
-import VDataObjectCardHeader from './VDataObjectCardHeader.vue';
+import VGridHeader from './VGridHeader.vue';
 
 export default Vue.extend({
-  name: 'VDataObjectCard',
-  components: { VDataObjectCardHeader },
+  name: 'VGrid',
+  components: { VGridHeader },
   props: {
     dataType: {
       type: String as PropType<DataType>,

@@ -5,7 +5,7 @@
     style="overflow-y: scroll; border-radius: 0;"
   >
     <div
-      v-for="(category, i) in classesFiltered"
+      v-for="(category, i) in categoriesFiltered"
       :key="`slot-${i}`"
       class="my-1"
       :style="{
@@ -179,8 +179,8 @@ export default Vue.extend({
         width: this.slotClientXRange.width,
       };
     },
-    classesFiltered(): Category[] {
-      return this.filterClassesByLabelTask(LabelTaskType.SpanClassification);
+    categoriesFiltered(): Category[] {
+      return this.filterCategoriesByLabelTask(LabelTaskType.SpanClassification);
     },
   },
   watch: {
@@ -190,11 +190,11 @@ export default Vue.extend({
         this.newSpan.end = Math.max(this.newSpan.start, currentTime);
       }
     },
-    classesFiltered() {
+    categoriesFiltered() {
       // If the category the new span belongs to has been deleted,
       // remove the new span.
       if (this.newSpan !== null
-        && !this.classesFiltered.includes(this.newSpan.category)) {
+        && !this.categoriesFiltered.includes(this.newSpan.category)) {
         this.newSpan = null;
       }
     },
@@ -337,14 +337,14 @@ export default Vue.extend({
       const { r, g, b } = color.rgb();
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
     },
-    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
-      const classesFiltered: Category[] = Object.entries(categoryTasks)
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([category, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
 });

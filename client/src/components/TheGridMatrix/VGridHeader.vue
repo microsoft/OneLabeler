@@ -30,7 +30,7 @@
       <component
         :is="setup.singleTool"
         :label="label"
-        :categories="filterClassesByLabelTask(setup.type)"
+        :categories="filterCategoriesByLabelTask(setup.type)"
         :label2color="label2color"
         :disabled="label === null"
         @upsert:label="$emit('upsert:label', $event)"
@@ -51,7 +51,7 @@ import {
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 export default Vue.extend({
-  name: 'VDataObjectCardHeader',
+  name: 'VGridHeader',
   props: {
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
@@ -94,14 +94,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
-      const classesFiltered: Category[] = Object.entries(categoryTasks)
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([category, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
 });

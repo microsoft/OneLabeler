@@ -3,7 +3,6 @@
     <ThePaintBoardHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
-      :classes="classes"
       :category-tasks="categoryTasks"
       :stroke-label="strokeLabel"
       :stroke-shape="strokeShape"
@@ -120,10 +119,6 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -174,13 +169,18 @@ export default Vue.extend({
       if (!this.showCanvas) return 0;
       return this.dataObjects.length;
     },
+    categories(): Category[] {
+      const { categoryTasks } = this;
+      return Object.keys(categoryTasks)
+        .filter((d) => d !== null && d !== undefined);
+    },
   },
   watch: {
     dataObjects() {
       // reset page number
       this.page = 1;
     },
-    classes() {
+    categories() {
       this.initializeStrokeLabel();
     },
   },
@@ -190,8 +190,8 @@ export default Vue.extend({
   },
   methods: {
     initializeStrokeLabel(): void {
-      if (this.strokeLabel === null && this.classes.length !== 0) {
-        [this.strokeLabel] = this.classes;
+      if (this.strokeLabel === null && this.categories.length !== 0) {
+        [this.strokeLabel] = this.categories;
       }
     },
     async onSetLabelMask(labelMaskCanvas: HTMLCanvasElement): Promise<void> {

@@ -34,7 +34,7 @@ import {
   Category,
   LabelTaskType,
 } from '@/commons/types';
-import VStrokeColorMenu from '@/builtins/label-task-types/segmentation/VStrokeColorMenu.vue';
+import VStrokeColorMenu from '@/builtins/label-task-types/segmentation-2d/VStrokeColorMenu.vue';
 import VObjectShapeButtonToggle from './VObjectShapeButtonToggle.vue';
 
 export enum MouseOperationType {

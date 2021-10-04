@@ -16,7 +16,7 @@
       style="flex: 1 1 auto; overflow-y: scroll;"
     >
       <div
-        v-for="category in classesFiltered"
+        v-for="category in categoriesFiltered"
         :key="category"
         style="min-height: 40px"
       >
@@ -88,22 +88,22 @@ export default Vue.extend({
       'statuses',
     ]),
     ...mapGetters('workflow', ['labelTasks']),
-    classesFiltered(): Category[] {
+    categoriesFiltered(): Category[] {
       const classes = this.classes as Category[];
       const categoryTasks = this.categoryTasks as Record<Category, LabelTaskType[]>;
       const { labelTasks } = this;
-      const classesFiltered: Category[] = [];
+      const categoriesFiltered: Category[] = [];
       classes.forEach((category) => {
         if (!(category in categoryTasks)) return;
         const usedInTasks = categoryTasks[category];
         const overlaps = isOverlapping(new Set(usedInTasks), new Set(labelTasks));
-        if (usedInTasks === null || overlaps) classesFiltered.push(category);
+        if (usedInTasks === null || overlaps) categoriesFiltered.push(category);
       });
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
   watch: {
-    async classesFiltered() {
+    async categoriesFiltered() {
       this.nLabeledByCategory = await this.getNLabeledByCategory();
     },
     async labels() {
@@ -138,7 +138,7 @@ export default Vue.extend({
     },
     async getNLabeledByCategory(): Promise<Record<Category, number>> {
       const nLabeledByCategory: Record<Category, number> = {};
-      await Promise.all(this.classesFiltered.map(async (category: Category) => {
+      await Promise.all(this.categoriesFiltered.map(async (category: Category) => {
         const n = await this.getNLabeledOf(category);
         nLabeledByCategory[category] = n;
       }));

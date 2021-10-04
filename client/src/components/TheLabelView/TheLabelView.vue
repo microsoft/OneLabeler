@@ -8,7 +8,6 @@
     :task-window="taskWindow"
     :label-tasks="labelTasks"
     :data-type="dataType"
-    :classes="classes"
     :category-tasks="categoryTasks"
     :unlabeled-mark="unlabeledMark"
     :label2color="label2color"
@@ -23,22 +22,18 @@
 import Vue, { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import {
-  DataType,
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   IStatus,
   IStatusStorage,
-  LabelTaskType,
   StatusType,
   TaskWindow,
   WorkflowNodeType,
 } from '@/commons/types';
-import TheCardMatrix from '@/components/TheCardMatrix/TheCardMatrix.vue';
-import ThePaintBoard from '@/components/ThePaintBoard/ThePaintBoard.vue';
-import TheTextSpanBoard from '@/components/TheTextSpanBoard/TheTextSpanBoard.vue';
-import TheTimeSpanBoard from '@/components/TheTimeSpanBoard/TheTimeSpanBoard.vue';
+import TheGridMatrix from '@/components/TheGridMatrix/TheGridMatrix.vue';
+import TheSingleObjectDisplay from '@/components/TheSingleObjectDisplay/TheSingleObjectDisplay.vue';
 
 const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -66,26 +61,16 @@ export default Vue.extend({
       'labels',
       'statuses',
       'queryUuids',
-      'classes',
       'categoryTasks',
       'unlabeledMark',
     ]),
     ...mapGetters(['label2color']),
     ...mapGetters('workflow', ['dataType', 'labelTasks']),
     component(): VueConstructor | null {
-      const { dataType, labelTasks } = this;
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
-      if (process.api === 'SingleObjectDisplay') {
-        if (dataType === DataType.Image) return ThePaintBoard;
-        if (dataType === DataType.Text) return TheTextSpanBoard;
-        if (dataType === DataType.Video) return TheTimeSpanBoard;
-        if (dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
-        if (dataType === DataType.Audio) return TheTimeSpanBoard;
-        if (labelTasks.includes(LabelTaskType.SpanClassification)) return TheTextSpanBoard;
-      }
-      if (process.api === 'GridMatrix') return TheCardMatrix;
-      if (process.api === 'SingleObjectDisplay') return TheTextSpanBoard;
+      if (process.api === 'SingleObjectDisplay') return TheSingleObjectDisplay;
+      if (process.api === 'GridMatrix') return TheGridMatrix;
       return null;
     },
     ready(): boolean {
@@ -148,7 +133,7 @@ export default Vue.extend({
         this.setStatusOf({ uuid: d.uuid, value: StatusType.Labeled });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
-      editSingleCommand.execute();
+      editSingleCommand.execute();onEditTaskWindow
       this.pushCommandHistory(editSingleCommand);
       */
     },

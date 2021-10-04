@@ -1,6 +1,6 @@
 <template>
   <v-card style="display: flex; flex-direction: column;">
-    <TheCardMatrixHeader
+    <TheGridMatrixHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
       :category-tasks="categoryTasks"
@@ -12,7 +12,7 @@
     />
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; align-items: center;">
-      <VCardMatrix
+      <VGridMatrix
         v-if="dataObjects.length !== 0"
         style="height: 100%; width: 100%;"
         :data-type="dataType"
@@ -26,7 +26,7 @@
         :items-per-col="itemsPerCol"
         :label2color="label2color"
         @upsert:label="onUpsertLabel"
-        @click:card="onClickCard"
+        @click:grid="onClickGrid"
       />
       <p
         v-else
@@ -50,14 +50,14 @@ import {
   TaskWindow,
   Category,
 } from '@/commons/types';
-import VCardMatrix from './VCardMatrix.vue';
-import TheCardMatrixHeader from './TheCardMatrixHeader.vue';
+import VGridMatrix from './VGridMatrix.vue';
+import TheGridMatrixHeader from './TheGridMatrixHeader.vue';
 
 export default Vue.extend({
-  name: 'TheCardMatrix',
+  name: 'TheGridMatrix',
   components: {
-    VCardMatrix,
-    TheCardMatrixHeader,
+    VGridMatrix,
+    TheGridMatrixHeader,
   },
   props: {
     dataObjects: {
@@ -124,7 +124,7 @@ export default Vue.extend({
     onUpsertLabel(uuid: string, partialLabel: Partial<ILabel>): void {
       this.$emit('user-edit-label', uuid, partialLabel);
     },
-    onClickCard(dataObject: IDataObject, e: MouseEvent): void {
+    onClickGrid(dataObject: IDataObject, e: MouseEvent): void {
       const { uuid } = dataObject;
       const { ctrlKey } = e;
       if (!ctrlKey) {

@@ -68,7 +68,7 @@
         <component
           :is="setup.singleTool"
           :label="label"
-          :categories="filterClassesByLabelTask(setup.type)"
+          :categories="filterCategoriesByLabelTask(setup.type)"
           :label2color="label2color"
           :disabled="label === null"
           :label-tasks="labelTasks"
@@ -101,7 +101,7 @@ import VToolbar from '@/components/VWindow/VToolbar.vue';
 import {
   MouseOperationType as LabelMaskMouseOperationType,
   StrokeShapeType,
-} from '@/builtins/label-task-types/segmentation/VSingleTool.vue';
+} from '@/builtins/label-task-types/segmentation-2d/VSingleTool.vue';
 import {
   MouseOperationType as LabelShapesMouseOperationType,
 } from '@/builtins/label-task-types/object-detection/VSingleTool.vue';
@@ -116,10 +116,7 @@ type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperatio
 
 export default Vue.extend({
   name: 'ThePaintBoardHeader',
-  components: {
-    VDataTypeIcon,
-    VToolbar,
-  },
+  components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -127,10 +124,6 @@ export default Vue.extend({
     },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
-      required: true,
-    },
-    classes: {
-      type: Array as PropType<Category[]>,
       required: true,
     },
     categoryTasks: {
@@ -172,8 +165,13 @@ export default Vue.extend({
     includesSegmentation(): boolean {
       return this.labelTasks.includes(LabelTaskType.Segmentation);
     },
-    classesNotEmpty(): boolean {
-      return this.classes.length !== 0;
+    categories(): Category[] {
+      const { categoryTasks } = this;
+      return Object.keys(categoryTasks)
+        .filter((d) => d !== null && d !== undefined);
+    },
+    categoriesNotEmpty(): boolean {
+      return this.categories.length !== 0;
     },
     mouseOperationButtons(): {
       title: string,
@@ -192,19 +190,19 @@ export default Vue.extend({
           title: 'edit shape',
           icon: this.$vuetify.icons.values.hand,
           mouseOperation: MouseOperationType.EditShape,
-          disabled: !this.classesNotEmpty,
+          disabled: !this.categoriesNotEmpty,
         },
         {
           title: 'paint',
           icon: this.$vuetify.icons.values.paint,
           mouseOperation: MouseOperationType.PaintBrush,
-          disabled: !this.classesNotEmpty,
+          disabled: !this.categoriesNotEmpty,
         },
         {
           title: 'eraser',
           icon: this.$vuetify.icons.values.eraser,
           mouseOperation: MouseOperationType.PaintErase,
-          disabled: !this.classesNotEmpty,
+          disabled: !this.categoriesNotEmpty,
         },
       ];
     },
@@ -217,14 +215,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
-      const classesFiltered: Category[] = Object.entries(categoryTasks)
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([category, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
 });

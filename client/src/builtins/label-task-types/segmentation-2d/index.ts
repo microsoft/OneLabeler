@@ -3,6 +3,6 @@ import VSingleTool from './VSingleTool.vue';
 
 export default {
   type: LabelTaskType.Segmentation,
-  label: 'segmentation',
+  label: '2d segmentation',
   singleTool: VSingleTool,
 } as ILabelTaskTypeSetup;

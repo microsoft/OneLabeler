@@ -1,14 +1,11 @@
 <template>
   <v-card style="display: flex; flex-direction: column">
-    <TheTextSpanBoardHeader
+    <TheTimeSpanBoardHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
-      :data-object="dataObject"
-      :label="label"
-      :brush-category="brushCategory"
       :category-tasks="categoryTasks"
       :label2color="label2color"
-      @set:brush-category="onSetBrushCategory"
+      :label="label"
       @upsert:label="onUpsertLabel"
       @window:minimize="$emit('edit-task-window', { isMinimized: true })"
       @window:pin="$emit('edit-task-window', { isPinned: true })"
@@ -16,21 +13,37 @@
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; flex-direction: column">
       <template v-if="showDataObject">
+        <!-- Note: not setting height: 0px will make the component not responsive
+          when the window height is small. -->
         <div style="height: 0px; flex: 1 1 auto; display: flex">
-          <TheTextSpanBoardBody
+          <TheTimeSpanBoardBody
             ref="canvas"
             :data-type="dataType"
             :label-tasks="labelTasks"
             :data-object="dataObject"
             :label="label"
-            :brush-category="brushCategory"
+            :category-tasks="categoryTasks"
+            :selected-slot="selectedSlot"
+            :selected-span="selectedSpan"
             :label2color="label2color"
-            @upsert:label="onUpsertLabel"
+            class="px-2 pb-2"
+            style="flex: 1 1 auto"
             @create:span="onCreateLabelSpan"
-            @select:span="onSelectLabelSpan"
-            @remove:span="onRemoveLabelSpan"
-            @create:relation="onCreateLabelRelation"
-            @remove:relation="onRemoveLabelRelation"
+            @select:span="selectedSpan = $event"
+            @select:slot="selectedSlot = $event"
+            @update:span="onUpdateLabelSpan"
+          />
+          <component
+            v-for="(setup, i) in taskSetups"
+            :key="i"
+            :is="setup.panel"
+            :label="label"
+            :categories="filterCategoriesByLabelTask(setup.type)"
+            :label2color="label2color"
+            :disabled="label === null"
+            class="pr-2 ma-2"
+            style="flex: 1 1 25%"
+            @upsert:label="onUpsertLabel"
           />
         </div>
         <template v-if="enablePagination">
@@ -59,19 +72,20 @@ import {
   DataType,
   IDataObject,
   ILabel,
-  ILabelRelation,
-  ILabelTextSpan,
+  ILabelTimeSpan,
   LabelTaskType,
   TaskWindow,
+  ILabelTaskTypeSetup,
 } from '@/commons/types';
-import TheTextSpanBoardHeader from './TheTextSpanBoardHeader.vue';
-import TheTextSpanBoardBody from './TheTextSpanBoardBody.vue';
+import labelTaskTypeSetups from '@/builtins/label-task-types/index';
+import TheTimeSpanBoardHeader from './TheTimeSpanBoardHeader.vue';
+import TheTimeSpanBoardBody from './TheTimeSpanBoardBody.vue';
 
 export default Vue.extend({
-  name: 'TheTextSpanBoard',
+  name: 'TheTimeSpanBoard',
   components: {
-    TheTextSpanBoardHeader,
-    TheTextSpanBoardBody,
+    TheTimeSpanBoardHeader,
+    TheTimeSpanBoardBody,
   },
   props: {
     dataType: {
@@ -94,10 +108,6 @@ export default Vue.extend({
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-    classes: {
-      type: Array as PropType<Category[]>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -109,12 +119,18 @@ export default Vue.extend({
   },
   data() {
     return {
-      brushCategory: null as Category | null,
-      selectedSpan: null as ILabelTextSpan | null,
+      selectedSlot: null as Category | null,
+      selectedSpan: null as ILabelTimeSpan | null,
       page: 1 as number,
     };
   },
   computed: {
+    taskSetups(): ILabelTaskTypeSetup[] {
+      const { labelTasks } = this;
+      return labelTaskTypeSetups
+        .filter((d) => (labelTasks as string[]).includes(d.type))
+        .filter((d) => d.panel !== undefined);
+    },
     showDataObject(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;
@@ -128,11 +144,8 @@ export default Vue.extend({
       if (this.labels === null) return null;
       return this.labels[this.page - 1];
     },
-    labelSpans(): ILabelTextSpan[] | null {
+    labelSpans(): ILabelTimeSpan[] | null {
       return this.label?.spans ?? null;
-    },
-    labelRelations(): ILabelRelation[] | null {
-      return this.label?.relations ?? null;
     },
     enablePagination(): boolean {
       if (!this.showDataObject) return false;
@@ -149,11 +162,7 @@ export default Vue.extend({
       this.page = 1;
     },
     dataObject() {
-      this.brushCategory = null;
       this.selectedSpan = null;
-    },
-    classes() {
-      this.initializeBrushCategory();
     },
   },
   created(): void {
@@ -167,14 +176,8 @@ export default Vue.extend({
   },
   mounted() {
     this.page = 1;
-    this.initializeBrushCategory();
   },
   methods: {
-    initializeBrushCategory(): void {
-      if (this.brushCategory === null && this.classes.length !== 0) {
-        [this.brushCategory] = this.classes;
-      }
-    },
     onKey(e: KeyboardEvent): void {
       const { key } = e;
 
@@ -185,61 +188,33 @@ export default Vue.extend({
         this.onRemoveLabelSpan(selectedSpan);
       }
     },
-    onCreateLabelRelation(relation: ILabelRelation): void {
-      const { dataObject, labelRelations } = this;
-      if (dataObject === null) return;
-      const relations = labelRelations === null
-        ? [relation]
-        : [...labelRelations, relation];
-      this.$emit('user-edit-label', dataObject.uuid, { relations } as Partial<ILabel>);
-    },
-    onRemoveLabelRelation(relation: ILabelRelation): void {
-      const { dataObject, labelRelations } = this;
-      if (dataObject === null || labelRelations === null) return;
-      const relations = labelRelations.filter((d) => d.uuid !== relation.uuid);
-      this.$emit('user-edit-label', dataObject.uuid, { relations } as Partial<ILabel>);
-    },
-    onCreateLabelSpan(span: ILabelTextSpan): void {
+    onCreateLabelSpan(labelSpan: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null) return;
-      const spans = labelSpans === null ? [span] : [...labelSpans, span];
+      const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onSelectLabelSpan(span: ILabelTextSpan | null): void {
-      this.selectedSpan = span;
-      if (span !== null) {
-        this.brushCategory = span.category;
-      }
-    },
-    onUpdateLabelSpan(span: ILabelTextSpan): void {
+    onUpdateLabelSpan(newValue: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null || labelSpans === null) return;
-      const index = labelSpans.findIndex(
-        (d: ILabelTextSpan) => d.uuid === span.uuid,
-      );
+      const index = labelSpans.findIndex((d) => d.uuid === newValue.uuid);
+      if (!(index >= 0)) return;
       const spans = [...labelSpans];
-      spans[index] = span;
+      spans[index] = newValue;
       this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
-    onRemoveLabelSpan(span: ILabelTextSpan): void {
+    onRemoveLabelSpan(labelSpan: ILabelTimeSpan): void {
       const {
         dataObject,
         labelSpans,
-        labelRelations,
+        selectedSpan,
       } = this;
       if (dataObject === null || labelSpans === null) return;
-
-      // Remove the relations that involves the label span.
-      const relations = labelRelations === null
-        ? null
-        : labelRelations.filter((d) => (
-          d.sourceUuid !== span.uuid && d.targetUuid !== span.uuid
-        ));
-
-      // Remove the label span itself.
-      const spans = labelSpans.filter((d) => d.uuid !== span.uuid);
-
-      this.$emit('user-edit-label', dataObject.uuid, { relations, spans } as Partial<ILabel>);
+      if (selectedSpan !== null && selectedSpan.uuid === labelSpan.uuid) {
+        this.selectedSpan = null;
+      }
+      const spans = labelSpans.filter((d) => d.uuid !== labelSpan.uuid);
+      this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
     },
     onUpsertLabel(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
@@ -247,11 +222,14 @@ export default Vue.extend({
       const { uuid } = dataObject;
       this.$emit('user-edit-label', uuid, partialLabel);
     },
-    onSetBrushCategory(category: Category | null): void {
-      this.brushCategory = category;
-      const { selectedSpan } = this;
-      if (selectedSpan === null || category === null) return;
-      this.onUpdateLabelSpan({ ...selectedSpan, category });
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
+      const { categoryTasks } = this;
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([category, usedInTasks]) => (
+          usedInTasks === null || usedInTasks.includes(labelTask)
+        )).map((d) => d[0]);
+      return categoriesFiltered;
     },
   },
 });

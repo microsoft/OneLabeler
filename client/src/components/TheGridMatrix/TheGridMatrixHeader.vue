@@ -19,7 +19,7 @@
         />
         <component
           :is="setup.batchTool"
-          :categories="filterClassesByLabelTask(setup.type)"
+          :categories="filterCategoriesByLabelTask(setup.type)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
           @upsert-bulk:label="$emit('upsert-bulk:label', $event)"
@@ -42,7 +42,7 @@ import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default Vue.extend({
-  name: 'TheCardMatrixHeader',
+  name: 'TheGridMatrixHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {
@@ -75,14 +75,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
-      const classesFiltered: Category[] = Object.entries(categoryTasks)
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([category, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
 });

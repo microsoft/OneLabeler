@@ -19,14 +19,11 @@
         />
         <component
           :is="setup.singleTool"
-          :data-object="dataObject"
           :label="label"
-          :categories="filterClassesByLabelTask(setup.type)"
+          :categories="filterCategoriesByLabelTask(setup.type)"
           :label2color="label2color"
           :disabled="label === null"
-          :brush-category="brushCategory"
           @upsert:label="$emit('upsert:label', $event)"
-          @set:brush-category="$emit('set:brush-category', $event)"
         />
       </div>
     </template>
@@ -47,7 +44,7 @@ import VToolbar from '@/components/VWindow/VToolbar.vue';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 export default Vue.extend({
-  name: 'TheTextSpanBoardHeader',
+  name: 'TheTimeSpanBoardHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {
@@ -58,18 +55,6 @@ export default Vue.extend({
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
-    dataObject: {
-      type: Object as PropType<ILabel | null>,
-      default: null,
-    },
-    label: {
-      type: Object as PropType<ILabel | null>,
-      default: null,
-    },
-    brushCategory: {
-      type: String as PropType<Category | null>,
-      default: null,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -77,6 +62,10 @@ export default Vue.extend({
     label2color: {
       type: Function as PropType<(category: string) => string>,
       required: true,
+    },
+    label: {
+      type: Object as PropType<ILabel | null>,
+      default: null,
     },
   },
   computed: {
@@ -88,14 +77,14 @@ export default Vue.extend({
     },
   },
   methods: {
-    filterClassesByLabelTask(labelTask: LabelTaskType): Category[] {
+    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
-      const classesFiltered: Category[] = Object.entries(categoryTasks)
+      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([category, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return classesFiltered;
+      return categoriesFiltered;
     },
   },
 });

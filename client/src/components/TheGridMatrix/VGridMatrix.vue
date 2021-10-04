@@ -3,10 +3,10 @@
     <!-- Note: use position absolute to allow container to have responsive size. -->
     <div style="position: absolute;">
       <!-- Note: need align-content: flex-start
-        to let the cards float to top left when the number of cards
-        is less than the allocated grids. -->
+        to let the grids float to top left when the number of grids
+        is less than the allocated cells. -->
       <div
-        ref="labelCards"
+        ref="grids"
         style="display: flex; flex-wrap: wrap; align-content: flex-start;"
       >
         <div
@@ -18,7 +18,7 @@
             'height': `${100/itemsPerCol}%`,
           }"
         >
-          <VDataObjectCard
+          <VGrid
             :data-type="dataType"
             :label-tasks="labelTasks"
             :data-object="dataObjects[i]"
@@ -28,9 +28,9 @@
             :category-tasks="categoryTasks"
             :title="''"
             :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
-            :height="Math.max(cardHeight - 2 * padding, 0)"
-            :width="Math.max(cardWidth - 2 * padding, 0)"
-            @click:card="$emit('click:card', dataObjects[i], $event)"
+            :height="Math.max(gridHeight - 2 * padding, 0)"
+            :width="Math.max(gridWidth - 2 * padding, 0)"
+            @click:grid="$emit('click:grid', dataObjects[i], $event)"
             @upsert:label="$emit('upsert:label', dataObjects[i].uuid, $event)"
           />
         </div>
@@ -50,8 +50,8 @@
 
 <script lang="ts">
 /**
- * The component for rendering a list of items
- * as a matrix of cells in cards.
+ * The component for rendering a list of data objects
+ * as a matrix of grids.
  */
 
 import {
@@ -74,11 +74,11 @@ import {
   StatusType,
 } from '@/commons/types';
 import useResizeObserver from '@/components/composables/useResizeObserver';
-import VDataObjectCard from './VDataObjectCard.vue';
+import VGrid from './VGrid.vue';
 
 export default defineComponent({
-  name: 'VCardMatrix',
-  components: { VDataObjectCard },
+  name: 'VGridMatrix',
+  components: { VGrid },
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -129,10 +129,10 @@ export default defineComponent({
 
     const container: Ref<HTMLElement | null> = ref(null);
     const pagination: Ref<HTMLElement | null> = ref(null);
-    const labelCards: Ref<HTMLElement | null> = ref(null);
+    const grids: Ref<HTMLElement | null> = ref(null);
 
-    const cardHeight: Ref<number> = ref(0);
-    const cardWidth: Ref<number> = ref(0);
+    const gridHeight: Ref<number> = ref(0);
+    const gridWidth: Ref<number> = ref(0);
     const page: Ref<number> = ref(1);
 
     const itemsPerPage: ComputedRef<number> = computed(
@@ -148,23 +148,23 @@ export default defineComponent({
       () => nPages.value >= 2,
     );
 
-    const updateCardSize = (): void => {
+    const updateGridSize = (): void => {
       if (container.value === null) return;
-      if (labelCards.value === null) return;
+      if (grids.value === null) return;
       const height = container.value.clientHeight;
       const width = container.value.clientWidth;
       let paginationHeight = 0;
       if (enablePagination.value && pagination.value !== null) {
         paginationHeight = pagination.value.clientHeight;
       }
-      cardHeight.value = (height - paginationHeight) / itemsPerCol.value;
-      cardWidth.value = width / itemsPerRow.value;
+      gridHeight.value = (height - paginationHeight) / itemsPerCol.value;
+      gridWidth.value = width / itemsPerRow.value;
     };
 
-    onMounted(updateCardSize);
-    useResizeObserver(container, updateCardSize);
-    watch(itemsPerRow, updateCardSize);
-    watch(itemsPerCol, updateCardSize);
+    onMounted(updateGridSize);
+    useResizeObserver(container, updateGridSize);
+    watch(itemsPerRow, updateGridSize);
+    watch(itemsPerCol, updateGridSize);
     watch(dataObjects, () => { page.value = 1; });
 
     const indicesInPage: ComputedRef<number[]> = computed(() => (
@@ -177,9 +177,9 @@ export default defineComponent({
     return {
       container,
       pagination,
-      labelCards,
-      cardHeight,
-      cardWidth,
+      grids,
+      gridHeight,
+      gridWidth,
       page,
       nPages,
       indicesInPage,
