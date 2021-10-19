@@ -1,23 +1,26 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-import tornado.httpserver
 import tornado.ioloop
-import tornado.options
-from tornado.options import options
+import tornado.web
+from tornado.options import define, options, parse_command_line
 
-from application import application
-import setting
+from url import url
 
+define('port', default=8005, help='run on th given port', type=int)
+define('debug', default=False, help='run in debug mode')
 
 def main():
-    tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(options.port)
-    print('Development server is running at http://127.0.0.1:%s/' % options.port)
+    parse_command_line()
+    app = tornado.web.Application(
+        handlers=url,
+        debug=options.debug,
+    )
+    app.listen(options.port)
+    print(f'Development server is running at http://127.0.0.1:{options.port}/')
     print('Quit the server with Control-C')
     tornado.ioloop.IOLoop.instance().start()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

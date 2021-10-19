@@ -1,3 +1,4 @@
+import tornado.web
 from handlers import (CompileHandler,
                       FeatureExtractionHandler,
                       DataObjectSelectionHandler,
@@ -5,6 +6,10 @@ from handlers import (CompileHandler,
                       InterimModelTrainingHandler,
                       ImageProcessingHandler,
                       ProjectionHandler)
+
+class RoundtripHandler(tornado.web.RequestHandler):
+    def post(self):
+        self.set_header('Access-Control-Allow-Origin', '*')
 
 url = [
     # request for compiled exe package
@@ -21,4 +26,6 @@ url = [
     (r'/defaultLabels/(.*)', DefaultLabelingHandler),
     # request for updated model computed with interim model training algorithms
     (r'/modelUpdated/(.*)', InterimModelTrainingHandler),
+    # request for roundtrip testing
+    (r'/roundtrip', RoundtripHandler),
 ]

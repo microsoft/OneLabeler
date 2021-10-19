@@ -117,6 +117,8 @@
       />
     </v-btn>
 
+    <TheNetworkMenu />
+
     <v-divider
       class="app-header-divider"
       vertical
@@ -137,6 +139,7 @@ import {
 import { saveJsonFile } from '@/plugins/file';
 import templates from '@/builtins/workflow-templates/index';
 import { compileInstaller, compileZip } from '@/services/compile-api';
+import TheNetworkMenu from './TheNetworkMenu.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
 import VDockSideButtons from './VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
@@ -145,6 +148,7 @@ export default Vue.extend({
   name: 'TheDevPanelHeader',
   components: {
     Icon,
+    TheNetworkMenu,
     VTemplateMenu,
     VDockSideButtons,
     VUploadWorkflowButton,

@@ -66,6 +66,8 @@ const icons = {
   arrowRight: 'fas fa-arrow-right',
   samples: 'fas fa-vials',
   labels: 'fas fa-tags',
+  network: 'fas fa-network-wired',
+  python: 'fab fa-python',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

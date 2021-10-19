@@ -24,6 +24,9 @@ storage.init().then(() => {
   app.use('/labels', labelsRestFactory(storage.labels, SECRETE));
   app.use('/statuses', statusesRPCFactory(storage.statuses, SECRETE));
   app.use('/statuses', statusesRestFactory(storage.statuses, SECRETE));
+
+  // support timing of round trip between client and server
+  app.use('/roundtrip', (req, res, next) => res.end());
   app.listen(PORT);
 
   console.log(`Development server is running at http://127.0.0.1:${PORT}/`);

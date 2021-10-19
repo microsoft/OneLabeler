@@ -14,7 +14,6 @@ import {
   ModelService,
   Process,
   WorkflowNodeType,
-  ILabelCategory,
   IDataObject,
   IDataObjectStorage,
   SourceType,

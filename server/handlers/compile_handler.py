@@ -9,7 +9,7 @@ CLIENT_CODEBASE_PATH = '../client'
 
 class CompileHandler(tornado.web.RequestHandler):
     """
-    The handler for image labeling.
+    The handler for compilation.
     """
 
     def post(self, key: str):
@@ -36,22 +36,23 @@ class CompileHandler(tornado.web.RequestHandler):
             try:
                 subprocess.check_call('npm run electron:build',
                                       shell=True, cwd=CLIENT_CODEBASE_PATH)
+                path = f'{CLIENT_CODEBASE_PATH}/dist_electron/one-labeler Setup 0.1.0.exe'
+                with open(path, 'rb') as f:
+                    self.write(f.read())
             except:
                 print('compile failed')
-            path = f'{CLIENT_CODEBASE_PATH}/dist_electron/one-labeler Setup 0.1.0.exe'
-            with open(path, 'rb') as f:
-                self.write(f.read())
+            
         
         if key == 'zip/bundle':
             try:
                 subprocess.check_call('npm run build',
                                       shell=True, cwd=CLIENT_CODEBASE_PATH)
+                path = f'{CLIENT_CODEBASE_PATH}/dist'
+                shutil.make_archive('bundle', 'zip', path)
+                with open('bundle.zip', 'rb') as f:
+                    self.write(f.read())
             except:
                 print('compile failed')
-            path = f'{CLIENT_CODEBASE_PATH}/dist'
-            shutil.make_archive('bundle', 'zip', path)
-            with open('bundle.zip', 'rb') as f:
-                self.write(f.read())
 
         if key == 'zip/source':
             filename = 'source'
@@ -59,11 +60,11 @@ class CompileHandler(tornado.web.RequestHandler):
             try:
                 subprocess.check_call(f'git archive -o {filename}.{extname} HEAD',
                                       shell=True, cwd=CLIENT_CODEBASE_PATH)
+                path = f'{CLIENT_CODEBASE_PATH}/{filename}.{extname}'
+                with open(path, 'rb') as f:
+                    self.write(f.read())
             except:
                 print('compile failed')
-            path = f'{CLIENT_CODEBASE_PATH}/{filename}.{extname}'
-            with open(path, 'rb') as f:
-                self.write(f.read())
 
         dotenv.set_key(env_file, 'VUE_APP_TITLE', old_title)
         dotenv.set_key(env_file, 'VUE_APP_DEFAULT_WORKFLOW', old_default_workflow)

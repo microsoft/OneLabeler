@@ -1,6 +1,6 @@
-# Server
+# Algorithm Server
 
-server for vue-tornado-project
+A server providing algorithm services
 
 ## Development
 

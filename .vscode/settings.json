@@ -110,6 +110,7 @@
         "sklearn",
         "slic",
         "sobel",
+        "socketio",
         "subsampling",
         "superpixel",
         "tensorflow",
