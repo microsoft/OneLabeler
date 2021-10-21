@@ -6,6 +6,7 @@ export default {
   label: 'SmallestMargin (Active Learning)',
   id: 'SmallestMargin-74021796',
   inputs: ['features', 'labels', 'model'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

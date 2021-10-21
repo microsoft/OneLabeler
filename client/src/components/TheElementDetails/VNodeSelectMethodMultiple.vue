@@ -62,7 +62,7 @@
           <v-list-item
             v-if="appendCreateOption"
             class="px-6"
-            @click="onCreateMenuOption"
+            @click="$emit('create:option')"
           >
             <v-list-item-title class="subtitle-2">
               <v-icon
@@ -132,9 +132,6 @@ export default Vue.extend({
         orders.indexOf(a.id) - orders.indexOf(b.id)
       ));
       this.$emit('update:selections', sorted);
-    },
-    onCreateMenuOption(): void {
-      this.$emit('create:option');
     },
   },
 });

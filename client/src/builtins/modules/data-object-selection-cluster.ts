@@ -6,6 +6,7 @@ export default {
   label: 'Cluster (Clustering)',
   id: 'Cluster-13466955',
   inputs: ['features', 'labels'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

@@ -5,6 +5,7 @@ export default {
   label: 'Random (Dummy)',
   id: 'Random-73417867',
   inputs: ['labels'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

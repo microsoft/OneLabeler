@@ -5,6 +5,7 @@ export default {
   label: 'Projection (User Sampling)',
   id: 'Projection',
   inputs: ['features', 'labels'],
+  output: 'samples',
   isAlgorithmic: false,
   isBuiltIn: true,
   isModelBased: false,

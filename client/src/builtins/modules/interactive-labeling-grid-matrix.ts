@@ -5,6 +5,7 @@ export default {
   label: 'Grid Matrix',
   id: 'GridMatrix-89670576',
   inputs: ['dataObjects', 'samples'],
+  output: 'labels',
   isAlgorithmic: false,
   isBuiltIn: true,
   isModelBased: false,

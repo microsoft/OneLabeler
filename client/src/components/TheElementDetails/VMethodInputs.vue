@@ -1,15 +1,15 @@
 <template>
   <div style="display: flex; flex: 1 1 100%; align-items: center;">
     <v-autocomplete
-      :value="instanceInputList"
-      :items="processInputList"
+      :value="methodInputs"
+      :items="moduleInputs"
       :disabled="disabled"
       label="Process Input"
       outlined
       dense
       multiple
       hide-details
-      @input="onEditInstanceInputList($event)"
+      @input="onEditMethodInputs($event)"
     >
       <template #selection="data">
         <v-chip
@@ -30,9 +30,9 @@
         >
           <v-checkbox
             :label="data.item"
-            :value="instanceInputList.findIndex((d) => d === data.item) >= 0"
-            :input-value="instanceInputList.findIndex((d) => d === data.item) >= 0"
-            :disabled="processInputListOfRequired.findIndex((d) => d === data.item) >= 0"
+            :value="methodInputs.findIndex((d) => d === data.item) >= 0"
+            :input-value="methodInputs.findIndex((d) => d === data.item) >= 0"
+            :disabled="moduleRequiredInputs.findIndex((d) => d === data.item) >= 0"
             class="ma-0"
             dense
             hide-details
@@ -47,17 +47,17 @@
 import Vue, { PropType } from 'vue';
 
 export default Vue.extend({
-  name: 'VNodeEditableInput',
+  name: 'VMethodInputs',
   props: {
-    processInputList: {
+    moduleInputs: {
       type: Array as PropType<string[]>,
       default: () => [],
     },
-    processInputListOfRequired: {
+    moduleRequiredInputs: {
       type: Array as PropType<string[]>,
       default: () => [],
     },
-    instanceInputList: {
+    methodInputs: {
       type: Array as PropType<string[]>,
       default: () => [],
     },
@@ -72,17 +72,18 @@ export default Vue.extend({
     };
   },
   methods: {
-    onEditInstanceInputList(instanceInputList: string[]): void {
+    onEditMethodInputs(newValues: string[]): void {
       // Sort by input list order.
-      const orders = this.processInputList;
-      const sorted = instanceInputList.sort((a, b) => (
+      const orders = this.moduleInputs;
+      const sorted = newValues.sort((a, b) => (
         orders.indexOf(a) - orders.indexOf(b)
       ));
-      this.$emit('edit:list', sorted);
+      this.$emit('edit:method-inputs', sorted);
     },
   },
 });
 </script>
+
 <style>
 /** Change the font of checkbox text. */
 .parameter-panel-checkbox .v-label {

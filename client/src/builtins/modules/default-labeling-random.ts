@@ -8,6 +8,7 @@ export default {
   label: 'Random (Dummy)',
   id: 'Random-38398168',
   inputs: ['features'],
+  output: 'labels',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

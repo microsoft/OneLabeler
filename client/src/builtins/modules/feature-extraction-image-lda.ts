@@ -9,6 +9,7 @@ export default {
   label: 'LDA (Supervised)',
   id: 'image-LDA-45100847',
   inputs: ['dataObjects', 'labels'],
+  output: 'features',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

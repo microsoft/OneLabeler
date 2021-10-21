@@ -290,6 +290,10 @@ const createNodeMenu = [
     value: WorkflowNodeType.ModelTraining,
   },
   {
+    label: 'create custom node',
+    value: WorkflowNodeType.Custom,
+  },
+  {
     label: 'create decision node',
     value: WorkflowNodeType.Decision,
   },
@@ -451,6 +455,7 @@ export default Vue.extend({
         [WorkflowNodeType.InteractiveLabeling]: 'interactive labeling',
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
         [WorkflowNodeType.ModelTraining]: 'model training',
+        [WorkflowNodeType.Custom]: 'custom',
         [WorkflowNodeType.Decision]: 'decision',
         [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
@@ -462,6 +467,7 @@ export default Vue.extend({
         [WorkflowNodeType.InteractiveLabeling]: [],
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
+        [WorkflowNodeType.Custom]: null,
         [WorkflowNodeType.Decision]: undefined,
         [WorkflowNodeType.Exit]: undefined,
       } as Record<WorkflowNodeType, unknown>;
@@ -598,6 +604,7 @@ export default Vue.extend({
   },
 });
 </script>
+
 <style>
 #flowchart-canvas {
   background-size: 20px 20px, 20px 20px, 10px 10px, 10px 10px;

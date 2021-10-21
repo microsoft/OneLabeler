@@ -28,7 +28,7 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'VNodeOutput',
+  name: 'VMethodOutput',
   props: {
     processOutput: {
       type: String,
@@ -42,6 +42,7 @@ export default Vue.extend({
   },
 });
 </script>
+
 <style>
 /** Hide the menu trigger button for process-output. */
 .parameter-panel-process-output .v-input__append-inner {

@@ -6,6 +6,7 @@ export default {
   label: 'DenseAreas (Clustering)',
   id: 'DenseAreas-67390401',
   inputs: ['features', 'labels'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

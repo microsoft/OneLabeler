@@ -8,6 +8,7 @@ export default {
   label: 'Null (Dummy)',
   id: 'Null-35514905',
   inputs: ['features'],
+  output: 'labels',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

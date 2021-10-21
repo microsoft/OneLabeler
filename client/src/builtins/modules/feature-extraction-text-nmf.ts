@@ -9,6 +9,7 @@ export default {
   label: 'NMF (Unsupervised)',
   id: 'text-NMF-78139065',
   inputs: ['dataObjects'],
+  output: 'features',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

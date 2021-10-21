@@ -23,7 +23,7 @@
         <v-list-item
           v-for="(option, i) in menu.options"
           :key="i"
-          @click="onClickMenuOption(option.value)"
+          @click="$emit('update:selection', option.value)"
         >
           <v-list-item-title class="subtitle-2">
             {{ option.label }}
@@ -45,7 +45,7 @@
         </v-list-item>
         <v-list-item
           v-if="appendCreateOption"
-          @click.stop="onCreateMenuOption"
+          @click.stop="$emit('create:option')"
         >
           <v-list-item-title class="subtitle-2">
             <v-icon
@@ -98,14 +98,6 @@ export default Vue.extend({
     disabled: {
       type: Boolean,
       default: false,
-    },
-  },
-  methods: {
-    onClickMenuOption(option: IMethod): void {
-      this.$emit('update:selection', option);
-    },
-    onCreateMenuOption(): void {
-      this.$emit('create:option');
     },
   },
 });

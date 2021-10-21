@@ -7,6 +7,7 @@ export default {
   label: 'Random3D (Dummy)',
   id: 'Random-87333124',
   inputs: ['dataObjects'],
+  output: 'features',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

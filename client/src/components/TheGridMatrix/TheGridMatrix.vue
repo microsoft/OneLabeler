@@ -78,7 +78,8 @@ export default Vue.extend({
     },
     dataType: {
       type: String as PropType<DataType>,
-      required: true,
+      // In case the interface is created before data type is selected.
+      default: null,
     },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,

@@ -10,6 +10,7 @@ export default {
   label: 'POS-tagging',
   id: 'POS-tagging-438546',
   inputs: ['dataObjects', 'features'],
+  output: 'labels',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

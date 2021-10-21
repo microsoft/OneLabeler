@@ -38,8 +38,7 @@ export const dataType = (state: IState): DataType | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.Initialization;
   const node = nodes.find((d) => d.type === type);
-  if (node === undefined) return null;
-  return (node.value as { dataType: DataType }).dataType;
+  return node?.value?.dataType ?? null;
 };
 
 export const processesValid = (state: IState): Process[] => {

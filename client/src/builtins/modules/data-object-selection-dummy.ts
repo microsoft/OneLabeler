@@ -7,6 +7,7 @@ export default {
   label: 'DatasetOrder (Dummy)',
   id: 'DatasetOrder',
   inputs: ['labels'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

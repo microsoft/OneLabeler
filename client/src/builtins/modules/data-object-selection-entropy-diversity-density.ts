@@ -6,6 +6,7 @@ export default {
   label: 'EntropyDiversityDensity (Active Learning)',
   id: 'EntropyDiversityDensity-60957928',
   inputs: ['features', 'labels', 'model'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

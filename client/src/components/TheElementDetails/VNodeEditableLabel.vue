@@ -18,7 +18,7 @@
       dense
       hide-details
       single-line
-      @input="onEditLabel($event)"
+      @input="$emit('edit:label', $event)"
     />
     <v-btn
       title="edit"
@@ -60,9 +60,6 @@ export default Vue.extend({
     },
     onClickOutsideEditField(): void {
       this.isLabelEditable = false;
-    },
-    onEditLabel(label: string): void {
-      this.$emit('edit:label', label);
     },
   },
 });

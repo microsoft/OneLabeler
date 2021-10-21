@@ -9,6 +9,7 @@ export default {
   label: 'BoW (Handcrafted)',
   id: 'image-BoW-6989392',
   inputs: ['dataObjects'],
+  output: 'features',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

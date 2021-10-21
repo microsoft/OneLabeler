@@ -3,9 +3,7 @@
     flat
     outlined
   >
-    <v-card-title
-      class="view-header px-2"
-    >
+    <v-card-title class="view-header px-2">
       <template v-if="!isLabelEditable">
         <span
           class="subtitle-2"
@@ -26,7 +24,7 @@
         dense
         hide-details
         single-line
-        @input="onEditLabel($event)"
+        @input="$emit('edit:label', $event)"
       />
       <v-btn
         v-if="!disabled"
@@ -52,7 +50,7 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'VNodeEditableMethodLabel',
+  name: 'VMethodLabel',
   props: {
     label: {
       type: String,
@@ -74,9 +72,6 @@ export default Vue.extend({
     },
     onClickOutsideEditField(): void {
       this.isLabelEditable = false;
-    },
-    onEditLabel(label: string): void {
-      this.$emit('edit:label', label);
     },
   },
 });

@@ -1,42 +1,30 @@
 <template>
   <component
     :is="component"
-    :methods="methodsFiltered"
-    :models="modelsFiltered"
+    :methods="methods"
+    :models="models"
     :node="node"
     :edge="edge"
     @edit:node="$emit('edit:node', $event)"
-    @create:method="onCreateMethod"
+    @create:method="$emit('create:method', $event)"
     @edit:method="$emit('edit:method', $event)"
-    @create:model="onCreateModel"
+    @create:model="$emit('create:model', $event)"
     @edit:model="$emit('edit:model', $event)"
   />
 </template>
 
 <script lang="ts">
 import Vue, { PropType, VueConstructor } from 'vue';
-import ObjectId from 'bson-objectid';
-import { v4 as uuidv4 } from 'uuid';
 import {
   ModelService,
   Process,
-  ProcessType,
   WorkflowEdge,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
 import TheEdgeDetails from './TheEdgeDetails.vue';
 import TheElementDetailsSelectionEmpty from './TheElementDetailsSelectionEmpty.vue';
 import TheElementDetailsSelectionMultiple from './TheElementDetailsSelectionMultiple.vue';
-import TheNodeDetailsDataObjectSelection from './TheNodeDetailsDataObjectSelection.vue';
-import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
-import TheNodeDetailsDefaultLabeling from './TheNodeDetailsDefaultLabeling.vue';
-import TheNodeDetailsFeatureExtraction from './TheNodeDetailsFeatureExtraction.vue';
-import TheNodeDetailsInteractiveLabeling from './TheNodeDetailsInteractiveLabeling.vue';
-import TheNodeDetailsModelTraining from './TheNodeDetailsModelTraining.vue';
-import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
-import TheNodeDetailsStoppageAnalysis from './TheNodeDetailsStoppageAnalysis.vue';
-import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
+import TheNodeDetails from './TheNodeDetails.vue';
 
 const isElementNode = (
   element: WorkflowNode | WorkflowEdge,
@@ -75,112 +63,9 @@ export default Vue.extend({
       const { edge, node, selection } = this;
       if (selection.length === 0) return TheElementDetailsSelectionEmpty;
       if (selection.length >= 2) return TheElementDetailsSelectionMultiple;
-      const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsDataObjectSelection,
-        [WorkflowNodeType.Decision]: TheNodeDetailsDecision,
-        [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsDefaultLabeling,
-        [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsFeatureExtraction,
-        [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsInteractiveLabeling,
-        [WorkflowNodeType.ModelTraining]: TheNodeDetailsModelTraining,
-        [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsStoppageAnalysis,
-        [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
-        [WorkflowNodeType.Exit]: TheNodeDetailsExit,
-      } as Partial<Record<WorkflowNodeType, VueConstructor>>;
-      if (node !== null && node.type in mapper) return mapper[node.type] as VueConstructor;
-      if (edge !== null) return TheEdgeDetails as VueConstructor;
+      if (node !== null) return TheNodeDetails;
+      if (edge !== null) return TheEdgeDetails;
       return TheElementDetailsSelectionEmpty;
-    },
-    methodsFiltered(): Process[] | null {
-      const { node } = this;
-      if (node === null) return null;
-      const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: ProcessType.DataObjectSelection,
-        [WorkflowNodeType.DefaultLabeling]: ProcessType.DefaultLabeling,
-        [WorkflowNodeType.FeatureExtraction]: ProcessType.FeatureExtraction,
-        [WorkflowNodeType.InteractiveLabeling]: ProcessType.InteractiveLabeling,
-        [WorkflowNodeType.ModelTraining]: ProcessType.ModelTraining,
-        [WorkflowNodeType.StoppageAnalysis]: ProcessType.StoppageAnalysis,
-      } as Record<WorkflowNodeType, ProcessType>;
-      if (!(node.type in mapper)) return [];
-      const processType = mapper[node.type];
-      return (this.methods as Process[])
-        .filter((d) => d.type === processType);
-    },
-    modelsFiltered(): ModelService[] | null {
-      const { node } = this;
-      if (node === null) return null;
-      if (node.type === WorkflowNodeType.DataObjectSelection) {
-        return this.models.filter((d: ModelService) => d.isValidSampler);
-      }
-      if (node.type === WorkflowNodeType.DefaultLabeling
-        || node.type === WorkflowNodeType.ModelTraining
-      ) {
-        return this.models;
-      }
-      return null;
-    },
-  },
-  methods: {
-    onCreateMethod(): void {
-      const { node } = this;
-      if (node === null) return;
-      const nodeType = node.type;
-      let method = {
-        label: 'custom',
-        id: `custom-${uuidv4()}`,
-        isAlgorithmic: true,
-        isBuiltIn: false,
-        isModelBased: false,
-        isServerless: false,
-        api: '',
-      } as Partial<Process>;
-      if (nodeType === WorkflowNodeType.DataObjectSelection) {
-        method = {
-          ...method,
-          type: ProcessType.DataObjectSelection,
-          inputs: ['labels'],
-        };
-      }
-      if (nodeType === WorkflowNodeType.DefaultLabeling) {
-        method = {
-          ...method,
-          type: ProcessType.DefaultLabeling,
-          inputs: ['features', 'model'],
-        };
-      }
-      if (nodeType === WorkflowNodeType.FeatureExtraction) {
-        method = {
-          ...method,
-          type: ProcessType.FeatureExtraction,
-          inputs: ['dataObjects'],
-        };
-      }
-      if (nodeType === WorkflowNodeType.ModelTraining) {
-        method = {
-          ...method,
-          type: ProcessType.ModelTraining,
-          inputs: ['model'],
-        };
-      }
-      if (nodeType === WorkflowNodeType.StoppageAnalysis) {
-        method = {
-          ...method,
-          type: ProcessType.StoppageAnalysis,
-          inputs: ['labels'],
-        };
-      }
-      this.$emit('create:method', method);
-    },
-    onCreateModel(): void {
-      const model: ModelService = {
-        label: 'custom',
-        isBuiltIn: false,
-        isServerless: false,
-        isValidSampler: true,
-        type: '',
-        objectId: (new ObjectId()).toHexString(),
-      };
-      this.$emit('create:model', model);
     },
   },
 });

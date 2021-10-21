@@ -35,7 +35,7 @@
             <v-list-item
               v-for="(option, optionIdx) in param.options"
               :key="optionIdx"
-              @click="onClickParamOption(paramKey, option)"
+              @click="$emit('click:param-option', { paramKey, option })"
             >
               <v-list-item-title class="subtitle-2">
                 {{ option.label }}
@@ -53,7 +53,7 @@ import Vue, { PropType } from 'vue';
 import { MethodParams } from '@/commons/types';
 
 export default Vue.extend({
-  name: 'VNodeMethodParams',
+  name: 'VMethodParams',
   props: {
     params: {
       type: Object as PropType<MethodParams>,
@@ -62,14 +62,6 @@ export default Vue.extend({
     outlined: {
       type: Boolean,
       default: true,
-    },
-  },
-  methods: {
-    onClickParamOption(
-      paramKey: string,
-      option: { value: unknown, label: string },
-    ): void {
-      this.$emit('click:param-option', { paramKey, option });
     },
   },
 });

@@ -7,6 +7,7 @@ export default {
   label: 'Static',
   id: 'Static-72885436',
   inputs: ['model'],
+  output: 'model',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

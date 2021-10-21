@@ -9,6 +9,7 @@ export default {
   label: 'SVD (Unsupervised)',
   id: 'image-SVD-25940167',
   inputs: ['dataObjects'],
+  output: 'features',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

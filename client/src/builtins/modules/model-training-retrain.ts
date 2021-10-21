@@ -6,6 +6,7 @@ export default {
   label: 'Retrain',
   id: 'Retrain-16440841',
   inputs: ['features', 'labels', 'model'],
+  output: 'model',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

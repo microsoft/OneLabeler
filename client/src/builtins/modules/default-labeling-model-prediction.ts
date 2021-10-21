@@ -6,6 +6,7 @@ export default {
   label: 'ModelPrediction',
   id: 'ModelPrediction-29967546',
   inputs: ['features', 'model'],
+  output: 'labels',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

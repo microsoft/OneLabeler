@@ -24,7 +24,8 @@ export default Vue.extend({
   props: {
     dataType: {
       type: String as PropType<DataType>,
-      required: true,
+      // In case the interface is created before data type is selected.
+      default: null,
     },
   },
   data() {

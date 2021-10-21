@@ -6,6 +6,7 @@ export default {
   label: 'ClusterCentroids (Clustering)',
   id: 'ClusterCentroids-60587176',
   inputs: ['features', 'labels'],
+  output: 'samples',
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,
