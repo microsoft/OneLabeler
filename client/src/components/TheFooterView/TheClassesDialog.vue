@@ -42,7 +42,7 @@
           :close-on-content-click="false"
           offset-y
         >
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <v-btn
               title="set color"
               class="view-header-button elevation-0 ml-1"

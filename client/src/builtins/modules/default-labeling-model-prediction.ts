@@ -1,11 +1,5 @@
-import {
-  ProcessType,
-} from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ProcessType } from '@/commons/types';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DefaultLabeling,
@@ -17,5 +11,5 @@ export default {
   isModelBased: true,
   isServerless: false,
   model: undefined,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/ModelPrediction`,
+  api: `${ALGORITHM_URL}/defaultLabels/ModelPrediction`,
 };

@@ -1,15 +1,8 @@
 import axios from 'axios';
 import showProgressBar from '@/plugins/nprogress-interceptor';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from './http-params';
+import { ALGORITHM_URL } from '@/services/http-params';
 
-const formatter = (
-  port: number,
-  funcName: string,
-) => `${PROTOCOL_ALGO}://${IP_ALGO}:${port}/projection/${funcName}`;
+const formatter = (funcName: string) => `${ALGORITHM_URL}/projection/${funcName}`;
 
 export const PCA = showProgressBar(async (
   X: number[][],
@@ -17,7 +10,7 @@ export const PCA = showProgressBar(async (
 ): Promise<number[][]> => {
   const { projection } = (
     await axios.post(
-      formatter(PORT_ALGO, 'PCA'),
+      formatter('PCA'),
       JSON.stringify({ X, nComponents }),
     )
   ).data;
@@ -30,7 +23,7 @@ export const MDS = showProgressBar(async (
 ): Promise<number[][]> => {
   const { projection } = (
     await axios.post(
-      formatter(PORT_ALGO, 'MDS'),
+      formatter('MDS'),
       JSON.stringify({ X, nComponents }),
     )
   ).data;
@@ -43,7 +36,7 @@ export const TSNE = showProgressBar(async (
 ): Promise<number[][]> => {
   const { projection } = (
     await axios.post(
-      formatter(PORT_ALGO, 'TSNE'),
+      formatter('TSNE'),
       JSON.stringify({ X, nComponents }),
     )
   ).data;

@@ -31,10 +31,18 @@
             $vuetify.icons.values.server
           </v-icon>
         </div>
-        <div class="table-cell">Algorithm</div>
-        <div class="table-cell">Server</div>
-        <div class="table-cell">{{ algorithmServerLatency }}</div>
-        <div class="table-cell">ms</div>
+        <div class="table-cell">
+          Algorithm
+        </div>
+        <div class="table-cell">
+          Server
+        </div>
+        <div class="table-cell">
+          {{ algorithmServerLatency }}
+        </div>
+        <div class="table-cell">
+          ms
+        </div>
       </div>
       <div class="table-row">
         <div class="table-cell">
@@ -45,10 +53,18 @@
             $vuetify.icons.values.data
           </v-icon>
         </div>
-        <div class="table-cell">Database</div>
-        <div class="table-cell">Server</div>
-        <div class="table-cell">{{ databaseServerLatency }}</div>
-        <div class="table-cell">ms</div>
+        <div class="table-cell">
+          Database
+        </div>
+        <div class="table-cell">
+          Server
+        </div>
+        <div class="table-cell">
+          {{ databaseServerLatency }}
+        </div>
+        <div class="table-cell">
+          ms
+        </div>
       </div>
       <div class="table-row">
         <div class="table-cell">
@@ -59,10 +75,18 @@
             $vuetify.icons.values.python
           </v-icon>
         </div>
-        <div class="table-cell">Python API</div>
-        <div class="table-cell">Server</div>
-        <div class="table-cell">{{ pythonApiServerLatency }}</div>
-        <div class="table-cell">ms</div>
+        <div class="table-cell">
+          Python API
+        </div>
+        <div class="table-cell">
+          Server
+        </div>
+        <div class="table-cell">
+          {{ pythonApiServerLatency }}
+        </div>
+        <div class="table-cell">
+          ms
+        </div>
         <div>
           <v-switch
             class="pa-0 pl-2 ma-0"

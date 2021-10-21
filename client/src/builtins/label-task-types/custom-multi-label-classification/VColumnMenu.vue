@@ -1,6 +1,10 @@
 <template>
   <!-- The data object label menu. -->
-  <v-menu offset-y>
+  <v-menu
+    v-model="showMenu"
+    :close-on-click="false"
+    offset-y
+  >
     <template #activator="{ on }">
       <v-btn
         :disabled="disabled"
@@ -49,6 +53,14 @@ export default Vue.extend({
     disabled: {
       type: Boolean,
       default: false,
+    },
+  },
+  data() {
+    return { showMenu: true };
+  },
+  watch: {
+    columns() {
+      this.showMenu = true;
     },
   },
   methods: {

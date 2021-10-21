@@ -1,11 +1,5 @@
-import {
-  ProcessType,
-} from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ProcessType } from '@/commons/types';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DataObjectSelection,
@@ -17,7 +11,7 @@ export default {
   isModelBased: true,
   isServerless: false,
   // 'http://localhost:8005/selection/EntropyDiversityDensity'
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/EntropyDiversityDensity`,
+  api: `${ALGORITHM_URL}/selection/EntropyDiversityDensity`,
   model: undefined,
   params: {
     nBatch: {

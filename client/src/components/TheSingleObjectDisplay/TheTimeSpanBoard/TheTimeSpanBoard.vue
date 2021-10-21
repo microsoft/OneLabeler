@@ -34,9 +34,9 @@
             @update:span="onUpdateLabelSpan"
           />
           <component
+            :is="setup.panel"
             v-for="(setup, i) in taskSetups"
             :key="i"
-            :is="setup.panel"
             :label="label"
             :categories="filterCategoriesByLabelTask(setup.type)"
             :label2color="label2color"

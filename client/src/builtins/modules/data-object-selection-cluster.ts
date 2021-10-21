@@ -1,11 +1,5 @@
-import {
-  ProcessType,
-} from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ProcessType } from '@/commons/types';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DataObjectSelection,
@@ -17,7 +11,7 @@ export default {
   isModelBased: false,
   isServerless: false,
   // 'http://localhost:8005/selection/Cluster',
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/Cluster`,
+  api: `${ALGORITHM_URL}/selection/Cluster`,
   params: {
     nBatch: {
       value: 16,

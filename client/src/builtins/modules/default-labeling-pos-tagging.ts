@@ -3,11 +3,7 @@ import {
   LabelTaskType,
   ProcessType,
 } from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DefaultLabeling,
@@ -18,7 +14,7 @@ export default {
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/defaultLabels/POS-tagging`,
+  api: `${ALGORITHM_URL}/defaultLabels/POS-tagging`,
   dataTypes: [DataType.Text],
   labelTasks: [LabelTaskType.SpanClassification],
 };

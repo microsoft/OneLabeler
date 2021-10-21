@@ -21,7 +21,7 @@ export const upsample = <T extends (number[] | Uint8Array)>(
     // Start the new array with the first element.
     if (i === 0) return arr[0];
     // End the new array with the last element.
-    if (i === newLength - 1) return arr[arr.length -1];
+    if (i === newLength - 1) return arr[arr.length - 1];
     // Interpolate with the values before and after the current location.
     const location = i * stepSize;
     const before = Math.floor(location);
@@ -56,7 +56,7 @@ export const downsample = <T extends (number[] | Uint8Array)>(
 
   const oldStep = 1 / arr.length;
   const newStep = 1 / newLength;
-  
+
   const newArr = new type(newLength).fill(0).map((d, i) => {
     const newStart = i * newStep;
     const newEnd = (i + 1) * newStep;
@@ -72,7 +72,7 @@ export const downsample = <T extends (number[] | Uint8Array)>(
     // Note: if replacing jMin with 0 and jMax with oldLength
     // the function will still work, but at a lower speed.
     let sum = 0;
-    for (let j = jMin; j < jMax; j++) {
+    for (let j = jMin; j < jMax; j += 1) {
       const oldStart = j * oldStep;
       const oldEnd = (j + 1) * oldStep;
       const overlap = getOverlapLength([oldStart, oldEnd], [newStart, newEnd]);
@@ -152,12 +152,12 @@ const downsampleHeight = <T extends (number[] | Uint8Array)>(
     // Note: if replacing jMin with 0 and jMax with oldLength
     // the function will still work, but at a lower speed.
     const row = new type(width).fill(0);
-    for (let j = jMin; j < jMax; j++) {
+    for (let j = jMin; j < jMax; j += 1) {
       const oldStart = j * oldStep;
       const oldEnd = oldStart + oldStep;
       const overlap = getOverlapLength([oldStart, oldEnd], [newStart, newEnd]);
       if (overlap > 0) {
-        for (let k = 0; k < width; k++) {
+        for (let k = 0; k < width; k += 1) {
           row[k] += (overlap / newStep) * matrix[j][k];
         }
       }

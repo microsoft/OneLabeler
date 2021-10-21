@@ -39,9 +39,9 @@
         @scroll="onScroll"
       />
       <component
+        :is="setup.panel"
         v-for="(setup, i) in taskSetups"
         :key="i"
-        :is="setup.panel"
         :label="label"
         :label2color="label2color"
         :label-tasks="labelTasks"

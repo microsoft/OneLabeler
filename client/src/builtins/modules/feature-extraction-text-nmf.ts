@@ -2,11 +2,7 @@ import {
   DataType,
   ProcessType,
 } from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.FeatureExtraction,
@@ -17,6 +13,6 @@ export default {
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/text/NMF`,
+  api: `${ALGORITHM_URL}/features/text/NMF`,
   dataTypes: [DataType.Text],
 };

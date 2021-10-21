@@ -9,7 +9,7 @@ const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'DecisionTree-95912701',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/DecisionTree`,
+  // api: `${ALGORITHM_URL}/model/DecisionTree`,
   // isLocal: true,
 }, {
   type: 'SVM',
@@ -19,7 +19,7 @@ const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'SVM-99885399',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/SVM`,
+  // api: `${ALGORITHM_URL}/model/SVM`,
   // isLocal: true,
 }, {
   type: 'LogisticRegression',
@@ -29,7 +29,7 @@ const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: true,
   // id: 'LogisticRegression-75095119',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LogisticRegression`,
+  // api: `${ALGORITHM_URL}/model/LogisticRegression`,
   // isLocal: true,
 }, {
   type: 'RestrictedBoltzmannMachine',
@@ -39,7 +39,7 @@ const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: false,
   // id: 'RestrictedBoltzmannMachine-73157581',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/RestrictedBoltzmannMachine`,
+  // api: `${ALGORITHM_URL}/model/RestrictedBoltzmannMachine`,
   // isLocal: true,
 }, {
   type: 'LabelSpreading',
@@ -49,7 +49,7 @@ const modelServices: ModelService[] = [{
   isServerless: false,
   isValidSampler: true,
   // id: 'LabelSpreading-81419641',
-  // api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/model/LabelSpreading`,
+  // api: `${ALGORITHM_URL}/model/LabelSpreading`,
   // isLocal: true,
 }];
 

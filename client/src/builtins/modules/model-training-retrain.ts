@@ -1,11 +1,5 @@
-import {
-  ProcessType,
-} from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ProcessType } from '@/commons/types';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.ModelTraining,
@@ -17,5 +11,5 @@ export default {
   isModelBased: false,
   isServerless: false,
   // 'http://localhost:8005/modelUpdated/Retrain'
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/modelUpdated/Retrain`,
+  api: `${ALGORITHM_URL}/modelUpdated/Retrain`,
 };

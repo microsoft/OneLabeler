@@ -2,11 +2,7 @@ import {
   DataType,
   ProcessType,
 } from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.FeatureExtraction,
@@ -18,6 +14,6 @@ export default {
   isModelBased: false,
   isServerless: false,
   // api: 'http://localhost:8005/features/image/SVD',
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/features/image/SVD`,
+  api: `${ALGORITHM_URL}/features/image/SVD`,
   dataTypes: [DataType.Image],
 };

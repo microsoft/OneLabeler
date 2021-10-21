@@ -1,11 +1,5 @@
-import {
-  ProcessType,
-} from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from '@/services/http-params';
+import { ProcessType } from '@/commons/types';
+import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DataObjectSelection,
@@ -16,7 +10,7 @@ export default {
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/selection/ClusterCentroids`,
+  api: `${ALGORITHM_URL}/selection/ClusterCentroids`,
   params: {
     nBatch: {
       value: 48,

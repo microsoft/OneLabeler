@@ -40,7 +40,7 @@ export default {
       formData.append('fileName', name);
       formData.append('key', name);
       const { url, width, height } = (await axios.post(
-        `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/dataObject/image`,
+        `${ALGORITHM_URL}/dataObject/image`,
         formData,
       )).data;
       */

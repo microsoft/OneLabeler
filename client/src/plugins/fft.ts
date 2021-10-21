@@ -40,10 +40,7 @@ const computeWindowValues = (
     Math.cos((Math.PI * i) / (len - 1) - Math.PI / 2)
   );
   const gauss = (len: number, i: number, alpha: number) => (
-    Math.pow(
-      Math.E,
-      -0.5 * Math.pow((i - (len - 1) / 2) / ((alpha * (len - 1)) / 2), 2),
-    )
+    Math.E ** (-0.5 * (((i - (len - 1) / 2) / ((alpha * (len - 1)) / 2)) ** 2))
   );
   const hamming = (len: number, i: number) => (
     0.54 - 0.46 * Math.cos((Math.PI * 2 * i) / (len - 1))
@@ -93,7 +90,7 @@ const computeReverseTable = (bufferSize: number): Uint32Array => {
   let limit = 1;
   let bit = bufferSize >> 1;
   while (limit < bufferSize) {
-    for (let i = 0; i < limit; i++) {
+    for (let i = 0; i < limit; i += 1) {
       reverseTable[i + limit] = reverseTable[i] + bit;
     }
     limit = limit << 1;

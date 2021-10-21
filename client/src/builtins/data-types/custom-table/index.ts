@@ -1,11 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
-  DataType,
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  IText,
   LabelTaskType,
   UploadTarget,
 } from '@/commons/types';

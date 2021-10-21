@@ -1,15 +1,9 @@
 import axios from 'axios';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import { WorkflowGraph } from '@/commons/types';
-import {
-  PROTOCOL_ALGO,
-  IP_ALGO,
-  PORT_ALGO,
-} from './http-params';
+import { ALGORITHM_URL } from '@/services/http-params';
 
-const formatter = (
-  method: string,
-) => `${PROTOCOL_ALGO}://${IP_ALGO}:${PORT_ALGO}/compile/${method}`;
+const formatter = (method: string) => `${ALGORITHM_URL}/compile/${method}`;
 
 /** Download a file from the given url. */
 const download = (
