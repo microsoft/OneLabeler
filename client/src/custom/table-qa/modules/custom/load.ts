@@ -1,5 +1,6 @@
-import { IDataObject, ProcessType } from '@/commons/types';
 import * as d3 from 'd3';
+import { randomShuffle } from '@/plugins/random';
+import { IDataObject, ProcessType } from '@/commons/types';
 
 interface ITable extends IDataObject {
   /** The content of the data object. */
@@ -47,10 +48,10 @@ export default {
         pairs[nameTrimmed].queries = (await d3.json(`./assets/${name}`)).sentence;
       }
     }));
-    const dataObjects = Object.entries(pairs).map(([key, value]) => ({
+    const dataObjects = randomShuffle(Object.entries(pairs).map(([key, value]) => ({
       uuid: key,
       content: value,
-    }));
+    })));
     return { dataObjects };
   },
 };
