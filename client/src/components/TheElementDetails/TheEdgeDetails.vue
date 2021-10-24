@@ -87,6 +87,44 @@
           single-line
         />
       </v-card>
+
+      <!-- The condition -->
+      <template v-if="'condition' in edge">
+        <v-card
+          flat
+          outlined
+          class="mt-2 mx-4"
+        >
+          <div class="view-header px-2">
+            <span
+              class="subtitle-2"
+              style="padding-bottom: 7.4px; padding-top: 7px"
+            >
+              Branch
+            </span>
+          </div>
+        </v-card>
+
+        <v-card
+          outlined
+          class="mt-2 mx-4"
+          style="display: flex"
+        >
+          <span class="pl-2 py-2 subtitle-2">
+            Option
+          </span>
+          <v-text-field
+            :value="`${edge.condition}`"
+            disabled
+            class="ma-0 px-4 pt-1 subtitle-2"
+            style="padding-bottom: 6px !important"
+            type="text"
+            dense
+            hide-details
+            single-line
+          />
+        </v-card>
+      </template>
     </div>
   </v-card>
 </template>
@@ -111,6 +149,7 @@ export default Vue.extend({
   },
 });
 </script>
+
 <style>
 /** Make the letter spacing of v-text-field the same as text outside. */
 .parameter-panel input {

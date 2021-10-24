@@ -44,6 +44,7 @@
       :method="method"
       :models="models"
       :module-inputs="moduleInputs"
+      :module-outputs="moduleOutputs"
       @edit:method="onEditMethod"
       @edit:model="$emit('edit:model', $event)"
       @create:model="$emit('create:model')"
@@ -87,6 +88,10 @@ export default Vue.extend({
       default: '',
     },
     moduleInputs: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    moduleOutputs: {
       type: Array as PropType<string[]>,
       default: () => [],
     },

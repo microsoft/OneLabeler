@@ -273,8 +273,11 @@ export default Vue.extend({
       return this.nDataObjects === 0;
     },
     disableExecutionButton(): boolean {
+      return false;
+      /*
       return (this.currentNode === null || this.nDataObjects === 0)
         && (this.sourceService.type !== SourceType.ServerDB);
+      */
     },
     disableUndoButton(): boolean {
       return this.commandHistory.length === 0;
@@ -286,8 +289,11 @@ export default Vue.extend({
       return this.sourceService.type === SourceType.FileUpload;
     },
     showExecutionButton(): boolean {
+      return true;
+      /*
       return this.currentNode !== null
         || this.sourceService.type === SourceType.ServerDB;
+      */
     },
     uploadType(): UploadTarget | null {
       const dataType = this.dataType as DataType | null;

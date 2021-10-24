@@ -22,6 +22,7 @@
         "blackman",
         "bson",
         "builtins",
+        "camelcase",
         "clusterer",
         "colorama",
         "configurability",
@@ -41,6 +42,7 @@
         "glcm",
         "greycomatrix",
         "greycoprops",
+        "Haifeng",
         "hann",
         "heatmap",
         "hstack",
@@ -62,6 +64,7 @@
         "konva",
         "lanczoz",
         "linebreak",
+        "Liu's",
         "matplotlib",
         "mccabe",
         "mongodb",
@@ -134,7 +137,8 @@
         "vuex",
         "wavesurfer",
         "youtu",
-        "youtube"
+        "youtube",
+        "Zhang's"
     ],
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "python.linting.enabled": true,

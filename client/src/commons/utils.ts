@@ -20,6 +20,7 @@ export const isNodeProcess = (node: WorkflowNode): boolean => (
   || (node.type === WorkflowNodeType.StoppageAnalysis)
   || (node.type === WorkflowNodeType.ModelTraining)
   || (node.type === WorkflowNodeType.QualityAssurance)
+  || (node.type === WorkflowNodeType.Custom)
 );
 
 export const isNodeInteractive = (node: WorkflowNode): boolean => {

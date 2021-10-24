@@ -19,11 +19,12 @@
     >
       <div style="width: 70%">
         <!-- The input box for module instance input parameters. -->
-        <VMethodInputs
-          :module-inputs="moduleInputs"
-          :method-inputs="method.inputs"
+        <VMethodArgs
+          :label="'Method Inputs'"
+          :module-args="moduleInputs"
+          :method-args="method.inputs"
           :disabled="method.isBuiltIn"
-          @edit:method-inputs="onUpsertMethod({ inputs: $event })"
+          @edit:method-args="onUpsertMethod({ inputs: $event })"
         />
       </div>
       <div
@@ -31,7 +32,13 @@
         style="width: 30%"
       >
         <!-- The display of module instance output parameters. -->
-        <VMethodOutput :process-output="method.output" />
+        <VMethodArgs
+          :label="'Method Outputs'"
+          :module-args="moduleOutputs"
+          :method-args="method.outputs"
+          :disabled="method.isBuiltIn || moduleOutputs.length === 1"
+          @edit:method-args="onUpsertMethod({ outputs: $event })"
+        />
       </div>
     </div>
 
@@ -128,19 +135,17 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { ModelService, Process } from '@/commons/types';
-import VMethodInputs from './VMethodInputs.vue';
+import VMethodArgs from './VMethodArgs.vue';
 import VMethodLabel from './VMethodLabel.vue';
 import VMethodModel from './VMethodModel.vue';
-import VMethodOutput from './VMethodOutput.vue';
 import VMethodParams from './VMethodParams.vue';
 
 export default Vue.extend({
   name: 'VMethod',
   components: {
-    VMethodInputs,
+    VMethodArgs,
     VMethodLabel,
     VMethodModel,
-    VMethodOutput,
     VMethodParams,
   },
   props: {
@@ -153,6 +158,10 @@ export default Vue.extend({
       default: () => [],
     },
     moduleInputs: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    moduleOutputs: {
       type: Array as PropType<string[]>,
       default: () => [],
     },

@@ -14,7 +14,7 @@
     style="height: 100%;"
     @user-edit-label="onUserEditLabel"
     @user-edit-labels="onUserEditLabels"
-    @edit-task-window="onEditTaskWindow"
+    @edit-task-window="editTaskWindow({ ...taskWindow, ...$event })"
   />
 </template>
 
@@ -133,7 +133,7 @@ export default Vue.extend({
         this.setStatusOf({ uuid: d.uuid, value: StatusType.Labeled });
       };
       const editSingleCommand = new EditSingleCommand(dataObject, oldLabel, label, editSingle);
-      editSingleCommand.execute();onEditTaskWindow
+      editSingleCommand.execute();
       this.pushCommandHistory(editSingleCommand);
       */
     },
@@ -168,13 +168,6 @@ export default Vue.extend({
       editBatchCommand.execute();
       this.pushCommandHistory(editBatchCommand);
       */
-    },
-    onEditTaskWindow(newValue: Partial<TaskWindow>) {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        ...newValue,
-      });
     },
     async getQueriedDataObjects(): Promise<IDataObject[]> {
       const queryUuids = this.queryUuids as string[];

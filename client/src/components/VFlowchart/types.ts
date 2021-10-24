@@ -60,4 +60,5 @@ export interface FlowchartEdge {
   id: string;
   source: FlowchartPort;
   target: FlowchartPort;
+  condition?: boolean;
 }

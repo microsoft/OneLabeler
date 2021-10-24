@@ -10,7 +10,7 @@
     :task-window="taskWindow"
     style="height: 100%"
     @user-select-uuids="onUserSelectUuids"
-    @edit-task-window="onEditTaskWindow"
+    @edit-task-window="editTaskWindow({ ...taskWindow, ...$event })"
   />
 </template>
 
@@ -109,13 +109,6 @@ export default Vue.extend({
 
       // await this.executeWorkflow(this.nextNodes[0]);
       await this.executeWorkflow(taskWindow.node);
-    },
-    onEditTaskWindow(newValue: Partial<TaskWindow>): void {
-      const { taskWindow } = this;
-      this.editTaskWindow({
-        ...taskWindow,
-        ...newValue,
-      });
     },
     async getScopedDataObjects(): Promise<IDataObject[]> {
       const scopeUuids = this.scopeUuids as string[] | null;

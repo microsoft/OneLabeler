@@ -16,6 +16,7 @@ const icons = {
   fileText: 'far fa-file-alt',
   fileVideo: 'far fa-file-video',
   fileZip: 'fas fa-file-archive',
+  fileCode: 'fas fa-file-code',
   text: 'fas fa-paragraph',
   new: 'fas fa-folder-plus',
   open: 'fas fa-folder-open',

@@ -6,7 +6,7 @@
     @mousemove="onMouseMoveCanvas"
     @mouseup="onMouseUpCanvas"
     @mouseleave="onMouseLeaveCanvas"
-    @contextmenu="onContextMenu"
+    @contextmenu="$emit('contextmenu', $event)"
   >
     <!-- The flowchart edges. -->
     <g
@@ -20,7 +20,7 @@
       :key="edge.id"
       cursor="pointer"
       @mousedown="onMouseDownEdge(edge, $event)"
-      @contextmenu.stop="onContextMenuOfEdge(edge, $event)"
+      @contextmenu.stop="$emit('contextmenu:edge', edge, $event)"
     >
       <slot
         name="edge"
@@ -30,7 +30,7 @@
         <!-- The visible edge. -->
         <path
           :d="`M${getEdgePathPoints(edge).map((d) => d.join(',')).join('L')}`"
-          :stroke="isEdgeSelected(edge) ? 'black' : '#bbb'"
+          :stroke="getEdgeColor(edge)"
           stroke-width="1"
           fill="none"
           :marker-end="`url(#${
@@ -70,7 +70,7 @@
     />
 
     <!-- The flowchart nodes. -->
-    <g
+    <VNode
       v-for="node in [...nodes].sort((a, b) => {
         // Render the selected nodes later than unselected ones.
         if (draggedNode === null) return 0;
@@ -79,67 +79,32 @@
         return 0;
       })"
       :key="node.id"
-      :transform="`translate(${node.x},${node.y})`"
-      cursor="move"
-      @mouseover="onMouseOverNode(node)"
-      @mousedown="onMouseDownNode(node, $event)"
-      @mouseleave="onMouseLeaveNode(node)"
+      :node="node"
+      :is-hovered="isNodeHovered(node)"
+      :is-selected="isNodeSelected(node)"
+      :is-dragged="isNodeDragged(node)"
+      :hovered-port="hoveredPort"
+      @hover:node="onMouseOverNode"
+      @mousedown:node="onMouseDownNode"
+      @leave:node="onMouseLeaveNode"
+      @drag:port="onMouseDownPort"
     >
-      <!-- The geometric element of the node. -->
-      <slot
-        name="node-shape"
-        :node="node"
-        :is-selected="isNodeSelected(node)"
-      >
-        <rect
-          :width="node.width"
-          :height="node.height"
-          :stroke="isNodeSelected(node) ? 'black' : '#bbb'"
-          fill-opacity="0"
-          stroke-width="1"
-        />
-      </slot>
-
-      <!-- The text label of the node. -->
-      <text
-        :y="node.height / 2"
-        font-size="14px"
-        dominant-baseline="middle"
-        text-anchor="middle"
-        style="user-select: none; pointer-events: none;"
-      >
-        <tspan
-          v-for="(d, i) in node.label.split(' ')"
-          :key="i"
-          :x="node.width / 2"
-          :dy="i === 0
-            ? `${-(node.label.split(' ').length - 1) * 0.6}em`
-            : '1.2em'
-          "
+      <template #node-shape>
+        <slot
+          name="node-shape"
+          :node="node"
+          :is-selected="isNodeSelected(node)"
         >
-          {{ d }}
-        </tspan>
-      </text>
-
-      <!-- The ports for linking edges. -->
-      <circle
-        v-for="port in getPorts(node)"
-        :key="`${port.nodeId}-${port.direction}`"
-        :cx="port.dx"
-        :cy="port.dy"
-        :opacity="isPortActive(port) ? 1 : 0"
-        :stroke="hoveredPort !== null
-          && hoveredPort.nodeId === port.nodeId
-          && hoveredPort.direction === port.direction
-          ? 'red'
-          : '#bbb'"
-        :stroke-width="isPortActive(port) ? 1 : 0"
-        fill="white"
-        r="4"
-        style="cursor: crosshair"
-        @mousedown.stop="onMouseDownPort(port)"
-      />
-    </g>
+          <rect
+            :width="node.width"
+            :height="node.height"
+            :stroke="isNodeSelected(node) ? 'black' : '#bbb'"
+            fill-opacity="0"
+            stroke-width="1"
+          />
+        </slot>
+      </template>
+    </VNode>
 
     <!-- The selection box -->
     <rect
@@ -202,6 +167,7 @@ import {
   getBBoxOfPoints,
   getZaggedPathPoints,
 } from './geometry';
+import VNode from './VNode.vue';
 
 const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
@@ -209,6 +175,9 @@ const isSuperset = (set: string[], subset: string[]) => (
 
 export default Vue.extend({
   name: 'VFlowchart',
+  components: {
+    VNode,
+  },
   props: {
     nodes: {
       type: Array as PropType<FlowchartNode[]>,
@@ -545,12 +514,6 @@ export default Vue.extend({
       // port on:drag-start
       this.draggedPort = port;
     },
-    onContextMenu(e: MouseEvent) {
-      this.$emit('contextmenu', e);
-    },
-    onContextMenuOfEdge(edge: FlowchartEdge, e: MouseEvent) {
-      this.$emit('contextmenu:edge', edge, e);
-    },
     clearDragState(): void {
       this.dragStartPoint = null;
       this.dragLastPoint = null;
@@ -608,23 +571,23 @@ export default Vue.extend({
       );
       return points;
     },
-    isPortActive(port: FlowchartPort): boolean {
-      const { hoveredPort, hoveredNode } = this;
-      // If the port is hovered, the port is active.
-      if (hoveredPort !== null
-        && hoveredPort.nodeId === port.nodeId
-        && hoveredPort.direction === port.direction
-      ) {
-        return true;
-      }
-      // If the node of the port is hovered, the port is active.
-      if (hoveredNode !== null && hoveredNode.id === port.nodeId) {
-        return true;
-      }
-      return false;
+    getEdgeColor(edge: FlowchartEdge): string {
+      if (this.isEdgeSelected(edge)) return 'black';
+      if (edge.condition === undefined) return '#bbb';
+      if (edge.condition === true) return '#5aaf4b';
+      if (edge.condition === false) return '#f5504e';
+      return '#bbb';
+    },
+    isNodeHovered(node: FlowchartNode): boolean {
+      if (this.hoveredNode === null) return false;
+      return this.hoveredNode.id === node.id;
     },
     isNodeSelected(node: FlowchartNode): boolean {
       return this.selectedNodeIds.findIndex((id) => id === node.id) >= 0;
+    },
+    isNodeDragged(node: FlowchartNode): boolean {
+      if (this.draggedNodeId === null) return false;
+      return this.draggedNodeId === node.id;
     },
     isEdgeSelected(edge: FlowchartEdge): boolean {
       return this.selectedEdgeIds.findIndex((id) => id === edge.id) >= 0;

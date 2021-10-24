@@ -16,13 +16,13 @@ import {
   IMessage,
   MessageType,
 } from '@/commons/types';
+import {
+  TrimmedWorkflow,
+  parseWorkflow,
+  validateWorkflow,
+} from '@/commons/workflow-utils';
 import { parseJsonFile } from '@/plugins/file';
 import VUploadButton from '../VUploadButton/VUploadButton.vue';
-import {
-  JsonGraph,
-  JsonGraphToWorkflowGraph,
-  validate,
-} from './load-workflow';
 
 /** Compute alert message according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -54,9 +54,9 @@ export default Vue.extend({
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
       const jsonGraph = await parseJsonFile(file);
-      if (validate(jsonGraph)) {
-        const workflow = JsonGraphToWorkflowGraph(
-          jsonGraph as JsonGraph,
+      if (validateWorkflow(jsonGraph)) {
+        const workflow = parseWorkflow(
+          jsonGraph as TrimmedWorkflow,
         );
         const message = {
           content: 'Workflow Configuration Uploaded.',
@@ -65,7 +65,7 @@ export default Vue.extend({
         this.$emit('set:workflow', workflow);
         this.$emit('set:message', message);
       } else {
-        const errors = validate.errors as DefinedError[];
+        const errors = validateWorkflow.errors as DefinedError[];
         const message = computeErrorMessage(errors[0]);
         this.$emit('set:message', message);
       }

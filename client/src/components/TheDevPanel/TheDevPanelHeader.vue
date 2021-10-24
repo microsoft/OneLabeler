@@ -25,7 +25,7 @@
       icon
       tile
       small
-      @click="onClickExport"
+      @click="saveJsonFile(workflow, 'workflow.config.json')"
     >
       <v-icon
         aria-hidden="true"
@@ -42,13 +42,30 @@
       icon
       tile
       small
-      @click="onClickCompile"
+      @click="compileInstaller(workflow)"
     >
       <v-icon
         aria-hidden="true"
         small
       >
         $vuetify.icons.values.hammer
+      </v-icon>
+    </v-btn>
+
+    <!-- The export bundled code button. -->
+    <v-btn
+      title="Export bundled code"
+      color="white"
+      icon
+      tile
+      small
+      @click="compileBundleZip(workflow)"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.fileZip
       </v-icon>
     </v-btn>
 
@@ -59,13 +76,13 @@
       icon
       tile
       small
-      @click="onClickSourceCode"
+      @click="compileSourceZip(workflow)"
     >
       <v-icon
         aria-hidden="true"
         small
       >
-        $vuetify.icons.values.fileZip
+        $vuetify.icons.values.fileCode
       </v-icon>
     </v-btn>
 
@@ -132,13 +149,13 @@
 import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
-import {
-  WorkflowGraph,
-  DockSideType,
-} from '@/commons/types';
+import { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
-import templates from '@/builtins/workflow-templates/index';
-import { compileInstaller, compileZip } from '@/services/compile-api';
+import {
+  compileBundleZip,
+  compileInstaller,
+  compileSourceZip,
+} from '@/services/compile-api';
 import TheNetworkMenu from './TheNetworkMenu.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
 import VDockSideButtons from './VDockSideButtons.vue';
@@ -153,12 +170,6 @@ export default Vue.extend({
     VDockSideButtons,
     VUploadWorkflowButton,
   },
-  data() {
-    return {
-      DockSideType,
-      templates,
-    };
-  },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
     workflow(): WorkflowGraph {
@@ -167,20 +178,15 @@ export default Vue.extend({
     },
   },
   methods: {
+    compileBundleZip,
+    compileInstaller,
+    compileSourceZip,
+    saveJsonFile,
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
       'resetGraph',
     ]),
-    onClickExport(): void {
-      saveJsonFile(this.workflow, 'workflow.config.json');
-    },
-    async onClickCompile(): Promise<void> {
-      await compileInstaller(this.workflow);
-    },
-    async onClickSourceCode(): Promise<void> {
-      await compileZip(this.workflow);
-    },
   },
 });
 </script>

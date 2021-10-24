@@ -44,14 +44,14 @@ import templates from '@/builtins/workflow-templates/index';
 
 export default Vue.extend({
   name: 'VTemplateMenu',
-  data() {
-    return { templates };
-  },
   props: {
     workflow: {
       type: Object as PropType<WorkflowGraph>,
       required: true,
     },
+  },
+  data() {
+    return { templates };
   },
 });
 </script>

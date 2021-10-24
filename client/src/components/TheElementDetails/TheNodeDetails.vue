@@ -6,6 +6,7 @@
     :node="node"
     :view-title="viewTitle"
     :module-inputs="moduleInputs"
+    :module-outputs="moduleOutputs"
     @edit:node="$emit('edit:node', $event)"
     @create:method="onCreateMethod"
     @edit:method="$emit('edit:method', $event)"
@@ -58,6 +59,7 @@ export default Vue.extend({
         [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsMulti,
         [WorkflowNodeType.ModelTraining]: TheNodeDetailsSingle,
         [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsSingle,
+        [WorkflowNodeType.Custom]: TheNodeDetailsSingle,
         [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
         [WorkflowNodeType.Exit]: TheNodeDetailsExit,
       } as Partial<Record<WorkflowNodeType, VueConstructor>>;
@@ -72,6 +74,7 @@ export default Vue.extend({
         [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Instantiation',
         [WorkflowNodeType.ModelTraining]: 'Interim Model Training Instantiation',
         [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
+        [WorkflowNodeType.Custom]: 'Custom Instantiation',
       } as Partial<Record<WorkflowNodeType, string>>;
       return mapper[node.type] ?? '';
     },
@@ -98,6 +101,34 @@ export default Vue.extend({
           'features',
           'dataObjects',
         ],
+        [WorkflowNodeType.Custom]: [
+          'dataObjects',
+          'labels',
+          'samples',
+          'features',
+          'model',
+          'stop',
+        ],
+      } as Partial<Record<WorkflowNodeType, string[]>>;
+      return mapper[node.type] ?? [];
+    },
+    moduleOutputs(): string[] {
+      const { node } = this;
+      const mapper = {
+        [WorkflowNodeType.DataObjectSelection]: ['samples'],
+        [WorkflowNodeType.DefaultLabeling]: ['labels'],
+        [WorkflowNodeType.FeatureExtraction]: ['features'],
+        [WorkflowNodeType.InteractiveLabeling]: ['labels'],
+        [WorkflowNodeType.ModelTraining]: ['model'],
+        [WorkflowNodeType.StoppageAnalysis]: ['stop'],
+        [WorkflowNodeType.Custom]: [
+          'dataObjects',
+          'labels',
+          'samples',
+          'features',
+          'model',
+          'stop',
+        ],
       } as Partial<Record<WorkflowNodeType, string[]>>;
       return mapper[node.type] ?? [];
     },
@@ -111,6 +142,7 @@ export default Vue.extend({
         [WorkflowNodeType.InteractiveLabeling]: ProcessType.InteractiveLabeling,
         [WorkflowNodeType.ModelTraining]: ProcessType.ModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: ProcessType.StoppageAnalysis,
+        [WorkflowNodeType.Custom]: ProcessType.Custom,
       } as Record<WorkflowNodeType, ProcessType>;
       if (!(node.type in mapper)) return [];
       const processType = mapper[node.type];
@@ -150,7 +182,7 @@ export default Vue.extend({
           ...method,
           type: ProcessType.DataObjectSelection,
           inputs: ['labels'],
-          output: 'samples',
+          outputs: ['samples'],
         };
       }
       if (nodeType === WorkflowNodeType.DefaultLabeling) {
@@ -158,7 +190,7 @@ export default Vue.extend({
           ...method,
           type: ProcessType.DefaultLabeling,
           inputs: ['features', 'model'],
-          output: 'labels',
+          outputs: ['labels'],
         };
       }
       if (nodeType === WorkflowNodeType.FeatureExtraction) {
@@ -166,7 +198,7 @@ export default Vue.extend({
           ...method,
           type: ProcessType.FeatureExtraction,
           inputs: ['dataObjects'],
-          output: 'features',
+          outputs: ['features'],
         };
       }
       if (nodeType === WorkflowNodeType.ModelTraining) {
@@ -174,7 +206,7 @@ export default Vue.extend({
           ...method,
           type: ProcessType.ModelTraining,
           inputs: ['model'],
-          output: 'model',
+          outputs: ['model'],
         };
       }
       if (nodeType === WorkflowNodeType.StoppageAnalysis) {
@@ -182,7 +214,15 @@ export default Vue.extend({
           ...method,
           type: ProcessType.StoppageAnalysis,
           inputs: ['labels'],
-          output: 'stop',
+          outputs: ['stop'],
+        };
+      }
+      if (nodeType === WorkflowNodeType.Custom) {
+        method = {
+          ...method,
+          type: ProcessType.Custom,
+          inputs: [],
+          outputs: [],
         };
       }
       this.$emit('create:method', method);

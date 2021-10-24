@@ -372,8 +372,7 @@ export const executeFeatureExtraction = showProgressBar(async (
 
   if (dataObjects === null || labels === null || statuses === null) return;
 
-  const requireLabels = method.inputs
-    .findIndex((d) => d === 'labels') >= 0;
+  const requireLabels = method.inputs.includes('labels');
 
   try {
     const response = requireLabels
@@ -446,6 +445,66 @@ export const executeStoppageAnalysis = showProgressBar(async (
     }, { root: true });
   }
   commit(rootTypes.SET_STOP, stop, { root: true });
+});
+
+export const executeCustom = showProgressBar(async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  method: Process,
+): Promise<void> => {
+  const {
+    dataObjects,
+    labels,
+    statuses,
+    queryUuids,
+    classes,
+    unlabeledMark,
+    // model,
+    stop,
+  } = rootState;
+
+  const requireDataObjects = method.inputs.includes('dataObjects');
+  const requireLabels = method.inputs.includes('labels');
+  const requireSamples = method.inputs.includes('samples');
+  const requireCategories = method.inputs.includes('categories');
+  const requireModel = method.inputs.includes('model');
+  const requireStop = method.inputs.includes('stop');
+
+  const outputDataObjects = method.outputs.includes('dataObjects');
+  const outputLabels = method.outputs.includes('labels');
+  const outputSamples = method.outputs.includes('samples');
+  const outputCategories = method.outputs.includes('categories');
+  // const outputModel = method.outputs.includes('model');
+  const outputStop = method.outputs.includes('stop');
+
+  try {
+    const inputs = {
+      ...(requireDataObjects && { dataObjects }),
+      ...(requireLabels && { labels, statuses }),
+      ...(requireSamples && { queryUuids }),
+      ...(requireCategories && { classes, unlabeledMark }),
+      // ...(requireModel && { model }),
+      ...(requireStop && { stop }),
+    };
+    const response = await method.run(inputs);
+    if (outputDataObjects) {
+      const newValue = dataObjects.upsertBulk(response.dataObjects);
+      commit(rootTypes.SET_DATA_OBJECTS, newValue.shallowCopy(), { root: true });
+    }
+    if (outputLabels) {
+      commit(rootTypes.SET_LABELS, response.labels.shallowCopy(), { root: true });
+    }
+    if (outputSamples) {
+      commit(rootTypes.SET_QUERY_UUIDS, response.queryUuids, { root: true });
+    }
+    if (outputCategories) {
+      commit(rootTypes.SET_CLASSES, response.categories, { root: true });
+    }
+    if (outputStop) {
+      commit(rootTypes.SET_STOP, response.stop, { root: true });
+    }
+  } catch (e) {
+    handleAlgorithmServiceError(e, commit);
+  }
 });
 
 const getOutputNodes = (
@@ -542,6 +601,12 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.QualityAssurance) {
     // TODO
+  }
+
+  if (node.type === WorkflowNodeType.Custom) {
+    const method = node.value as Process;
+    await executeCustom(store, method);
+    [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   commit(types.SET_CURRENT_NODE, outputNode);

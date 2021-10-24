@@ -3,14 +3,14 @@ import {
   Process,
   WorkflowNode,
   WorkflowEdge,
-  WorkflowGraph,
 } from '@/commons/types';
 import modelServices from '@/builtins/model-services';
-import processes from '@/builtins/processes';
+import processes from '@/builtins/modules';
+import { TrimmedWorkflow, parseWorkflow } from '@/commons/workflow-utils';
 
 const DEFAULT_WORKFLOW = process.env.VUE_APP_DEFAULT_WORKFLOW;
 const { nodes, edges } = DEFAULT_WORKFLOW !== undefined
-  ? JSON.parse(DEFAULT_WORKFLOW) as WorkflowGraph
+  ? parseWorkflow(JSON.parse(DEFAULT_WORKFLOW) as TrimmedWorkflow)
   : { nodes: [], edges: [] };
 
 export interface IState {

@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import TheDevPanelBody from '../TheDevPanelBody/TheDevPanelBody.vue';
+import TheDevPanelBody from './TheDevPanelBody.vue';
 import TheDevPanelHeader from './TheDevPanelHeader.vue';
 
 export default Vue.extend({
