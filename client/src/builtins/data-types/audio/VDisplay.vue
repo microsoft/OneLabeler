@@ -1,12 +1,7 @@
 <template>
   <div
     ref="container"
-    :style="{
-      'width': widthStr,
-      'height': heightStr,
-      'display': 'flex',
-      'flex-direction': 'column',
-    }"
+    style="display: flex; flex-direction: column;"
   >
     <div
       ref="spectrogram"
@@ -43,14 +38,13 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { debounce } from 'lodash';
 import {
-  computed,
   defineComponent,
   ref,
   toRefs,
   onMounted,
   watch,
-  ComputedRef,
   PropType,
   Ref,
 } from '@vue/composition-api';
@@ -141,7 +135,7 @@ const useResponsive = (
     spectrogramCanvas.style.height = `${spectrogram.value.clientHeight}px`;
     spectrogramCanvas.style.width = `${spectrogram.value.clientWidth}px`;
   };
-  useResizeObserver(waveform, onResize);
+  useResizeObserver(waveform, debounce(onResize, 200));
 };
 
 export default defineComponent({
@@ -153,27 +147,9 @@ export default defineComponent({
       type: Object as PropType<IAudio>,
       required: true,
     },
-    // The width of the component as a number or string of form '...%'.
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    // The height of the component as a number or string of form '...%'.
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
   },
   setup(props, { emit }) {
-    const { dataObject, width, height } = toRefs(props);
+    const { dataObject } = toRefs(props);
 
     const container: Ref<HTMLDivElement | null> = ref(null);
     const spectrogram: Ref<HTMLDivElement | null> = ref(null);
@@ -199,15 +175,6 @@ export default defineComponent({
       const containerX = container.value.getBoundingClientRect().left;
       return { left: rect.left - containerX, width: rect.width };
     };
-
-    const widthStr: ComputedRef<string> = computed((): string => {
-      if (typeof width.value === 'number') return `${width.value}px`;
-      return width.value;
-    });
-    const heightStr: ComputedRef<string> = computed((): string => {
-      if (typeof height.value === 'number') return `${height.value}px`;
-      return height.value;
-    });
 
     const onTimeUpdate = (e: Event): void => {
       emit('timeupdate', e);
@@ -235,8 +202,6 @@ export default defineComponent({
       spectrogram,
       waveform,
       vmedia,
-      widthStr,
-      heightStr,
       getMedia,
       getProgress,
       onTimeUpdate,

@@ -19,7 +19,7 @@ export default parseWorkflow({
       type: WorkflowNodeType.Initialization,
       value: {
         dataType: DataType.Image,
-        labelTasks: [LabelTaskType.Segmentation],
+        labelTasks: [LabelTaskType.Segmentation2d],
       },
       layout: { x: 40, y: 40 },
     },

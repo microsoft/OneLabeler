@@ -7,7 +7,8 @@ export enum LabelTaskType {
   FreeformText = 'FreeformText',
   AnnotationRelation = 'AnnotationRelation',
   ObjectDetection = 'ObjectDetection',
-  Segmentation = 'Segmentation',
+  Segmentation2d = 'Segmentation2d',
+  Segmentation3d = 'Segmentation3d',
   SpanClassification = 'SpanClassification',
 }
 
@@ -104,6 +105,9 @@ export interface ILabelRelation {
   uuid: string;
 }
 
+/** The interface of a list storing point segmentation of points in a point cloud data object. */
+export type ILabelPoints = Category[];
+
 export interface ILabel {
   /** The uuid of the data object that owns the label. */
   uuid: string;
@@ -115,6 +119,7 @@ export interface ILabel {
   mask?: ILabelMask;
   spans?: ILabelTextSpan[];
   relations?: ILabelRelation[];
+  pointLabels: ILabelPoints;
 }
 
 /** The label task type setup. */
@@ -127,4 +132,6 @@ export interface ILabelTaskTypeSetup {
   batchTool?: VueConstructor;
   /** The UI widget for displaying single object label in a dedicated panel. */
   panel?: VueConstructor;
+  /** The UI widget for overlaying single object label and interaction trigger. */
+  overlay?: VueConstructor;
 }

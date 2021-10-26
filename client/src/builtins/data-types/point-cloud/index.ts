@@ -11,7 +11,8 @@ import {
   UploadTarget,
   Vector3d,
 } from '@/commons/types';
-import VDisplay from './VDisplay.vue';
+// import VDisplay from './VDisplay.vue';
+import VDisplay from './VDisplayMultiView.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
@@ -35,6 +36,7 @@ export default {
     LabelTaskType.Classification,
     LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
+    LabelTaskType.Segmentation3d,
   ],
   label: 'point cloud',
   importType: UploadTarget.File,

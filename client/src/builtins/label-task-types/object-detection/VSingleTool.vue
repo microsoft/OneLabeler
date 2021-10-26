@@ -78,7 +78,7 @@ export default Vue.extend({
   },
   computed: {
     includesSegmentation(): boolean {
-      return this.labelTasks.includes(LabelTaskType.Segmentation);
+      return this.labelTasks.includes(LabelTaskType.Segmentation2d);
     },
   },
 });

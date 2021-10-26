@@ -1,60 +1,62 @@
 <template>
   <v-card
     class="rounded-0"
-    style="display: flex; flex-direction: column; width: 0;"
+    style="display: flex; flex-direction: row;"
   >
-    <div class="view-header">
-      <v-icon
-        class="px-2"
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.info
-      </v-icon>
-      Variable Inspector
-    </div>
-    <v-divider />
-    <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
-      <div>
-        <div class="view-header">
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.data
-          </v-icon>
-          Data Objects
-        </div>
-        <pre ref="dataObjects" />
+    <div style="flex: 1 1 100%; display: flex; flex-direction: column; width: 0;">
+      <div class="view-header">
+        <v-icon
+          class="px-2"
+          aria-hidden="true"
+          small
+        >
+          $vuetify.icons.values.info
+        </v-icon>
+        Variable Inspector
       </div>
-
-      <div>
-        <div class="view-header">
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.labels
-          </v-icon>
-          Labels
+      <v-divider />
+      <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
+        <div>
+          <div class="view-header">
+            <v-icon
+              class="px-2"
+              aria-hidden="true"
+              small
+            >
+              $vuetify.icons.values.data
+            </v-icon>
+            Data Objects
+          </div>
+          <pre ref="dataObjects" />
         </div>
-        <pre ref="labels" />
-      </div>
 
-      <div>
-        <div class="view-header">
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.samples
-          </v-icon>
-          Samples
+        <div>
+          <div class="view-header">
+            <v-icon
+              class="px-2"
+              aria-hidden="true"
+              small
+            >
+              $vuetify.icons.values.labels
+            </v-icon>
+            Labels
+          </div>
+          <pre ref="labels" />
         </div>
-        <pre ref="samples" />
+
+        <div>
+          <div class="view-header">
+            <v-icon
+              class="px-2"
+              aria-hidden="true"
+              small
+            >
+              $vuetify.icons.values.samples
+            </v-icon>
+            Samples
+          </div>
+          <pre ref="samples" />
+        </div>
       </div>
     </div>
   </v-card>

@@ -7,6 +7,7 @@ import multiLabelClassification from './multi-label-classification';
 import objectDetection from './object-detection';
 import relation from './relation';
 import segmentation2d from './segmentation-2d';
+import segmentation3d from './segmentation-3d';
 import spanClassification from './span-classification';
 
 export default [
@@ -15,6 +16,7 @@ export default [
   freeformText,
   objectDetection,
   segmentation2d,
+  segmentation3d,
   spanClassification,
   relation,
   customClassification,

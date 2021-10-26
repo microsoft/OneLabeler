@@ -11,7 +11,7 @@
       </v-icon>
       Relations
     </div>
-    <div style="overflow-y: scroll; flex: 1 1 auto;">
+    <div class="cards-container">
       <v-card
         v-for="labelRelation in labelRelations"
         :key="labelRelation.uuid"
@@ -145,3 +145,14 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.cards-container {
+  $margin: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: $margin;
+  padding: $margin;
+  overflow-y: auto;
+}
+</style>

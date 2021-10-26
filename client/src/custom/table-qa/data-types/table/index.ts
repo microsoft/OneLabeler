@@ -3,7 +3,6 @@ import {
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  LabelTaskType,
   UploadTarget,
 } from '@/commons/types';
 import {

@@ -1,22 +1,25 @@
 <template>
-  <svg
-    ref="svg"
-    :height="height"
-    :width="width"
-  >
-    <g :transform="transform">
-      <image
-        style="image-rendering: pixelated"
-        :href="src"
-      />
-      <polygon
-        stroke-width="1"
-        fill-opacity="0.5"
-        :stroke="stroke"
-        :points="dataObject.contour.map((d) => d.map((x) => x + 0.5).join(',')).join(' ')"
-      />
-    </g>
-  </svg>
+  <div ref="container">
+    <svg
+      ref="svg"
+      width="0"
+      height="0"
+      style="width: 100%; height: 100%;"
+    >
+      <g :transform="transform">
+        <image
+          style="image-rendering: pixelated"
+          :href="src"
+        />
+        <polygon
+          stroke-width="1"
+          fill-opacity="0.5"
+          :stroke="stroke"
+          :points="dataObject.contour.map((d) => d.map((x) => x + 0.5).join(',')).join(' ')"
+        />
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -27,13 +30,22 @@ import {
   onUpdated,
   ref,
   toRefs,
-  watch,
   ComputedRef,
   PropType,
   Ref,
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
-import { IDataObject, ILabel } from '@/commons/types';
+import { Category, IDataObject, ILabel } from '@/commons/types';
+import useResizeObserver from '@/components/composables/useResizeObserver';
+
+/**
+ * Implementation note:
+ * - flex: 1 1 auto does not work on svg like it works on div.
+ * Thus, wrap the svg with a div, make the div size responsive,
+ * and update the svg with the div is resized.
+ * - Set width and height attribute to 0 to undo the default
+ * svg size (with width being 300 and height being 150).
+ */
 
 interface IBlock extends IDataObject {
   contour: [number, number][];
@@ -43,11 +55,10 @@ interface IBlock extends IDataObject {
   height: number;
 }
 
-/** Compute the transform for moving the image to the convas center. */
+/** Get continuously updated svg size. */
 const useSvgSize = (
+  container: Ref<HTMLElement | null>,
   svg: Ref<HTMLElement | null>,
-  width: Ref<number | string | null>,
-  height: Ref<number | string | null>,
 ) => {
   const svgWidth: Ref<number | null> = ref(null);
   const svgHeight: Ref<number | null> = ref(null);
@@ -59,10 +70,9 @@ const useSvgSize = (
     svgHeight.value = svg.value.clientHeight;
   };
 
+  useResizeObserver(container, getSvgSize);
   onMounted(getSvgSize);
   onUpdated(getSvgSize);
-  watch(width, getSvgSize);
-  watch(height, getSvgSize);
 
   return { svgWidth, svgHeight };
 };
@@ -84,29 +94,16 @@ export default defineComponent({
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
-    /** @description The width of the svg as a number or string of form '...%'. */
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    /** @description The height of the svg as a number or string of form '...%'. */
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
+    unlabeledMark: {
+      type: String as PropType<Category>,
+      default: null,
     },
   },
   setup(props) {
-    const { width, height, dataObject } = toRefs(props);
+    const { dataObject } = toRefs(props);
+    const container: Ref<HTMLElement | null> = ref(null);
     const svg: Ref<HTMLElement | null> = ref(null);
-    const { svgWidth, svgHeight } = useSvgSize(svg, width, height);
+    const { svgWidth, svgHeight } = useSvgSize(container, svg);
 
     // Compute the scaling of the image to fit the svg.
     const transform: ComputedRef<string> = computed(() => {

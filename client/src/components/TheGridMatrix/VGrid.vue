@@ -3,6 +3,8 @@
     :style="{
       'box-shadow': isSelected ? '0px 0px 0px 3px #757575 !important' : undefined,
       'opacity': isLabeled ? '0.5' : undefined,
+      display: 'flex',
+      'flex-direction': 'column',
     }"
     :ripple="false"
     @click="$emit('click:grid', $event)"
@@ -23,19 +25,13 @@
       :style="{ 'height': `${headerHeight}px` }"
       @upsert:label="$emit('upsert:label', $event)"
     />
-    <div
-      pointer-events="none"
-      style="display: flex; align-items: center;"
-    >
-      <component
-        :is="component"
-        :data-object="dataObject"
-        :label="label"
-        :label2color="label2color"
-        :height="bodyHeight"
-        :width="bodyWidth"
-      />
-    </div>
+    <component
+      :is="component"
+      :data-object="dataObject"
+      :label="label"
+      :label2color="label2color"
+      style="flex: 1 1 auto"
+    />
   </v-card>
 </template>
 
@@ -99,14 +95,6 @@ export default Vue.extend({
       type: Boolean,
       default: false,
     },
-    height: {
-      type: Number,
-      default: null,
-    },
-    width: {
-      type: Number,
-      default: null,
-    },
     headerHeight: {
       type: Number,
       default: 29,
@@ -117,12 +105,6 @@ export default Vue.extend({
       const { dataType } = this;
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
       return dataTypeSetup?.display ?? null;
-    },
-    bodyHeight(): number {
-      return Math.max(this.height - this.headerHeight, 0);
-    },
-    bodyWidth(): number {
-      return this.width;
     },
     isLabeled(): boolean {
       return this.status === StatusType.Labeled;

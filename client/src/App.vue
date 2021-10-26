@@ -32,20 +32,17 @@
       </template>
       <div style="flex: 1 1 50%; display: flex; flex-direction: column;">
         <TheNavBarView />
-        <div style="display: flex; flex: 1 1 auto;">
-          <div
-            v-for="(taskWindow, i) in taskWindowsDisplayed"
-            :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
-            :style="{ width: `${100 / nWindows}%` }"
-            class="pa-1"
-            :class="{ 'pl-0': (taskWindows.length !== 1 && i !== 0) }"
-          >
+        <div
+          class="windows-container"
+          :style="{ 'grid-template-columns': `repeat(${nWindows}, 1fr)` }"
+        >
+          <template v-for="taskWindow in taskWindowsDisplayed">
             <component
               :is="getComponent(taskWindow)"
+              :key="`col-${taskWindow.node.id}-${taskWindow.process.id}`"
               :task-window="taskWindow"
-              style="height: 100%;"
             />
-          </div>
+          </template>
         </div>
         <TheFooterView />
         <TheMessageView />
@@ -128,3 +125,13 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.windows-container {
+  $margin: 4px;
+  display: grid;
+  flex: 1 1 auto;
+  gap: $margin;
+  margin: $margin;
+}
+</style>

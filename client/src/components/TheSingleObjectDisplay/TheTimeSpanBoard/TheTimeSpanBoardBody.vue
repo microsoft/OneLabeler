@@ -10,8 +10,7 @@
       :data-object="dataObject"
       :label="label"
       :label2color="label2color"
-      :height="includesSpanClassification ? '70%' : '100%'"
-      :width="'100%'"
+      style="flex: 1 1 70%"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
     />
@@ -27,7 +26,7 @@
       :spans="spans"
       :selected-span="selectedSpan"
       :label2color="label2color"
-      style="flex: 1 1 auto"
+      style="flex: 1 1 30%"
       @create:span="$emit('create:span', $event)"
       @select:span="onSelectSpan"
       @update:span="$emit('update:span', $event)"

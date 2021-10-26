@@ -21,41 +21,42 @@
       @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
-    <div style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;">
-      <template v-if="showCanvas">
-        <ThePaintBoardCanvas
-          ref="canvas"
-          :data-object="dataObject"
-          :label-shapes="labelShapes"
-          :label-mask="labelMask"
-          :unlabeled-mark="unlabeledMark"
-          :stroke-shape="strokeShape"
-          :stroke-width="strokeWidth"
-          :stroke-label="strokeLabel"
-          :label2color="label2color"
-          :mouse-operation="mouseOperation"
-          style="flex: 1 1 auto; width: 100%;"
-          @create:shape="onAddLabelShape"
-          @update:shape="onUpdateLabelShape"
-          @delete:shape="onRemoveLabelShape"
-          @update:mask="onSetLabelMask"
+    <div
+      v-if="showDataObject"
+      style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center;"
+    >
+      <ThePaintBoardBody
+        ref="canvas"
+        :data-object="dataObject"
+        :label-shapes="labelShapes"
+        :label-mask="labelMask"
+        :unlabeled-mark="unlabeledMark"
+        :stroke-shape="strokeShape"
+        :stroke-width="strokeWidth"
+        :stroke-label="strokeLabel"
+        :label2color="label2color"
+        :mouse-operation="mouseOperation"
+        style="flex: 1 1 auto; width: 100%;"
+        @create:shape="onAddLabelShape"
+        @update:shape="onUpdateLabelShape"
+        @delete:shape="onRemoveLabelShape"
+        @update:mask="onSetLabelMask"
+      />
+      <template v-if="enablePagination">
+        <v-divider />
+        <v-pagination
+          v-model="page"
+          :length="nPages"
+          :total-visible="Math.min(5, nPages)"
         />
-        <template v-if="enablePagination">
-          <v-divider />
-          <v-pagination
-            v-model="page"
-            :length="nPages"
-            :total-visible="Math.min(5, nPages)"
-          />
-        </template>
       </template>
-      <p
-        v-else
-        class="subtitle-1"
-        style="flex: 1 1 auto; display: flex; align-items: center;"
-      >
-        No Data Objects Queried
-      </p>
+    </div>
+    <div
+      v-else
+      class="subtitle-1 mx-auto"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
+    >
+      No Data Objects Queried
     </div>
   </v-card>
 </template>
@@ -75,7 +76,7 @@ import {
 } from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
 import ThePaintBoardHeader from './ThePaintBoardHeader.vue';
-import ThePaintBoardCanvas from './ThePaintBoardCanvas.vue';
+import ThePaintBoardBody from './ThePaintBoardBody.vue';
 
 const canvasToFile = async (
   canvas: HTMLCanvasElement,
@@ -96,7 +97,7 @@ export default Vue.extend({
   name: 'ThePaintBoard',
   components: {
     ThePaintBoardHeader,
-    ThePaintBoardCanvas,
+    ThePaintBoardBody,
   },
   props: {
     dataType: {
@@ -143,16 +144,16 @@ export default Vue.extend({
     };
   },
   computed: {
-    showCanvas(): boolean {
+    showDataObject(): boolean {
       const { dataObjects } = this;
       return dataObjects !== null && dataObjects.length !== 0;
     },
     dataObject(): IDataObject | null {
-      if (!this.showCanvas) return null;
+      if (!this.showDataObject) return null;
       return this.dataObjects[this.page - 1];
     },
     label(): ILabel | null {
-      if (!this.showCanvas) return null;
+      if (!this.showDataObject) return null;
       if (this.labels === null) return null;
       return this.labels[this.page - 1];
     },
@@ -163,11 +164,11 @@ export default Vue.extend({
       return this.label?.mask ?? null;
     },
     enablePagination(): boolean {
-      if (!this.showCanvas) return false;
+      if (!this.showDataObject) return false;
       return this.dataObjects.length >= 2;
     },
     nPages(): number {
-      if (!this.showCanvas) return 0;
+      if (!this.showDataObject) return 0;
       return this.dataObjects.length;
     },
     categories(): Category[] {

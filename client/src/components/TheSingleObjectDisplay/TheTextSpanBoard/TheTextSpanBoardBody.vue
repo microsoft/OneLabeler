@@ -2,7 +2,7 @@
   <div
     ref="container"
     v-click-outside="onClickOutside"
-    style="width: 100%"
+    style="display: flex;"
     @click="onClickInside"
   >
     <!-- The annotated spans. -->
@@ -26,7 +26,7 @@
     <!-- The content of the data object. -->
     <div
       ref="content"
-      style="position: relative; width: 100%; height: 100%; display: flex;"
+      style="position: relative; flex: 1 1 auto; display: flex; gap: 4px; margin: 4px"
     >
       <component
         :is="component"
@@ -34,8 +34,7 @@
         :data-object="dataObject"
         :label="label"
         :label2color="label2color"
-        :height="'100%'"
-        :width="'100%'"
+        style="flex: 1 1 75%"
         @scroll="onScroll"
       />
       <component
@@ -46,9 +45,7 @@
         :label2color="label2color"
         :label-tasks="labelTasks"
         :selected-span="selectedSpan"
-        :class="{ 'ml-0': i !== 0 }"
-        class="ma-2"
-        style="flex: 1 1 30%"
+        style="flex: 1 1 25%"
         @upsert:label="$emit('upsert:label', $event)"
         @select:span="onSelectLabelSpan"
         @remove:span="$emit('remove:span', $event)"

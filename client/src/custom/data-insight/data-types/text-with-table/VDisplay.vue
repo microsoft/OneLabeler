@@ -1,15 +1,13 @@
 <template>
   <div
     :style="{
-      'width': widthStr,
-      'height': heightStr,
       'overflow-y': 'scroll',
       'font-size': '24px',
       'line-height': 'initial',
       'display': 'flex',
       'flex-direction': 'row',
     }"
-    @scroll="onScroll"
+    @scroll="$emit('scroll', $event)"
   >
     <div>
       <!-- The data table. -->
@@ -77,24 +75,6 @@ export default Vue.extend({
       type: Object as PropType<ITextWithTable>,
       required: true,
     },
-    /** The width of the svg as a number or string of form '...%' */
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    /** The height of the svg as a number or string of form '...%' */
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
   },
   computed: {
     table() {
@@ -108,16 +88,6 @@ export default Vue.extend({
       if (table.length === 0) return [];
       return Object.keys(table[0]);
     },
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
-    },
   },
   methods: {
     /** Get the text node (needed by span annotation). */
@@ -125,9 +95,6 @@ export default Vue.extend({
       const textElement = this.$refs.textElement as HTMLElement;
       const textNode = textElement.childNodes[0] as Text;
       return textNode;
-    },
-    onScroll(e: MouseEvent): void {
-      this.$emit('scroll', e);
     },
   },
 });

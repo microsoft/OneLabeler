@@ -8,7 +8,6 @@
     :label2color="label2color"
     :feature-names="featureNames"
     :task-window="taskWindow"
-    style="height: 100%"
     @user-select-uuids="onUserSelectUuids"
     @edit-task-window="editTaskWindow({ ...taskWindow, ...$event })"
   />

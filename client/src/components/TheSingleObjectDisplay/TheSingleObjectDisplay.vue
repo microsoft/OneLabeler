@@ -28,6 +28,7 @@ import {
   TaskWindow,
 } from '@/commons/types';
 import ThePaintBoard from './ThePaintBoard/ThePaintBoard.vue';
+import TheSingleObjectBoard from './TheSingleObjectBoard/TheSingleObjectBoard.vue';
 import TheTextSpanBoard from './TheTextSpanBoard/TheTextSpanBoard.vue';
 import TheTimeSpanBoard from './TheTimeSpanBoard/TheTimeSpanBoard.vue';
 
@@ -80,6 +81,7 @@ export default Vue.extend({
       if (dataType === DataType.Video) return TheTimeSpanBoard;
       if (dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
       if (dataType === DataType.Audio) return TheTimeSpanBoard;
+      if (dataType === DataType.PointCloud) return TheSingleObjectBoard;
       if (labelTasks.includes(LabelTaskType.SpanClassification)) return TheTextSpanBoard;
       return TheTextSpanBoard;
     },

@@ -11,56 +11,57 @@
       @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
-    <div style="flex: 1 1 auto; display: flex; flex-direction: column">
-      <template v-if="showDataObject">
-        <!-- Note: not setting height: 0px will make the component not responsive
-          when the window height is small. -->
-        <div style="height: 0px; flex: 1 1 auto; display: flex">
-          <TheTimeSpanBoardBody
-            ref="canvas"
-            :data-type="dataType"
-            :label-tasks="labelTasks"
-            :data-object="dataObject"
-            :label="label"
-            :category-tasks="categoryTasks"
-            :selected-slot="selectedSlot"
-            :selected-span="selectedSpan"
-            :label2color="label2color"
-            class="px-2 pb-2"
-            style="flex: 1 1 auto"
-            @create:span="onCreateLabelSpan"
-            @select:span="selectedSpan = $event"
-            @select:slot="selectedSlot = $event"
-            @update:span="onUpdateLabelSpan"
-          />
-          <component
-            :is="setup.panel"
-            v-for="(setup, i) in taskSetups"
-            :key="i"
-            :label="label"
-            :categories="filterCategoriesByLabelTask(setup.type)"
-            :label2color="label2color"
-            :disabled="label === null"
-            class="pr-2 ma-2"
-            style="flex: 1 1 25%"
-            @upsert:label="onUpsertLabel"
-          />
-        </div>
-        <template v-if="enablePagination">
-          <v-divider />
-          <v-pagination
-            v-model="page"
-            :length="nPages"
-            :total-visible="Math.min(5, nPages)"
-          />
-        </template>
+    <div
+      v-if="showDataObject"
+      style="flex: 1 1 auto; display: flex; flex-direction: column"
+    >
+      <!-- Note: not setting height: 0px will make the component not responsive
+        when the window height is small. -->
+      <div style="flex: 1 1 auto; display: flex; gap: 4px; padding: 4px">
+        <TheTimeSpanBoardBody
+          ref="canvas"
+          :data-type="dataType"
+          :label-tasks="labelTasks"
+          :data-object="dataObject"
+          :label="label"
+          :category-tasks="categoryTasks"
+          :selected-slot="selectedSlot"
+          :selected-span="selectedSpan"
+          :label2color="label2color"
+          style="flex: 1 1 75%"
+          @create:span="onCreateLabelSpan"
+          @select:span="selectedSpan = $event"
+          @select:slot="selectedSlot = $event"
+          @update:span="onUpdateLabelSpan"
+        />
+        <component
+          :is="setup.panel"
+          v-for="(setup, i) in taskSetups"
+          :key="i"
+          :label-tasks="labelTasks"
+          :label="label"
+          :categories="filterCategoriesByLabelTask(setup.type)"
+          :label2color="label2color"
+          :disabled="label === null"
+          style="flex: 1 1 25%"
+          @upsert:label="onUpsertLabel"
+        />
+      </div>
+      <template v-if="enablePagination">
+        <v-divider />
+        <v-pagination
+          v-model="page"
+          :length="nPages"
+          :total-visible="Math.min(5, nPages)"
+        />
       </template>
-      <p
-        v-else
-        class="ma-auto subtitle-1"
-      >
-        No Data Objects Queried
-      </p>
+    </div>
+    <div
+      v-else
+      class="subtitle-1 mx-auto"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
+    >
+      No Data Objects Queried
     </div>
   </v-card>
 </template>

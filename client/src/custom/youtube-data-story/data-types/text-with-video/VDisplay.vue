@@ -1,25 +1,18 @@
 <template>
-  <div
-    :style="{
-      'width': widthStr,
-      'height': heightStr,
-      'display': 'flex',
-      'flex-direction': 'column',
-    }"
-  >
+  <div style="display: flex; flex-direction: column; gap: 4px;">
     <VMedia
       ref="media"
       :key="dataObject.uuid"
       component="youtube-video"
       :src="dataObject.content.url"
-      :width="'100%'"
-      :height="'70%'"
-      @timeupdate="onTimeUpdate"
+      style="flex: 1 1 70%"
+      @timeupdate="$emit('timeupdate', $event)"
       @loadedmetadata="onLoadedMetadata"
     />
     <div
-      style="overflow-y: scroll; font-size: 24px; line-height: initial;"
-      @scroll="onScroll"
+      class="text-container"
+      style="flex: 1 1 30%;"
+      @scroll="$emit('scroll', $event)"
     >
       <!-- Note: don't use linebreak between the text,
         otherwise a white space will be added -->
@@ -31,8 +24,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import VMedia from '../video/VMedia.vue';
-import YoutubeVideoElement from '../youtube-video/youtube-video';
+import VMedia from '@/builtins/data-types/video/VMedia.vue';
+import YoutubeVideoElement from '@/builtins/data-types/youtube-video/youtube-video';
 
 if (customElements.get('youtube-video') === undefined) {
   customElements.define('youtube-video', YoutubeVideoElement);
@@ -58,52 +51,12 @@ export default Vue.extend({
       type: Object as PropType<ITextWithVideo>,
       required: true,
     },
-    /**
-     * @description The width of the svg as a number or string of form '...%'
-     */
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    /**
-     * @description The height of the svg as a number or string of form '...%'
-     */
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-  },
-  computed: {
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
-    },
   },
   methods: {
     onLoadedMetadata(e: Event): void {
       const media = this.getMedia();
       media.currentTime = this.dataObject.content.timestamp;
       this.$emit('loadedmetadata', e);
-    },
-    onScroll(e: MouseEvent): void {
-      this.$emit('scroll', e);
-    },
-    onTimeUpdate(e: Event): void {
-      this.$emit('timeupdate', e);
     },
     getMedia(): HTMLMediaElement {
       const component = this.$refs.media as Vue & {
@@ -126,3 +79,11 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.text-container {
+  overflow-y: scroll;
+  font-size: 24px;
+  line-height: initial;
+}
+</style>

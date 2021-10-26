@@ -24,7 +24,7 @@ export default {
     LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.ObjectDetection,
-    LabelTaskType.Segmentation,
+    LabelTaskType.Segmentation2d,
   ],
   label: 'image',
   importType: UploadTarget.Folder,
@@ -33,17 +33,6 @@ export default {
     storage: IDataObjectStorage,
   ): Promise<void> => {
     await Promise.all([...files].map(async (file) => {
-      /*
-      const { name } = file;
-      const formData = new FormData();
-      formData.append('fileToUpload', file);
-      formData.append('fileName', name);
-      formData.append('key', name);
-      const { url, width, height } = (await axios.post(
-        `${ALGORITHM_URL}/dataObject/image`,
-        formData,
-      )).data;
-      */
       const content = await getBase64(file);
       const { width, height } = await getImgSize(content);
       const dataObject: IImage = {

@@ -31,7 +31,7 @@
       class="pa-1 subtitle-2"
       style="display: flex; flex-direction: row;"
     >
-      <TheDataManagementView />
+      <TheDataManagementView style="flex: 1 1 auto" />
     </div>
   </v-card>
 </template>

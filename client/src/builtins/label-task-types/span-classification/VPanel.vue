@@ -11,13 +11,13 @@
       </v-icon>
       Spans
     </div>
-    <div style="overflow-y: scroll">
+    <div class="cards-container">
       <v-card
         v-for="labelSpan in labelSpans"
         :key="labelSpan.uuid"
         :style="{ 'border-color': isSelected(labelSpan) ? 'gray' : undefined }"
         :ripple="false"
-        class="rounded-0 elevation-0 pa-2"
+        class="rounded-0 elevation-0 pa-1"
         outlined
         @click="$emit('select:span', labelSpan)"
       >
@@ -42,7 +42,7 @@
           <v-btn
             title="remove"
             class="view-header-button elevation-0"
-            :style="{ 'border-color': '#bbb' }"
+            style="border-color: #bbb"
             x-small
             icon
             outlined
@@ -149,3 +149,14 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.cards-container {
+  $margin: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: $margin;
+  padding: $margin;
+  overflow-y: auto;
+}
+</style>

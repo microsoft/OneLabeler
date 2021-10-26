@@ -11,7 +11,6 @@
     :category-tasks="categoryTasks"
     :unlabeled-mark="unlabeledMark"
     :label2color="label2color"
-    style="height: 100%;"
     @user-edit-label="onUserEditLabel"
     @user-edit-labels="onUserEditLabels"
     @edit-task-window="editTaskWindow({ ...taskWindow, ...$event })"

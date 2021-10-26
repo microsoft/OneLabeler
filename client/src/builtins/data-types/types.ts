@@ -91,7 +91,7 @@ export enum UploadTarget {
 /** The data type setup abstracting type-dependent properties. */
 export interface IDataTypeSetup<T extends UploadTarget> {
   type: DataType | string;
-  tasks: LabelTaskType[];
+  tasks: (LabelTaskType | string)[];
   label: string;
   importType: T;
   handleImport: (

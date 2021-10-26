@@ -1,18 +1,21 @@
 <template>
-  <svg
-    ref="svg"
-    :height="height"
-    :width="width"
-  >
-    <g :transform="transform">
-      <image
-        style="image-rendering: pixelated"
-        :href="src"
-        :width="dataObject.width"
-        :height="dataObject.height"
-      />
-    </g>
-  </svg>
+  <div ref="container">
+    <svg
+      ref="svg"
+      width="0"
+      height="0"
+      style="width: 100%; height: 100%;"
+    >
+      <g :transform="transform">
+        <image
+          style="image-rendering: pixelated"
+          :href="src"
+          :width="dataObject.width"
+          :height="dataObject.height"
+        />
+      </g>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -23,19 +26,27 @@ import {
   onUpdated,
   ref,
   toRefs,
-  watch,
   ComputedRef,
   PropType,
   Ref,
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
 import { IImage } from '@/commons/types';
+import useResizeObserver from '@/components/composables/useResizeObserver';
 
-/** Compute the transform for moving the image to the convas center. */
+/**
+ * Implementation note:
+ * - flex: 1 1 auto does not work on svg like it works on div.
+ * Thus, wrap the svg with a div, make the div size responsive,
+ * and update the svg with the div is resized.
+ * - Set width and height attribute to 0 to undo the default
+ * svg size (with width being 300 and height being 150).
+ */
+
+/** Get continuously updated svg size. */
 const useSvgSize = (
+  container: Ref<HTMLElement | null>,
   svg: Ref<HTMLElement | null>,
-  width: Ref<number | string | null>,
-  height: Ref<number | string | null>,
 ) => {
   const svgWidth: Ref<number | null> = ref(null);
   const svgHeight: Ref<number | null> = ref(null);
@@ -47,10 +58,9 @@ const useSvgSize = (
     svgHeight.value = svg.value.clientHeight;
   };
 
+  useResizeObserver(container, getSvgSize);
   onMounted(getSvgSize);
   onUpdated(getSvgSize);
-  watch(width, getSvgSize);
-  watch(height, getSvgSize);
 
   return { svgWidth, svgHeight };
 };
@@ -58,56 +68,38 @@ const useSvgSize = (
 export default defineComponent({
   name: 'VDisplay',
   props: {
-    /** @description The data object to be rendered. */
+    /** The data object to be rendered. */
     dataObject: {
       type: Object as PropType<IImage>,
       required: true,
     },
-    /** @description The width of the svg as a number or string of form '...%'. */
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    /** @description The height of the svg as a number or string of form '...%'. */
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
   },
   setup(props) {
-    const { width, height, dataObject } = toRefs(props);
+    const { dataObject } = toRefs(props);
+    const container: Ref<HTMLElement | null> = ref(null);
     const svg: Ref<HTMLElement | null> = ref(null);
-    const { svgWidth, svgHeight } = useSvgSize(svg, width, height);
+    const { svgWidth, svgHeight } = useSvgSize(container, svg);
 
     // Compute the scaling of the image to fit the svg.
     const transform: ComputedRef<string> = computed(() => {
       if (svgWidth.value === null || svgHeight.value === null) return '';
-      if (dataObject.value === null || dataObject.value.width === null) return '';
-      if (dataObject.value === null || dataObject.value.height === null) return '';
+      const imgWidth = dataObject.value?.width ?? null;
+      const imgHeight = dataObject.value?.height ?? null;
+      if (imgWidth === null || imgHeight === null) return '';
       return calFittingTransform({
         xMin: 0,
-        xMax: dataObject.value.width,
+        xMax: imgWidth,
         yMin: 0,
-        yMax: dataObject.value.height,
+        yMax: imgHeight,
       }, svgWidth.value, svgHeight.value);
     });
 
-    return { svg, transform };
+    return { container, svg, transform };
   },
   computed: {
     src(): string {
       const { content, url } = this.dataObject;
-      if (content !== null && content !== undefined) return content;
-      if (url !== null && url !== undefined) return url;
-      return '';
+      return content ?? url ?? '';
     },
   },
 });

@@ -11,29 +11,28 @@
       @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
-    <div style="flex: 1 1 auto; display: flex; align-items: center;">
-      <VGridMatrix
-        v-if="dataObjects.length !== 0"
-        style="height: 100%; width: 100%;"
-        :data-type="dataType"
-        :label-tasks="labelTasks"
-        :data-objects="dataObjects"
-        :labels="labels"
-        :statuses="statuses"
-        :category-tasks="categoryTasks"
-        :selected-uuids="selectedUuids"
-        :items-per-row="itemsPerRow"
-        :items-per-col="itemsPerCol"
-        :label2color="label2color"
-        @upsert:label="onUpsertLabel"
-        @click:grid="onClickGrid"
-      />
-      <p
-        v-else
-        class="mx-auto subtitle-1"
-      >
-        No Data Objects Queried
-      </p>
+    <VGridMatrix
+      v-if="dataObjects.length !== 0"
+      style="flex: 1 1 auto"
+      :data-type="dataType"
+      :label-tasks="labelTasks"
+      :data-objects="dataObjects"
+      :labels="labels"
+      :statuses="statuses"
+      :category-tasks="categoryTasks"
+      :selected-uuids="selectedUuids"
+      :items-per-row="itemsPerRow"
+      :items-per-col="itemsPerCol"
+      :label2color="label2color"
+      @upsert:label="onUpsertLabel"
+      @click:grid="onClickGrid"
+    />
+    <div
+      v-else
+      class="subtitle-1 mx-auto"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
+    >
+      No Data Objects Queried
     </div>
   </v-card>
 </template>

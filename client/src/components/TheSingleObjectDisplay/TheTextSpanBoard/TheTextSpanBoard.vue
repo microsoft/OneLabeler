@@ -14,40 +14,43 @@
       @window:pin="$emit('edit-task-window', { isPinned: true })"
     />
     <v-divider />
-    <div style="flex: 1 1 auto; display: flex; flex-direction: column">
-      <template v-if="showDataObject">
-        <div style="height: 0px; flex: 1 1 auto; display: flex">
-          <TheTextSpanBoardBody
-            ref="canvas"
-            :data-type="dataType"
-            :label-tasks="labelTasks"
-            :data-object="dataObject"
-            :label="label"
-            :brush-category="brushCategory"
-            :label2color="label2color"
-            @upsert:label="onUpsertLabel"
-            @create:span="onCreateLabelSpan"
-            @select:span="onSelectLabelSpan"
-            @remove:span="onRemoveLabelSpan"
-            @create:relation="onCreateLabelRelation"
-            @remove:relation="onRemoveLabelRelation"
-          />
-        </div>
-        <template v-if="enablePagination">
-          <v-divider />
-          <v-pagination
-            v-model="page"
-            :length="nPages"
-            :total-visible="Math.min(5, nPages)"
-          />
-        </template>
+    <div
+      v-if="showDataObject"
+      style="flex: 1 1 auto; display: flex; flex-direction: column"
+    >
+      <div style="height: 0px; flex: 1 1 auto; display: flex">
+        <TheTextSpanBoardBody
+          ref="canvas"
+          :data-type="dataType"
+          :label-tasks="labelTasks"
+          :data-object="dataObject"
+          :label="label"
+          :brush-category="brushCategory"
+          :label2color="label2color"
+          style="flex: 1 1 auto"
+          @upsert:label="onUpsertLabel"
+          @create:span="onCreateLabelSpan"
+          @select:span="onSelectLabelSpan"
+          @remove:span="onRemoveLabelSpan"
+          @create:relation="onCreateLabelRelation"
+          @remove:relation="onRemoveLabelRelation"
+        />
+      </div>
+      <template v-if="enablePagination">
+        <v-divider />
+        <v-pagination
+          v-model="page"
+          :length="nPages"
+          :total-visible="Math.min(5, nPages)"
+        />
       </template>
-      <p
-        v-else
-        class="ma-auto subtitle-1"
-      >
-        No Data Objects Queried
-      </p>
+    </div>
+    <div
+      v-else
+      class="subtitle-1 mx-auto"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
+    >
+      No Data Objects Queried
     </div>
   </v-card>
 </template>

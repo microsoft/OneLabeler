@@ -38,6 +38,7 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   DataType,
+  IDataObject,
   ILabel,
   LabelTaskType,
   ILabelTaskTypeSetup,
@@ -60,15 +61,11 @@ export default Vue.extend({
       required: true,
     },
     dataObject: {
-      type: Object as PropType<ILabel | null>,
+      type: Object as PropType<IDataObject | null>,
       default: null,
     },
     label: {
       type: Object as PropType<ILabel | null>,
-      default: null,
-    },
-    brushCategory: {
-      type: String as PropType<Category | null>,
       default: null,
     },
     categoryTasks: {
@@ -78,6 +75,10 @@ export default Vue.extend({
     label2color: {
       type: Function as PropType<(category: string) => string>,
       required: true,
+    },
+    brushCategory: {
+      type: String as PropType<Category | null>,
+      default: null,
     },
   },
   computed: {

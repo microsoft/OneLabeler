@@ -12,7 +12,7 @@
       x-small
       icon
       tile
-      @click="onClickMinimize"
+      @click="$emit('window:minimize')"
     >
       <v-icon
         aria-hidden="true"
@@ -29,7 +29,7 @@
       x-small
       icon
       tile
-      @click="onClickPin"
+      @click="$emit('window:pin')"
     >
       <v-icon
         aria-hidden="true"
@@ -49,13 +49,5 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'VToolbar',
-  methods: {
-    onClickMinimize() {
-      this.$emit('window:minimize');
-    },
-    onClickPin() {
-      this.$emit('window:pin');
-    },
-  },
 });
 </script>

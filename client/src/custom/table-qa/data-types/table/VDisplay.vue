@@ -1,13 +1,5 @@
 <template>
-  <div
-    :style="{
-      width: widthStr,
-      height: heightStr,
-      'overflow-y': 'scroll',
-      'font-size': '24px',
-      'line-height': 'initial',
-    }"
-  >
+  <div style="overflow-y: scroll">
     <!-- The data table. -->
     <v-simple-table>
       <thead>
@@ -58,36 +50,8 @@ export default Vue.extend({
       type: Object as PropType<ITable>,
       required: true,
     },
-    /** The width of the svg as a number or string of form '...%'. */
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    /** The height of the svg as a number or string of form '...%'. */
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
   },
   computed: {
-    widthStr(): string {
-      const { width } = this;
-      if (typeof width === 'number') return `${width}px`;
-      return width;
-    },
-    heightStr(): string {
-      const { height } = this;
-      if (typeof height === 'number') return `${height}px`;
-      return height;
-    },
     table() {
       return this.dataObject.content.table;
     },

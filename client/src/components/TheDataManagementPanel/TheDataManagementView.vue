@@ -1,7 +1,6 @@
 <template>
   <v-card
     :class="classNameOfPanel"
-    style="width: 100%; height: 100%;"
     tile
   >
     <div class="view-header">
@@ -16,32 +15,27 @@
     </div>
     <v-divider />
     <div
-      class="px-2"
-      style="width: 100%"
+      style="display: flex; flex-direction: column; gap: 4px; padding: 4px;"
     >
       <!-- The method used to instantiated the process. -->
-      <div class="py-1">
-        <VEditableService
-          :label="'Source'"
-          :service="sourceService"
-          :options="sourceServices"
-          :disabled="disabled"
-          @select:service="onSelectSourceService"
-          @edit:service="onEditSourceService"
-          @create:service="onCreateSourceService"
-        />
-      </div>
-      <div class="pb-1">
-        <VEditableService
-          :label="'Storage'"
-          :service="storageService"
-          :options="storageServices"
-          :disabled="disabled"
-          @select:service="onSelectStorageService"
-          @edit:service="onEditStorageService"
-          @create:service="onCreateStorageService"
-        />
-      </div>
+      <VEditableService
+        :label="'Source'"
+        :service="sourceService"
+        :options="sourceServices"
+        :disabled="disabled"
+        @select:service="setSourceService($event)"
+        @edit:service="editSourceService($event)"
+        @create:service="onCreateSourceService"
+      />
+      <VEditableService
+        :label="'Storage'"
+        :service="storageService"
+        :options="storageServices"
+        :disabled="disabled"
+        @select:service="setStorageService($event)"
+        @edit:service="editStorageService($event)"
+        @create:service="onCreateStorageService"
+      />
     </div>
   </v-card>
 </template>
@@ -52,9 +46,7 @@ import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import {
   SourceType,
-  SourceService,
   StorageType,
-  StorageService,
 } from '@/commons/types';
 import VEditableService from './VEditableService.vue';
 
@@ -87,12 +79,6 @@ export default Vue.extend({
       'pushStorageServices',
       'editStorageService',
     ]),
-    onSelectSourceService(option: SourceService): void {
-      this.setSourceService(option);
-    },
-    onEditSourceService(newValue: SourceService): void {
-      this.editSourceService(newValue);
-    },
     onCreateSourceService(): void {
       this.pushSourceServices({
         type: SourceType.ServerDB,
@@ -102,12 +88,6 @@ export default Vue.extend({
         isBuiltIn: false,
         isServerless: false,
       });
-    },
-    onSelectStorageService(option: StorageService): void {
-      this.setStorageService(option);
-    },
-    onEditStorageService(newValue: StorageService): void {
-      this.editStorageService(newValue);
     },
     onCreateStorageService(): void {
       this.pushStorageServices({
@@ -122,6 +102,7 @@ export default Vue.extend({
   },
 });
 </script>
+
 <style>
 /** Make the letter spacing of v-text-field the same as text outside. */
 .parameter-panel input {

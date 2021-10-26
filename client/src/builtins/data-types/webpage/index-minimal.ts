@@ -27,9 +27,9 @@ export default {
   },
   display: Vue.extend({
     functional: true,
-    props: ['dataObject', 'width', 'height'],
+    props: ['dataObject'],
     render: (h, { props }) => (
-      h('iframe', { attrs: { ...props, src: props.dataObject.src } })
+      h('iframe', { attrs: { src: props.dataObject.src } })
     ),
   }),
 };

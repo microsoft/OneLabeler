@@ -4,7 +4,11 @@ import {
   Ref,
 } from '@vue/composition-api';
 
-/** Bind resizeObserver to the container. */
+/**
+ * Bind resizeObserver to the container.
+ * @note ResizeObserver cannot observe svg
+ * according to W3C specification as of 2021.10.25.
+ */
 const useResizeObserver = (
   container: Ref<HTMLElement | null>,
   onResize: () => void,

@@ -1,13 +1,10 @@
 <template>
-  <div style="display: flex">
+  <div style="display: flex; gap: 4px;">
     <v-btn
-      v-for="(category, i) in categories"
+      v-for="category in categories"
       :key="category"
       class="view-header-button subtitle-2 elevation-0 text-none"
-      :class="{
-        'white--text': isCategorySelected(category),
-        'ml-1': i !== 0,
-      }"
+      :class="{ 'white--text': isCategorySelected(category) }"
       :style="{
         'border-color': '#bbb',
         'background-color': isCategorySelected(category)

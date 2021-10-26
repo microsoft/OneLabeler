@@ -3,10 +3,8 @@
     ref="media"
     component="youtube-video"
     :src="dataObject.content"
-    :width="width"
-    :height="height"
-    @timeupdate="onTimeUpdate"
-    @loadedmetadata="onLoadedMetadata"
+    @timeupdate="$emit('timeupdate', $event)"
+    @loadedmetadata="$emit('loadedmetadata', $event)"
   />
 </template>
 
@@ -29,32 +27,8 @@ export default Vue.extend({
       type: Object as PropType<IVideo>,
       required: true,
     },
-    // The width of the component as a number or string of form '...%'.
-    width: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
-    // The height of the component as a number or string of form '...%'.
-    height: {
-      type: [Number, String],
-      default: undefined,
-      validator(val) {
-        return typeof val === 'number'
-          || (typeof val === 'string' && /^([0-9]+)%$/.test(val));
-      },
-    },
   },
   methods: {
-    onLoadedMetadata(e: Event): void {
-      this.$emit('loadedmetadata', e);
-    },
-    onTimeUpdate(e: Event): void {
-      this.$emit('timeupdate', e);
-    },
     getMedia(): HTMLMediaElement {
       const component = this.$refs.media as Vue & {
         getMedia: () => HTMLMediaElement,

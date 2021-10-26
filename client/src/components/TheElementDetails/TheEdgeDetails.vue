@@ -1,7 +1,6 @@
 <template>
   <v-card
     :class="`fill-height ${classNameOfPanel}`"
-    style="width: 100%"
     tile
   >
     <div class="view-header">
@@ -15,12 +14,12 @@
       {{ viewTitle }}
     </div>
     <v-divider />
-    <div class="pt-2">
+    <div>
       <!-- The source node. -->
       <v-card
         flat
         outlined
-        class="mx-4"
+        class="mt-2 mx-2"
       >
         <div class="view-header px-2">
           <span
@@ -34,7 +33,7 @@
 
       <v-card
         outlined
-        class="mt-2 mx-4"
+        class="mt-2 mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -56,7 +55,7 @@
       <v-card
         flat
         outlined
-        class="mt-2 mx-4"
+        class="mt-2 mx-2"
       >
         <div class="view-header px-2">
           <span
@@ -70,7 +69,7 @@
 
       <v-card
         outlined
-        class="mt-2 mx-4"
+        class="mt-2 mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -93,7 +92,7 @@
         <v-card
           flat
           outlined
-          class="mt-2 mx-4"
+          class="mt-2 mx-2"
         >
           <div class="view-header px-2">
             <span
@@ -107,7 +106,7 @@
 
         <v-card
           outlined
-          class="mt-2 mx-4"
+          class="mt-2 mx-2"
           style="display: flex"
         >
           <span class="pl-2 py-2 subtitle-2">

@@ -70,7 +70,7 @@ import TheLayerShapes from './TheLayerShapes.vue';
 type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
 
 export default Vue.extend({
-  name: 'ThePaintBoardCanvas',
+  name: 'ThePaintBoardBody',
   components: {
     TheLayerImage,
     TheLayerPaint,

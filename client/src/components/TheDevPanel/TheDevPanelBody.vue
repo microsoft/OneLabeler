@@ -48,24 +48,23 @@
       </div>
     </v-card>
     <div style="display: flex; flex-direction: column; flex-basis: 40%;">
-      <div style="flex: 1 1 100%; display: flex">
-        <!-- The process parameter panel. -->
-        <TheElementDetails
-          v-if="!showInspector"
-          :methods="processesValid"
-          :models="modelServices"
-          :selection="selection"
-          @edit:node="editNode($event)"
-          @create:method="pushProcesses($event)"
-          @edit:method="editProcess($event)"
-          @create:model="pushModelServices($event)"
-          @edit:model="editModelService($event)"
-        />
-        <TheVariableInspector
-          v-else
-          style="flex: 1 1 auto"
-        />
-      </div>
+      <!-- The process parameter panel. -->
+      <TheElementDetails
+        v-if="!showInspector"
+        :methods="processesValid"
+        :models="modelServices"
+        :selection="selection"
+        style="flex: 1 1 auto"
+        @edit:node="editNode($event)"
+        @create:method="pushProcesses($event)"
+        @edit:method="editProcess($event)"
+        @create:model="pushModelServices($event)"
+        @edit:model="editModelService($event)"
+      />
+      <TheVariableInspector
+        v-else
+        style="flex: 1 1 auto"
+      />
     </div>
   </div>
 </template>

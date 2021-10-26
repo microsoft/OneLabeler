@@ -22,13 +22,19 @@ export default {
   },
   display: Vue.extend({
     functional: true,
-    props: ['dataObject', 'width', 'height'],
+    props: ['dataObject'],
     // TODO: transform the svg to move the polygon to center;
     render: (h, { props }) => (
-      h('svg', { attrs: { width: props.width, height: props.height }, ref: 'svg' }, [
-        h('image', { attrs: { href: props.dataObject.src } }),
-        h('polygon', { attrs: { points: props.dataObject.contour
-          .map((d) => d[0].map((x) => x + 0.5).join(',')).join(' ') } }),
+      h('div', {}, [
+        h(
+          'svg',
+          { attrs: { width: 0, height: 0 }, style: { width: '100%', height: '100%' } },
+          [
+            h('image', { attrs: { href: props.dataObject.src } }),
+            h('polygon', { attrs: { points: props.dataObject.contour
+              .map((d) => d[0].map((x) => x + 0.5).join(',')).join(' ') } }),
+          ],
+        )
       ])
     ),
   }),
