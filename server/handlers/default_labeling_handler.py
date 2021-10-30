@@ -15,8 +15,10 @@ from sklearn.semi_supervised import LabelSpreading
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 import tornado.web
+import torch
 
 from .utils.data_persistence import is_saved, load, save
+from .utils.pointnet import PointNetSeg
 
 
 def load_estimator(model) -> BaseEstimator:
@@ -86,6 +88,7 @@ def default_label_pos_tag(sentence: str) -> List[dict]:
         })
     return spans
 
+
 def default_label_pos_tag_value(sentence: str) -> List[dict]:
     pos_tag = nltk.pos_tag(sentence.split())
     start = 0
@@ -105,6 +108,28 @@ def default_label_pos_tag_value(sentence: str) -> List[dict]:
         })
     return spans
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+pointnet = PointNetSeg()
+
+# Note: the pretrained model is for airplane segmentation with 4 classes
+# 0: wing, 1: body, 2: tail, 3: engine
+path = './handlers/utils/pointnet/seg_model'
+pointnet.load_state_dict(torch.load(path, map_location=device))
+
+def default_label_pointnet_seg(batch: List) -> np.ndarray:
+    """
+    For each data object (i.e., point cloud),
+    get a list of labels corresponding to point segmentation labels
+    """
+
+    # TODO: the current model only allow batch size > 1
+    # need to figure out why this restriction exists
+
+    pred = pointnet(torch.tensor(batch).transpose(1, 2))
+    pred_np = np.array(torch.argmax(pred[0], 1))
+    return pred_np
+
+
 class DefaultLabelingHandler(tornado.web.RequestHandler):
     """
     The handler for default labeling.
@@ -114,7 +139,7 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Origin', '*')
         json_data = json.loads(self.request.body)
 
-        if key not in ['Null', 'Random', 'ModelPrediction', 'POS-tagging']:
+        if key not in ['Null', 'Random', 'ModelPrediction', 'POS-tagging', 'PointNet-segmentation']:
             # The service is not found.
             self.send_error(404)
             return
@@ -137,11 +162,11 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
         if key == 'Null':
             labels = default_label_null(unlabeled_mark, n_samples)
             labels = labels.tolist()
-            labels = [{ 'category': d } for d in labels]
+            labels = [{'category': d} for d in labels]
         if key == 'Random':
             labels = default_label_random(classes, n_samples)
             labels = labels.tolist()
-            labels = [{ 'category': d } for d in labels]
+            labels = [{'category': d} for d in labels]
         if key == 'ModelPrediction':
             predictor = load_estimator(model)
             try:
@@ -155,15 +180,17 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
                     labels = None
             if labels is not None:
                 labels = labels.tolist()
-                labels = [{ 'category': d } for d in labels]
-        
+                labels = [{'category': d} for d in labels]
         if key == 'POS-tagging':
             labels = [default_label_pos_tag_value(d['content'])
                       for d in data_objects]
-            '''
-            labels = [default_label_pos_tag(d['content'])
-                      for d in data_objects]
-            '''
-            labels = [{ 'spans': d } for d in labels]
+            # labels = [default_label_pos_tag(d['content']) for d in data_objects]
+            labels = [{'spans': d} for d in labels]
+        if key == 'PointNet-segmentation':
+            points = [data_object['content'] for data_object in data_objects]
+            labels = default_label_pointnet_seg(points)
+            if labels is not None:
+                labels = labels.tolist()
+            labels = [{'pointLabels': d} for d in labels]
 
         self.write({'labels': labels})

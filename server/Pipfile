@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/torch_stable.html"
+verify_ssl = false
+
 [packages]
 numpy = "*"
 opencv-contrib-python = "*"
@@ -13,6 +18,9 @@ python-dotenv = "*"
 nltk = "*"
 tornado = "*"
 modal = "*"
+torch = {index = "pytorch",version = "*"}
+torchvision = {index = "pytorch", version = "*"}
+torchaudio = {index = "pytorch", version = "*"}
 
 [dev-packages]
 pylint = "*"

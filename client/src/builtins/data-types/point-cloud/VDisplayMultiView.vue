@@ -21,10 +21,21 @@
         class="render-canvas"
       />
     </div>
-    <div class="main-canvas-container">
-      <canvas
-        ref="canvasMain"
-        class="render-canvas"
+
+    <div style="grid-area: 1 / 2 / 4 / 5; display: grid">
+      <div
+        ref="container"
+        class="main-canvas-container"
+        style="grid-area: 1 / 1 / 2 / 2"
+      >
+        <canvas
+          ref="canvasMain"
+          class="render-canvas"
+        />
+      </div>
+      <slot
+        name="overlay"
+        :on-segment3d="onSegment3d"
       />
     </div>
   </div>
@@ -42,8 +53,10 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { polygonContains } from 'd3';
 import * as BABYLON from 'babylonjs';
 import {
+  Category,
   ILabel,
   ILabelPoints,
   IPointCloud,
@@ -94,6 +107,8 @@ export default defineComponent({
     const canvasLeft: Ref<HTMLCanvasElement | null> = ref(null);
 
     let engine: BABYLON.Engine | null = null;
+    let scene: BABYLON.Scene | null = null;
+    let cameraMain: BABYLON.ArcRotateCamera | null = null;
     const canvas = document.createElement('canvas');
     const pcs: Ref<BABYLON.PointsCloudSystem | null> = ref(null);
 
@@ -112,16 +127,16 @@ export default defineComponent({
       if (engine !== null) engine.dispose();
       engine = new BABYLON.Engine(canvas);
       engine.inputElement = canvasMain.value;
-      const scene = new BABYLON.Scene(engine);
+      scene = new BABYLON.Scene(engine);
       scene.clearColor = new BABYLON.Color4(0.8, 0.8, 0.8, 1.0);
       engine.runRenderLoop(() => {
-        if (scene.activeCamera) {
+        if (scene?.activeCamera) {
           scene.render();
         }
       });
 
       // Set camera and register for main view.
-      const cameraMain = new BABYLON.ArcRotateCamera(
+      cameraMain = new BABYLON.ArcRotateCamera(
         'cameraMain',
         0,
         0,
@@ -179,6 +194,25 @@ export default defineComponent({
       pcs.value.buildMeshAsync();
     };
 
+    const project = (point: BABYLON.Vector3): BABYLON.Vector2 | null => {
+      if (
+        canvasMain.value === null
+        || cameraMain === null
+        || engine === null
+      ) return null;
+      const viewport = cameraMain.viewport.toGlobal(
+        canvasMain.value.width,
+        canvasMain.value.height,
+      );
+      const vector = BABYLON.Vector3.Project(
+        point,
+        BABYLON.Matrix.Identity(),
+        cameraMain.getTransformationMatrix(),
+        viewport,
+      );
+      return new BABYLON.Vector2(vector.x, vector.y);
+    };
+
     onMounted(render);
     watch(dataObject, render);
     useResizeObserver(container, () => engine?.resize());
@@ -190,6 +224,8 @@ export default defineComponent({
       canvasTop,
       canvasLeft,
       pcs,
+      points,
+      project,
     };
   },
   computed: {
@@ -199,6 +235,12 @@ export default defineComponent({
   },
   watch: {
     pointLabels(): void {
+      const { pcs } = this;
+      if (pcs === null) return;
+      this.setPointColors();
+      pcs.setParticles();
+    },
+    label2color(): void {
       const { pcs } = this;
       if (pcs === null) return;
       this.setPointColors();
@@ -215,6 +257,20 @@ export default defineComponent({
           BABYLON.Color3.FromHexString(label2color(pointLabels[i])),
         );
       }
+    },
+    onSegment3d(
+      polygon: [number, number][],
+      category: Category,
+    ): void {
+      const { points, pointLabels, project } = this;
+      if (points === null || pointLabels === null) return;
+      const points2d = points.map((d) => project(new BABYLON.Vector3(d[0], d[1], d[2])));
+      const pointLabelsUpdated = [...pointLabels].map((d, i) => {
+        const p = points2d[i];
+        const isInPolygon = p === null ? false : polygonContains(polygon, [p.x, p.y]);
+        return isInPolygon ? category : d;
+      });
+      this.$emit('upsert:label', { pointLabels: pointLabelsUpdated });
     },
   },
 });
@@ -237,26 +293,21 @@ export default defineComponent({
 
 .top-canvas-container {
   @extend .canvas-container;
-  grid-column: 1;
-  grid-row: 1;
+  grid-area: 1 / 1 / 2 / 2;
 }
 
 .front-canvas-container {
   @extend .canvas-container;
-  grid-column: 1;
-  grid-row: 2;
+  grid-area: 2 / 1 / 3 / 2;
 }
 
 .left-canvas-container {
   @extend .canvas-container;
-  grid-column: 1;
-  grid-row: 3;
+  grid-area: 3 / 1 / 4 / 2;
 }
 
 .main-canvas-container {
   @extend .canvas-container;
-  grid-column: 2 / 5;
-  grid-row: 1 / 4;
 }
 
 .render-canvas {

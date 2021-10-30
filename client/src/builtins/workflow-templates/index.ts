@@ -6,6 +6,7 @@ import imageClassificationIML from './templates/image-classification-iml';
 import imageClassification from './templates/image-classification';
 import imageSegmentation from './templates/image-segmentation';
 import pointCloudClassification from './templates/point-cloud-classification';
+import pointCloudSegmentation from './templates/point-cloud-segmentation';
 import textClassification from './templates/text-classification';
 import textNamedEntityRecognition from './templates/text-named-entity-recognition';
 import videoClassification from './templates/video-classification';
@@ -21,6 +22,7 @@ export default [
   imageSegmentation,
   // MI3Block,
   pointCloudClassification,
+  pointCloudSegmentation,
   textClassification,
   textNamedEntityRecognition,
   // textWithTableMultiple,

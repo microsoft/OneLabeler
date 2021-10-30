@@ -1,6 +1,6 @@
 <template>
   <div
-    class="container"
+    class="data-object-container"
     @scroll="$emit('scroll', $event)"
   >
     <!-- Note: don't use linebreak between the text,
@@ -8,7 +8,7 @@
     <!-- eslint-disable vue/singleline-html-element-content-newline -->
     <p
       ref="textElement"
-      class="content"
+      class="data-object-content"
     >{{ dataObject.content }}</p>
   </div>
 </template>
@@ -38,15 +38,14 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.container {
+.data-object-container {
   position: relative;
   overflow-y: auto;
   line-height: initial;
   font-size: 24px;
-  padding: 0 !important;
 }
 
-.content {
+.data-object-content {
   position: absolute;
   width: 100%;
   height: 100%;

@@ -119,7 +119,7 @@ export interface ILabel {
   mask?: ILabelMask;
   spans?: ILabelTextSpan[];
   relations?: ILabelRelation[];
-  pointLabels: ILabelPoints;
+  pointLabels?: ILabelPoints;
 }
 
 /** The label task type setup. */

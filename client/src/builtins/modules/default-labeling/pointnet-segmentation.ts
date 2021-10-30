@@ -7,15 +7,15 @@ import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ProcessType.DefaultLabeling,
-  label: 'POS-tagging',
-  id: 'POS-tagging-438546',
+  label: 'PointNet-segmentation',
+  id: 'PointNet-segmentation-438546',
   inputs: ['dataObjects'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,
   isServerless: false,
-  api: `${ALGORITHM_URL}/defaultLabels/POS-tagging`,
-  dataTypes: [DataType.Text],
-  labelTasks: [LabelTaskType.SpanClassification],
+  api: `${ALGORITHM_URL}/defaultLabels/PointNet-segmentation`,
+  dataTypes: [DataType.PointCloud],
+  labelTasks: [LabelTaskType.Segmentation3d],
 };

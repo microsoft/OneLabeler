@@ -28,7 +28,7 @@ import {
   TaskWindow,
 } from '@/commons/types';
 import ThePaintBoard from './ThePaintBoard/ThePaintBoard.vue';
-import TheSingleObjectBoard from './TheSingleObjectBoard/TheSingleObjectBoard.vue';
+import TheSingleObjectBoard from './TheSingleObjectBoard/index.vue';
 import TheTextSpanBoard from './TheTextSpanBoard/TheTextSpanBoard.vue';
 import TheTimeSpanBoard from './TheTimeSpanBoard/TheTimeSpanBoard.vue';
 

@@ -18,6 +18,7 @@ import DOSSmallestMargin from './data-object-selection/smallest-margin';
 // default labeling modules
 import DLModelPrediction from './default-labeling/model-prediction';
 import DLNull from './default-labeling/null';
+import DLPointnetSegmentation from './default-labeling/pointnet-segmentation';
 import DLPosTagging from './default-labeling/pos-tagging';
 import DLRandom from './default-labeling/random';
 // feature extraction modules
@@ -57,6 +58,7 @@ const processes: Process[] = [
   // default labeling modules:
   DLModelPrediction,
   DLPosTagging,
+  DLPointnetSegmentation,
   DLNull,
   DLRandom,
   // feature extraction modules:

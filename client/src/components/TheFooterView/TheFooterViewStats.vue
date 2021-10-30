@@ -1,21 +1,21 @@
 <template>
-  <div style="display: flex; align-items: center;">
+  <div style="display: flex; align-items: center; gap: 8px;">
     <v-divider vertical />
-    <span class="mx-2 footer-text">
+    <span class="footer-text">
       {{ `${nTotal} data objects` }}
     </span>
     <v-divider vertical />
-    <span class="mx-2 footer-text">
+    <span class="footer-text">
       {{ `${nLabeled} / ${nTotal} labeled` }}
     </span>
     <v-divider vertical />
-    <span class="ml-2 mr-1 footer-text">
+    <span class="footer-text">
       {{ `${classes.length} classes` }}
     </span>
 
     <!-- The create new class option button. -->
     <TheClassesDialog
-      :classes="classes"
+      :categories="classes"
       :category-tasks="categoryTasks"
       :label-tasks="labelTasks"
       :unlabeled-mark="unlabeledMark"

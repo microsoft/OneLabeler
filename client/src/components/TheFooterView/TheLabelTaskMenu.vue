@@ -2,6 +2,7 @@
   <v-menu offset-y>
     <template #activator="{ on }">
       <v-btn
+        :disabled="disabled"
         class="view-header-button subtitle-2 text-none"
         x-small
         v-on="on"
@@ -49,6 +50,10 @@ export default Vue.extend({
     selectedLabelTasks: {
       type: Array as PropType<LabelTaskType[] | null>,
       default: null,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   methods: {

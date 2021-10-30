@@ -8,7 +8,7 @@
   >
     <template #dialog-body>
       <div
-        v-for="(category, i) in classes"
+        v-for="(category, i) in [unlabeledMark, ...categories]"
         :key="i"
         class="pa-1"
         style="display: flex; align-items: center; border: thin solid rgba(0,0,0,.12);"
@@ -35,6 +35,7 @@
         <TheLabelTaskMenu
           :label-tasks="labelTasks"
           :selected-label-tasks="categoryTasks[category]"
+          :disabled="category === unlabeledMark"
           @set:selected-label-tasks="onSetSelectedLabelTasks(category, $event)"
         />
 
@@ -70,6 +71,7 @@
 
         <!-- The button for removing the label category. -->
         <v-btn
+          :disabled="category === unlabeledMark"
           title="remove"
           class="view-header-button elevation-0 ml-1"
           style="border-color: #bbb"
@@ -123,7 +125,7 @@ export default Vue.extend({
   name: 'TheClassesDialog',
   components: { VDialogButton, TheLabelTaskMenu },
   props: {
-    classes: {
+    categories: {
       type: Array as PropType<Category[]>,
       required: true,
     },
@@ -152,13 +154,13 @@ export default Vue.extend({
   },
   computed: {
     classNameRules(): InputValidator[] {
-      const { classes, unlabeledMark } = this;
+      const { categories, unlabeledMark } = this;
       const notEmpty = (v: unknown) => (
         !!v
         || 'Class name cannot be empty string'
       );
       const notRepetitive = (v: unknown) => (
-        (!(classes.findIndex((d: Category) => d === v) >= 0) && !(unlabeledMark === v))
+        (!(categories.findIndex((d: Category) => d === v) >= 0) && !(unlabeledMark === v))
         || 'Class name exists'
       );
       return [notEmpty, notRepetitive];

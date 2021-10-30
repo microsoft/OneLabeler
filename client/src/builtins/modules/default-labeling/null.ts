@@ -7,7 +7,7 @@ export default {
   type: ProcessType.DefaultLabeling,
   label: 'Null (Dummy)',
   id: 'Null-35514905',
-  inputs: ['features'],
+  inputs: ['dataObjects'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,

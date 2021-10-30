@@ -356,9 +356,7 @@ export const executeDefaultLabeling = showProgressBar(async (
 
   await Promise.all(queryUuids.map(async (uuid, i) => {
     const label: ILabel | undefined = await labels.get(uuid);
-    const labelUpdated: ILabel = label === undefined
-      ? { uuid, ...defaultLabels[i] }
-      : { ...label, ...defaultLabels[i] };
+    const labelUpdated: ILabel = { uuid, ...label, ...defaultLabels[i] };
     await labels.upsert(labelUpdated);
   }));
   commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });

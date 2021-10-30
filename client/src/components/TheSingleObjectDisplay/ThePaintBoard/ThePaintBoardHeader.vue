@@ -174,12 +174,7 @@ export default Vue.extend({
     categoriesNotEmpty(): boolean {
       return this.categories.length !== 0;
     },
-    mouseOperationButtons(): {
-      title: string,
-      icon: any,
-      mouseOperation: MouseOperationType,
-      disabled: boolean,
-      }[] {
+    mouseOperationButtons() {
       return [
         {
           title: 'pan & zoom',
