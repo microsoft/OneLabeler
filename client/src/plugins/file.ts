@@ -3,7 +3,7 @@ import { csvParse } from 'd3';
 import { saveAs } from 'file-saver';
 
 export const getBase64 = (
-  file: File,
+  file: File | Blob,
 ): Promise<string> => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);

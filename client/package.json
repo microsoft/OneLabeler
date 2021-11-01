@@ -15,6 +15,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@tensorflow-models/deeplab": "^0.2.1",
     "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs": "^3.11.0",
     "@tensorflow/tfjs-backend-webgl": "^3.11.0",

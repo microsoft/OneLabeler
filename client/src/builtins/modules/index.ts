@@ -21,7 +21,8 @@ import DLNull from './default-labeling/null';
 import DLPointnetSegmentation from './default-labeling/pointnet-segmentation';
 import DLPosTagging from './default-labeling/pos-tagging';
 // import DLCNN from './default-labeling/cnn';
-import DLMobilenet from './default-labeling/mobilenet';
+import DLMobileNet from './default-labeling/mobilenet';
+import DLDeepLab from './default-labeling/deeplab';
 import DLRandom from './default-labeling/random';
 // feature extraction modules
 import FEImageBow from './feature-extraction/image-bow';
@@ -63,7 +64,8 @@ const processes: Process[] = [
   DLPosTagging,
   DLPointnetSegmentation,
   // DLCNN,
-  DLMobilenet,
+  DLMobileNet,
+  DLDeepLab,
   DLNull,
   DLRandom,
   // feature extraction modules:
