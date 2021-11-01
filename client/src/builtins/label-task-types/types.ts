@@ -39,6 +39,8 @@ type Point = [number, number];
 export interface ILabelShape {
   category: Category;
   shape: ObjectShapeType;
+  // For rect, position only store diagonal points,
+  // (either top left and bottom right or top right and bottom left).
   position: Point[] | Point;
   /** The uuid is for recognizing which shape in the canvas
    * corresponds to which label shape. */

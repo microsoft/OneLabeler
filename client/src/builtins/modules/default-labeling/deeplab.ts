@@ -13,7 +13,7 @@ import { getBase64 } from '@/plugins/file';
 
 // TODO: deeplab predicted mask not rendered, figure out why
 
-// Reference: https://github.com/tensorflow/tfjs-models/tree/master/mobilenet
+// Reference: https://github.com/tensorflow/tfjs-models/tree/master/deeplab
 
 const url2image = (url: string): Promise<HTMLImageElement> => (
   new Promise((resolve) => {

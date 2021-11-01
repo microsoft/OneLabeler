@@ -15,9 +15,11 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.2",
     "@tensorflow-models/deeplab": "^0.2.1",
     "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs": "^3.11.0",
+    "@tensorflow/tfjs-backend-cpu": "^3.11.0",
     "@tensorflow/tfjs-backend-webgl": "^3.11.0",
     "@vue/composition-api": "^1.3.0",
     "ajv": "^7.2.4",

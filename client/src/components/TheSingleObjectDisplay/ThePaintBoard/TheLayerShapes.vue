@@ -13,9 +13,7 @@ import {
   ILabelShape,
   ObjectShapeType,
 } from '@/commons/types';
-import {
-  IEditableShape,
-} from './types';
+import { IEditableShape } from './types';
 import EditableCircle from './editable-circle';
 import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
