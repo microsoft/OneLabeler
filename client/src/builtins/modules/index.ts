@@ -20,6 +20,7 @@ import DLModelPrediction from './default-labeling/model-prediction';
 import DLNull from './default-labeling/null';
 import DLPointnetSegmentation from './default-labeling/pointnet-segmentation';
 import DLPosTagging from './default-labeling/pos-tagging';
+// import DLCNN from './default-labeling/cnn';
 import DLRandom from './default-labeling/random';
 // feature extraction modules
 import FEImageBow from './feature-extraction/image-bow';
@@ -59,6 +60,7 @@ const processes: Process[] = [
   DLModelPrediction,
   DLPosTagging,
   DLPointnetSegmentation,
+  // DLCNN,
   DLNull,
   DLRandom,
   // feature extraction modules:

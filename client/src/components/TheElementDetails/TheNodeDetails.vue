@@ -87,7 +87,12 @@ export default Vue.extend({
           'model',
           'samples',
         ],
-        [WorkflowNodeType.DefaultLabeling]: ['features', 'model'],
+        [WorkflowNodeType.DefaultLabeling]: [
+          'dataObjects',
+          'queryUuids',
+          'features',
+          'model',
+        ],
         [WorkflowNodeType.FeatureExtraction]: ['dataObjects', 'labels'],
         [WorkflowNodeType.InteractiveLabeling]: ['dataObjects', 'samples'],
         [WorkflowNodeType.ModelTraining]: [

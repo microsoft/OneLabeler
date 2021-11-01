@@ -183,6 +183,78 @@ const handleAlgorithmServiceError = (
   throw e;
 };
 
+export const executeCustom = showProgressBar(async (
+  { commit, rootState }: ActionContext<IState, IRootState>,
+  method: Process,
+): Promise<void> => {
+  if (method.run === undefined || method.run === null) {
+    throw Error('Method not implemented');
+  }
+
+  const {
+    dataObjects,
+    labels,
+    statuses,
+    queryUuids,
+    classes,
+    unlabeledMark,
+    // model,
+    stop,
+  } = rootState;
+
+  const requireDataObjects = method.inputs.includes('dataObjects');
+  const requireLabels = method.inputs.includes('labels');
+  const requireSamples = method.inputs.includes('samples') || method.inputs.includes('queryUuids');
+  const requireCategories = method.inputs.includes('categories');
+  const requireModel = method.inputs.includes('model');
+  const requireStop = method.inputs.includes('stop');
+
+  const outputDataObjects = method.outputs.includes('dataObjects');
+  const outputLabels = method.outputs.includes('labels');
+  const outputSamples = method.outputs.includes('samples');
+  const outputCategories = method.outputs.includes('categories');
+  // const outputModel = method.outputs.includes('model');
+  const outputStop = method.outputs.includes('stop');
+
+  try {
+    const inputs = {
+      ...(requireDataObjects && { dataObjects }),
+      ...(requireLabels && { labels, statuses }),
+      ...(requireSamples && { queryUuids }),
+      ...(requireCategories && { classes, unlabeledMark }),
+      // ...(requireModel && { model }),
+      ...(requireStop && { stop }),
+    };
+    const response = await method.run(inputs);
+    if (outputDataObjects) {
+      if (dataObjects === null) throw Error('Data object storage not initialized');
+      const { dataObjects: newValue } = response as { dataObjects: IDataObject[] };
+      dataObjects.upsertBulk(newValue);
+      commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
+    }
+    if (outputLabels) {
+      if (labels === null) throw Error('Label storage not initialized');
+      const { labels: newValue } = response as { labels: ILabel[] };
+      labels.upsertBulk(newValue);
+      commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
+    }
+    if (outputSamples) {
+      const { queryUuids: newValue } = response as { queryUuids: string[] };
+      commit(rootTypes.SET_QUERY_UUIDS, newValue, { root: true });
+    }
+    if (outputCategories) {
+      const { categories: newValue } = response as { categories: string[] };
+      commit(rootTypes.SET_CLASSES, newValue, { root: true });
+    }
+    if (outputStop) {
+      const { stop: newValue } = response as { stop: boolean };
+      commit(rootTypes.SET_STOP, newValue, { root: true });
+    }
+  } catch (e) {
+    handleAlgorithmServiceError(e, commit);
+  }
+});
+
 export const executeRegisterStorage = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
 ): Promise<void> => {
@@ -327,6 +399,14 @@ export const executeDefaultLabeling = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
+  if (method.run !== undefined && method.run !== null) {
+    await executeCustom(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    return;
+  }
+
   const {
     labels,
     dataObjects,
@@ -443,66 +523,6 @@ export const executeStoppageAnalysis = showProgressBar(async (
     }, { root: true });
   }
   commit(rootTypes.SET_STOP, stop, { root: true });
-});
-
-export const executeCustom = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
-): Promise<void> => {
-  const {
-    dataObjects,
-    labels,
-    statuses,
-    queryUuids,
-    classes,
-    unlabeledMark,
-    // model,
-    stop,
-  } = rootState;
-
-  const requireDataObjects = method.inputs.includes('dataObjects');
-  const requireLabels = method.inputs.includes('labels');
-  const requireSamples = method.inputs.includes('samples');
-  const requireCategories = method.inputs.includes('categories');
-  const requireModel = method.inputs.includes('model');
-  const requireStop = method.inputs.includes('stop');
-
-  const outputDataObjects = method.outputs.includes('dataObjects');
-  const outputLabels = method.outputs.includes('labels');
-  const outputSamples = method.outputs.includes('samples');
-  const outputCategories = method.outputs.includes('categories');
-  // const outputModel = method.outputs.includes('model');
-  const outputStop = method.outputs.includes('stop');
-
-  try {
-    const inputs = {
-      ...(requireDataObjects && { dataObjects }),
-      ...(requireLabels && { labels, statuses }),
-      ...(requireSamples && { queryUuids }),
-      ...(requireCategories && { classes, unlabeledMark }),
-      // ...(requireModel && { model }),
-      ...(requireStop && { stop }),
-    };
-    const response = await method.run(inputs);
-    if (outputDataObjects) {
-      const newValue = dataObjects.upsertBulk(response.dataObjects);
-      commit(rootTypes.SET_DATA_OBJECTS, newValue.shallowCopy(), { root: true });
-    }
-    if (outputLabels) {
-      commit(rootTypes.SET_LABELS, response.labels.shallowCopy(), { root: true });
-    }
-    if (outputSamples) {
-      commit(rootTypes.SET_QUERY_UUIDS, response.queryUuids, { root: true });
-    }
-    if (outputCategories) {
-      commit(rootTypes.SET_CLASSES, response.categories, { root: true });
-    }
-    if (outputStop) {
-      commit(rootTypes.SET_STOP, response.stop, { root: true });
-    }
-  } catch (e) {
-    handleAlgorithmServiceError(e, commit);
-  }
 });
 
 const getOutputNodes = (

@@ -53,5 +53,5 @@ export interface Process {
   labelTasks?: LabelTaskType[];
   model?: ModelService;
   params?: MethodParams;
-  run?: (inputs: Record<string, unknown>) => unknown;
+  run?: (inputs: Record<string, unknown>) => Promise<void | Record<string, unknown>>;
 }
