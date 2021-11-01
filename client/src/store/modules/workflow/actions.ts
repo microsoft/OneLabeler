@@ -212,6 +212,7 @@ export const executeCustom = showProgressBar(async (
   const outputDataObjects = method.outputs.includes('dataObjects');
   const outputLabels = method.outputs.includes('labels');
   const outputSamples = method.outputs.includes('samples');
+  const outputFeatures = method.outputs.includes('features');
   const outputCategories = method.outputs.includes('categories');
   // const outputModel = method.outputs.includes('model');
   const outputStop = method.outputs.includes('stop');
@@ -241,6 +242,20 @@ export const executeCustom = showProgressBar(async (
     if (outputSamples) {
       const { queryUuids: newValue } = response as { queryUuids: string[] };
       commit(rootTypes.SET_QUERY_UUIDS, newValue, { root: true });
+    }
+    if (outputFeatures) {
+      if (dataObjects === null) throw Error('Data object storage not initialized');
+      const { features: newValue } = response as { features: number[][] };
+      const uuids = await dataObjects.uuids();
+      await Promise.all(uuids.map(async (uuid, i) => {
+        const features = newValue[i];
+        const dataObject = await dataObjects.get(uuid);
+        if (dataObject === undefined) return;
+        await dataObjects.upsert({ ...dataObject, features });
+      }));
+      commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
+      const featureNames = [...newValue[0].keys()];
+      commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
     }
     if (outputCategories) {
       const { categories: newValue } = response as { categories: string[] };
@@ -446,6 +461,14 @@ export const executeFeatureExtraction = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   method: Process,
 ): Promise<void> => {
+  if (method.run !== undefined && method.run !== null) {
+    await executeCustom(
+      { commit, rootState } as ActionContext<IState, IRootState>,
+      method,
+    );
+    return;
+  }
+
   const { dataObjects, labels, statuses } = rootState;
 
   if (dataObjects === null || labels === null || statuses === null) return;

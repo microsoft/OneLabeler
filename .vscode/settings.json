@@ -74,6 +74,7 @@
         "matplotlib",
         "mccabe",
         "MNIST",
+        "mobilenet",
         "mongodb",
         "ndarray",
         "networkx",
@@ -149,6 +150,7 @@
         "vuetify's",
         "vuex",
         "wavesurfer",
+        "webgl",
         "youtu",
         "youtube",
         "Zhang's"

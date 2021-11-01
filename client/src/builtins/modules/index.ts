@@ -21,6 +21,7 @@ import DLNull from './default-labeling/null';
 import DLPointnetSegmentation from './default-labeling/pointnet-segmentation';
 import DLPosTagging from './default-labeling/pos-tagging';
 // import DLCNN from './default-labeling/cnn';
+import DLMobilenet from './default-labeling/mobilenet';
 import DLRandom from './default-labeling/random';
 // feature extraction modules
 import FEImageBow from './feature-extraction/image-bow';
@@ -28,6 +29,7 @@ import FEImageLda from './feature-extraction/image-lda';
 import FEImageSvd from './feature-extraction/image-svd';
 import FERandom3d from './feature-extraction/random3d';
 import FETextNmf from './feature-extraction/text-nmf';
+import FEMobilenet from './feature-extraction/mobilenet';
 // interactive labeling modules
 import ILGridMatrix from './interactive-labeling/grid-matrix';
 import ILSingleObjectDisplay from './interactive-labeling/single-object-display';
@@ -61,6 +63,7 @@ const processes: Process[] = [
   DLPosTagging,
   DLPointnetSegmentation,
   // DLCNN,
+  DLMobilenet,
   DLNull,
   DLRandom,
   // feature extraction modules:
@@ -69,6 +72,7 @@ const processes: Process[] = [
   FEImageLda,
   FERandom3d,
   FETextNmf,
+  FEMobilenet,
   // interactive labeling modules:
   ILGridMatrix,
   ILSingleObjectDisplay,

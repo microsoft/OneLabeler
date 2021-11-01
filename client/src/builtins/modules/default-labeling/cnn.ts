@@ -9,6 +9,8 @@ import {
   ProcessType,
 } from '@/commons/types';
 
+// Reference: https://www.tensorflow.org/js/tutorials/training/handwritten_digit_cnn
+
 const getModel = (): tf.Sequential => {
   const model = tf.sequential();
 
