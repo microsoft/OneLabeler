@@ -3,7 +3,6 @@
     <!-- The content of the data object. -->
     <component
       :is="component"
-      ref="dataObject"
       :data-object="dataObject"
       :label="label"
       :label2color="label2color"
@@ -30,6 +29,8 @@
         </template>
       </template>
     </component>
+
+    <!-- The interaction panels of label tasks. -->
     <template v-for="(setup, i) in taskSetups">
       <component
         :is="setup.panel"
@@ -40,7 +41,7 @@
         :label2color="label2color"
         :categories="filterCategoriesByLabelTask(setup.type)"
         :toolbar-state="toolbarState"
-        style="flex: 0 1 30%"
+        style="flex: 0 1 20%"
         @upsert:label="$emit('upsert:label', $event)"
         @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
       />

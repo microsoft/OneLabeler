@@ -48,7 +48,7 @@ import VToolbar from '@/components/VWindow/VToolbar.vue';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
 export default Vue.extend({
-  name: 'TheTextSpanBoardHeader',
+  name: 'TheHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {

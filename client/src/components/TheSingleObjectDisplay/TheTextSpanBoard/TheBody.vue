@@ -2,7 +2,7 @@
   <div
     ref="container"
     v-click-outside="onClickOutside"
-    style="display: flex;"
+    style="display: flex; gap: 4px; padding: 4px;"
     @click="onClickInside"
   >
     <!-- The annotated spans. -->
@@ -24,35 +24,34 @@
     </div>
 
     <!-- The content of the data object. -->
-    <div
-      ref="content"
-      style="position: relative; flex: 1 1 auto; display: flex; gap: 4px; margin: 4px"
-    >
-      <component
-        :is="component"
-        ref="dataObject"
-        :data-object="dataObject"
-        :label="label"
-        :label2color="label2color"
-        style="flex: 1 1 75%"
-        @scroll="onScroll"
-      />
+    <component
+      :is="component"
+      ref="dataObject"
+      :data-object="dataObject"
+      :label="label"
+      :label2color="label2color"
+      style="flex: 1 1 auto"
+      @scroll="onScroll"
+    />
+
+    <!-- The interaction panels of label tasks. -->
+    <template v-for="(setup, i) in taskSetups">
       <component
         :is="setup.panel"
-        v-for="(setup, i) in taskSetups"
+        v-if="setup.panel !== undefined"
         :key="i"
+        :label-tasks="labelTasks"
         :label="label"
         :label2color="label2color"
-        :label-tasks="labelTasks"
         :selected-span="selectedSpan"
-        style="flex: 1 1 25%"
+        style="flex: 0 1 20%"
         @upsert:label="$emit('upsert:label', $event)"
         @select:span="onSelectLabelSpan"
         @remove:span="$emit('remove:span', $event)"
         @create:relation="$emit('create:relation', $event)"
         @remove:relation="$emit('remove:relation', $event)"
       />
-    </div>
+    </template>
   </div>
 </template>
 
@@ -81,7 +80,7 @@ type Box = {
 }
 
 export default Vue.extend({
-  name: 'TheTextSpanBoardBody',
+  name: 'TheBody',
   props: {
     dataType: {
       type: String as PropType<DataType>,
@@ -227,7 +226,7 @@ export default Vue.extend({
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
     },
     getViewPort(): DOMRect {
-      return (this.$refs.content as HTMLElement).getBoundingClientRect();
+      return (this.$refs.dataObject?.$el as HTMLElement).getBoundingClientRect();
     },
     getBoxes(): Box[] {
       // Compute the boxes to render for the span annotations.

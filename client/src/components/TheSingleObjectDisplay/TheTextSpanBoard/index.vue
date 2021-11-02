@@ -1,6 +1,6 @@
 <template>
   <v-card style="display: flex; flex-direction: column">
-    <TheTextSpanBoardHeader
+    <TheHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
       :data-object="dataObject"
@@ -18,24 +18,21 @@
       v-if="showDataObject"
       style="flex: 1 1 auto; display: flex; flex-direction: column"
     >
-      <div style="height: 0px; flex: 1 1 auto; display: flex">
-        <TheTextSpanBoardBody
-          ref="canvas"
-          :data-type="dataType"
-          :label-tasks="labelTasks"
-          :data-object="dataObject"
-          :label="label"
-          :brush-category="brushCategory"
-          :label2color="label2color"
-          style="flex: 1 1 auto"
-          @upsert:label="onUpsertLabel"
-          @create:span="onCreateLabelSpan"
-          @select:span="onSelectLabelSpan"
-          @remove:span="onRemoveLabelSpan"
-          @create:relation="onCreateLabelRelation"
-          @remove:relation="onRemoveLabelRelation"
-        />
-      </div>
+      <TheBody
+        :data-type="dataType"
+        :label-tasks="labelTasks"
+        :data-object="dataObject"
+        :label="label"
+        :brush-category="brushCategory"
+        :label2color="label2color"
+        style="height: 0px; flex: 1 1 auto;"
+        @upsert:label="onUpsertLabel"
+        @create:span="onCreateLabelSpan"
+        @select:span="onSelectLabelSpan"
+        @remove:span="onRemoveLabelSpan"
+        @create:relation="onCreateLabelRelation"
+        @remove:relation="onRemoveLabelRelation"
+      />
       <template v-if="enablePagination">
         <v-divider />
         <v-pagination
@@ -67,15 +64,12 @@ import {
   LabelTaskType,
   TaskWindow,
 } from '@/commons/types';
-import TheTextSpanBoardHeader from './TheTextSpanBoardHeader.vue';
-import TheTextSpanBoardBody from './TheTextSpanBoardBody.vue';
+import TheHeader from './TheHeader.vue';
+import TheBody from './TheBody.vue';
 
 export default Vue.extend({
   name: 'TheTextSpanBoard',
-  components: {
-    TheTextSpanBoardHeader,
-    TheTextSpanBoardBody,
-  },
+  components: { TheHeader, TheBody },
   props: {
     dataType: {
       type: String as PropType<DataType>,

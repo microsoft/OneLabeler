@@ -29,7 +29,7 @@ import {
 } from '@/commons/types';
 import ThePaintBoard from './ThePaintBoard/ThePaintBoard.vue';
 import TheSingleObjectBoard from './TheSingleObjectBoard/index.vue';
-import TheTextSpanBoard from './TheTextSpanBoard/TheTextSpanBoard.vue';
+import TheTextSpanBoard from './TheTextSpanBoard/index.vue';
 import TheTimeSpanBoard from './TheTimeSpanBoard/TheTimeSpanBoard.vue';
 
 export default Vue.extend({
@@ -83,7 +83,7 @@ export default Vue.extend({
       if (dataType === DataType.Audio) return TheTimeSpanBoard;
       if (dataType === DataType.PointCloud) return TheSingleObjectBoard;
       if (labelTasks.includes(LabelTaskType.SpanClassification)) return TheTextSpanBoard;
-      return TheTextSpanBoard;
+      return TheSingleObjectBoard;
     },
   },
   methods: {
