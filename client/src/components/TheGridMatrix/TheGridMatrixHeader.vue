@@ -8,23 +8,22 @@
       Sampled Objects
     </template>
     <template #tools>
-      <div
-        v-for="(setup, i) in taskSetups"
-        :key="i"
-        style="display: flex"
-      >
+      <!-- The toolbars for each label task. -->
+      <template v-for="(setup, i) in taskSetups">
         <v-divider
+          :key="`${i}-divider`"
           class="mx-1"
           vertical
         />
         <component
           :is="setup.batchTool"
+          :key="`${i}-tool`"
           :categories="filterCategoriesByLabelTask(setup.type)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
           @upsert-bulk:label="$emit('upsert-bulk:label', $event)"
         />
-      </div>
+      </template>
     </template>
   </VToolbar>
 </template>

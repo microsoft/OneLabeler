@@ -8,18 +8,19 @@
       Sampled Object
     </template>
     <template #tools>
-      <v-divider
-        class="mx-1"
-        vertical
-      />
-
       <!-- mouse operation mode toggle -->
-      <TheHeaderModeToggle
-        :label-tasks="labelTasks"
-        :category-tasks="categoryTasks"
-        :toolbar-state="toolbarState"
-        @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
-      />
+      <template v-if="dataType === DataType.PointCloud">
+        <v-divider
+          class="mx-1"
+          vertical
+        />
+        <TheHeaderModeToggle
+          :label-tasks="labelTasks"
+          :category-tasks="categoryTasks"
+          :toolbar-state="toolbarState"
+          @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
+        />
+      </template>
 
       <!-- The toolbars for each label task. -->
       <template v-for="(setup, i) in taskSetups">
@@ -31,13 +32,11 @@
         <component
           :is="setup.singleTool"
           :key="`${i}-tool`"
-          :label-tasks="labelTasks"
-          :data-object="dataObject"
           :label="label"
           :categories="filterCategoriesByLabelTask(setup.type)"
           :label2color="label2color"
-          :disabled="label === null"
           :toolbar-state="toolbarState"
+          :disabled="label === null"
           @upsert:label="$emit('upsert:label', $event)"
           @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
         />
@@ -51,7 +50,6 @@ import Vue, { PropType } from 'vue';
 import {
   Category,
   DataType,
-  IDataObject,
   ILabel,
   LabelTaskType,
   ILabelTaskTypeSetup,
@@ -79,10 +77,6 @@ export default Vue.extend({
       type: Array as PropType<LabelTaskType[]>,
       required: true,
     },
-    dataObject: {
-      type: Object as PropType<IDataObject | null>,
-      default: null,
-    },
     label: {
       type: Object as PropType<ILabel | null>,
       default: null,
@@ -97,8 +91,11 @@ export default Vue.extend({
     },
     toolbarState: {
       type: Object as PropType<ToolbarState>,
-      default: () => ({}),
+      default: null,
     },
+  },
+  data() {
+    return { DataType };
   },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {

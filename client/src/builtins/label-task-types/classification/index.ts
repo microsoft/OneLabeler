@@ -1,10 +1,10 @@
 import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
-import VSingleTool from './VSingleTool.vue';
-import VBatchTool from './VBatchTool.vue';
+import BaseSingleTool from './BaseSingleTool.vue';
+import BaseBatchTool from './BaseBatchTool.vue';
 
 export default {
   type: LabelTaskType.Classification,
   label: 'classification',
-  singleTool: VSingleTool,
-  batchTool: VBatchTool,
+  singleTool: BaseSingleTool,
+  batchTool: BaseBatchTool,
 } as ILabelTaskTypeSetup;

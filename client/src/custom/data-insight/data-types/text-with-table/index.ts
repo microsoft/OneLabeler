@@ -7,7 +7,7 @@ import {
   UploadTarget,
 } from '@/commons/types';
 import { parseJsonFile } from '@/plugins/file';
-import VDisplay from './VDisplay.vue';
+import VDisplay from './BaseDisplay.vue';
 
 interface ITextWithTable extends IDataObject {
   /** The content of the data object. */

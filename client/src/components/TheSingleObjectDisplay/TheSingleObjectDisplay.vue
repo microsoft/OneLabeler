@@ -27,10 +27,9 @@ import {
   StatusType,
   TaskWindow,
 } from '@/commons/types';
-import ThePaintBoard from './ThePaintBoard/ThePaintBoard.vue';
+import ThePaintBoard from './ThePaintBoard/index.vue';
 import TheSingleObjectBoard from './TheSingleObjectBoard/index.vue';
-import TheTextSpanBoard from './TheTextSpanBoard/index.vue';
-import TheTimeSpanBoard from './TheTimeSpanBoard/TheTimeSpanBoard.vue';
+import TheTimeSpanBoard from './TheTimeSpanBoard/index.vue';
 
 export default Vue.extend({
   name: 'TheSingleObjectDisplay',
@@ -75,14 +74,11 @@ export default Vue.extend({
   },
   computed: {
     component(): VueConstructor | null {
-      const { dataType, labelTasks } = this;
+      const { dataType } = this;
       if (dataType === DataType.Image) return ThePaintBoard;
-      if (dataType === DataType.Text) return TheTextSpanBoard;
       if (dataType === DataType.Video) return TheTimeSpanBoard;
       if (dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
       if (dataType === DataType.Audio) return TheTimeSpanBoard;
-      if (dataType === DataType.PointCloud) return TheSingleObjectBoard;
-      if (labelTasks.includes(LabelTaskType.SpanClassification)) return TheTextSpanBoard;
       return TheSingleObjectBoard;
     },
   },

@@ -8,7 +8,7 @@ import {
   UploadTarget,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
-import VDisplay from './VDisplay.vue';
+import BaseDisplay from './BaseDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }
@@ -72,5 +72,5 @@ export default {
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
-  display: VDisplay,
+  display: BaseDisplay,
 } as IDataTypeSetup<UploadTarget.File>;

@@ -5,7 +5,6 @@
       :label-tasks="labelTasks"
       :label="label"
       :category-tasks="categoryTasks"
-      :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
       :toolbar-state="toolbarState"
       @upsert:label="onUpsertLabel"
@@ -23,7 +22,6 @@
         :label-tasks="labelTasks"
         :data-object="dataObject"
         :label="label"
-        :category-tasks="categoryTasks"
         :unlabeled-mark="unlabeledMark"
         :label2color="label2color"
         :toolbar-state="toolbarState"
@@ -85,10 +83,6 @@ export default Vue.extend({
       type: Array as PropType<ILabel[]>,
       required: true,
     },
-    taskWindow: {
-      type: Object as PropType<TaskWindow>,
-      required: true,
-    },
     categoryTasks: {
       type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
       required: true,
@@ -101,10 +95,14 @@ export default Vue.extend({
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
+    taskWindow: {
+      type: Object as PropType<TaskWindow>,
+      required: true,
+    },
   },
   data() {
     return {
-      toolbarState: {} as ToolbarState,
+      toolbarState: null as ToolbarState | null,
       page: 1 as number,
     };
   },

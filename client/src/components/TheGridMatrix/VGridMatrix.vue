@@ -10,7 +10,7 @@
     >
       <VGrid
         v-for="i in indicesInPage"
-        :key="dataObjects[i].uuid"
+        :key="i"
         :data-type="dataType"
         :label-tasks="labelTasks"
         :data-object="dataObjects[i]"

@@ -1,12 +1,11 @@
 <template>
   <v-card
-    :style="{
-      'box-shadow': isSelected ? '0px 0px 0px 3px #757575 !important' : undefined,
-      'opacity': isLabeled ? '0.5' : undefined,
-      display: 'flex',
-      'flex-direction': 'column',
+    :class="{
+      'selected-grid': isSelected,
+      'labeled-grid': isLabeled,
     }"
     :ripple="false"
+    style="display: flex; flex-direction: column;"
     @click="$emit('click:grid', $event)"
     @mouseenter="$emit('hover:grid')"
     @mouseleave="$emit('leave:grid')"
@@ -112,3 +111,13 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped>
+.selected-grid {
+  box-shadow: 0px 0px 0px 3px #757575 !important;
+}
+
+.labeled-grid {
+  opacity: 0.5;
+}
+</style>

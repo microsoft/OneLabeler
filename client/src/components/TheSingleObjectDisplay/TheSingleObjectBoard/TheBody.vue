@@ -14,15 +14,14 @@
           <component
             :is="setup.overlay"
             v-if="setup.overlay !== undefined"
+            v-bind="props"
             :key="i"
-            :label-tasks="labelTasks"
+            :data-object="dataObject"
             :label="label"
-            :label2color="label2color"
-            :categories="filterCategoriesByLabelTask(setup.type)"
             :unlabeled-mark="unlabeledMark"
+            :label2color="label2color"
             :toolbar-state="toolbarState"
-            :on-segment3d="props.onSegment3d"
-            style="grid-area: 1 / 1 / 2 / 2; z-index: 1;"
+            style="grid-area: 1 / 1 / 2 / 2;"
             @upsert:label="$emit('upsert:label', $event)"
             @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
           />
@@ -39,7 +38,6 @@
         :label-tasks="labelTasks"
         :label="label"
         :label2color="label2color"
-        :categories="filterCategoriesByLabelTask(setup.type)"
         :toolbar-state="toolbarState"
         style="flex: 0 1 20%"
         @upsert:label="$emit('upsert:label', $event)"
@@ -61,6 +59,7 @@ import {
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
+import { ToolbarState } from './types';
 
 export default Vue.extend({
   name: 'TheBody',
@@ -82,10 +81,6 @@ export default Vue.extend({
       type: Object as PropType<ILabel | null>,
       default: null,
     },
-    categoryTasks: {
-      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
-      required: true,
-    },
     unlabeledMark: {
       type: String as PropType<Category>,
       required: true,
@@ -95,8 +90,8 @@ export default Vue.extend({
       required: true,
     },
     toolbarState: {
-      type: Object as PropType<Record<string, unknown>>,
-      default: () => ({}),
+      type: Object as PropType<ToolbarState>,
+      default: null,
     },
   },
   computed: {
@@ -110,17 +105,6 @@ export default Vue.extend({
       const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
       if (dataTypeSetup === undefined) return null;
       return dataTypeSetup.display;
-    },
-  },
-  methods: {
-    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
-          usedInTasks === null || usedInTasks.includes(labelTask)
-        )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
 });

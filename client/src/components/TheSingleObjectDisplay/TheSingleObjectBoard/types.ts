@@ -1,4 +1,4 @@
-import { Category } from '@/commons/types';
+import { Category, ILabelTextSpan } from '@/commons/types';
 
 export enum MouseOperationType {
   PanAndZoom = 'PanAndZoom',
@@ -6,7 +6,8 @@ export enum MouseOperationType {
   PaintErase = 'PaintErase',
 }
 
-export type ToolbarState = {
-  mouseOperation: MouseOperationType;
-  strokeCategory: Category;
-}
+export type ToolbarState = Partial<{
+  mouseOperation: MouseOperationType | null;
+  strokeCategory: Category | null;
+  selectedSpan: ILabelTextSpan | null;
+}>

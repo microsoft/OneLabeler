@@ -1,8 +1,8 @@
 import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
-import VPanel from './VPanel.vue';
+import BasePanel from './BasePanel.vue';
 
 export default {
   type: LabelTaskType.AnnotationRelation,
   label: 'span relation',
-  panel: VPanel,
+  panel: BasePanel,
 } as ILabelTaskTypeSetup;

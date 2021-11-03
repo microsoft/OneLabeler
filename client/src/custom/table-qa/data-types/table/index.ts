@@ -9,7 +9,7 @@ import {
   parseJsonFile,
   parseCsvFile,
 } from '@/plugins/file';
-import VDisplay from './VDisplay.vue';
+import BaseDisplay from './BaseDisplay.vue';
 
 type IExport = (Partial<ILabel>)[];
 
@@ -83,5 +83,5 @@ export default {
       return idx === undefined ? partial : { ...labels[idx], ...partial };
     });
   },
-  display: VDisplay,
+  display: BaseDisplay,
 } as IDataTypeSetup<UploadTarget.Folder>;

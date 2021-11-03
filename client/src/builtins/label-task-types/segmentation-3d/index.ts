@@ -1,10 +1,10 @@
 import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
-import VSingleTool from './VSingleTool.vue';
-import VOverlay from './VOverlay.vue';
+import BaseSingleTool from './BaseSingleTool.vue';
+import BaseOverlay from './BaseOverlay.vue';
 
 export default {
   type: LabelTaskType.Segmentation3d,
   label: '3d segmentation',
-  singleTool: VSingleTool,
-  overlay: VOverlay,
+  singleTool: BaseSingleTool,
+  overlay: BaseOverlay,
 } as ILabelTaskTypeSetup;

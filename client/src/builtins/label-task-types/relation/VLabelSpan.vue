@@ -1,5 +1,5 @@
 <template>
-  <div v-if="labelSpan !== null">
+  <div>
     <v-btn
       class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
       style="border-color: #bbb"
@@ -11,7 +11,7 @@
         class="pl-2"
         aria-hidden="true"
         small
-        :style="{ color: label2color(labelSpan.category) }"
+        :style="{ color }"
       >
         $vuetify.icons.values.square
       </v-icon>
@@ -30,12 +30,12 @@ export default Vue.extend({
   name: 'VLabelSpan',
   props: {
     labelSpan: {
-      type: Object as PropType<ILabelTextSpan | null>,
-      default: null,
-    },
-    label2color: {
-      type: Function as PropType<(label: string) => string>,
+      type: Object as PropType<ILabelTextSpan>,
       required: true,
+    },
+    color: {
+      type: String as PropType<string>,
+      default: '#bbb',
     },
   },
 });

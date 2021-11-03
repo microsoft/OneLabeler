@@ -1,10 +1,10 @@
 import { ILabelTaskTypeSetup } from '@/commons/types';
-import VSingleTool from './VSingleTool.vue';
-import VPanel from './VPanel.vue';
+import BaseSingleTool from './BaseSingleTool.vue';
+import BasePanel from './BasePanel.vue';
 
 export default {
   type: 'CustomFreeformText',
   label: 'custom freeform text',
-  singleTool: VSingleTool,
-  panel: VPanel,
+  singleTool: BaseSingleTool,
+  panel: BasePanel,
 } as ILabelTaskTypeSetup;

@@ -1,8 +1,8 @@
 import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
-import VSingleTool from './VSingleTool.vue';
+import BaseSingleTool from './BaseSingleTool.vue';
 
 export default {
   type: LabelTaskType.Segmentation2d,
   label: '2d segmentation',
-  singleTool: VSingleTool,
+  singleTool: BaseSingleTool,
 } as ILabelTaskTypeSetup;
