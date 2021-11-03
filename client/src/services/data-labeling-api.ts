@@ -118,7 +118,7 @@ export const dataObjectSelection = async (
 ): Promise<string[]> => {
   const uuids = await dataObjectStorage.uuids();
   const statuses: IStatus[] = (await statusStorage.getBulk(uuids)).map((d, i) => (
-    d !== undefined ? d : { uuid: uuids[i], value: StatusType.New }
+    d ?? { uuid: uuids[i], value: StatusType.New }
   ));
 
   if (method.isServerless && (method.api === 'DatasetOrder')) {

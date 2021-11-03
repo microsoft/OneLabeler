@@ -340,7 +340,8 @@ export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
 
   // Sample data objects.
-  const { dataObjects } = rootState as { dataObjects: IDataObjectStorage };
+  const { dataObjects } = rootState;
+  if (dataObjects === null) throw Error('Data object storage not initialized.');
   const model = method.model as ModelService;
   const nBatch = (method.params as MethodParams).nBatch.value as number;
 

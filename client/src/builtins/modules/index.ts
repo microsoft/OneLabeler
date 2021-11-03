@@ -46,7 +46,7 @@ import SAAllChecked from './stoppage-analysis/all-checked';
  * so that given a customized data type, the existing processes can still be reused.
  */
 
-const processes: Process[] = [
+const processes = [
   // data object selection modules:
   DOSCluster,
   DOSClusterCentroids,
@@ -88,6 +88,6 @@ const processes: Process[] = [
   // custom modules:
   CustomExport,
   CustomLoad,
-];
+] as Process[];
 
 export default processes;

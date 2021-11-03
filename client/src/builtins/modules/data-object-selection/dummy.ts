@@ -13,6 +13,8 @@ export default {
   isModelBased: false,
   isServerless: true,
   api: 'DatasetOrder',
+  // TODO: refactor all computation modules into classes
+  // so that their own params can be accessed inside .run()
   params: {
     nBatch: {
       value: 48,
