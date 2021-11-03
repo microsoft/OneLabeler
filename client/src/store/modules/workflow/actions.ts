@@ -245,16 +245,17 @@ export const executeCustom = showProgressBar(async (
     }
     if (outputFeatures) {
       if (dataObjects === null) throw Error('Data object storage not initialized');
-      const { features: newValue } = response as { features: number[][] };
+      const features = response?.features as number[][];
+      const featureNames = response?.featureNames
+        ?? [...features[0].keys()].map((d) => String(d)) as string[];
+
       const uuids = await dataObjects.uuids();
       await Promise.all(uuids.map(async (uuid, i) => {
-        const features = newValue[i];
         const dataObject = await dataObjects.get(uuid);
         if (dataObject === undefined) return;
-        await dataObjects.upsert({ ...dataObject, features });
+        await dataObjects.upsert({ ...dataObject, features: features[i] });
       }));
       commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
-      const featureNames = [...newValue[0].keys()];
       commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
     }
     if (outputCategories) {
@@ -457,36 +458,6 @@ export const executeDefaultLabeling = showProgressBar(async (
   commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
 });
 
-export const executeFeatureExtraction = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
-): Promise<void> => {
-  if (method.run !== undefined && method.run !== null) {
-    await executeCustom(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
-    return;
-  }
-
-  const { dataObjects, labels, statuses } = rootState;
-
-  if (dataObjects === null || labels === null || statuses === null) return;
-
-  const requireLabels = method.inputs.includes('labels');
-
-  try {
-    const response = requireLabels
-      ? (await API.featureExtraction(method, dataObjects, labels, statuses))
-      : (await API.featureExtraction(method, dataObjects));
-
-    commit(rootTypes.SET_DATA_OBJECTS, response.dataObjects.shallowCopy(), { root: true });
-    commit(rootTypes.SET_FEATURE_NAMES, response.featureNames, { root: true });
-  } catch (e) {
-    handleAlgorithmServiceError(e, commit);
-  }
-});
-
 export const executeModelTraining = showProgressBar(async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
   method: Process,
@@ -597,7 +568,7 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.FeatureExtraction) {
     const method = node.value as Process;
-    await executeFeatureExtraction(store, method);
+    await executeCustom(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 

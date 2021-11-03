@@ -17,12 +17,14 @@ const download = (
   link.click();
 };
 
-/** Compile an installer given the labeling tool's workflow. */
-export const compileInstaller = showProgressBar(async (
+/** Evoke the compile service. */
+const compile = showProgressBar(async (
   workflow: WorkflowGraph,
+  url: string,
+  filename: string,
 ): Promise<void> => {
   const response = await axios.post(
-    formatter('exe'),
+    url,
     JSON.stringify({ workflow }),
     // Parse the response data as blob
     // instead of the default as a string
@@ -30,43 +32,33 @@ export const compileInstaller = showProgressBar(async (
     { responseType: 'blob' },
   );
   const blob = new Blob([response.data]);
-  const url = window.URL.createObjectURL(blob);
-  const filename = 'labeling-tool-installer.exe';
-  download(url, filename);
+  const objectUrl = window.URL.createObjectURL(blob);
+  download(objectUrl, filename);
 });
+
+/** Compile an installer given the labeling tool's workflow. */
+export const compileInstaller = (workflow: WorkflowGraph): Promise<void> => (
+  compile(
+    workflow,
+    formatter('exe'),
+    'labeling-tool-installer.exe',
+  )
+);
 
 /** Compile a zip of the bundled code given the labeling tool's workflow. */
-export const compileBundleZip = showProgressBar(async (
-  workflow: WorkflowGraph,
-): Promise<void> => {
-  const response = await axios.post(
+export const compileBundleZip = (workflow: WorkflowGraph): Promise<void> => (
+  compile(
+    workflow,
     formatter('zip/bundle'),
-    JSON.stringify({ workflow }),
-    // Parse the response data as blob
-    // instead of the default as a string
-    // (alternatively parse as arraybuffer also works).
-    { responseType: 'blob' },
-  );
-  const blob = new Blob([response.data]);
-  const url = window.URL.createObjectURL(blob);
-  const filename = 'labeling-tool-bundle.zip';
-  download(url, filename);
-});
+    'labeling-tool-bundle.zip',
+  )
+);
 
 /** Compile a zip of the source code given the labeling tool's workflow. */
-export const compileSourceZip = showProgressBar(async (
-  workflow: WorkflowGraph,
-): Promise<void> => {
-  const response = await axios.post(
+export const compileSourceZip = (workflow: WorkflowGraph): Promise<void> => (
+  compile(
+    workflow,
     formatter('zip/source'),
-    JSON.stringify({ workflow }),
-    // Parse the response data as blob
-    // instead of the default as a string
-    // (alternatively parse as arraybuffer also works).
-    { responseType: 'blob' },
-  );
-  const blob = new Blob([response.data]);
-  const url = window.URL.createObjectURL(blob);
-  const filename = 'labeling-tool-source.zip';
-  download(url, filename);
-});
+    'labeling-tool-source.zip',
+  )
+);

@@ -36,6 +36,7 @@ export default {
     },
   ): Promise<{ features: number[][] }> => {
     const model = await MobileNet.load();
+    // If queryUuids empty, compute features for all data objects.
     const dataObjects = inputs.queryUuids.length !== 0
       ? await inputs.dataObjects.getBulk(inputs.queryUuids) as IImage[]
       : await inputs.dataObjects.getAll() as IImage[];
