@@ -1,5 +1,6 @@
-// import textWithTableMultiple from '@/custom/table-qa/workflow-templates/template';
-// import MI3Block from '@/custom/mi3/workflow-templates/mi3-block';
+// import customTextWithTableMultiple from '@/custom/table-qa/workflow-templates/template';
+// import customMI3Block from '@/custom/mi3/workflow-templates/mi3-block';
+import customReverseEngineering from '@/custom/reverse-engineering/workflow-templates/template';
 import audioClassification from './templates/audio-classification';
 import audioTemporalSegmentation from './templates/audio-temporal-segmentation';
 import imageClassificationIML from './templates/image-classification-iml';
@@ -20,14 +21,15 @@ export default [
   imageClassificationIML,
   imageClassification,
   imageSegmentation,
-  // MI3Block,
   pointCloudClassification,
   pointCloudSegmentation,
   textClassification,
   textNamedEntityRecognition,
-  // textWithTableMultiple,
   videoClassification,
   videoTemporalSegmentation,
   webpageClassification,
   youtubeVideoTemporalSegmentation,
+  customReverseEngineering,
+  // customMI3Block,
+  // customTextWithTableMultiple,
 ];

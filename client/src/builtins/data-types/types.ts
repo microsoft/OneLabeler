@@ -6,6 +6,7 @@ import type { IDataObjectStorage } from '@/commons/types';
 export enum DataType {
   Audio = 'Audio',
   Image = 'Image',
+  VectorImage = 'VectorImage',
   Text = 'Text',
   Video = 'Video',
   YoutubeVideo = 'YoutubeVideo',
@@ -33,6 +34,12 @@ export interface IImage extends IDataObject {
   width?: number | null;
   /** The height of the image. */
   height?: number | null;
+}
+
+/** The interface of a vector image data object. */
+export interface IVectorImage extends IDataObject {
+  /** The svg content as a string. */
+  content?: string | null;
 }
 
 /** The interface of an text data object. */
