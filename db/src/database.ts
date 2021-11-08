@@ -304,14 +304,9 @@ class StorageStore implements IStorageStore {
 
   async init(): Promise<void> {
     try {
-      await mongoose.connect(DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-        useCreateIndex: true,
-      });
+      await mongoose.connect(DB_URL);
     } catch (err) {
-      console.log(`Mongoose connection error: ${err.message}`);
+      console.log(`Mongoose connection error: ${(err as Error).message}`);
     }
   }
 }

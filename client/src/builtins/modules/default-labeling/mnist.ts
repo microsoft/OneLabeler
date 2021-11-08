@@ -147,7 +147,8 @@ export default class MnistData {
     });
 
     const labelsRequest = fetch(MNIST_LABELS_PATH);
-    const [imgResponse, labelsResponse] = await Promise.all([imgRequest, labelsRequest]);
+    await imgRequest;
+    const labelsResponse = await labelsRequest;
 
     this.datasetLabels = new Uint8Array(await labelsResponse.arrayBuffer());
 
@@ -165,7 +166,10 @@ export default class MnistData {
 
   nextBatch = nextBatch;
 
-  nextTrainBatch(batchSize: number) {
+  nextTrainBatch(batchSize: number): {
+    xs: tf.Tensor2D;
+    labels: tf.Tensor2D;
+  } {
     if (this.trainImages === null) throw Error('Train images unavailable.');
     if (this.trainLabels === null) throw Error('Train labels unavailable.');
 
@@ -180,7 +184,10 @@ export default class MnistData {
     );
   }
 
-  nextTestBatch(batchSize: number) {
+  nextTestBatch(batchSize: number): {
+    xs: tf.Tensor2D;
+    labels: tf.Tensor2D;
+  } {
     if (this.testImages === null) throw Error('Test images unavailable.');
     if (this.testLabels === null) throw Error('Test labels unavailable.');
 

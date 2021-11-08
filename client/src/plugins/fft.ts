@@ -1,6 +1,7 @@
+/* eslint-disable no-bitwise */
 /**
  * Calculate FFT.
- * 
+ *
  * Reference: https://github.com/katspaugh/wavesurfer.js/blob/master/src/plugin/spectrogram/fft.js
  */
 
@@ -24,8 +25,8 @@ const computeWindowValues = (
 ): Float32Array => {
   let windowValues = new Float32Array(bufferSize).fill(0);
 
-  const bartlett = (len: number, i: number) => (2 / (len - 1)) *
-    ((len - 1) / 2 - Math.abs(i - (len - 1) / 2));
+  const bartlett = (len: number, i: number) => (2 / (len - 1))
+    * ((len - 1) / 2 - Math.abs(i - (len - 1) / 2));
   const bartlettHann = (len: number, i: number) => (
     0.62
     - 0.48 * Math.abs(i / (len - 1) - 0.5)
@@ -93,8 +94,8 @@ const computeReverseTable = (bufferSize: number): Uint32Array => {
     for (let i = 0; i < limit; i += 1) {
       reverseTable[i + limit] = reverseTable[i] + bit;
     }
-    limit = limit << 1;
-    bit = bit >> 1;
+    limit <<= 1;
+    bit >>= 1;
   }
   return reverseTable;
 };
@@ -103,12 +104,12 @@ const FFT = (
   buffer: number[],
   windowFunc: WindowFunction = WindowFunction.hann,
   alpha: number | null = null,
-) => {
+): Float32Array => {
   const bufferSize = buffer.length;
 
   const k = Math.floor(Math.log(bufferSize) / Math.LN2);
-  if (Math.pow(2, k) !== bufferSize) {
-    throw 'Invalid buffer size, must be a power of 2.';
+  if (2 ** k !== bufferSize) {
+    throw Error('Invalid buffer size, must be a power of 2.');
   }
 
   const sinTable = new Float32Array(bufferSize).fill(0)
@@ -148,7 +149,7 @@ const FFT = (
       currentPhaseShiftImag = tmpReal * phaseShiftStepImag
         + currentPhaseShiftImag * phaseShiftStepReal;
     }
-    halfSize = halfSize << 1;
+    halfSize <<= 1;
   }
 
   const spectrum = new Float32Array(bufferSize / 2).fill(0).map((d, i) => (

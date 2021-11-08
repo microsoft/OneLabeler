@@ -74,16 +74,12 @@ export default Vue.extend({
       const layer = this.getLayer();
 
       // clean layer
+      // TODO: destroy children cause the the mask to flash when mask is updated
       layer.destroyChildren();
-
-      if (labelMask === null || labelMask.content === null) {
-        layer.batchDraw();
-        return;
-      }
+      if (labelMask === null || labelMask.content === null) return;
 
       const image: HTMLImageElement = await createImage(labelMask.content);
       layer.add(new Konva.Image({ image }));
-      layer.draw();
     },
   },
 });

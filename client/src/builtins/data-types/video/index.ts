@@ -18,10 +18,10 @@ type IExport<T extends IDataObject> = (
 
 const getVideoSize = (content: string) => new Promise((resolve) => {
   const video = document.createElement('video');
-  video.addEventListener('loadedmetadata', function () {
-    const height = this.videoHeight;
-    const width = this.videoWidth;
-    const { duration } = this;
+  video.addEventListener('loadedmetadata', () => {
+    const height = video.videoHeight;
+    const width = video.videoWidth;
+    const { duration } = video;
     // Force the video element to be cleaned up.
     video.src = '';
     video.remove();

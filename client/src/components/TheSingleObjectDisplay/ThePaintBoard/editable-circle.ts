@@ -32,9 +32,6 @@ export default class EditableCircle implements IEditableCircle {
   /** The state of whether the circle is editable. */
   #editable: boolean;
 
-  /** The layer on which the group renders. */
-  #layer: Konva.Layer;
-
   /** The circle. */
   #circle: Konva.Circle;
 
@@ -45,7 +42,6 @@ export default class EditableCircle implements IEditableCircle {
   #onClick: ((d: EditableCircle) => void) | null = null;
 
   startEdit(): void {
-    const layer = this.#layer;
     const circle = this.#circle;
 
     circle.fill('rgba(0,0,0,0.5)');
@@ -55,7 +51,6 @@ export default class EditableCircle implements IEditableCircle {
       const y = Math.floor(circle.y()) + 0.5;
       circle.x(x);
       circle.y(y);
-      layer.batchDraw();
 
       if (this.#onUpdatePoint !== null) {
         this.#onUpdatePoint(this);
@@ -75,21 +70,15 @@ export default class EditableCircle implements IEditableCircle {
 
     circle.on('click', () => {
       this.startEdit();
-      const layer = this.#layer;
-      layer.draw();
       if (this.#onClick !== null) {
         this.#onClick(this);
       }
     });
     circle.on('mouseover', () => {
-      const layer = this.#layer;
       circle.strokeWidth(0.5);
-      layer.batchDraw();
     });
     circle.on('mouseout', () => {
-      const layer = this.#layer;
       circle.strokeWidth(0.25);
-      layer.batchDraw();
     });
   }
 
@@ -152,7 +141,6 @@ export default class EditableCircle implements IEditableCircle {
 
   constructor(
     point: { x: number, y: number },
-    layer: Konva.Layer,
     editable = true,
   ) {
     const circle = new Konva.Circle({
@@ -165,7 +153,6 @@ export default class EditableCircle implements IEditableCircle {
     });
 
     this.#editable = editable;
-    this.#layer = layer;
     this.#circle = circle;
 
     if (editable) {

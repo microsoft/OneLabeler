@@ -293,7 +293,6 @@ export default Vue.extend({
         x: viewPortWidth / 2 - cx * scale,
         y: viewPortHeight / 2 - cy * scale,
       });
-      stage.batchDraw();
     },
     stopPolygonCreation(enableSimplify: boolean): void {
       const { strokeLabel } = this;
@@ -308,12 +307,11 @@ export default Vue.extend({
 
       const layerShapes = this.getLayerShapes();
       layerShapes.find('#temp-prospective-polygon-edge')
-        .each((shape) => shape.destroy());
+        .forEach((shape) => shape.destroy());
       layerShapes.find('#temp-prospective-polygon-closing-edge')
-        .each((shape) => shape.destroy());
+        .forEach((shape) => shape.destroy());
       layerShapes.find('#temp-polygon-path')
-        .each((shape) => shape.destroy());
-      layerShapes.draw();
+        .forEach((shape) => shape.destroy());
       this.points = [];
     },
     drawStroke(offsetX: number, offsetY: number): void {
@@ -351,7 +349,6 @@ export default Vue.extend({
 
       const layerPaint = this.getLayerPaint();
       layerPaint.add(stroke as Konva.Shape);
-      layerPaint.batchDraw();
     },
     drawPaintCursor(offsetX: number, offsetY: number): void {
       const {
@@ -369,7 +366,7 @@ export default Vue.extend({
 
       // remove the old cursor
       const layerInteraction = this.getLayerInteraction();
-      layerInteraction.find('#cursor').each((shape) => shape.destroy());
+      layerInteraction.find('#cursor').forEach((shape) => shape.destroy());
       let cursor = null;
       if (strokeShape === StrokeShapeType.Square) {
         cursor = new Konva.Rect({
@@ -394,7 +391,6 @@ export default Vue.extend({
           .opacity(0.5);
       }
       layerInteraction.add(cursor as Konva.Shape);
-      layerInteraction.batchDraw();
     },
     drawShapeCursor(offsetX: number, offsetY: number): void {
       const {
@@ -407,7 +403,7 @@ export default Vue.extend({
 
       // remove the old cursor
       const layerInteraction = this.getLayerInteraction();
-      layerInteraction.find('#cursor').each((shape) => shape.destroy());
+      layerInteraction.find('#cursor').forEach((shape) => shape.destroy());
       const cursor = new Konva.Circle({
         x,
         y,
@@ -418,7 +414,6 @@ export default Vue.extend({
         opacity: 0.5,
       });
       layerInteraction.add(cursor);
-      layerInteraction.batchDraw();
     },
     onKey(e: KeyboardEvent): void {
       const { key } = e;
@@ -428,7 +423,6 @@ export default Vue.extend({
         this.stopPolygonCreation(false);
       }
       if (key === 'Delete') {
-        const layerShapes = this.getLayerShapes();
         const shapes = this.getShapes();
         shapes.forEach((shape) => {
           const uuid = shape.getAttr('uuid');
@@ -443,7 +437,6 @@ export default Vue.extend({
             ];
           }
         });
-        layerShapes.draw();
       }
     },
     onDragEndStage(): void {
@@ -524,7 +517,6 @@ export default Vue.extend({
 
       stage.position(newPos);
       this.setImageBlur();
-      stage.batchDraw();
     },
     onMouseDownStage(e: Konva.KonvaEventObject<MouseEvent>): void {
       this.isMouseDown = true;
@@ -572,7 +564,7 @@ export default Vue.extend({
         const layerShapes = this.getLayerShapes();
 
         layerShapes.find('#temp-prospective-polygon-closing-edge')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
         if (points.length >= 2) {
           const firstPoint = points[0];
           const prospectiveClosingEdge = new Konva.Line({
@@ -587,7 +579,7 @@ export default Vue.extend({
         }
 
         layerShapes.find('#temp-polygon-path')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
         const clickedPath = new Konva.Line({
           id: 'temp-polygon-path',
           points: points.flat(),
@@ -596,7 +588,6 @@ export default Vue.extend({
           closed: false,
         });
         layerShapes.add(clickedPath);
-        layerShapes.batchDraw();
       }
       if (this.polygonByClick) {
         if (this.points.length === 0) return;
@@ -607,9 +598,9 @@ export default Vue.extend({
 
         const layerShapes = this.getLayerShapes();
         layerShapes.find('#temp-prospective-polygon-edge')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
         layerShapes.find('#temp-prospective-polygon-closing-edge')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
 
         const lastPoint = this.points[this.points.length - 1];
         const currentPoint = [x, y];
@@ -635,7 +626,6 @@ export default Vue.extend({
           });
           layerShapes.add(prospectiveClosingEdge);
         }
-        layerShapes.batchDraw();
       }
       if (this.rectByClick) {
         if (this.points.length !== 1) return;
@@ -646,7 +636,7 @@ export default Vue.extend({
 
         const layerShapes = this.getLayerShapes();
         layerShapes.find('#temp-prospective-rect')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
 
         const firstPoint = this.points[0];
         const currentPoint = [x, y];
@@ -668,7 +658,6 @@ export default Vue.extend({
           opacity: 0.5,
         });
         layerShapes.add(prospectiveRect);
-        layerShapes.batchDraw();
       }
     },
     onMouseUpStage(): void {
@@ -689,7 +678,6 @@ export default Vue.extend({
       // clear the paint brush drawn in the interaction layer
       const layerInteraction = this.getLayerInteraction();
       layerInteraction.destroyChildren();
-      layerInteraction.draw();
     },
     onClickStage(e: Konva.KonvaEventObject<MouseEvent>): void {
       const { snapToPixel, strokeLabel, label2color } = this;
@@ -715,7 +703,7 @@ export default Vue.extend({
         this.points = [...this.points, [x, y]];
 
         layerShapes.find('#temp-polygon-path')
-          .each((shape) => shape.destroy());
+          .forEach((shape) => shape.destroy());
         const clickedPath = new Konva.Line({
           id: 'temp-polygon-path',
           points: this.points.flat(),
@@ -724,14 +712,13 @@ export default Vue.extend({
           closed: false,
         });
         layerShapes.add(clickedPath);
-        layerShapes.batchDraw();
       } else if (this.rectByClick) {
         if (this.points.length === 0) {
           this.points = [[x, y]];
         } else if (this.points.length === 1) {
           const { points } = this;
           layerShapes.find('#temp-prospective-rect')
-            .each((shape) => shape.destroy());
+            .forEach((shape) => shape.destroy());
           this.points = [];
 
           const labelRect: ILabelShape = {

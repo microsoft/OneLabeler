@@ -49,9 +49,6 @@ export default class EditableRect implements IEditableRect {
   /** The state of whether the rect is editable. */
   #editable: boolean;
 
-  /** The layer on which the group renders. */
-  #layer: Konva.Layer;
-
   /** The group containing the rect and anchors. */
   #group: Konva.Group;
 
@@ -142,31 +139,19 @@ export default class EditableRect implements IEditableRect {
       draggable: true,
     });
     anchor.on('mouseover', () => {
-      const layer = this.#layer;
-
       anchor.strokeWidth(0.25);
-      layer.draw();
     });
     anchor.on('mouseout', () => {
-      const layer = this.#layer;
-
       anchor.strokeWidth(0.125);
-      layer.draw();
     });
 
     anchor.on('dragmove', () => {
-      const layer = this.#layer;
       this.onDragRedraw(anchor, controlPointType);
-      layer.batchDraw();
     });
     anchor.on('dragend', () => {
       anchor.x(Math.floor(anchor.x()) + 0.5);
       anchor.y(Math.floor(anchor.y()) + 0.5);
-
-      const layer = this.#layer;
       this.onDragRedraw(anchor, controlPointType);
-      layer.batchDraw();
-
       if (this.#onUpdatePoints !== null) {
         this.#onUpdatePoints(this);
       }
@@ -175,7 +160,6 @@ export default class EditableRect implements IEditableRect {
   }
 
   startEdit(): void {
-    const layer = this.#layer;
     const group = this.#group;
     const rect = this.#rect;
     const anchors = this.#anchors;
@@ -193,7 +177,6 @@ export default class EditableRect implements IEditableRect {
           .y(anchor.y() + dy);
       });
       group.x(0).y(0);
-      layer.batchDraw();
 
       if (this.#onUpdatePoints !== null) {
         this.#onUpdatePoints(this);
@@ -211,12 +194,10 @@ export default class EditableRect implements IEditableRect {
   }
 
   private enableEdit(): void {
-    const layer = this.#layer;
     const group = this.#group;
 
     group.on('click', () => {
       this.startEdit();
-      layer.draw();
 
       if (this.#onClick !== null) {
         this.#onClick(this);
@@ -313,7 +294,6 @@ export default class EditableRect implements IEditableRect {
 
   constructor(
     points: [number, number][],
-    layer: Konva.Layer,
     editable = true,
   ) {
     const xMin = Math.min(points[0][0], points[1][0]);
@@ -367,7 +347,6 @@ export default class EditableRect implements IEditableRect {
     Object.values(anchors).forEach((anchor) => group.add(anchor));
 
     this.#editable = editable;
-    this.#layer = layer;
     this.#group = group;
     this.#rect = rect;
     this.#anchors = anchors;

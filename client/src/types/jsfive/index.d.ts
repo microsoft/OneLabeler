@@ -1,10 +1,9 @@
-declare module jsfive {
-  class Dataset { }
-  class File {
-    constructor(fh: ArrayBuffer, filename: string) { }
-    get(y: string): { shape: number[], value: number[] }
-  }
-  class Group { }
-}
+/* eslint-disable max-classes-per-file */
 
-export = jsfive;
+export class Dataset { }
+export class File {
+  constructor(fh: ArrayBuffer, filename: string)
+
+  get(y: string): { shape: number[], value: number[] }
+}
+export class Group { }

@@ -19,8 +19,8 @@ type IExport<T extends IDataObject> = (
 
 const getAudioSize = (content: string) => new Promise((resolve) => {
   const audio = document.createElement('audio');
-  audio.addEventListener('loadedmetadata', function () {
-    const { duration } = this;
+  audio.addEventListener('loadedmetadata', () => {
+    const { duration } = audio;
     // Force the audio element to be cleaned up.
     audio.src = '';
     audio.remove();

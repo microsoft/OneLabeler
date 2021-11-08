@@ -35,7 +35,7 @@ export default {
   isServerless: true,
   run: async (): Promise<{ dataObjects: ITable[] }> => {
     const fileNames = await d3.json('./assets/catalog.json') as string[];
-    const pairs: Record<string, { table: any, queries: any }> = {};
+    const pairs: Record<string, { table: unknown, queries: unknown }> = {};
     await Promise.all(fileNames.map(async (name: string) => {
       const ext = getExt(name);
       const nameTrimmed = trimExt(name);

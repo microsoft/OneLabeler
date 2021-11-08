@@ -46,7 +46,7 @@ export default {
     files: FileList,
     storage: IDataObjectStorage,
   ): Promise<void> => {
-    const pairs: Record<string, { table: any, queries: any }> = {};
+    const pairs: Record<string, { table: unknown, queries: unknown }> = {};
     await Promise.all([...files].map(async (file: File) => {
       const { name } = file;
       const ext = getExt(name);

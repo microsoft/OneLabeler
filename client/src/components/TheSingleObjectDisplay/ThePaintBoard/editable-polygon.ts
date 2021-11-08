@@ -49,9 +49,6 @@ export default class EditablePolygon implements IEditablePolygon {
   /** The state of whether the polygon is editable. */
   #editable: boolean;
 
-  /** The layer on which the group renders. */
-  #layer: Konva.Layer;
-
   /** The group containing the polygon and anchors. */
   #group: Konva.Group;
 
@@ -94,32 +91,24 @@ export default class EditablePolygon implements IEditablePolygon {
       draggable: true,
     });
     anchor.on('mouseover', () => {
-      const layer = this.#layer;
       anchor.strokeWidth(0.25);
-      layer.batchDraw();
     });
     anchor.on('mouseout', () => {
-      const layer = this.#layer;
       anchor.strokeWidth(0.125);
-      layer.batchDraw();
     });
     anchor.on('dragmove', () => {
-      const layer = this.#layer;
       const polygon = this.#polygon;
       const anchors = this.#anchors;
       const updatedPoints = anchors.map((d: Konva.Circle) => [d.x(), d.y()]);
       polygon.points(updatedPoints.flat());
-      layer.batchDraw();
     });
     anchor.on('dragend', () => {
-      const layer = this.#layer;
       const polygon = this.#polygon;
       const anchors = this.#anchors;
       anchor.x(Math.floor(anchor.x()) + 0.5);
       anchor.y(Math.floor(anchor.y()) + 0.5);
       const updatedPoints = anchors.map((d: Konva.Circle) => [d.x(), d.y()]);
       polygon.points(updatedPoints.flat());
-      layer.batchDraw();
       if (this.#onUpdatePoints !== null) {
         this.#onUpdatePoints(this);
       }
@@ -128,7 +117,6 @@ export default class EditablePolygon implements IEditablePolygon {
   }
 
   startEdit(): void {
-    const layer = this.#layer;
     const group = this.#group;
     const polygon = this.#polygon;
     const anchors = this.#anchors;
@@ -148,7 +136,6 @@ export default class EditablePolygon implements IEditablePolygon {
       });
       group.x(0);
       group.y(0);
-      layer.batchDraw();
 
       if (this.#onUpdatePoints !== null) {
         this.#onUpdatePoints(this);
@@ -166,12 +153,10 @@ export default class EditablePolygon implements IEditablePolygon {
   }
 
   private enableEdit(): void {
-    const layer = this.#layer;
     const group = this.#group;
 
     group.on('click', () => {
       this.startEdit();
-      layer.draw();
 
       if (this.#onClick !== null) {
         this.#onClick(this);
@@ -243,7 +228,6 @@ export default class EditablePolygon implements IEditablePolygon {
 
   constructor(
     points: [number, number][],
-    layer: Konva.Layer,
     editable = true,
   ) {
     const anchors = points.map((pt) => this.buildAnchor(pt[0], pt[1]));
@@ -265,7 +249,6 @@ export default class EditablePolygon implements IEditablePolygon {
     });
 
     this.#editable = editable;
-    this.#layer = layer;
     this.#group = group;
     this.#polygon = polygon;
     this.#anchors = anchors;

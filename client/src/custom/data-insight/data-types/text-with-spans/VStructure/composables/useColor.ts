@@ -10,9 +10,7 @@ const useColor = (label2color: Ref<(category: Category) => string>) => {
     return `rgba(${r}, ${g}, ${b}, 0.5)`;
   };
 
-  return {
-    getColorByCategory,
-  };
+  return { getColorByCategory };
 };
 
 export default useColor;

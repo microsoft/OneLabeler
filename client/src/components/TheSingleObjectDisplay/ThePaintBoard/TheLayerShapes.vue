@@ -54,13 +54,11 @@ export default Vue.extend({
       this.drawEditState();
     },
     editable() {
-      const layer = this.getLayer();
       const shapes = this.getShapes();
       shapes.forEach((shape) => {
         const editableShape = shape.getAttr('object') as IEditableShape;
         editableShape.editable(this.editable);
       });
-      layer.batchDraw();
     },
   },
   mounted() {
@@ -71,14 +69,11 @@ export default Vue.extend({
       return (this.$refs.layer as VueKonvaLayer).getNode();
     },
     getShapes(): Konva.Node[] {
-      const { shapeName } = this;
       const layer = this.getLayer();
-      const shapes = layer.find(`.${shapeName}`);
-      return [...shapes] as Konva.Shape[];
+      return layer.find(`.${this.shapeName}`);
     },
     drawEditState(): void {
       const uuids = this.selectedShapeUuids;
-      const layer = this.getLayer();
       const shapes = this.getShapes();
       shapes.forEach((shape) => {
         const uuid = shape.getAttr('uuid') as string;
@@ -90,7 +85,6 @@ export default Vue.extend({
           editableShape.startEdit();
         }
       });
-      layer.draw();
     },
     drawEditableCircle(labelCircle: ILabelShape): void {
       const { label2color, editable, shapeName } = this;
@@ -100,7 +94,6 @@ export default Vue.extend({
 
       const editableCircle = new EditableCircle(
         { x, y },
-        layer,
         editable,
       );
       const circle = editableCircle.getNode()
@@ -128,7 +121,7 @@ export default Vue.extend({
       const points = labelRect.position as [number, number][];
       const { category, uuid } = labelRect;
 
-      const editableRect = new EditableRect(points, layer, editable);
+      const editableRect = new EditableRect(points, editable);
       const group = editableRect.getNode()
         .name(shapeName)
         .setAttr('object', editableRect)
@@ -154,7 +147,7 @@ export default Vue.extend({
       const points = labelPolygon.position as [number, number][];
       const { category, uuid } = labelPolygon;
 
-      const editablePolygon = new EditablePolygon(points, layer, editable);
+      const editablePolygon = new EditablePolygon(points, editable);
       const group = editablePolygon.getNode()
         .name(shapeName)
         .setAttr('object', editablePolygon)
@@ -192,7 +185,6 @@ export default Vue.extend({
         });
       }
       this.drawEditState();
-      layer.draw();
     },
   },
 });
