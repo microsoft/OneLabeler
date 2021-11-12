@@ -8,6 +8,7 @@ import { IDataTypeSetup, UploadTarget } from '@/commons/types';
 import customVectorImage from '@/custom/reverse-engineering/data-types/vector-image';
 import audio from './audio';
 import image from './image';
+import pdf from './pdf';
 import pointCloud from './point-cloud';
 import text from './text';
 import vectorImage from './vector-image';
@@ -22,6 +23,7 @@ export default [
   vectorImage,
   video,
   youtubeVideo,
+  pdf,
   pointCloud,
   webpage,
   text,

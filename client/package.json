@@ -37,6 +37,7 @@
     "mongoose": "^6.0.12",
     "nprogress": "^0.2.0",
     "object-visualizer": "^4.1.0",
+    "pdfjs-dist": "^2.10.377",
     "seedrandom": "^3.0.5",
     "sift": "^15.0.0",
     "socket.io-client": "^4.3.2",

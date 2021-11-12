@@ -12,6 +12,7 @@ export enum DataType {
   YoutubeVideo = 'YoutubeVideo',
   PointCloud = 'PointCloud',
   Webpage = 'Webpage',
+  PDF = 'PDF',
 }
 
 /** The interface of a data object to be labeled. */
@@ -82,6 +83,12 @@ export interface IWebpage extends IDataObject {
   content?: string | null;
 }
 
+/** The interface of a webpage data object. */
+export interface IPdf extends IDataObject {
+  /** The pdf base64 url. */
+  content?: string | null;
+}
+
 export type Vector3d = [number, number, number];
 
 /** The interface of a point cloud object. */
@@ -103,7 +110,7 @@ export interface IDataTypeSetup<T extends UploadTarget> {
   importType: T;
   handleImport: (
     input: T extends UploadTarget.File ? File : FileList,
-    storage: IDataObjectStorage
+    storage: IDataObjectStorage,
   ) => void | Promise<void>;
   handleExport: (
     dataObjects: IDataObject[],
