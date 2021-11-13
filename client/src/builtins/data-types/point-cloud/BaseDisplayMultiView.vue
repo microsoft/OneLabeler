@@ -85,12 +85,12 @@ import createPointCloudSystem from './createPointCloudSystem';
 export default defineComponent({
   name: 'BaseDisplay',
   props: {
-    /** @description The data object to be rendered. */
+    /** The data object to be rendered. */
     dataObject: {
       type: Object as PropType<IPointCloud>,
       required: true,
     },
-    /** @description The data label. */
+    /** The data label. */
     label: {
       type: Object as PropType<ILabel>,
       default: null,

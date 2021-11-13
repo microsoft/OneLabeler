@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import type { VueConstructor } from 'vue';
 import { debounce } from 'lodash';
 import {
   defineComponent,
@@ -154,7 +154,7 @@ export default defineComponent({
     const container: Ref<HTMLDivElement | null> = ref(null);
     const spectrogram: Ref<HTMLDivElement | null> = ref(null);
     const waveform: Ref<HTMLDivElement | null> = ref(null);
-    const vmedia: Ref<Vue.VueConstructor & {
+    const vmedia: Ref<VueConstructor & {
       getMedia: () => HTMLMediaElement | null,
       getProgress: () => HTMLProgressElement,
     } | null> = ref(null);

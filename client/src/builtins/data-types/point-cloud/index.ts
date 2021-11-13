@@ -11,8 +11,7 @@ import {
   UploadTarget,
   Vector3d,
 } from '@/commons/types';
-// import BaseDisplay from './BaseDisplay.vue';
-import BaseDisplay from './BaseDisplayMultiView.vue';
+import BaseDisplay from './BaseDisplay.vue';
 
 type IExport<T extends IDataObject> = (
   Partial<ILabel> & { content: T['content'] }

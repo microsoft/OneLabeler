@@ -36,6 +36,7 @@
         "dateutil",
         "devtools",
         "dexie",
+        "docgen",
         "dotenv",
         "downsample",
         "downsampling",
