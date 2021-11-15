@@ -1,206 +1,170 @@
 <template>
-  <svg
-    ref="svg"
-    style="height: 100%; width: 100%;"
-  />
+  <div
+    ref="container"
+    style="display: flex"
+  >
+    <svg
+      ref="svg"
+      style="flex: 1 1 auto;"
+    >
+      <VScatterplot
+        :data="data"
+        :width="width"
+        :height="height"
+        :margin="margin"
+        :x-axis="xAxis"
+        :y-axis="yAxis"
+        :x-map="(d) => d.x"
+        :y-map="(d) => d.y"
+        :r-map="rMap"
+        :fill-map="fillMap"
+      />
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import * as d3 from 'd3';
 import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
-import Scatterplot from '@/plugins/d3.scatterplot';
-import { ILabelCategory } from '@/commons/types';
+import VScatterplot, { Axis } from '@/plugins/scatterplot/VScatterplot.vue';
+import useResizeObserver from '@/components/composables/useResizeObserver';
 
-type Datum = { x: number, y: number, uuid: string };
-type Axis = { label: string, tickNum: number | null };
+type Point = [number, number];
+type Polygon = Point[];
 
-export default Vue.extend({
-  name: 'VScatterplot',
+/** Get continuously updated element size. */
+const useElementSize = (element: Ref<HTMLElement | null>) => {
+  const width: Ref<number | null> = ref(null);
+  const height: Ref<number | null> = ref(null);
+
+  // Store the size of the element.
+  const getSize = (): void => {
+    if (element.value === null) return;
+    width.value = element.value.clientWidth;
+    height.value = element.value.clientHeight;
+  };
+
+  useResizeObserver(element, getSize);
+  onMounted(getSize);
+
+  return { width, height };
+};
+
+export default defineComponent({
+  name: 'VScatterplotWrapper',
+  components: { VScatterplot },
   props: {
     points: {
-      type: Array as PropType<[number, number][] | null>,
-      required: false,
+      type: Array as PropType<Point[] | null>,
       default: null,
     },
-    uuids: {
-      type: Array as PropType<string[]>,
-      required: true,
-    },
-    labels: {
-      type: Array as PropType<ILabelCategory[] | null>,
+    colormap: {
+      type: Function as PropType<((idx: number) => string) | null>,
       default: null,
     },
-    queryUuids: {
-      type: Array as PropType<string[]>,
-      required: true,
+    highlightIndices: {
+      type: Array as PropType<number[] | null>,
+      default: null,
     },
     xAxis: {
       type: Object as PropType<Axis | null>,
-      required: false,
       default: null,
     },
     yAxis: {
       type: Object as PropType<Axis | null>,
-      required: false,
       default: null,
     },
-    xExtent: {
-      type: Array as unknown as PropType<[number, number] | null>,
-      required: false,
-      default: null,
+    dotRadius: {
+      type: Number as PropType<number>,
+      default: 3,
     },
-    yExtent: {
-      type: Array as unknown as PropType<[number, number] | null>,
-      required: false,
-      default: null,
-    },
-    label2color: {
-      type: Function as PropType<(label: string) => string>,
-      required: true,
-    },
+  },
+  setup() {
+    const svg: Ref<HTMLElement | null> = ref(null);
+    const container: Ref<HTMLElement | null> = ref(null);
+    const { width, height } = useElementSize(container);
+    return {
+      svg,
+      container,
+      width,
+      height,
+    };
   },
   data() {
     return {
-      chart: null as Scatterplot | null,
+      margin: {
+        top: 20,
+        right: 10,
+        left: 30,
+        bottom: 30,
+      },
       lassoInstance: null as Lasso | null,
-      dotRadius: 3,
     };
   },
-  watch: {
-    points() {
-      this.rerender();
+  computed: {
+    data(): ({ x: number, y: number }[]) {
+      const { points } = this;
+      if (points === null) return [];
+      return points.map((d) => ({ x: d[0], y: d[1] }));
     },
-    labels() {
-      this.rerender();
+    rMap(): ((d: unknown, i: number) => number) {
+      const { highlightIndices, dotRadius } = this;
+      if (
+        highlightIndices === null
+        || highlightIndices.length === 0
+      ) {
+        return () => dotRadius;
+      }
+      const highlighted = Object.fromEntries(
+        highlightIndices.map((d) => [d, true]),
+      );
+      return (d: unknown, i: number) => (i in highlighted ? dotRadius : dotRadius / 2);
     },
-    label2color() {
-      this.rerender();
-    },
-    queryUuids(queryUuids: string[]) {
-      // TODO: check if this function significantly slow down the frontend.
-      this.highlightScatterplot(queryUuids);
+    fillMap(): (((d: unknown, i: number) => string) | null) {
+      const { colormap } = this;
+      if (colormap === null) return null;
+      return (d: unknown, i: number) => colormap(i);
     },
   },
-  mounted() {
-    this.rerender();
+  mounted(): void {
+    this.bindLasso();
   },
   methods: {
-    emptyDisplay(): void {
-      (this.$refs.svg as HTMLElement).innerHTML = '';
-      this.lassoInstance = null;
-    },
-    getSelectedUuids(lassoPolygon: [number, number][]): string[] {
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      const margin = (this.chart as Scatterplot).margin();
-
-      const selectedUuids: string[] = [];
+    getSelectedIndices(lassoPolygon: Polygon): number[] {
+      const svg = this.$refs.svg as SVGSVGElement;
+      const { margin } = this;
+      const selectedIndices: number[] = [];
       d3.select(svg)
-        .selectAll<SVGCircleElement, Datum>('circle')
-        .each(function _(d: Datum) {
+        .selectAll<SVGCircleElement, undefined>('circle')
+        .each(function _(d: undefined, i: number) {
           const x = +(this.getAttribute('cx') as string);
           const y = +(this.getAttribute('cy') as string);
-          const { uuid } = d;
           if (d3.polygonContains(
             lassoPolygon,
             [x + margin.left, y + margin.top],
           )) {
-            selectedUuids.push(uuid);
+            selectedIndices.push(i);
           }
         });
-      return selectedUuids;
+      return selectedIndices;
     },
-    async rerender(): Promise<void> {
-      if (this.points === null) {
-        this.emptyDisplay();
-        return;
-      }
-      const {
-        points,
-        uuids,
-        labels,
-        queryUuids,
-        xAxis,
-        yAxis,
-        xExtent,
-        yExtent,
-        label2color,
-      } = this;
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      if (svg === undefined) return;
-      await this.renderScatterplot(
-        points,
-        uuids,
-        labels,
-        svg,
-        xAxis,
-        yAxis,
-        xExtent,
-        yExtent,
-        label2color,
-      );
-
+    bindLasso(): void {
+      if (this.lassoInstance !== null) return;
+      const svg = this.$refs.svg as SVGSVGElement;
       this.lassoInstance = new Lasso()
-        .on(LassoEventType.End, (lassoPolygon: [number, number][]) => {
+        .on(LassoEventType.End, (lassoPolygon: Polygon) => {
           (this.lassoInstance as Lasso).removePath();
-          const selectedUuids = this.getSelectedUuids(lassoPolygon);
-          this.$emit('select:uuids', selectedUuids);
+          const indices = this.getSelectedIndices(lassoPolygon);
+          this.$emit('select:indices', indices);
         });
       this.lassoInstance.render(svg);
-
-      this.highlightScatterplot(queryUuids);
-    },
-    highlightScatterplot(queryUuids: string[]): void {
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      const { dotRadius } = this;
-      d3.select(svg)
-        .selectAll<SVGCircleElement, Datum>('circle')
-        .each(function _(d: Datum) {
-          const { uuid } = d;
-          const highlight = (queryUuids.length === 0) || queryUuids.includes(uuid);
-          this.setAttribute('r', String(highlight ? dotRadius : dotRadius / 2));
-        });
-    },
-    async renderScatterplot(
-      points: [number, number][],
-      uuids: string[],
-      labels: ILabelCategory[] | null,
-      svg: SVGSVGElement,
-      xAxis: Axis | null,
-      yAxis: Axis | null,
-      xExtent: [number, number] | null,
-      yExtent: [number, number] | null,
-      label2color: ((label: string) => string),
-    ): Promise<void> {
-      const data: Datum[] = uuids.map((d, i) => ({
-        uuid: d,
-        x: points[i][0],
-        y: points[i][1],
-      }));
-
-      // Note: clientWidth, clientHeight is the rounded value of the real size
-      // thus, need to minus 1 to make sure the size doesn't overflow
-      const width = svg.clientWidth - 1;
-      const height = svg.clientHeight - 1;
-      const chart = new Scatterplot()
-        .margin({
-          top: 20, right: 10, left: 30, bottom: 30,
-        })
-        .width(width)
-        .height(height)
-        .duration(0)
-        .xExtent(xExtent)
-        .yExtent(yExtent)
-        .xAxis(xAxis)
-        .yAxis(yAxis)
-        .xAccessor((d: unknown) => ((d as Datum).x))
-        .yAccessor((d: unknown) => ((d as Datum).y))
-        .rAccessor(() => this.dotRadius);
-      if (labels !== null) {
-        chart.fillAccessor((d: unknown, i: number) => label2color(labels[i]));
-      }
-      await chart.render(svg, data as Datum[]);
-      this.chart = chart;
     },
   },
 });

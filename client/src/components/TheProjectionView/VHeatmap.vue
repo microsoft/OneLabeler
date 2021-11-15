@@ -1,200 +1,132 @@
 <template>
-  <svg
-    ref="svg"
-    style="height: 100%; width: 100%;"
-  />
+  <div
+    ref="container"
+    style="display: flex"
+  >
+    <svg
+      ref="svg"
+      style="flex: 1 1 auto;"
+    >
+      <VHeatmap
+        :data="data"
+        :width="width"
+        :height="height"
+        :margin="{
+          top: 20,
+          right: 10,
+          left: 30,
+          bottom: 30,
+        }"
+        :n-rows="nRows"
+        :n-columns="nColumns"
+        :x-axis="xAxis"
+        :y-axis="yAxis"
+        :x-map="(d) => d.x"
+        :y-map="(d) => d.y"
+      >
+        <template #cell="slotProps">
+          <rect
+            :width="Math.max(slotProps.width - 2, 0)"
+            :height="Math.max(slotProps.height - 2, 0)"
+            :x="slotProps.x + 1"
+            :y="slotProps.y + 1"
+            :fill="slotProps.fill"
+            :stroke="strokeMap(slotProps.datum)"
+            stroke-width="1"
+            @click="$emit('select:indices', slotProps.datum.indices)"
+          />
+        </template>
+      </VHeatmap>
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import * as d3 from 'd3';
-import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
-import Heatmap from '@/plugins/d3.heatmap';
+import {
+  defineComponent,
+  onMounted,
+  ref,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
+import VHeatmap, { Axis, BinDatum } from '@/plugins/heatmap/VHeatmap.vue';
+import useResizeObserver from '@/components/composables/useResizeObserver';
 
-type Datum = { x: number, y: number, uuid: string };
-type DatumBinned = { points: Datum[], row: number, column: number };
-type Axis = { label: string, tickNum: number | null };
+type Point = [number, number];
 
-export default Vue.extend({
-  name: 'VHeatmap',
+/** Get continuously updated element size. */
+const useElementSize = (element: Ref<HTMLElement | null>) => {
+  const width: Ref<number | null> = ref(null);
+  const height: Ref<number | null> = ref(null);
+
+  // Store the size of the element.
+  const getSize = (): void => {
+    if (element.value === null) return;
+    width.value = element.value.clientWidth;
+    height.value = element.value.clientHeight;
+  };
+
+  useResizeObserver(element, getSize);
+  onMounted(getSize);
+
+  return { width, height };
+};
+
+export default defineComponent({
+  name: 'VHeatmapWrapper',
+  components: { VHeatmap },
   props: {
     points: {
-      type: Array as PropType<[number, number][] | null>,
-      required: false,
+      type: Array as PropType<Point[] | null>,
       default: null,
     },
-    nRows: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    nColumns: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    uuids: {
-      type: Array as PropType<string[]>,
-      required: true,
-    },
-    queryUuids: {
-      type: Array as PropType<string[]>,
-      required: true,
+    highlightIndices: {
+      type: Array as PropType<number[] | null>,
+      default: null,
     },
     xAxis: {
       type: Object as PropType<Axis | null>,
-      required: false,
       default: null,
     },
     yAxis: {
       type: Object as PropType<Axis | null>,
-      required: false,
       default: null,
     },
-    xExtent: {
-      type: Array as unknown as PropType<[number, number] | null>,
-      required: false,
-      default: null,
+    nRows: {
+      type: Number as PropType<number>,
+      default: 10,
     },
-    yExtent: {
-      type: Array as unknown as PropType<[number, number] | null>,
-      required: false,
-      default: null,
+    nColumns: {
+      type: Number as PropType<number>,
+      default: 10,
     },
   },
-  data() {
+  setup() {
+    const svg: Ref<HTMLElement | null> = ref(null);
+    const container: Ref<HTMLElement | null> = ref(null);
+    const { width, height } = useElementSize(container);
     return {
-      chart: null as Heatmap | null,
-      lassoInstance: null as Lasso | null,
-      dotRadius: 3,
+      svg,
+      container,
+      width,
+      height,
     };
   },
-  watch: {
-    points() {
-      this.rerender();
+  computed: {
+    data(): ({ x: number, y: number }[]) {
+      const { points } = this;
+      if (points === null) return [];
+      return points.map((d, i) => ({ x: d[0], y: d[1], index: i }));
     },
-    nRows() {
-      this.rerender();
-    },
-    nColumns() {
-      this.rerender();
-    },
-    queryUuids(queryUuids: string[]) {
-      // TODO: check if this function significantly slow down the frontend.
-      this.highlightHeatmap(queryUuids);
-    },
-  },
-  mounted() {
-    this.rerender();
   },
   methods: {
-    emptyDisplay(): void {
-      (this.$refs.svg as HTMLElement).innerHTML = '';
-      this.lassoInstance = null;
-    },
-    getSelectedUuids(lassoPolygon: [number, number][]): string[] {
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      const margin = (this.chart as Heatmap).margin();
-      let selectedUuids: string[] = [];
-      d3.select(svg)
-        .selectAll<SVGCircleElement, DatumBinned>('rect.grid')
-        .each(function _(d: DatumBinned) {
-          const width = +(this.getAttribute('width') as string);
-          const height = +(this.getAttribute('height') as string);
-          const x = +(this.getAttribute('x') as string);
-          const y = +(this.getAttribute('y') as string);
-          if (d3.polygonContains(
-            lassoPolygon,
-            [x + (width / 2) + margin.left, y + (height / 2) + margin.top],
-          )) {
-            selectedUuids = selectedUuids.concat(d.points.map((pt) => pt.uuid));
-          }
-        });
-      return selectedUuids;
-    },
-    async rerender(): Promise<void> {
-      if (this.points === null) {
-        this.emptyDisplay();
-        return;
-      }
-      const {
-        points,
-        uuids,
-        queryUuids,
-        xAxis,
-        yAxis,
-        xExtent,
-        yExtent,
-      } = this;
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      if (svg === undefined) return;
-      await this.renderHeatmap(
-        points,
-        uuids,
-        svg,
-        xAxis,
-        yAxis,
-        xExtent,
-        yExtent,
-      );
-
-      this.lassoInstance = new Lasso()
-        .on(LassoEventType.End, (lassoPolygon: [number, number][]) => {
-          (this.lassoInstance as Lasso).removePath();
-          const selectedUuids = this.getSelectedUuids(lassoPolygon);
-          this.$emit('select:uuids', selectedUuids);
-        });
-      this.lassoInstance.render(svg);
-      this.highlightHeatmap(queryUuids);
-    },
-    highlightHeatmap(queryUuids: string[]): void {
-      const { svg } = this.$refs as { svg: SVGSVGElement};
-      d3.select(svg)
-        .selectAll<SVGRectElement, DatumBinned>('rect.grid')
-        .each(function _(d: DatumBinned) {
-          const binUuids = d.points.map((pt) => pt.uuid);
-          let highlight = true;
-          if (queryUuids.length !== 0) {
-            const union = new Set([...binUuids].filter((uuid) => queryUuids.includes(uuid)));
-            highlight = union.size > 0;
-          }
-          this.setAttribute('opacity', String(highlight ? 1 : 0.4));
-        });
-    },
-    async renderHeatmap(
-      points: [number, number][],
-      uuids: string[],
-      svg: SVGSVGElement,
-      xAxis: Axis | null,
-      yAxis: Axis | null,
-      xExtent: [number, number] | null,
-      yExtent: [number, number] | null,
-    ): Promise<void> {
-      const data: Datum[] = uuids.map((d, i) => ({
-        uuid: d,
-        x: points[i][0],
-        y: points[i][1],
-      }));
-
-      // Note: clientWidth, clientHeight is the rounded value of the real size
-      // thus, need to minus 1 to make sure the size doesn't overflow
-      const width = svg.clientWidth - 1;
-      const height = svg.clientHeight - 1;
-      const chart = new Heatmap()
-        .margin({
-          top: 20, right: 10, left: 30, bottom: 30,
-        })
-        .width(width)
-        .height(height)
-        .duration(0)
-        .xExtent(xExtent)
-        .yExtent(yExtent)
-        .nRows(this.nRows)
-        .nColumns(this.nColumns)
-        .xAxis(xAxis)
-        .yAxis(yAxis)
-        .xAccessor((d: unknown) => ((d as Datum).x))
-        .yAccessor((d: unknown) => ((d as Datum).y));
-      await chart.render(svg, data as Datum[]);
-      this.chart = chart;
+    strokeMap(d: BinDatum): string {
+      const { highlightIndices } = this;
+      if (highlightIndices === null || highlightIndices.length === 0) return 'white';
+      const union = new Set([...d.indices].filter(
+        (uuid) => highlightIndices.includes(uuid),
+      ));
+      return union.size > 0 ? 'black' : 'white';
     },
   },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div style="border: 0.5px solid #757575">
+  <div style="border: 0.5px solid #757575; display: flex;">
     <!-- The configure projection attribute dialog button. -->
     <VConfigurableProjectionHeader
       :feature-names="featureNames"
@@ -17,42 +17,35 @@
     />
 
     <!-- The dataset overview display. -->
-    <VScatterplot
-      v-if="!enableBinning"
+    <compoent
+      :is="component"
       :points="pointsSampled"
-      :uuids="uuidsSampled"
-      :labels="labelsSampled"
-      :query-uuids="queryUuids"
+      :highlight-indices="
+        uuidsSampled.map((d, i) => i)
+          .filter((i) => queryUuids.includes(uuidsSampled[i]))
+      "
       :x-axis="xAxis"
       :y-axis="yAxis"
-      :x-extent="xExtent"
-      :y-extent="yExtent"
-      :label2color="label2color"
-      @select:uuids="$emit('select:uuids', $event)"
-    />
-    <VHeatmap
-      v-else
-      :points="pointsSampled"
-      :uuids="uuidsSampled"
-      :labels="labelsSampled"
-      :query-uuids="queryUuids"
-      :x-axis="xAxis"
-      :y-axis="yAxis"
-      :x-extent="xExtent"
-      :y-extent="yExtent"
+      :colormap="colormap"
       :n-rows="binningNRows"
       :n-columns="binningNColumns"
-      @select:uuids="$emit('select:uuids', $event)"
+      style="flex: 1 1 auto;"
+      @select:indices="$emit('select:uuids', $event.map((d) => uuidsSampled[d]))"
     />
   </div>
 </template>
 
 <script lang="ts">
 import { xor4096 } from 'seedrandom';
-import Vue, { PropType } from 'vue';
+import Vue, { PropType, VueConstructor } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
-import { ILabelCategory, ProjectionMethodType } from '@/commons/types';
+import {
+  Category,
+  ILabelCategory,
+  ProjectionMethodType,
+} from '@/commons/types';
 import { randomShuffle } from '@/plugins/random';
+import type { Axis } from '@/plugins/heatmap/VHeatmap.vue';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
@@ -113,6 +106,10 @@ export default Vue.extend({
       type: Array as PropType<string[]>,
       required: true,
     },
+    unlabeledMark: {
+      type: String as PropType<Category>,
+      required: true,
+    },
     label2color: {
       type: Function as PropType<(label: string) => string>,
       required: true,
@@ -124,25 +121,9 @@ export default Vue.extend({
     };
   },
   computed: {
-    xAxis(): { label: string, tickNum: number } | null {
-      const { selectedFeatureIndices, featureNames } = this;
-      if (selectedFeatureIndices.length === 2) {
-        return {
-          label: featureNames[selectedFeatureIndices[0]],
-          tickNum: 5,
-        };
-      }
-      return null;
-    },
-    yAxis(): { label: string, tickNum: number } | null {
-      const { selectedFeatureIndices, featureNames } = this;
-      if (selectedFeatureIndices.length === 2) {
-        return {
-          label: featureNames[selectedFeatureIndices[1]],
-          tickNum: 5,
-        };
-      }
-      return null;
+    component(): VueConstructor {
+      if (!this.enableBinning) return VScatterplot;
+      return VHeatmap;
     },
     xExtent(): [number, number] | null {
       const { points } = this;
@@ -157,6 +138,17 @@ export default Vue.extend({
       }
       return [xMin, xMax];
     },
+    xAxis(): Axis | null {
+      const { selectedFeatureIndices, featureNames } = this;
+      if (selectedFeatureIndices.length === 2) {
+        return {
+          label: featureNames[selectedFeatureIndices[0]],
+          tickNum: 5,
+          extent: this.xExtent,
+        };
+      }
+      return null;
+    },
     yExtent(): [number, number] | null {
       const { points } = this;
       if (points === null || points.length === 0) {
@@ -169,6 +161,17 @@ export default Vue.extend({
         return [yMin - 0.5, yMax + 0.5];
       }
       return [yMin, yMax];
+    },
+    yAxis(): Axis | null {
+      const { selectedFeatureIndices, featureNames } = this;
+      if (selectedFeatureIndices.length === 2) {
+        return {
+          label: featureNames[selectedFeatureIndices[1]],
+          tickNum: 5,
+          extent: this.yExtent,
+        };
+      }
+      return null;
     },
     selectedFeatureValues(): number[][] {
       const { featureValues, selectedFeatureIndices } = this;
@@ -202,11 +205,20 @@ export default Vue.extend({
       if (subsampleIndices === null) return uuids;
       return subsampleIndices.map((d: number) => uuids[d]);
     },
-    labelsSampled(): ILabelCategory[] | null {
-      const { labels, subsampleIndices } = this;
-      if (labels === null) return null;
-      if (subsampleIndices === null) return labels;
-      return subsampleIndices.map((d: number) => labels[d]);
+    colormap(): ((i: number) => string) {
+      const {
+        labels,
+        label2color,
+        subsampleIndices,
+        unlabeledMark,
+      } = this;
+      if (labels === null) return () => label2color(unlabeledMark);
+      if (subsampleIndices === null) {
+        return (i: number) => label2color(labels[i]);
+      }
+      const labelsSampled = subsampleIndices
+        .map((d: number) => labels[d]);
+      return (i) => label2color(labelsSampled[i]);
     },
   },
   watch: {

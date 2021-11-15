@@ -9,55 +9,51 @@
     />
     <v-divider />
     <div
-      ref="container"
+      v-if="nTotal >= 2 && isFeatureValuesValid"
+      style="flex: 1 1 auto; display: grid;"
+      :style="{
+        'grid-template-rows': `repeat(${nRows}, ${100/nRows}%)`,
+        'grid-template-columns': `repeat(${nColumns}, ${100/nColumns}%)`,
+      }"
+    >
+      <VConfigurableProjection
+        v-for="(view, i) in views"
+        :key="view.id"
+        :selected-feature-indices="view.featureSpace.selectedFeatureIndices"
+        :projection-method="view.featureSpace.projectionMethod"
+        :enable-binning="view.binning.enabled"
+        :binning-n-rows="view.binning.nRows"
+        :binning-n-columns="view.binning.nColumns"
+        :enable-subsampling="view.subsampling.enabled"
+        :subsampling-n-samples="view.subsampling.nSamples"
+        :feature-values="featureValues"
+        :uuids="uuids"
+        :labels="labelCategories"
+        :query-uuids="queryUuids"
+        :feature-names="featureNames"
+        :unlabeled-mark="unlabeledMark"
+        :label2color="label2color"
+        style="margin: 1px"
+        @update:feature-indices="onUpdateSelectedFeatureIndices($event, i)"
+        @click:projection-method="onClickProjectionMethod($event, i)"
+        @update:binning="onUpdateBinning($event, i)"
+        @update:subsampling="onUpdateSubsampling($event, i)"
+        @select:uuids="$emit('user-select-uuids', $event)"
+      />
+    </div>
+    <div
+      v-else-if="nTotal <= 1"
+      class="subtitle-1 mx-auto"
       style="flex: 1 1 auto; display: flex; align-items: center;"
     >
-      <div
-        v-if="nTotal >= 2 && isFeatureValuesValid"
-        :style="{
-          height: '100%',
-          width: '100%',
-          display: 'grid',
-          'grid-template-rows': `repeat(${nRows}, ${100/nRows}%)`,
-          'grid-template-columns': `repeat(${nColumns}, ${100/nColumns}%)`,
-        }"
-      >
-        <VConfigurableProjection
-          v-for="(view, i) in views"
-          :key="view.id"
-          :selected-feature-indices="view.featureSpace.selectedFeatureIndices"
-          :projection-method="view.featureSpace.projectionMethod"
-          :enable-binning="view.binning.enabled"
-          :binning-n-rows="view.binning.nRows"
-          :binning-n-columns="view.binning.nColumns"
-          :enable-subsampling="view.subsampling.enabled"
-          :subsampling-n-samples="view.subsampling.nSamples"
-          :feature-values="featureValues"
-          :uuids="uuids"
-          :labels="labelCategories"
-          :query-uuids="queryUuids"
-          :feature-names="featureNames"
-          :label2color="label2color"
-          style="margin: 1px"
-          @update:feature-indices="onUpdateSelectedFeatureIndices($event, i)"
-          @click:projection-method="onClickProjectionMethod($event, i)"
-          @update:binning="onUpdateBinning($event, i)"
-          @update:subsampling="onUpdateSubsampling($event, i)"
-          @select:uuids="$emit('user-select-uuids', $event)"
-        />
-      </div>
-      <p
-        v-else-if="nTotal <= 1"
-        class="mx-auto subtitle-1"
-      >
-        Less Than 2 Data Objects Loaded
-      </p>
-      <p
-        v-else
-        class="mx-auto subtitle-1"
-      >
-        Feature Values not Computed
-      </p>
+      Less Than 2 Data Objects Loaded
+    </div>
+    <div
+      v-else
+      class="subtitle-1 mx-auto"
+      style="flex: 1 1 auto; display: flex; align-items: center;"
+    >
+      Feature Values not Computed
     </div>
   </v-card>
 </template>
@@ -77,8 +73,6 @@ import VConfigurableProjection from './VConfigurableProjection.vue';
 
 /** The type of a data object overview facet configuration. */
 type FacetAttribute = {
-  /** The id to be bound to the element key to trigger render. */
-  id: string,
   featureSpace: {
     selectedFeatureIndices: number[],
     projectionMethod: ProjectionMethodType,
@@ -87,10 +81,7 @@ type FacetAttribute = {
   subsampling: Subsampling,
 };
 
-const randomBigInt = () => Math.floor(Math.random() * 100000000);
-
 const createView = (nFeatures: number): FacetAttribute => ({
-  id: `${randomBigInt()}`,
   featureSpace: {
     selectedFeatureIndices: new Array(nFeatures).fill(null).map((d, i) => i),
     projectionMethod: ProjectionMethodType.PCA,
@@ -140,7 +131,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      resizeObserver: null as ResizeObserver | null,
       nRows: 1,
       nColumns: 1,
       views: [] as FacetAttribute[],
@@ -170,11 +160,7 @@ export default Vue.extend({
     },
   },
   watch: {
-    featureValues() {
-      this.forceViewsUpdate();
-    },
     featureNames() {
-      // change the id to force view update
       const nFeatures = this.featureNames.length;
       this.views = this.views.map((view) => ({
         ...view,
@@ -185,20 +171,9 @@ export default Vue.extend({
       }));
     },
   },
-  beforeDestroy(): void {
-    // Unbind resize observer.
-    (this.resizeObserver as ResizeObserver).disconnect();
-  },
   mounted() {
     const { featureNames } = this;
     this.views = [createView(featureNames.length)];
-
-    // Bind resize observer,
-    // rerender the scatter plots when the div containing the svg(s) change size.
-    // TODO: when resized, the configurable projection component
-    // is rerendered, and the projection is also recomputed, which is unnecessary.
-    this.resizeObserver = new ResizeObserver(this.forceViewsUpdate);
-    this.resizeObserver.observe(this.$refs.container as HTMLElement);
   },
   methods: {
     onSetMatrixShape(nRows: number, nColumns: number): void {
@@ -215,8 +190,6 @@ export default Vue.extend({
           ...newViews,
         ];
       }
-      // change the id to force view update
-      this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
     onUpdateSelectedFeatureIndices(selectedFeatureIndices: number[], i: number): void {
       const updatedViews = [...this.views];
@@ -237,10 +210,6 @@ export default Vue.extend({
       const updatedViews = [...this.views];
       updatedViews[i].subsampling = subsampling;
       this.views = updatedViews;
-    },
-    forceViewsUpdate(): void {
-      // change the id to force view update
-      this.views = this.views.map((view) => ({ ...view, id: `${randomBigInt()}` }));
     },
   },
 });

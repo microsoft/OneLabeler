@@ -1,3 +1,4 @@
+import { Story } from '@storybook/vue';
 import BaseDisplay from './BaseDisplay.vue';
 
 export default {
@@ -19,7 +20,7 @@ export default {
   },
 };
 
-const Template = (args, { argTypes }) => ({
+const Template: Story = (args, { argTypes }) => ({
   props: Object.keys(argTypes),
   components: { BaseDisplay },
   template: `

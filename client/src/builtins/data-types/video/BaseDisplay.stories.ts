@@ -1,3 +1,4 @@
+import { Story } from '@storybook/vue';
 import vuetify from '@/vuetify';
 import BaseDisplay from './BaseDisplay.vue';
 
@@ -11,7 +12,7 @@ export default {
   },
 };
 
-const Template = (args, { argTypes }) => ({
+const Template: Story = (args, { argTypes }) => ({
   // reference: https://github.com/storybookjs/storybook/issues/13532#issuecomment-767726219
   vuetify,
   props: Object.keys(argTypes),
