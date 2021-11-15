@@ -4,7 +4,17 @@
     :data-object="dataObject"
     :label="label"
     :label2color="label2color"
-  />
+  >
+    <template
+      v-for="(_, slot) of $scopedSlots"
+      #[slot]="scope"
+    >
+      <slot
+        :name="slot"
+        v-bind="scope"
+      />
+    </template>
+  </component>
 </template>
 
 <script lang="ts">

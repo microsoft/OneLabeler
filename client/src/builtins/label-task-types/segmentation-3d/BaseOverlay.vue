@@ -6,7 +6,13 @@
     <svg
       ref="svg"
       style="width: 100%; height: 100%;"
-    />
+    >
+      <VLasso
+        :width="width"
+        :height="height"
+        @lasso:end="onSegment3d($event)"
+      />
+    </svg>
   </div>
 </template>
 
@@ -14,13 +20,14 @@
 import Vue, { PropType } from 'vue';
 import { polygonContains } from 'd3';
 import { Category, ILabel, ILabelPoints } from '@/commons/types';
-import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
+import VLasso from '@/plugins/lasso/VLasso.vue';
 import { MouseOperationType, ToolbarState } from './types';
 
 type Polygon = [number, number][];
 
 export default Vue.extend({
   name: 'BaseOverlay',
+  components: { VLasso },
   props: {
     label: {
       type: Object as PropType<ILabel | null>,
@@ -58,15 +65,6 @@ export default Vue.extend({
       return MouseOperationType.PaintBrush !== this.mouseOperation
         && MouseOperationType.PaintErase !== this.mouseOperation;
     },
-  },
-  mounted() {
-    const svg = this.$refs.svg as SVGGElement;
-    const lassoInstance = new Lasso();
-    lassoInstance.on(LassoEventType.End, (polygon: Polygon) => {
-      lassoInstance.removePath();
-      this.onSegment3d(polygon);
-    });
-    lassoInstance.render(svg);
   },
   methods: {
     onSegment3d(polygon: Polygon): void {

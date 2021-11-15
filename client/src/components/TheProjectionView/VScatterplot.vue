@@ -19,6 +19,11 @@
         :r-map="rMap"
         :fill-map="fillMap"
       />
+      <VLasso
+        :width="width"
+        :height="height"
+        @lasso:end="$emit('select:indices', getSelectedIndices($event))"
+      />
     </svg>
   </div>
 </template>
@@ -32,7 +37,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import * as d3 from 'd3';
-import Lasso, { LassoEventType } from '@/plugins/d3.lasso';
+import VLasso from '@/plugins/lasso/VLasso.vue';
 import VScatterplot, { Axis } from '@/plugins/scatterplot/VScatterplot.vue';
 import useResizeObserver from '@/components/composables/useResizeObserver';
 
@@ -59,7 +64,7 @@ const useElementSize = (element: Ref<HTMLElement | null>) => {
 
 export default defineComponent({
   name: 'VScatterplotWrapper',
-  components: { VScatterplot },
+  components: { VLasso, VScatterplot },
   props: {
     points: {
       type: Array as PropType<Point[] | null>,
@@ -105,7 +110,6 @@ export default defineComponent({
         left: 30,
         bottom: 30,
       },
-      lassoInstance: null as Lasso | null,
     };
   },
   computed: {
@@ -133,9 +137,6 @@ export default defineComponent({
       return (d: unknown, i: number) => colormap(i);
     },
   },
-  mounted(): void {
-    this.bindLasso();
-  },
   methods: {
     getSelectedIndices(lassoPolygon: Polygon): number[] {
       const svg = this.$refs.svg as SVGSVGElement;
@@ -154,17 +155,6 @@ export default defineComponent({
           }
         });
       return selectedIndices;
-    },
-    bindLasso(): void {
-      if (this.lassoInstance !== null) return;
-      const svg = this.$refs.svg as SVGSVGElement;
-      this.lassoInstance = new Lasso()
-        .on(LassoEventType.End, (lassoPolygon: Polygon) => {
-          (this.lassoInstance as Lasso).removePath();
-          const indices = this.getSelectedIndices(lassoPolygon);
-          this.$emit('select:indices', indices);
-        });
-      this.lassoInstance.render(svg);
     },
   },
 });
