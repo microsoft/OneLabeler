@@ -33,6 +33,26 @@ export default {
       type: Array as PropType<unknown[]>,
       default: () => [],
     },
+    /** The inner tick size. */
+    tickSizeInner: {
+      type: Number as PropType<number>,
+      default: 6,
+    },
+    /** The outer tick size. */
+    tickSizeOuter: {
+      type: Number as PropType<number>,
+      default: 6,
+    },
+    /** The tick format function. */
+    tickFormat: {
+      type: Function as PropType<(d: string, i: number) => string | null>,
+      default: null,
+    },
+    /** Whether to plot the outer tick showing extent of scale's domain. */
+    showTickOuter: {
+      type: Boolean as PropType<boolean>,
+      default: true,
+    },
   },
   data() {
     return { orient: Orient.Left };

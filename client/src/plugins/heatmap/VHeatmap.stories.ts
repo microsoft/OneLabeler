@@ -40,12 +40,12 @@ Basic.args = {
   xAxis: {
     label: 'x',
     tickNum: 10,
-    extent: [0, 1],
+    domain: [0, 1],
   },
   yAxis: {
     label: 'y',
     tickNum: 10,
-    extent: [0, 1],
+    domain: [0, 1],
   },
   xMap: (d: Datum) => d.x,
   yMap: (d: Datum) => d.y,

@@ -1,23 +1,23 @@
 <template>
-  <g :transform="`translate(${margin.left},${margin.top})`">
+  <g>
     <!-- heatmap bins -->
-    <template v-for="d in binData">
+    <template v-for="(d, i) in binData">
       <slot
         name="cell"
         :width="Math.max(innerWidth / nColumns, 0)"
         :height="Math.max(innerHeight / nRows, 0)"
-        :x="d.column * innerWidth / nColumns"
-        :y="(nRows - 1 - d.row) * innerHeight / nRows"
-        :fill="color(d.indices.length)"
+        :x="d.column * innerWidth / nColumns + margin.left"
+        :y="(nRows - 1 - d.row) * innerHeight / nRows + margin.top"
+        :fill="fill(d.indices.length)"
         :datum="d"
       >
         <rect
-          :key="`${d.row}-${d.column}`"
+          :key="i"
           :width="Math.max(innerWidth / nColumns, 0)"
           :height="Math.max(innerHeight / nRows, 0)"
-          :x="d.column * innerWidth / nColumns"
-          :y="(nRows - 1 - d.row) * innerHeight / nRows"
-          :fill="color(d.indices.length)"
+          :x="d.column * innerWidth / nColumns + margin.left"
+          :y="(nRows - 1 - d.row) * innerHeight / nRows + margin.top"
+          :fill="fill(d.indices.length)"
           stroke="white"
           stroke-width="1"
         />
@@ -27,13 +27,13 @@
     <!-- x-axis -->
     <VAxisBottom
       v-if="xAxis !== null"
-      :scale="x"
+      :scale="xScale"
       :tick-arguments="xTickArguments"
-      :transform="`translate(0,${innerHeight})`"
+      :transform="`translate(0,${height - margin.bottom})`"
       style="font-size: 8px; font-family: sans-serif;"
     >
       <text
-        :x="innerWidth"
+        :x="width - margin.right"
         dy="2.5em"
         dx="0em"
         fill="currentColor"
@@ -45,12 +45,14 @@
     <!-- y-axis -->
     <VAxisLeft
       v-if="yAxis !== null"
-      :scale="y"
+      :scale="yScale"
       :tick-arguments="yTickArguments"
+      :transform="`translate(${margin.left},0)`"
       style="font-size: 8px; font-family: sans-serif;"
     >
       <text
         transform="rotate(-90)"
+        :x="-margin.top"
         dy="-3em"
         fill="currentColor"
       >
@@ -61,39 +63,38 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
-import * as d3 from 'd3';
+import {
+  computed,
+  defineComponent,
+  toRefs,
+  PropType,
+} from '@vue/composition-api';
+import { interpolateLab, scaleLinear } from 'd3';
 import VAxisBottom from '../axis/VAxisBottom.vue';
 import VAxisLeft from '../axis/VAxisLeft.vue';
 
 export type Datum = Record<string | number, unknown>;
-export type Data = Datum[];
 export type Margin = { top: number, right: number, bottom: number, left: number };
 export type Range = [number, number];
 export type Axis = {
   label: string,
   tickNum: number | null,
-  extent: Range | null,
+  domain: Range | null,
 };
-export type NumberAccessor = <T>(
-  datum?: T,
-  i?: number,
-  array?: Iterable<T>,
-) => number;
+export type MapCallback<T, U> = (value: T, index: number, array: T[]) => U;
 export type BinDatum = { indices: number[], row: number, column: number };
 export type BinData = BinDatum[];
 
 const binning = (
-  data: Data,
-  xAccessor: NumberAccessor,
-  yAccessor: NumberAccessor,
+  xData: number[],
+  yData: number[],
   nRows: number,
   nColumns: number,
-  xExtent: [number, number],
-  yExtent: [number, number],
+  xDomain: Range,
+  yDomain: Range,
 ): BinData => {
-  const [xMin, xMax] = xExtent;
-  const [yMin, yMax] = yExtent;
+  const [xMin, xMax] = xDomain;
+  const [yMin, yMax] = yDomain;
 
   // initialize 3d array of size (nRows, nColumns, 0)
   const binMatrix: number[][][] = new Array(nRows).fill(null).map(() => (
@@ -102,17 +103,12 @@ const binning = (
     )
   ));
 
-  data.forEach((datum: Datum, i: number) => {
-    const x = xAccessor(datum, i);
-    const y = yAccessor(datum, i);
+  xData.forEach((x: number, i: number) => {
+    const y = yData[i];
     let row = Math.floor((nRows * (y - yMin)) / (yMax - yMin));
-    if (row === nRows) {
-      row = nRows - 1;
-    }
+    if (row === nRows) row = nRows - 1;
     let column = Math.floor((nColumns * (x - xMin)) / (xMax - xMin));
-    if (column === nColumns) {
-      column = nColumns - 1;
-    }
+    if (column === nColumns) column = nColumns - 1;
     binMatrix[row][column].push(i);
   });
   const binData: BinData = [];
@@ -128,7 +124,7 @@ const binning = (
   return binData;
 };
 
-export default {
+export default defineComponent({
   name: 'VHeatmap',
   components: { VAxisBottom, VAxisLeft },
   props: {
@@ -173,7 +169,7 @@ export default {
       default: () => ({
         label: 'x',
         tickNum: null,
-        extent: null,
+        domain: null,
       }),
     },
     /** The configuration of y axis. */
@@ -182,77 +178,85 @@ export default {
       default: () => ({
         label: 'y',
         tickNum: null,
-        extent: null,
+        domain: null,
       }),
     },
     /** The accessor of point x value. */
     xMap: {
-      type: Function as PropType<NumberAccessor>,
-      default: (d: Datum) => d.x,
+      type: Function as PropType<MapCallback<Datum, number>>,
+      default: (d: Datum) => d[0],
     },
     /** The accessor of point y value. */
     yMap: {
-      type: Function as PropType<NumberAccessor>,
-      default: (d: Datum) => d.y,
+      type: Function as PropType<MapCallback<Datum, number>>,
+      default: (d: Datum) => d[1],
     },
   },
+  setup(props) {
+    const {
+      width,
+      height,
+      margin,
+      data,
+      xMap,
+      yMap,
+      xAxis,
+      yAxis,
+      nRows,
+      nColumns,
+    } = toRefs(props);
+
+    const xData = computed(() => data.value.map(xMap.value));
+    const xDomain = computed(() => xAxis.value?.domain
+      ?? [Math.min(...xData.value), Math.max(...xData.value)] as Range);
+    const xScale = computed(() => scaleLinear(xDomain.value,
+      [margin.value.left, width.value - margin.value.right]));
+    const xTickArguments = computed(() => {
+      const tickNum = xAxis.value?.tickNum ?? null;
+      return tickNum !== null ? [tickNum] as [number] : [];
+    });
+
+    const yData = computed(() => data.value.map(yMap.value));
+    const yDomain = computed(() => yAxis.value?.domain
+      ?? [Math.min(...yData.value), Math.max(...yData.value)] as Range);
+    const yScale = computed(() => scaleLinear(yDomain.value,
+      [height.value - margin.value.bottom, margin.value.top]));
+    const yTickArguments = computed(() => {
+      const tickNum = yAxis.value?.tickNum ?? null;
+      return tickNum !== null ? [tickNum] as [number] : [];
+    });
+
+    const binData = computed(() => binning(
+      xData.value,
+      yData.value,
+      nRows.value,
+      nColumns.value,
+      xDomain.value,
+      yDomain.value,
+    ));
+
+    const fill = computed(() => {
+      const maxDots = Math.max(...binData.value.map((d) => d.indices.length));
+      return scaleLinear([0, maxDots], ['#ffffff', '#67000d'])
+        .interpolate(interpolateLab);
+    });
+
+    return {
+      binData,
+      xScale,
+      yScale,
+      xTickArguments,
+      yTickArguments,
+      fill,
+    };
+  },
   computed: {
-    binData(): BinData {
-      return binning(
-        this.data,
-        this.xMap as NumberAccessor,
-        this.yMap as NumberAccessor,
-        this.nRows,
-        this.nColumns,
-        this.xExtent,
-        this.yExtent,
-      );
-    },
     innerWidth(): number {
       return this.width - this.margin.left - this.margin.right;
     },
     innerHeight(): number {
       return this.height - this.margin.top - this.margin.bottom;
     },
-    xExtent(): Range {
-      const xMap = this.xMap as NumberAccessor;
-      return this.xAxis?.extent
-        ?? d3.extent(this.data, xMap) as Range;
-    },
-    x(): d3.ScaleLinear<number, number, never> {
-      const { innerWidth, xExtent } = this;
-      return d3.scaleLinear()
-        .range([0, innerWidth])
-        .domain(xExtent);
-    },
-    xTickArguments(): [number] | [] {
-      const tickNum = this.xAxis?.tickNum ?? null;
-      if (tickNum !== null) return [tickNum];
-      return [];
-    },
-    yExtent(): Range {
-      const yMap = this.yMap as NumberAccessor;
-      return this.yAxis?.extent
-        ?? d3.extent(this.data, yMap) as Range;
-    },
-    y(): d3.ScaleLinear<number, number, never> {
-      const { innerHeight, yExtent } = this;
-      return d3.scaleLinear()
-        .range([innerHeight, 0])
-        .domain(yExtent);
-    },
-    yTickArguments(): [number] | [] {
-      const tickNum = this.yAxis?.tickNum ?? null;
-      if (tickNum !== null) return [tickNum];
-      return [];
-    },
-    color(): d3.ScaleLinear<string, string, never> {
-      const maxDots = Math.max(...this.binData.map((d) => d.indices.length));
-      return d3.scaleLinear<string>()
-        .domain([0, maxDots])
-        .range(['#ffffff', '#67000d'])
-        .interpolate(d3.interpolateLab);
-    },
   },
-};
+});
 </script>

@@ -1,27 +1,27 @@
 <template>
-  <g :transform="`translate(${margin.left},${margin.top})`">
+  <g>
     <!-- scatter dots -->
     <circle
-      v-for="(d, i) in data"
-      :key="`${xMap(d, i)}-${yMap(d, i)}-i`"
-      :r="rMap(d, i)"
-      :cx="x(xMap(d, i))"
-      :cy="y(yMap(d, i))"
-      :fill="fillMap(d, i)"
-      :stroke="strokeMap(d, i)"
+      v-for="i in indices"
+      :key="i"
+      :r="rMap(data[i], i)"
+      :cx="xScale(xData[i])"
+      :cy="yScale(yData[i])"
+      :fill="fillMap(data[i], i)"
+      :stroke="strokeMap(data[i], i)"
       stroke-width="0.5"
     />
 
     <!-- x-axis -->
     <VAxisBottom
       v-if="xAxis !== null"
-      :scale="x"
+      :scale="xScale"
       :tick-arguments="xTickArguments"
-      :transform="`translate(0,${innerHeight})`"
+      :transform="`translate(0,${height - margin.bottom})`"
       style="font-size: 8px; font-family: sans-serif;"
     >
       <text
-        :x="innerWidth"
+        :x="width - margin.right"
         dy="2.5em"
         dx="0em"
         fill="currentColor"
@@ -33,12 +33,14 @@
     <!-- y-axis -->
     <VAxisLeft
       v-if="yAxis !== null"
-      :scale="y"
+      :scale="yScale"
       :tick-arguments="yTickArguments"
+      :transform="`translate(${margin.left},0)`"
       style="font-size: 8px; font-family: sans-serif;"
     >
       <text
         transform="rotate(-90)"
+        :x="-margin.top"
         dy="-3em"
         fill="currentColor"
       >
@@ -49,8 +51,14 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
-import * as d3 from 'd3';
+// reference: https://observablehq.com/@d3/scatterplot?collection=@d3/charts
+import {
+  computed,
+  defineComponent,
+  toRefs,
+  PropType,
+} from '@vue/composition-api';
+import { range, scaleLinear } from 'd3';
 import VAxisBottom from '../axis/VAxisBottom.vue';
 import VAxisLeft from '../axis/VAxisLeft.vue';
 
@@ -60,15 +68,11 @@ export type Range = [number, number];
 export type Axis = {
   label: string,
   tickNum: number | null,
-  extent: Range | null,
+  domain: Range | null,
 };
-export type NumberAccessor = <T>(
-  datum: T,
-  i: number,
-  array: Iterable<T>,
-) => number;
+export type MapCallback<T, U> = (value: T, index: number, array: T[]) => U;
 
-export default {
+export default defineComponent({
   name: 'VScatterplot',
   components: { VAxisBottom, VAxisLeft },
   props: {
@@ -76,6 +80,21 @@ export default {
     data: {
       type: Array as PropType<Datum[]>,
       required: true,
+    },
+    /** The accessor of point x value. */
+    xMap: {
+      type: Function as PropType<MapCallback<Datum, number>>,
+      default: (d: Datum) => d[0],
+    },
+    /** The accessor of point y value. */
+    yMap: {
+      type: Function as PropType<MapCallback<Datum, number>>,
+      default: (d: Datum) => d[1],
+    },
+    /** The accessor of point radius. */
+    rMap: {
+      type: Function as PropType<((d: Datum, i: number) => number) | null>,
+      default: () => 3,
     },
     /** The width of the spared region. */
     width: {
@@ -103,7 +122,7 @@ export default {
       default: () => ({
         label: 'x',
         tickNum: null,
-        extent: null,
+        domain: null,
       }),
     },
     /** The configuration of y axis. */
@@ -112,23 +131,8 @@ export default {
       default: () => ({
         label: 'y',
         tickNum: null,
-        extent: null,
+        domain: null,
       }),
-    },
-    /** The accessor of point x value. */
-    xMap: {
-      type: Function as PropType<NumberAccessor>,
-      default: (d: Datum) => d.x,
-    },
-    /** The accessor of point y value. */
-    yMap: {
-      type: Function as PropType<NumberAccessor>,
-      default: (d: Datum) => d.y,
-    },
-    /** The accessor of point radius. */
-    rMap: {
-      type: Function as PropType<((d: Datum, i: number) => number) | null>,
-      default: () => 3,
     },
     /** The accessor of point color. */
     fillMap: {
@@ -141,41 +145,49 @@ export default {
       default: () => '#bbbbbb',
     },
   },
-  computed: {
-    innerWidth(): number {
-      return this.width - this.margin.left - this.margin.right;
-    },
-    innerHeight(): number {
-      return this.height - this.margin.top - this.margin.bottom;
-    },
-    x(): d3.ScaleLinear<number, number, never> {
-      const { innerWidth } = this;
-      const xMap = this.xMap as NumberAccessor;
-      const xExtent = this.xAxis?.extent
-        ?? d3.extent(this.data, xMap) as Range;
-      return d3.scaleLinear()
-        .range([0, innerWidth])
-        .domain(xExtent);
-    },
-    xTickArguments(): [number] | [] {
-      const tickNum = this.xAxis?.tickNum ?? null;
-      if (tickNum !== null) return [tickNum];
-      return [];
-    },
-    y(): d3.ScaleLinear<number, number, never> {
-      const { innerHeight } = this;
-      const yMap = this.yMap as NumberAccessor;
-      const yExtent = this.yAxis?.extent
-        ?? d3.extent(this.data, yMap) as Range;
-      return d3.scaleLinear()
-        .range([innerHeight, 0])
-        .domain(yExtent);
-    },
-    yTickArguments(): [number] | [] {
-      const tickNum = this.yAxis?.tickNum ?? null;
-      if (tickNum !== null) return [tickNum];
-      return [];
-    },
+  setup(props) {
+    const {
+      width,
+      height,
+      margin,
+      data,
+      xMap,
+      yMap,
+      xAxis,
+      yAxis,
+    } = toRefs(props);
+
+    const xData = computed(() => data.value.map(xMap.value));
+    const xDomain = computed(() => xAxis.value?.domain
+      ?? [Math.min(...xData.value), Math.max(...xData.value)] as Range);
+    const xScale = computed(() => scaleLinear(xDomain.value,
+      [margin.value.left, width.value - margin.value.right]));
+    const xTickArguments = computed(() => {
+      const tickNum = xAxis.value?.tickNum ?? null;
+      return tickNum !== null ? [tickNum] as [number] : [];
+    });
+
+    const yData = computed(() => data.value.map(yMap.value));
+    const yDomain = computed(() => yAxis.value?.domain
+      ?? [Math.min(...yData.value), Math.max(...yData.value)] as Range);
+    const yScale = computed(() => scaleLinear(yDomain.value,
+      [height.value - margin.value.bottom, margin.value.top]));
+    const yTickArguments = computed(() => {
+      const tickNum = yAxis.value?.tickNum ?? null;
+      return tickNum !== null ? [tickNum] as [number] : [];
+    });
+
+    const indices = computed(() => range(data.value.length));
+
+    return {
+      xData,
+      yData,
+      xScale,
+      yScale,
+      xTickArguments,
+      yTickArguments,
+      indices,
+    };
   },
-};
+});
 </script>

@@ -23,5 +23,5 @@ export const Basic = Template.bind({});
 Basic.args = {
   width: 500,
   height: 300,
-  closingNumber: 70,
+  closingDistance: 75,
 };

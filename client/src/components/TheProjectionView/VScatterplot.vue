@@ -36,7 +36,7 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
-import * as d3 from 'd3';
+import { polygonContains } from 'd3';
 import VLasso from '@/plugins/lasso/VLasso.vue';
 import VScatterplot, { Axis } from '@/plugins/scatterplot/VScatterplot.vue';
 import useResizeObserver from '@/components/composables/useResizeObserver';
@@ -140,17 +140,12 @@ export default defineComponent({
   methods: {
     getSelectedIndices(lassoPolygon: Polygon): number[] {
       const svg = this.$refs.svg as SVGSVGElement;
-      const { margin } = this;
       const selectedIndices: number[] = [];
-      d3.select(svg)
-        .selectAll<SVGCircleElement, undefined>('circle')
-        .each(function _(d: undefined, i: number) {
-          const x = +(this.getAttribute('cx') as string);
-          const y = +(this.getAttribute('cy') as string);
-          if (d3.polygonContains(
-            lassoPolygon,
-            [x + margin.left, y + margin.top],
-          )) {
+      [...svg.getElementsByTagName('circle')]
+        .forEach((d: SVGCircleElement, i: number) => {
+          const x = +(d.getAttribute('cx') as string);
+          const y = +(d.getAttribute('cy') as string);
+          if (polygonContains(lassoPolygon, [x, y])) {
             selectedIndices.push(i);
           }
         });
