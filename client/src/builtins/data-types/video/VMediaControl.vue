@@ -110,9 +110,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VMediaControl',
   props: {
     // The currentTime of the media.
@@ -197,7 +197,7 @@ export default Vue.extend({
       return this.$refs.progress as HTMLProgressElement;
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

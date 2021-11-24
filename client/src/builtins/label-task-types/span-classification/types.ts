@@ -1,4 +1,4 @@
-import { Category, ILabelTextSpan } from '@/commons/types';
+import type { Category, ILabelTextSpan } from '@/commons/types';
 
 export type ToolbarState = {
   selectedSpan: ILabelTextSpan | null;

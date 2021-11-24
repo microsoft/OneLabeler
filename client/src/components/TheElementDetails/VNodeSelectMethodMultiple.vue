@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
 interface IMethod {
   id: string;
@@ -100,7 +100,7 @@ interface MethodMenu {
   }[];
 }
 
-export default Vue.extend({
+export default {
   name: 'VNodeSelectMethodMultiple',
   props: {
     selectedMethods: {
@@ -112,7 +112,7 @@ export default Vue.extend({
       required: true,
     },
     appendCreateOption: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: true,
     },
   },
@@ -134,5 +134,5 @@ export default Vue.extend({
       this.$emit('update:selections', sorted);
     },
   },
-});
+};
 </script>

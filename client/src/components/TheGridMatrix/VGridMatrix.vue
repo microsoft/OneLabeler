@@ -49,7 +49,7 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
-import {
+import type {
   Category,
   DataType,
   IDataObject,

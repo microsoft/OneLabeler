@@ -2,11 +2,13 @@ import '@tensorflow/tfjs-backend-webgl';
 import * as MobileNet from '@tensorflow-models/mobilenet';
 import {
   DataType,
+  LabelTaskType,
+  ProcessType,
+} from '@/commons/types';
+import type {
   IImage,
   ILabel,
   IDataObjectStorage,
-  LabelTaskType,
-  ProcessType,
 } from '@/commons/types';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/mobilenet

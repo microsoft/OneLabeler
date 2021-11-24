@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { IText } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { IText } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   props: {
     /**  The data object to be rendered. */
@@ -55,7 +55,7 @@ export default Vue.extend({
       return this.$refs.medium as HTMLElement;
     },
   },
-});
+};
 </script>
 
 <style scoped>

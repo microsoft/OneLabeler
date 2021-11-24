@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import { IEditableShape } from './types';
+import type { IEditableShape } from './types';
 
 export interface IEditablePolygon extends IEditableShape {
   /** Get polygon contour points. */

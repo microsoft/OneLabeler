@@ -9,8 +9,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
-import { Category, ILabel, ILabelMultiCategory } from '@/commons/types';
+import type { PropType, VueConstructor } from 'vue';
+import type { Category, ILabel, ILabelMultiCategory } from '@/commons/types';
 import VSingleToolMenu from './VSingleToolMenu.vue';
 import VSingleToolTags from './VSingleToolTags.vue';
 
@@ -19,7 +19,7 @@ enum Component {
   Tags = 'Tags',
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -52,5 +52,5 @@ export default Vue.extend({
       return label?.multiCategory ?? null;
     },
   },
-});
+};
 </script>

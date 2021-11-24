@@ -36,10 +36,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { LabelTaskType } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { LabelTaskType } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'TheLabelTaskMenu',
   props: {
     labelTasks: {
@@ -76,5 +76,5 @@ export default Vue.extend({
       return selectedLabelTasks.includes(labelTask);
     },
   },
-});
+};
 </script>

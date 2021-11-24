@@ -51,11 +51,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapState } from 'vuex';
-import { IDataObjectStorage, IStatusStorage, StatusType } from '@/commons/types';
+import { StatusType } from '@/commons/types';
+import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'TheDashboardProgressView',
   data() {
     return {
@@ -157,5 +157,5 @@ export default Vue.extend({
       return statuses.count({ value: StatusType.Viewed });
     },
   },
-});
+};
 </script>

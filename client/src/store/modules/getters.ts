@@ -2,7 +2,7 @@ import {
   scaleOrdinal,
   schemeCategory10,
 } from 'd3';
-import { IState } from './state';
+import type { IState } from './state';
 
 const schemeCategory20: string[] = [
   '#1f77b4',

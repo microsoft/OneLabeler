@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import VMediaControl from './VMediaControl.vue';
 
 /**
@@ -52,13 +52,13 @@ import VMediaControl from './VMediaControl.vue';
  * Reference: https://css-tricks.com/fluid-width-video/
  */
 
-export default Vue.extend({
+export default {
   name: 'VMedia',
   components: { VMediaControl },
   props: {
     // The html element of the media.
     component: {
-      type: [String, Object] as PropType<string | Vue.VueConstructor>,
+      type: [String, Object] as PropType<string | VueConstructor>,
       required: true,
     },
     // The source of the media.
@@ -181,7 +181,7 @@ export default Vue.extend({
       return this.$refs.control.getProgress() as HTMLProgressElement;
     },
   },
-});
+};
 </script>
 
 <style scoped>

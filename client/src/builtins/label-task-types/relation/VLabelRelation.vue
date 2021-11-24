@@ -58,11 +58,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ILabelRelation, ILabelTextSpan } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { ILabelRelation, ILabelTextSpan } from '@/commons/types';
 import VLabelSpan from './VLabelSpan.vue';
 
-export default Vue.extend({
+export default {
   name: 'VLabelRelation',
   components: { VLabelSpan },
   props: {
@@ -87,7 +87,7 @@ export default Vue.extend({
       default: null,
     },
   },
-});
+};
 </script>
 
 <style scoped>

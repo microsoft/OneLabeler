@@ -129,10 +129,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { WorkflowEdge } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { WorkflowEdge } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'TheEdgeDetails',
   props: {
     edge: {
@@ -146,7 +146,7 @@ export default Vue.extend({
       classNameOfPanel: 'parameter-panel',
     };
   },
-});
+};
 </script>
 
 <style>

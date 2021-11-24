@@ -9,10 +9,10 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import { IVideo } from '@/commons/types';
+import type { IVideo } from '@/commons/types';
 import VMedia from './VMedia.vue';
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   components: { VMedia },
   props: {
@@ -36,5 +36,5 @@ export default Vue.extend({
       return component.getProgress();
     },
   },
-});
+};
 </script>

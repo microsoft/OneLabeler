@@ -34,10 +34,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VBatchTool',
   props: {
     categories: {
@@ -57,5 +57,5 @@ export default Vue.extend({
       default: false,
     },
   },
-});
+};
 </script>

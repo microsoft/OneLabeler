@@ -1,8 +1,8 @@
-import { Store } from 'vuex';
-import { WorkflowNode } from '@/commons/types';
+import type { Store } from 'vuex';
+import type { WorkflowNode } from '@/commons/types';
 import { updatedTaskWindowsByNodes } from './actions';
-import { IState as IRootState } from './state';
-import { IState as IWorkflowState } from './workflow/state';
+import type { IState as IRootState } from './state';
+import type { IState as IWorkflowState } from './workflow/state';
 import * as types from './mutation-types';
 import * as workflowTypes from './workflow/mutation-types';
 

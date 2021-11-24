@@ -1,6 +1,6 @@
 import { Ref, watch } from '@vue/composition-api';
 import { PointsCloudSystem } from 'babylonjs';
-import { Category } from '@/commons/types';
+import type { Category } from '@/commons/types';
 
 // Update point colors when pointLabels or label2color changes.
 const usePointColors = (

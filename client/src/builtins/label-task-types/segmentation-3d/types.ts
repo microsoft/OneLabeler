@@ -1,4 +1,4 @@
-import { Category } from '@/commons/types';
+import type { Category } from '@/commons/types';
 
 export enum MouseOperationType {
   PanAndZoom = 'PanAndZoom',

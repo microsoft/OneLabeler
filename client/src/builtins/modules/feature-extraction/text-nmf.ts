@@ -1,10 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import {
-  DataType,
-  IDataObject,
-  IDataObjectStorage,
-  ProcessType,
-} from '@/commons/types';
+import { DataType, ProcessType } from '@/commons/types';
+import type { IDataObject, IDataObjectStorage } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 const bindErrorHandler = (response: Promise<AxiosResponse>) => {

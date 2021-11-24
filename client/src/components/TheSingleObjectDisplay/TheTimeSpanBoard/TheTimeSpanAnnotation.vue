@@ -93,7 +93,8 @@
 import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
-import { Category, ILabelTimeSpan, LabelTaskType } from '@/commons/types';
+import { LabelTaskType } from '@/commons/types';
+import type { Category, ILabelTimeSpan } from '@/commons/types';
 
 interface Point {
   x: number;
@@ -118,7 +119,7 @@ interface SpanHandle {
   direction: HandleDirection;
 }
 
-export default Vue.extend({
+export default {
   name: 'TheTimeSpanAnnotation',
   props: {
     duration: {
@@ -343,5 +344,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

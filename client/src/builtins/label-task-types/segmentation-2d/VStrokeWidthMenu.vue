@@ -48,9 +48,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VStrokeWidthMenu',
   props: {
     strokeWidth: {
@@ -67,5 +67,5 @@ export default Vue.extend({
       widths: [1, 5, 15],
     };
   },
-});
+};
 </script>

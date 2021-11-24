@@ -87,11 +87,11 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue';
-import {
+import { LabelTaskType } from '@/commons/types';
+import type {
   Category,
   DataType,
   ILabel,
-  LabelTaskType,
   ILabelTaskTypeSetup,
 } from '@/commons/types';
 import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';

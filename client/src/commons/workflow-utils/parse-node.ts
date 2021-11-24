@@ -1,7 +1,5 @@
-import {
-  WorkflowNode,
-  WorkflowNodeType,
-} from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
+import type { WorkflowNode } from '@/commons/types';
 import type { TrimmedProcess } from './parse-process';
 import { parseProcess } from './parse-process';
 

@@ -7,87 +7,22 @@
     @click:close="onClickClose"
   >
     <template #dialog-body>
-      <div
+      <!-- The list of existing categories. -->
+      <TheCategoryEntry
         v-for="(category, i) in [unlabeledMark, ...categories]"
         :key="i"
+        :category="category"
+        :label-tasks="labelTasks"
+        :category-tasks="categoryTasks"
+        :unlabeled-mark="unlabeledMark"
+        :label2color="label2color"
         class="pa-1"
-        style="display: flex; align-items: center; border: thin solid rgba(0,0,0,.12);"
-      >
-        <div
-          class="px-1"
-          style="display: flex; align-items: center;
-            font-size: 0.875rem; height: 20px;
-            border: thin solid rgba(0,0,0,.12); border-radius: 2px;"
-        >
-          <v-icon
-            class="pr-1"
-            aria-hidden="true"
-            small
-            :style="{ color: label2color(category) }"
-          >
-            $vuetify.icons.values.square
-          </v-icon>
-          {{ category }}
-        </div>
-        <v-spacer />
+        @set:category-tasks="$emit('set:category-tasks', $event)"
+        @upsert:color-mapper="$emit('upsert:color-mapper', $event)"
+        @remove:category="$emit('remove:category', $event)"
+      />
 
-        <!-- The menu of setting the applicable label task of the category. -->
-        <TheLabelTaskMenu
-          :label-tasks="labelTasks"
-          :selected-label-tasks="categoryTasks[category]"
-          :disabled="category === unlabeledMark"
-          @set:selected-label-tasks="onSetSelectedLabelTasks(category, $event)"
-        />
-
-        <v-menu
-          :close-on-content-click="false"
-          offset-y
-        >
-          <template #activator="{ on }">
-            <v-btn
-              title="set color"
-              class="view-header-button elevation-0 ml-1"
-              style="border-color: #bbb"
-              x-small
-              icon
-              outlined
-              v-on="on"
-            >
-              <v-icon
-                aria-hidden="true"
-                small
-                :style="{ color: label2color(category) }"
-              >
-                $vuetify.icons.values.square
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-color-picker
-            dot-size="6"
-            :value="label2color(category)"
-            @input="$emit('upsert:color-mapper', { [category]: $event })"
-          />
-        </v-menu>
-
-        <!-- The button for removing the label category. -->
-        <v-btn
-          :disabled="category === unlabeledMark"
-          title="remove"
-          class="view-header-button elevation-0 ml-1"
-          style="border-color: #bbb"
-          x-small
-          icon
-          outlined
-          @click="$emit('remove:category', category)"
-        >
-          <v-icon
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.reset
-          </v-icon>
-        </v-btn>
-      </div>
+      <!-- The text input for category name. -->
       <v-form
         ref="form"
         v-model="classNameValid"
@@ -117,13 +52,16 @@
 import Vue, { PropType } from 'vue';
 import { Category, LabelTaskType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
-import TheLabelTaskMenu from './TheLabelTaskMenu.vue';
+import TheCategoryEntry from './TheCategoryEntry.vue';
 
 type InputValidator = (input: unknown) => true | string;
 
 export default Vue.extend({
   name: 'TheClassesDialog',
-  components: { VDialogButton, TheLabelTaskMenu },
+  components: {
+    VDialogButton,
+    TheCategoryEntry,
+  },
   props: {
     categories: {
       type: Array as PropType<Category[]>,
@@ -183,16 +121,6 @@ export default Vue.extend({
       this.className = null;
       const form = this.$refs.form as HTMLFormElement;
       form.resetValidation();
-    },
-    onSetSelectedLabelTasks(
-      category: Category,
-      labelTasks: LabelTaskType[] | null,
-    ): void {
-      const updatedCategoryTasks = {
-        ...this.categoryTasks,
-        [category]: labelTasks,
-      };
-      this.$emit('set:category-tasks', updatedCategoryTasks);
     },
   },
 });

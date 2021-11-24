@@ -302,10 +302,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { ProjectionMethodType } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VConfigurableProjectionHeader',
   props: {
     featureNames: {
@@ -462,5 +462,5 @@ export default Vue.extend({
       this.$emit('update:subsampling', subsamplingUpdated);
     },
   },
-});
+};
 </script>

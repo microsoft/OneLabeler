@@ -1,4 +1,4 @@
-import { WorkflowGraph } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import type { TrimmedNode } from './parse-node';
 import { parseNode } from './parse-node';
 import type { TrimmedEdge } from './parse-edge';

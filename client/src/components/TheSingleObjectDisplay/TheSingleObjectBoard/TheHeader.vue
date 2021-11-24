@@ -46,10 +46,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import { DataType } from '@/commons/types';
+import type {
   Category,
-  DataType,
   ILabel,
   LabelTaskType,
   ILabelTaskTypeSetup,
@@ -58,9 +58,9 @@ import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import TheHeaderModeToggle from './TheHeaderModeToggle.vue';
-import { ToolbarState } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'TheHeader',
   components: {
     VDataTypeIcon,
@@ -116,5 +116,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

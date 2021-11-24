@@ -4,13 +4,15 @@ import * as CocoSsd from '@tensorflow-models/coco-ssd';
 import { v4 as uuidv4 } from 'uuid';
 import {
   DataType,
+  LabelTaskType,
+  ObjectShapeType,
+  ProcessType,
+} from '@/commons/types';
+import type {
   IImage,
   ILabel,
   ILabelShape,
   IDataObjectStorage,
-  LabelTaskType,
-  ObjectShapeType,
-  ProcessType,
 } from '@/commons/types';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd

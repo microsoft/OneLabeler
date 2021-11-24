@@ -1,13 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   DataType,
+  LabelTaskType,
+  UploadTarget,
+} from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   IImage,
   ILabel,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import { getImgSize } from '@/commons/utils';
 import { getBase64 } from '@/plugins/file';

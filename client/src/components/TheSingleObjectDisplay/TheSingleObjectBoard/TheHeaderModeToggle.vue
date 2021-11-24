@@ -25,11 +25,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category, LabelTaskType } from '@/commons/types';
-import { MouseOperationType, ToolbarState } from './types';
+import type { PropType } from 'vue';
+import { LabelTaskType } from '@/commons/types';
+import type { Category } from '@/commons/types';
+import { MouseOperationType } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'TheHeaderModeToggle',
   props: {
     labelTasks: {
@@ -100,5 +102,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

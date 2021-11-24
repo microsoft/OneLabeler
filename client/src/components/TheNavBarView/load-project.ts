@@ -1,5 +1,5 @@
 import Ajv, { JSONSchemaType } from 'ajv';
-import {
+import type {
   Category,
   IDataObject,
   ILabel,

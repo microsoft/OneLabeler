@@ -35,13 +35,13 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
-import {
+import type {
   ILabel,
   ILabelTextSpan,
   IText,
 } from '@/commons/types';
 import { useResizeObserver } from '@/components/composables/useResize';
-import { Box, ToolbarState } from './types';
+import type { Box, ToolbarState } from './types';
 import useBoxes from './useBoxes';
 
 const useKey = (onDelete: () => void): void => {

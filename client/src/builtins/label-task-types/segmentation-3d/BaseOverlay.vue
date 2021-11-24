@@ -17,15 +17,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { polygonContains } from 'd3';
-import { Category, ILabel, ILabelPoints } from '@/commons/types';
+import type { Category, ILabel, ILabelPoints } from '@/commons/types';
 import VLasso from '@/plugins/lasso/VLasso.vue';
-import { MouseOperationType, ToolbarState } from './types';
+import { MouseOperationType } from './types';
+import type { ToolbarState } from './types';
 
 type Polygon = [number, number][];
 
-export default Vue.extend({
+export default {
   name: 'BaseOverlay',
   components: { VLasso },
   props: {
@@ -88,5 +89,5 @@ export default Vue.extend({
       this.$emit('upsert:label', { pointLabels: pointLabelsUpdated });
     },
   },
-});
+};
 </script>

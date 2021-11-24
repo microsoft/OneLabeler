@@ -28,7 +28,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
-import { IImage } from '@/commons/types';
+import type { IImage } from '@/commons/types';
 import { useElementSize } from '@/components/composables/useResize';
 
 /**

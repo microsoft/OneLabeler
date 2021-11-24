@@ -41,13 +41,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapGetters } from 'vuex';
 import { LabelTaskType } from '@/commons/types';
 import TheDashboardProgressView from './TheDashboardProgressView.vue';
 import TheDashboardLabelDistributionView from './TheDashboardLabelDistributionView.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheDashboardPanel',
   components: {
     TheDashboardProgressView,
@@ -59,5 +58,5 @@ export default Vue.extend({
       return (this.labelTasks as LabelTaskType[]).includes(LabelTaskType.Classification);
     },
   },
-});
+};
 </script>

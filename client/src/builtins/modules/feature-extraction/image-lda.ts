@@ -1,13 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import {
-  DataType,
+import { DataType, ProcessType } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   IStatus,
   IStatusStorage,
-  ProcessType,
 } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 

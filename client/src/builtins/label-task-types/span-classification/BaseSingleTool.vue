@@ -29,11 +29,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
-import { ToolbarState } from './types';
+import type { PropType } from 'vue';
+import type { Category } from '@/commons/types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   props: {
     categories: {
@@ -56,17 +56,21 @@ export default Vue.extend({
   },
   mounted() {
     if (this.strokeCategory === null && this.categories.length !== 0) {
-      this.$emit('upsert:toolbar-state', { strokeCategory: this.categories[0] } as Partial<ToolbarState>);
+      this.$emit('upsert:toolbar-state', {
+        strokeCategory: this.categories[0],
+      } as Partial<ToolbarState>);
     }
   },
   methods: {
     onSetStrokeCategory(category: Category): void {
       const brush = category === this.strokeCategory ? null : category;
-      this.$emit('upsert:toolbar-state', { strokeCategory: brush } as Partial<ToolbarState>);
+      this.$emit('upsert:toolbar-state', {
+        strokeCategory: brush,
+      } as Partial<ToolbarState>);
     },
     isCategorySelected(category: Category): boolean {
       return this.strokeCategory === category;
     },
   },
-});
+};
 </script>

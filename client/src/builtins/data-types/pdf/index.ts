@@ -1,13 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   DataType,
+  LabelTaskType,
+  UploadTarget,
+} from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
   IPdf,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import BaseDisplay from './BaseDisplay.vue';
 

@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs';
-import { Category, Vector3d } from '@/commons/types';
+import type { Category, Vector3d } from '@/commons/types';
 
 // Register point cloud system to scene.
 const createPointCloudSystem = (

@@ -18,28 +18,26 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import {
+import { StatusType, WorkflowNodeType } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   IStatus,
   IStatusStorage,
-  StatusType,
   TaskWindow,
-  WorkflowNodeType,
 } from '@/commons/types';
 import TheGridMatrix from '@/components/TheGridMatrix/TheGridMatrix.vue';
 import TheSingleObjectDisplay from '@/components/TheSingleObjectDisplay/TheSingleObjectDisplay.vue';
 
 const clean: (<T>(d: T) => T) = (d) => Object.fromEntries(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Object.entries(d).filter(([_, v]) => v != null),
+  Object.entries(d).filter(([, v]) => v != null),
 ) as (typeof d);
 
-export default Vue.extend({
+export default {
   name: 'TheLabelView',
   props: {
     taskWindow: {
@@ -195,5 +193,5 @@ export default Vue.extend({
       return queriedStatuses;
     },
   },
-});
+};
 </script>

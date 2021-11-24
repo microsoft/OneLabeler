@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import Vue from 'vue';
 
 export enum MouseOperationType {
   PanAndZoom = 'PanAndZoom',
@@ -38,3 +39,5 @@ export interface IEditableShape {
   /** Set the callback when the circle is clicked. */
   setOnClick(value: (d: IEditableShape) => void): this;
 }
+
+export type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };

@@ -3,9 +3,9 @@ import {
   DataType,
   LabelTaskType,
   PortDirection,
-  WorkflowGraph,
   WorkflowNodeType,
 } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
 import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';

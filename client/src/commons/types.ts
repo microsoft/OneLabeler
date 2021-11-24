@@ -1,4 +1,5 @@
-import { FilterQuery } from 'mongoose';
+import type { FilterQuery } from 'mongoose';
+import type { WorkflowNode } from '@/commons/types';
 import type { IDataObject } from '@/builtins/data-types/types';
 import type { ILabel } from '@/builtins/label-task-types/types';
 import type { Process } from '@/builtins/modules/types';

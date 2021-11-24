@@ -1,6 +1,7 @@
-import { ActionContext } from 'vuex';
+import type { ActionContext } from 'vuex';
 import createStorage from '@/services/storage';
-import {
+import { StatusType } from '@/commons/types';
+import type {
   Category,
   ICommand,
   IDataObject,
@@ -12,7 +13,6 @@ import {
   Process,
   SourceService,
   StorageService,
-  StatusType,
   TaskWindow,
   WorkflowNode,
   DockSideType,

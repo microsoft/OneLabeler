@@ -33,10 +33,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category, ILabelMultiCategory } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category, ILabelMultiCategory } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VSingleToolMenu',
   props: {
     labelMultiCategory: {
@@ -69,5 +69,5 @@ export default Vue.extend({
       return this.labelMultiCategory?.includes(category) ?? false;
     },
   },
-});
+};
 </script>

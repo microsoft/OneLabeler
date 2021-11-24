@@ -1,6 +1,6 @@
 import axios from 'axios';
 import showProgressBar from '@/plugins/nprogress-interceptor';
-import { WorkflowGraph } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 const formatter = (method: string) => `${ALGORITHM_URL}/compile/${method}`;

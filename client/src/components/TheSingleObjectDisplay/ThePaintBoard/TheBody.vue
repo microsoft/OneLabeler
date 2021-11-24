@@ -51,23 +51,22 @@ import Vue, { PropType } from 'vue';
 import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
 import simplify from '@/plugins/simplify';
-import {
+import { ObjectShapeType } from '@/commons/types';
+import type {
   Category,
   IImage,
   ILabelMask,
   ILabelShape,
-  ObjectShapeType,
 } from '@/commons/types';
 import {
   MouseOperationType,
   StrokeShapeType,
+  VueKonvaLayer,
 } from './types';
 import { createCircle } from './pixelated-circle';
 import TheLayerImage from './TheLayerImage.vue';
 import TheLayerPaint from './TheLayerPaint.vue';
 import TheLayerShapes from './TheLayerShapes.vue';
-
-type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
 
 export default Vue.extend({
   name: 'ThePaintBoardBody',

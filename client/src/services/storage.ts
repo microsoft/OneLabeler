@@ -1,8 +1,5 @@
-import {
-  IStorageStore,
-  StorageService,
-  StorageType,
-} from '@/commons/types';
+import { StorageType } from '@/commons/types';
+import type { IStorageStore, StorageService } from '@/commons/types';
 import StorageStoreMemory from './storage-memory';
 import StorageStoreClientDB from './storage-indexedDB';
 import StorageStoreServerDB from './storage-mongoDB';

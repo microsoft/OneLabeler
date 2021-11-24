@@ -1,10 +1,10 @@
-import {
+import type {
   ModelService,
   Process,
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
-import { IState } from './state';
+import type { IState } from './state';
 import * as types from './mutation-types';
 
 export default {

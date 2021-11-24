@@ -1,5 +1,5 @@
 import ObjectId from 'bson-objectid';
-import { ModelService } from '@/commons/types';
+import type { ModelService } from '@/commons/types';
 
 const modelServices: ModelService[] = [{
   type: 'DecisionTree',

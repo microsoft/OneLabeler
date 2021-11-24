@@ -2,11 +2,13 @@ import '@tensorflow/tfjs-backend-webgl';
 import * as DeepLab from '@tensorflow-models/deeplab';
 import {
   DataType,
+  LabelTaskType,
+  ProcessType,
+} from '@/commons/types';
+import type {
   IImage,
   ILabel,
   IDataObjectStorage,
-  LabelTaskType,
-  ProcessType,
   ILabelMask,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';

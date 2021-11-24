@@ -1,6 +1,6 @@
-import { Ref } from '@vue/composition-api';
-import { ILabelTextSpan } from '@/commons/types';
-import { Box } from './types';
+import type { Ref } from '@vue/composition-api';
+import type { ILabelTextSpan } from '@/commons/types';
+import type { Box } from './types';
 
 type UseBoxesReturn = () => Box[];
 

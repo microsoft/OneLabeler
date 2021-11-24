@@ -33,7 +33,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import * as BABYLON from 'babylonjs';
-import {
+import type {
   ILabel,
   IPointCloud,
   Vector3d,

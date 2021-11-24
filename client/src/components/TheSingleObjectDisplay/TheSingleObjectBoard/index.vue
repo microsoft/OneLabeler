@@ -49,8 +49,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import type {
   Category,
   DataType,
   IDataObject,
@@ -60,9 +60,9 @@ import {
 } from '@/commons/types';
 import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
-import { ToolbarState } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'TheSingleObjectBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -149,5 +149,5 @@ export default Vue.extend({
       this.toolbarState = { ...this.toolbarState, ...partialState };
     },
   },
-});
+};
 </script>

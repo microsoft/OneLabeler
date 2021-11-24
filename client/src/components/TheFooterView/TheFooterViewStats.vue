@@ -31,11 +31,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import {
-  IDataObjectStorage,
-  IStatusStorage,
-  StatusType,
-} from '@/commons/types';
+import { StatusType } from '@/commons/types';
+import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
 import TheClassesDialog from './TheClassesDialog.vue';
 
 /*

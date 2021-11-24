@@ -159,7 +159,7 @@
 
 <script lang="ts">
 import type { PropType, VueConstructor } from 'vue';
-import { WorkflowNode } from '@/commons/types';
+import type { WorkflowNode } from '@/commons/types';
 import {
   isNodeProcess,
   isNodeInteractive,

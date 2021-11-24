@@ -40,17 +40,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import { LabelTaskType, StatusType } from '@/commons/types';
+import type {
   Category,
   ILabel,
-  LabelTaskType,
   ILabelTaskTypeSetup,
-  StatusType,
 } from '@/commons/types';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
-export default Vue.extend({
+export default {
   name: 'VGridHeader',
   props: {
     labelTasks: {
@@ -104,5 +103,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

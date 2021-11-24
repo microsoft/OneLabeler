@@ -48,8 +48,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
-import {
+import type { PropType, VueConstructor } from 'vue';
+import type {
   Category,
   DataType,
   IDataObject,
@@ -59,9 +59,9 @@ import {
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
-import { ToolbarState } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'TheBody',
   props: {
     dataType: {
@@ -107,5 +107,5 @@ export default Vue.extend({
       return dataTypeSetup.display;
     },
   },
-});
+};
 </script>

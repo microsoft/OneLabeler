@@ -1,4 +1,4 @@
-import { IDataTypeSetup, UploadTarget } from '@/commons/types';
+import type { IDataTypeSetup, UploadTarget } from '@/commons/types';
 // import customMI3Block from '@/custom/mi3/data-types/discrete-bar-chart-block';
 // import customMI3Block from '@/custom/mi3/data-types/discrete-bar-chart-block/index-minimal';
 // import customTable from '@/custom/table-qa/data-types/table';

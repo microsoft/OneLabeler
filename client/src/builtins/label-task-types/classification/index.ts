@@ -1,4 +1,5 @@
-import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
+import { LabelTaskType } from '@/commons/types';
+import type { ILabelTaskTypeSetup } from '@/commons/types';
 import BaseSingleTool from './BaseSingleTool.vue';
 import BaseBatchTool from './BaseBatchTool.vue';
 

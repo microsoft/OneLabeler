@@ -1,5 +1,5 @@
 import type { Ref } from '@vue/composition-api';
-import { Category, LabelTaskType } from '@/commons/types';
+import type { Category, LabelTaskType } from '@/commons/types';
 
 /** Get continuously updated element size. */
 const useFilterCategories = (categoryTasks: Ref<Record<Category, LabelTaskType[]>>) => {

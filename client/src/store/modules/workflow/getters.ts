@@ -1,11 +1,11 @@
-import {
+import { WorkflowNodeType } from '@/commons/types';
+import type {
   DataType,
   LabelTaskType,
   Process,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
-import { IState } from './state';
+import type { IState } from './state';
 
 export const startNode = (state: IState): WorkflowNode | null => {
   const { nodes } = state;

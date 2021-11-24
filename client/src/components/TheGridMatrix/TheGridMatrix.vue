@@ -38,9 +38,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { cloneDeep } from 'lodash';
-import {
+import type {
   DataType,
   IDataObject,
   ILabel,
@@ -52,7 +52,7 @@ import {
 import VGridMatrix from './VGridMatrix.vue';
 import TheGridMatrixHeader from './TheGridMatrixHeader.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheGridMatrix',
   components: {
     VGridMatrix,
@@ -138,5 +138,5 @@ export default Vue.extend({
         : [...selectedUuids, uuid];
     },
   },
-});
+};
 </script>

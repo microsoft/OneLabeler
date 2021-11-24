@@ -1,8 +1,5 @@
-import {
-  Process,
-  WorkflowNode,
-  WorkflowNodeType,
-} from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
+import type { Process, WorkflowNode } from '@/commons/types';
 
 export const getImgSize = (
   content: string,

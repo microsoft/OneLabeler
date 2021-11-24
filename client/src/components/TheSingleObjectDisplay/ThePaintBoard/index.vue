@@ -64,7 +64,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { getBase64 } from '@/plugins/file';
-import {
+import type {
   Category,
   DataType,
   IDataObject,
@@ -93,7 +93,7 @@ const canvasToFile = async (
   });
 });
 
-export default Vue.extend({
+export default {
   name: 'ThePaintBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -240,5 +240,5 @@ export default Vue.extend({
       (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();
     },
   },
-});
+};
 </script>

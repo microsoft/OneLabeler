@@ -59,15 +59,15 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import { ProjectionMethodType } from '@/commons/types';
+import type {
   Category,
   IDataObject,
   ILabel,
   ILabelCategory,
-  ProjectionMethodType,
 } from '@/commons/types';
-import { Binning, Subsampling } from './types';
+import type { Binning, Subsampling } from './types';
 import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
 import VConfigurableProjection from './VConfigurableProjection.vue';
 
@@ -97,7 +97,7 @@ const createView = (nFeatures: number): FacetAttribute => ({
   },
 });
 
-export default Vue.extend({
+export default {
   name: 'TheProjectionView',
   components: {
     TheProjectionViewHeader,
@@ -212,5 +212,5 @@ export default Vue.extend({
       this.views = updatedViews;
     },
   },
-});
+};
 </script>

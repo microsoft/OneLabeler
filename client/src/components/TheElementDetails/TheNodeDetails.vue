@@ -16,15 +16,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
-import {
+import { ProcessType, WorkflowNodeType } from '@/commons/types';
+import type {
   ModelService,
   Process,
-  ProcessType,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
 import TheNodeDetailsMulti from './TheNodeDetailsMulti.vue';
 import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
@@ -32,7 +31,7 @@ import TheNodeDetailsSingle from './TheNodeDetailsSingle.vue';
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheElementDetails',
   props: {
     methods: {
@@ -244,5 +243,5 @@ export default Vue.extend({
       this.$emit('create:model', model);
     },
   },
-});
+};
 </script>

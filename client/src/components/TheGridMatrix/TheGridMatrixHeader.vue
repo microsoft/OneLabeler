@@ -34,7 +34,7 @@ import {
   toRefs,
   PropType,
 } from '@vue/composition-api';
-import {
+import type {
   Category,
   DataType,
   LabelTaskType,

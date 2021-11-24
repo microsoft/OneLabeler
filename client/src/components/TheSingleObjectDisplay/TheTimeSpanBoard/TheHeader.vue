@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import {
+import type {
   Category,
   DataType,
   ILabel,

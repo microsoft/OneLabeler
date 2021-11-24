@@ -1,4 +1,5 @@
-import {
+import { DockSideType } from '@/commons/types';
+import type {
   Category,
   ICommand,
   IDataObjectStorage,
@@ -9,7 +10,6 @@ import {
   SourceService,
   StorageService,
   TaskWindow,
-  DockSideType,
 } from '@/commons/types';
 import {
   storageServices,

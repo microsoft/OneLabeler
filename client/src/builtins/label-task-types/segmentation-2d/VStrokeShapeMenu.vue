@@ -42,14 +42,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
 export enum StrokeShapeType {
   Circle = 'Circle',
   Square = 'Square',
 }
 
-export default Vue.extend({
+export default {
   name: 'VStrokeShapeMenu',
   props: {
     strokeShape: {
@@ -77,5 +77,5 @@ export default Vue.extend({
       return index;
     },
   },
-});
+};
 </script>

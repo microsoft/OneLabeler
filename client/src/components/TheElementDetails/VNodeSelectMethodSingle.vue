@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
 interface IMethod {
   label: string;
@@ -80,7 +80,7 @@ interface MethodMenu {
   }[];
 }
 
-export default Vue.extend({
+export default {
   name: 'VNodeSelectMethodSingle',
   props: {
     selectedMethod: {
@@ -92,13 +92,13 @@ export default Vue.extend({
       required: true,
     },
     appendCreateOption: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: true,
     },
     disabled: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
   },
-});
+};
 </script>

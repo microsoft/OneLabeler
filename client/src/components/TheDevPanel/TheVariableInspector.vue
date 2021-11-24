@@ -63,11 +63,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import { mount } from 'object-visualizer';
 
-export default Vue.extend({
+export default {
   name: 'TheVariableInspector',
   computed: {
     ...mapState([
@@ -113,7 +112,7 @@ export default Vue.extend({
       mount(data, element);
     },
   },
-});
+};
 </script>
 
 <style>

@@ -39,13 +39,10 @@
 import { xor4096 } from 'seedrandom';
 import Vue, { PropType, VueConstructor } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
-import {
-  Category,
-  ILabelCategory,
-  ProjectionMethodType,
-} from '@/commons/types';
+import { ProjectionMethodType } from '@/commons/types';
+import type { Category, ILabelCategory } from '@/commons/types';
 import { randomShuffle } from '@/plugins/random';
-import type { Axis } from '@/plugins/heatmap/VHeatmap.vue';
+import type { Axis, Range } from '@/plugins/heatmap/VHeatmap.vue';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
@@ -122,10 +119,9 @@ export default Vue.extend({
   },
   computed: {
     component(): VueConstructor {
-      if (!this.enableBinning) return VScatterplot;
-      return VHeatmap;
+      return this.enableBinning ? VHeatmap : VScatterplot;
     },
-    xExtent(): [number, number] | null {
+    xDomain(): Range | null {
       const { points } = this;
       if (points === null || points.length === 0) {
         return null;
@@ -144,12 +140,12 @@ export default Vue.extend({
         return {
           label: featureNames[selectedFeatureIndices[0]],
           tickNum: 5,
-          extent: this.xExtent,
+          domain: this.xDomain,
         };
       }
       return null;
     },
-    yExtent(): [number, number] | null {
+    yDomain(): Range | null {
       const { points } = this;
       if (points === null || points.length === 0) {
         return null;
@@ -168,7 +164,7 @@ export default Vue.extend({
         return {
           label: featureNames[selectedFeatureIndices[1]],
           tickNum: 5,
-          extent: this.yExtent,
+          domain: this.yDomain,
         };
       }
       return null;

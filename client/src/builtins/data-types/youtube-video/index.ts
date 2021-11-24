@@ -1,13 +1,15 @@
 import axios from 'axios';
 import {
   DataType,
+  LabelTaskType,
+  UploadTarget,
+} from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
   IVideo,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import { parseCsvFile } from '@/plugins/file';
 import BaseDisplay from './BaseDisplay.vue';

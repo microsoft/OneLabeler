@@ -1,4 +1,4 @@
-import { VueConstructor } from 'vue';
+import type { VueConstructor } from 'vue';
 
 /** The types of label tasks. */
 export enum LabelTaskType {

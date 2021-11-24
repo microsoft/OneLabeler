@@ -33,7 +33,7 @@ const createImage = async (
   img.src = url;
 });
 
-export default Vue.extend({
+export default {
   name: 'TheLayerImage',
   props: {
     /** The image url. */
@@ -81,5 +81,5 @@ export default Vue.extend({
       return (this.$refs.image as VueKonvaImage).getNode();
     },
   },
-});
+};
 </script>

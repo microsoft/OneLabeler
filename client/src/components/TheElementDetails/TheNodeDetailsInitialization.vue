@@ -114,8 +114,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import type {
   DataType,
   LabelTaskType,
   WorkflowNode,
@@ -128,7 +128,15 @@ const getValidLabelTasks = (dataType: DataType): LabelTaskType[] => {
   return setup?.tasks ?? [];
 };
 
-export default Vue.extend({
+const menuOfDataType = {
+  label: 'Data Type',
+  options: dataTypeSetups.map((d) => ({
+    value: d.type,
+    label: d.label,
+  })),
+};
+
+export default {
   name: 'TheNodeDetailsInitialization',
   props: {
     node: {
@@ -139,18 +147,10 @@ export default Vue.extend({
   data() {
     return {
       viewTitle: 'Initialization Setting',
+      menuOfDataType,
     };
   },
   computed: {
-    menuOfDataType() {
-      return {
-        label: 'Data Type',
-        options: dataTypeSetups.map((d) => ({
-          value: d.type,
-          label: d.label,
-        })),
-      };
-    },
     selectedDataType(): DataType | null {
       if (this.node === null) return null;
       return (this.node.value as { dataType: DataType }).dataType;
@@ -205,5 +205,5 @@ export default Vue.extend({
       this.$emit('edit:node', newValue);
     },
   },
-});
+};
 </script>

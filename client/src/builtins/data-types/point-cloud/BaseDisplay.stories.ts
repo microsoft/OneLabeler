@@ -1,4 +1,4 @@
-import { Story } from '@storybook/vue';
+import type { Story } from '@storybook/vue';
 import BaseDisplay from './BaseDisplay.vue';
 
 export default {

@@ -47,17 +47,17 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VMethodLabel',
   props: {
     label: {
-      type: String,
+      type: String as PropType<string>,
       default: '',
     },
     disabled: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
   },
@@ -74,5 +74,5 @@ export default Vue.extend({
       this.isLabelEditable = false;
     },
   },
-});
+};
 </script>

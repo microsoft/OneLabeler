@@ -1,4 +1,4 @@
-import { VueConstructor } from 'vue';
+import type { VueConstructor } from 'vue';
 import type { ILabel, LabelTaskType } from '@/builtins/label-task-types/types';
 import type { IDataObjectStorage } from '@/commons/types';
 

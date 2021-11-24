@@ -15,11 +15,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import Konva from 'konva';
-import { ILabelMask } from '@/commons/types';
-
-type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
+import type { ILabelMask } from '@/commons/types';
+import type { VueKonvaLayer } from './types';
 
 const createImage = async (
   url: string,
@@ -33,7 +32,7 @@ const createImage = async (
   img.src = url;
 });
 
-export default Vue.extend({
+export default {
   name: 'TheLayerPaint',
   props: {
     width: {
@@ -82,5 +81,5 @@ export default Vue.extend({
       layer.add(new Konva.Image({ image }));
     },
   },
-});
+};
 </script>

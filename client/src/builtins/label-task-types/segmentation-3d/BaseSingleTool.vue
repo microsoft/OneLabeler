@@ -10,12 +10,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category } from '@/commons/types';
 import VStrokeColorMenu from './VStrokeColorMenu.vue';
-import { MouseOperationType, ToolbarState } from './types';
+import { MouseOperationType } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   components: { VStrokeColorMenu },
   props: {
@@ -43,5 +44,5 @@ export default Vue.extend({
       return this.toolbarState?.strokeCategory ?? null;
     },
   },
-});
+};
 </script>

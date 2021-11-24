@@ -40,8 +40,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category, ILabelCategory } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category, ILabelCategory } from '@/commons/types';
 import VStrokeShapeMenu from './VStrokeShapeMenu.vue';
 import VStrokeWidthMenu from './VStrokeWidthMenu.vue';
 import VStrokeColorMenu from './VStrokeColorMenu.vue';
@@ -58,7 +58,7 @@ export enum StrokeShapeType {
   Square = 'Square',
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   components: {
     VStrokeShapeMenu,
@@ -94,5 +94,5 @@ export default Vue.extend({
   data() {
     return { MouseOperationType };
   },
-});
+};
 </script>

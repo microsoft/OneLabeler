@@ -39,13 +39,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VNodeEditableLabel',
   props: {
     label: {
-      type: String,
+      type: String as PropType<string>,
       default: '',
     },
   },
@@ -62,5 +62,5 @@ export default Vue.extend({
       this.isLabelEditable = false;
     },
   },
-});
+};
 </script>

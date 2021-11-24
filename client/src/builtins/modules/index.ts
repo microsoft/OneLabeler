@@ -1,4 +1,4 @@
-import { Process } from '@/commons/types';
+import type { Process } from '@/commons/types';
 // custom modules
 import CustomExport from '@/custom/table-qa/modules/custom/export';
 import CustomLoad from '@/custom/table-qa/modules/custom/load';

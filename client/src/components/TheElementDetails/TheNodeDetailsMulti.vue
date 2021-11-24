@@ -53,8 +53,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import type {
   ModelService,
   Process,
   WorkflowNode,
@@ -63,7 +63,7 @@ import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeSelectMethodMultiple from './VNodeSelectMethodMultiple.vue';
 import VMethod from './VMethod.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheNodeDetailsMulti',
   components: {
     VNodeEditableLabel,
@@ -148,7 +148,7 @@ export default Vue.extend({
       this.$emit('edit:method', newValue);
     },
   },
-});
+};
 </script>
 
 <style>

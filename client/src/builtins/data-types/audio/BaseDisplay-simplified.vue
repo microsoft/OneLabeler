@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import type { VueConstructor } from 'vue';
 import {
   computed,
   defineComponent,
@@ -44,7 +44,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import WaveSurfer from 'wavesurfer.js';
-import { IAudio } from '@/commons/types';
+import type { IAudio } from '@/commons/types';
 import { useResizeObserver } from '@/components/composables/useResize';
 import VMedia from '../video/VMedia.vue';
 
@@ -128,7 +128,7 @@ export default defineComponent({
 
     const container: Ref<HTMLDivElement | null> = ref(null);
     const waveform: Ref<HTMLDivElement | null> = ref(null);
-    const vmedia: Ref<Vue.VueConstructor & {
+    const vmedia: Ref<VueConstructor & {
       getMedia: () => HTMLMediaElement | null,
       getProgress: () => HTMLProgressElement,
     } | null> = ref(null);

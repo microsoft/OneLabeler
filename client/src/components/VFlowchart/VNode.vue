@@ -74,11 +74,8 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import {
-  PortDirection,
-  FlowchartNode,
-  FlowchartPort,
-} from './types';
+import { PortDirection } from './types';
+import type { FlowchartNode, FlowchartPort } from './types';
 
 export default {
   name: 'VNode',

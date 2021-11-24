@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
-import { Store } from 'vuex';
-import { IState } from '@/store/modules/state';
+import type { Store } from 'vuex';
+import type { IState } from '@/store/modules/state';
 
 const SOCKET_SERVER_URL = 'http://localhost:5000';
 const NAMESPACE = 'client';

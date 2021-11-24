@@ -7,20 +7,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import Konva from 'konva';
-import {
-  ILabelShape,
-  ObjectShapeType,
-} from '@/commons/types';
-import { IEditableShape } from './types';
+import { ObjectShapeType } from '@/commons/types';
+import type { ILabelShape } from '@/commons/types';
+import type { IEditableShape, VueKonvaLayer } from './types';
 import EditableCircle from './editable-circle';
 import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
 
-type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
-
-export default Vue.extend({
+export default {
   name: 'TheLayerShapes',
   props: {
     labelShapes: {
@@ -187,5 +183,5 @@ export default Vue.extend({
       this.drawEditState();
     },
   },
-});
+};
 </script>

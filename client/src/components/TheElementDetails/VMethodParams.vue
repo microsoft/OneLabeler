@@ -49,10 +49,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { MethodParams } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { MethodParams } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VMethodParams',
   props: {
     params: {
@@ -60,9 +60,9 @@ export default Vue.extend({
       required: true,
     },
     outlined: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: true,
     },
   },
-});
+};
 </script>

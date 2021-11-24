@@ -1,4 +1,4 @@
-import { Story } from '@storybook/vue';
+import type { Story } from '@storybook/vue';
 import vuetify from '@/vuetify';
 import BaseDisplay from './BaseDisplay.vue';
 

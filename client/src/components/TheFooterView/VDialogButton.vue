@@ -67,44 +67,44 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VDialogButton',
   props: {
     /**
      * @description The icon in the button triggering dialog.
      */
     buttonIcon: {
-      type: String,
+      type: String as PropType<string>,
       default: undefined,
     },
     /**
      * @description The text in the button triggering dialog.
      */
     buttonText: {
-      type: String,
+      type: String as PropType<string>,
       default: undefined,
     },
     /**
      * @description The title of the button triggering dialog.
      */
     buttonTitle: {
-      type: String,
+      type: String as PropType<string>,
       default: undefined,
     },
     /**
      * @description The title in the dialog header.
      */
     dialogHeaderTitle: {
-      type: String,
+      type: String as PropType<string>,
       default: undefined,
     },
     /**
      * @description The maximum width for the component.
      */
     maxWidth: {
-      type: String,
+      type: String as PropType<string>,
       default: '600px',
     },
   },
@@ -119,5 +119,5 @@ export default Vue.extend({
       this.$emit('click:close');
     },
   },
-});
+};
 </script>

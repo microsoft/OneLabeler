@@ -146,10 +146,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
-import { WorkflowGraph } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
 import {
   compileBundleZip,
@@ -161,7 +160,7 @@ import VTemplateMenu from './VTemplateMenu.vue';
 import VDockSideButtons from './VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheDevPanelHeader',
   components: {
     Icon,
@@ -188,5 +187,5 @@ export default Vue.extend({
       'resetGraph',
     ]),
   },
-});
+};
 </script>

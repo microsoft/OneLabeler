@@ -1,5 +1,5 @@
 import Ajv, { JSONSchemaType } from 'ajv';
-import { TrimmedWorkflow } from './parse-workflow';
+import type { TrimmedWorkflow } from './parse-workflow';
 
 const ajv = new Ajv({ allowUnionTypes: true });
 

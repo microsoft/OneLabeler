@@ -59,10 +59,8 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import {
-  WorkflowNode,
-  WorkflowNodeType,
-} from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
+import type { WorkflowNode } from '@/commons/types';
 import { isNodeProcess } from '@/commons/utils';
 import type { FlowchartNode } from '../VFlowchart/types';
 import VNodeProcess from './VNodeProcess.vue';

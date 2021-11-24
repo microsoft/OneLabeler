@@ -1,31 +1,33 @@
-import { ActionContext } from 'vuex';
+import type { ActionContext } from 'vuex';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import * as API from '@/services/data-labeling-api';
 import createStorage from '@/services/storage';
 import {
+  MessageType,
+  SourceType,
+  StorageType,
+  StatusType,
+  WorkflowNodeType,
+} from '@/commons/types';
+import type {
   MethodParams,
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
   ILabel,
   IStatus,
-  StatusType,
-  MessageType,
   ModelService,
   Process,
-  WorkflowNodeType,
   IDataObject,
   IDataObjectStorage,
-  SourceType,
   StorageService,
   IStorageStore,
   SourceService,
-  StorageType,
 } from '@/commons/types';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
-import { IState } from './state';
-import { IState as IRootState } from '../state';
+import type { IState } from './state';
+import type { IState as IRootState } from '../state';
 import { dataType } from './getters';
 
 export const setCurrentNode = (

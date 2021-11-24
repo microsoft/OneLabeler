@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import type { PropType, VueConstructor } from 'vue';
-import {
+import { DataType } from '@/commons/types';
+import type {
   Category,
-  DataType,
   IDataObject,
   ILabel,
   LabelTaskType,

@@ -1,4 +1,4 @@
-import {
+import type {
   Category,
   ICommand,
   IDataObjectStorage,
@@ -11,7 +11,7 @@ import {
   TaskWindow,
   DockSideType,
 } from '@/commons/types';
-import { IState } from './state';
+import type { IState } from './state';
 import * as types from './mutation-types';
 
 export default {

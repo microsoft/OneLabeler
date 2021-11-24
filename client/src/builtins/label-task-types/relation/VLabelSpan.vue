@@ -23,10 +23,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ILabelTextSpan } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { ILabelTextSpan } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VLabelSpan',
   props: {
     labelSpan: {
@@ -38,5 +38,5 @@ export default Vue.extend({
       default: '#bbb',
     },
   },
-});
+};
 </script>

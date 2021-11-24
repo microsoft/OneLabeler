@@ -27,16 +27,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import type {
   ILabel,
   ILabelRelation,
   ILabelTextSpan,
 } from '@/commons/types';
 import VLabelRelation from './VLabelRelation.vue';
-import { ToolbarState } from './types';
+import type { ToolbarState } from './types';
 
-export default Vue.extend({
+export default {
   name: 'BasePanel',
   components: { VLabelRelation },
   props: {
@@ -83,7 +83,7 @@ export default Vue.extend({
       return span.uuid === this.selectedSpan?.uuid;
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

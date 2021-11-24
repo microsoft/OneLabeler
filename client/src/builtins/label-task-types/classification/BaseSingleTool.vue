@@ -35,10 +35,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category, ILabel } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category, ILabel } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -68,5 +68,5 @@ export default Vue.extend({
       return label2color(label.category);
     },
   },
-});
+};
 </script>

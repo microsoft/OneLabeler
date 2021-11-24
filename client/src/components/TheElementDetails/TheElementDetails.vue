@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
-import {
+import type { PropType, VueConstructor } from 'vue';
+import type {
   ModelService,
   Process,
   WorkflowEdge,
@@ -30,7 +30,7 @@ const isElementNode = (
   element: WorkflowNode | WorkflowEdge,
 ): boolean => 'type' in element;
 
-export default Vue.extend({
+export default {
   name: 'TheElementDetails',
   props: {
     methods: {
@@ -68,5 +68,5 @@ export default Vue.extend({
       return TheElementDetailsSelectionEmpty;
     },
   },
-});
+};
 </script>

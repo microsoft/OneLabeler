@@ -70,18 +70,15 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import {
-  WorkflowEdge,
-  WorkflowNode,
-} from '@/commons/types';
+import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
 import TheDevPanelBodyCanvas from './TheDevPanelBodyCanvas.vue';
 import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
 import TheVariableInspector from './TheVariableInspector.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheDevPanelBody',
   components: {
     TheElementDetails,
@@ -164,5 +161,5 @@ export default Vue.extend({
       this.selectedEdgeIds = ids;
     },
   },
-});
+};
 </script>

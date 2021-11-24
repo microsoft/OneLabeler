@@ -1,6 +1,4 @@
-import {
-  ProcessType,
-} from '@/commons/types';
+import { ProcessType } from '@/commons/types';
 
 export default {
   type: ProcessType.DataObjectSelection,

@@ -11,10 +11,8 @@
 
 <script lang="ts">
 import type { DefinedError } from 'ajv';
-import {
-  IMessage,
-  MessageType,
-} from '@/commons/types';
+import { MessageType } from '@/commons/types';
+import type { IMessage } from '@/commons/types';
 import {
   TrimmedWorkflow,
   parseWorkflow,

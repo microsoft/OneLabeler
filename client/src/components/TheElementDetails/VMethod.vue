@@ -133,14 +133,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ModelService, Process } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { ModelService, Process } from '@/commons/types';
 import VMethodArgs from './VMethodArgs.vue';
 import VMethodLabel from './VMethodLabel.vue';
 import VMethodModel from './VMethodModel.vue';
 import VMethodParams from './VMethodParams.vue';
 
-export default Vue.extend({
+export default {
   name: 'VMethod',
   components: {
     VMethodArgs,
@@ -224,5 +224,5 @@ export default Vue.extend({
       this.$emit('edit:model', newValue);
     },
   },
-});
+};
 </script>

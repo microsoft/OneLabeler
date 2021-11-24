@@ -22,10 +22,7 @@ import {
   defineComponent,
   PropType,
 } from '@vue/composition-api';
-import {
-  ILabel,
-  IPointCloud,
-} from '@/commons/types';
+import type { ILabel, IPointCloud } from '@/commons/types';
 import BaseDisplayMultiView from './BaseDisplayMultiView.vue';
 import BaseDisplaySingleView from './BaseDisplaySingleView.vue';
 

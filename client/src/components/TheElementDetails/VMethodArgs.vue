@@ -44,9 +44,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VMethodArgs',
   props: {
     label: {
@@ -85,7 +85,7 @@ export default Vue.extend({
       this.$emit('edit:method-args', sorted);
     },
   },
-});
+};
 </script>
 
 <style>

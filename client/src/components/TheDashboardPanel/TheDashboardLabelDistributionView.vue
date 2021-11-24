@@ -57,14 +57,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapGetters, mapState } from 'vuex';
-import {
+import { StatusType } from '@/commons/types';
+import type {
   Category,
   ILabelStorage,
   IStatusStorage,
   LabelTaskType,
-  StatusType,
 } from '@/commons/types';
 
 const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
@@ -72,7 +71,7 @@ const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
   return delta !== 0;
 };
 
-export default Vue.extend({
+export default {
   name: 'TheDashboardLabelDistributionView',
   data() {
     return {
@@ -145,5 +144,5 @@ export default Vue.extend({
       return nLabeledByCategory;
     },
   },
-});
+};
 </script>

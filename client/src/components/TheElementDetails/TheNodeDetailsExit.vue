@@ -21,10 +21,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { WorkflowNode } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { WorkflowNode } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'TheNodeDetailsExit',
   props: {
     node: {
@@ -37,5 +37,5 @@ export default Vue.extend({
       viewTitle: 'Exit',
     };
   },
-});
+};
 </script>

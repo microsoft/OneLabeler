@@ -37,13 +37,13 @@
 
 <script lang="ts">
 import Vue, { PropType, VueConstructor } from 'vue';
-import {
+import { LabelTaskType } from '@/commons/types';
+import type {
   Category,
   DataType,
   IMedia,
   ILabel,
   ILabelTimeSpan,
-  LabelTaskType,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';

@@ -1,4 +1,4 @@
-import { ILabelTaskTypeSetup } from '@/commons/types';
+import type { ILabelTaskTypeSetup } from '@/commons/types';
 import customClassification from '@/custom/table-qa/label-task-types/multi-label-classification';
 import customFreeformText from '@/custom/table-qa/label-task-types/freeform-text';
 import classification from './classification';

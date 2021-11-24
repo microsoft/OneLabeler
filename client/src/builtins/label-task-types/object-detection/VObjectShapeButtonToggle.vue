@@ -47,8 +47,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category } from '@/commons/types';
 
 export enum MouseOperationType {
   ClickCreatePolygon = 'ClickCreatePolygon',
@@ -58,7 +58,7 @@ export enum MouseOperationType {
   ScissorsCreatePolygon = 'ScissorsCreatePolygon',
 }
 
-export default Vue.extend({
+export default {
   name: 'VObjectShapeButtonToggle',
   props: {
     categories: {
@@ -113,5 +113,5 @@ export default Vue.extend({
       return index;
     },
   },
-});
+};
 </script>

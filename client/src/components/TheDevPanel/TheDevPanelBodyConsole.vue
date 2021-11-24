@@ -59,15 +59,15 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import {
   Notification,
   validateWorkflow,
   validateInstantiations,
 } from '@/commons/graph-validate';
-import { WorkflowGraph } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'TheDevPanelBodyConsole',
   props: {
     graph: {
@@ -110,7 +110,7 @@ export default Vue.extend({
       return true;
     },
   },
-});
+};
 </script>
 
 <style scoped>

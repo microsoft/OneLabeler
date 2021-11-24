@@ -2,13 +2,15 @@ import { v4 as uuidv4 } from 'uuid';
 import * as hdf5 from 'jsfive';
 import {
   DataType,
+  LabelTaskType,
+  UploadTarget,
+} from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
   IPointCloud,
-  LabelTaskType,
-  UploadTarget,
   Vector3d,
 } from '@/commons/types';
 import BaseDisplay from './BaseDisplay.vue';

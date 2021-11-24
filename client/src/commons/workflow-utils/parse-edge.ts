@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import {
-  PortDirection,
-  WorkflowEdge,
-  WorkflowNode,
-} from '@/commons/types';
+import { PortDirection } from '@/commons/types';
+import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 
 export type TrimmedEdge = Partial<WorkflowEdge> & Omit<WorkflowEdge, 'id' | 'layout'>
 type RecursivePartial<T> = { [P in keyof T]?: RecursivePartial<T[P]>; };

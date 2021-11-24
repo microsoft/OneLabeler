@@ -63,8 +63,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ModelService } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { ModelService } from '@/commons/types';
 
 interface ModelMenu {
   label: string,
@@ -74,7 +74,7 @@ interface ModelMenu {
   }]
 }
 
-export default Vue.extend({
+export default {
   name: 'VMethodModel',
   props: {
     selectedModel: {
@@ -86,9 +86,9 @@ export default Vue.extend({
       required: true,
     },
     appendCreateOption: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: true,
     },
   },
-});
+};
 </script>

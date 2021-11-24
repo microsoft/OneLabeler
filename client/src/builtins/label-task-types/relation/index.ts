@@ -1,4 +1,5 @@
-import { LabelTaskType, ILabelTaskTypeSetup } from '@/commons/types';
+import { LabelTaskType } from '@/commons/types';
+import type { ILabelTaskTypeSetup } from '@/commons/types';
 import BasePanel from './BasePanel.vue';
 
 export default {

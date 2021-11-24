@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { FilterQuery } from 'mongoose';
-import {
+import type { FilterQuery } from 'mongoose';
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,

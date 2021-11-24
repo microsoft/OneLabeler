@@ -1,9 +1,6 @@
 import cytoscape from 'cytoscape';
-import {
-  WorkflowEdge,
-  WorkflowNode,
-  WorkflowNodeType,
-} from './types';
+import { WorkflowNodeType } from './types';
+import type { WorkflowEdge, WorkflowNode } from './types';
 
 export interface Notification {
   subject: WorkflowNode | WorkflowEdge | null;

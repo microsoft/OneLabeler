@@ -5,9 +5,9 @@ import {
   LabelTaskType,
   PortDirection,
   ProcessType,
-  WorkflowGraph,
   WorkflowNodeType,
 } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
 import DOSCluster from '@/builtins/modules/data-object-selection/cluster';
 import DOSProjection from '@/builtins/modules/data-object-selection/projection';

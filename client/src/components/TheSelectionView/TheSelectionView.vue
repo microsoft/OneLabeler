@@ -14,20 +14,20 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import {
+import { WorkflowNodeType } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   TaskWindow,
-  WorkflowNodeType,
 } from '@/commons/types';
 import TheImageOverview from '@/components/TheImageOverview/TheImageOverview.vue';
 import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheSelectionView',
   props: {
     taskWindow: {
@@ -134,5 +134,5 @@ export default Vue.extend({
       return queryUuids.filter((d) => scopeUuids.includes(d));
     },
   },
-});
+};
 </script>

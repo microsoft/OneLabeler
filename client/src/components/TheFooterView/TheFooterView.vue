@@ -29,12 +29,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
-import { TaskWindow, WorkflowNode } from '@/commons/types';
+import type { TaskWindow, WorkflowNode } from '@/commons/types';
 import TheFooterViewStats from './TheFooterViewStats.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheFooterView',
   components: { TheFooterViewStats },
   props: {
@@ -61,7 +60,7 @@ export default Vue.extend({
       });
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

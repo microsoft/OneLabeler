@@ -6,7 +6,8 @@
 import axios from 'axios';
 import { xor4096 } from 'seedrandom';
 import { randomChoice } from '@/plugins/random';
-import {
+import { StatusType } from '@/commons/types';
+import type {
   Category,
   DataType,
   IDataObject,
@@ -16,7 +17,6 @@ import {
   ILabel,
   ILabelStorage,
   ILabelCategory,
-  StatusType,
   ModelService,
   Process,
 } from '@/commons/types';

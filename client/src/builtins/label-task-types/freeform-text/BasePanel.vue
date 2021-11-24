@@ -33,10 +33,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ILabel, ILabelText } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { ILabel, ILabelText } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'BasePanel',
   props: {
     label: {
@@ -72,5 +72,5 @@ export default Vue.extend({
       this.text = this.label?.text?.content ?? null;
     },
   },
-});
+};
 </script>

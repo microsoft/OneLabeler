@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import VNodeSelectMethodSingle from '../TheElementDetails/VNodeSelectMethodSingle.vue';
 
 interface IService {
@@ -45,7 +45,7 @@ interface IService {
   isServerless: boolean;
 }
 
-export default Vue.extend({
+export default {
   name: 'VEditableService',
   components: { VNodeSelectMethodSingle },
   props: {
@@ -84,5 +84,5 @@ export default Vue.extend({
       this.$emit('edit:service', newValue);
     },
   },
-});
+};
 </script>

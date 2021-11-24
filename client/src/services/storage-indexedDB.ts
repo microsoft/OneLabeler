@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
-import { FilterQuery } from 'mongoose';
+import type { FilterQuery } from 'mongoose';
 import sift from 'sift';
-import {
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,

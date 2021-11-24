@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
-import { Ref } from '@vue/composition-api';
-import { Vector3d } from '@/commons/types';
+import type { Ref } from '@vue/composition-api';
+import type { Vector3d } from '@/commons/types';
 
 type Point = [number, number];
 

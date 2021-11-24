@@ -167,18 +167,20 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
 import {
   DataType,
-  ICommand,
-  IMessage,
+  DockSideType,
   MessageType,
   SourceType,
+} from '@/commons/types';
+import type {
+  ICommand,
+  IMessage,
   UploadTarget,
-  DockSideType,
 } from '@/commons/types';
 import EditBatchCommand from '@/commons/edit-batch-command';
 import EditSingleCommand from '@/commons/edit-single-command';
@@ -214,7 +216,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   return null;
 };
 
-export default Vue.extend({
+export default {
   name: 'TheNavBarView',
   components: {
     VUploadButton,
@@ -450,5 +452,5 @@ export default Vue.extend({
       this.setDockSide(updatedDockSide);
     },
   },
-});
+};
 </script>

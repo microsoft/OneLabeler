@@ -41,7 +41,6 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -50,7 +49,7 @@ import {
 } from '@/commons/types';
 import VEditableService from './VEditableService.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheDataManagementView',
   components: { VEditableService },
   data() {
@@ -100,7 +99,7 @@ export default Vue.extend({
       });
     },
   },
-});
+};
 </script>
 
 <style>

@@ -62,19 +62,16 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import {
+import { WorkflowNodeType } from '@/commons/types';
+import type {
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
-  WorkflowNodeType,
 } from '@/commons/types';
 import { getDefaultNodeSize } from '@/commons/workflow-utils/parse-node';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
-import {
-  FlowchartEdge,
-  FlowchartNode,
-  PortDirection,
-} from '../VFlowchart/types';
+import { PortDirection } from '../VFlowchart/types';
+import type { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
 import VNode from './VNode.vue';
 import TheMenuOfCanvas from './TheMenuOfCanvas.vue';
 import TheMenuOfEdge from './TheMenuOfEdge.vue';
@@ -121,7 +118,7 @@ const edgeAdaptor = (edge: WorkflowEdge): FlowchartEdge => ({
   condition: edge.condition,
 });
 
-export default Vue.extend({
+export default {
   name: 'TheDevPanelBodyCanvas',
   components: {
     VFlowchart,
@@ -391,7 +388,7 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>
 
 <style scoped>

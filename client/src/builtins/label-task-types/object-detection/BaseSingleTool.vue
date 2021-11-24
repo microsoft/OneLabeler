@@ -29,11 +29,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
-  Category,
-  LabelTaskType,
-} from '@/commons/types';
+import type { PropType } from 'vue';
+import { LabelTaskType } from '@/commons/types';
+import type { Category } from '@/commons/types';
 import VStrokeColorMenu from '@/builtins/label-task-types/segmentation-2d/VStrokeColorMenu.vue';
 import VObjectShapeButtonToggle from './VObjectShapeButtonToggle.vue';
 
@@ -45,7 +43,7 @@ export enum MouseOperationType {
   ScissorsCreatePolygon = 'ScissorsCreatePolygon',
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   components: {
     VStrokeColorMenu,
@@ -81,5 +79,5 @@ export default Vue.extend({
       return this.labelTasks.includes(LabelTaskType.Segmentation2d);
     },
   },
-});
+};
 </script>

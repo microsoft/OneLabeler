@@ -24,7 +24,7 @@ import {
 } from '@vue/composition-api';
 import * as pdfjs from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
-import { IPdf } from '@/commons/types';
+import type { IPdf } from '@/commons/types';
 
 /**
  * TODO:

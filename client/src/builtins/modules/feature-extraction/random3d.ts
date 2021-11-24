@@ -1,8 +1,6 @@
 import { xor4096 } from 'seedrandom';
-import {
-  IDataObjectStorage,
-  ProcessType,
-} from '@/commons/types';
+import { ProcessType } from '@/commons/types';
+import type { IDataObjectStorage } from '@/commons/types';
 
 export default {
   type: ProcessType.FeatureExtraction,
