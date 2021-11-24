@@ -28,11 +28,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { IText, ILabel } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { IText, ILabel } from '@/commons/types';
 import VStructure from './VStructure/VStructure.vue';
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   components: { VStructure },
   props: {
@@ -60,5 +60,5 @@ export default Vue.extend({
       return textNode;
     },
   },
-});
+};
 </script>

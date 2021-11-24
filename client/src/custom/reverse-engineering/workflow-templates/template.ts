@@ -2,9 +2,9 @@ import { cloneDeep, merge } from 'lodash';
 import {
   LabelTaskType,
   PortDirection,
-  WorkflowGraph,
   WorkflowNodeType,
 } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
 import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILSingleObjectDisplay from '@/builtins/modules/interactive-labeling/single-object-display';

@@ -31,8 +31,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { IDataObject } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { IDataObject } from '@/commons/types';
 
 interface ITable extends IDataObject {
   /** The content of the data object. */
@@ -42,7 +42,7 @@ interface ITable extends IDataObject {
   };
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   props: {
     /** The data object to be rendered. */
@@ -61,5 +61,5 @@ export default Vue.extend({
       return Object.keys(table[0]);
     },
   },
-});
+};
 </script>

@@ -1,13 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import {
+import { LabelTaskType, UploadTarget } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   ILabel,
   ILabelStorage,
   ILabelTextSpan,
   IText,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import { parseJsonFile } from '@/plugins/file';
 import BaseDisplay from './BaseDisplay.vue';

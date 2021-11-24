@@ -1,10 +1,9 @@
-import {
+import { LabelTaskType, UploadTarget } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import { parseJsonFile } from '@/plugins/file';
 import VDisplay from './BaseDisplay.vue';

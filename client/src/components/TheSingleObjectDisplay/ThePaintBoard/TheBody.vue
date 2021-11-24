@@ -68,7 +68,7 @@ import TheLayerImage from './TheLayerImage.vue';
 import TheLayerPaint from './TheLayerPaint.vue';
 import TheLayerShapes from './TheLayerShapes.vue';
 
-export default Vue.extend({
+export default {
   name: 'ThePaintBoardBody',
   components: {
     TheLayerImage,
@@ -760,5 +760,5 @@ export default Vue.extend({
       return (this.$refs.stage as unknown as Konva.Stage).getStage() as Konva.Stage;
     },
   },
-});
+};
 </script>

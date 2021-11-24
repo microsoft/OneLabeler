@@ -141,7 +141,10 @@
       vertical
     />
 
-    <VDockSideButtons @set:dock-side="setDockSide($event)" />
+    <VDockSideButtons
+      class="mr-1"
+      @set:dock-side="setDockSide($event)"
+    />
   </div>
 </template>
 

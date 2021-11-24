@@ -33,7 +33,7 @@ import {
   toRefs,
   PropType,
 } from '@vue/composition-api';
-import { ILabel } from '@/commons/types';
+import type { ILabel } from '@/commons/types';
 import useColor from './composables/useColor';
 import useLabel from './composables/useLabel';
 

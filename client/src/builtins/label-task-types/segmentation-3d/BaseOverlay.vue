@@ -1,12 +1,10 @@
 <template>
   <div
+    ref="container"
     style="z-index: 1"
     :style="{ 'pointer-events': disabled ? 'none' : undefined }"
   >
-    <svg
-      ref="svg"
-      style="width: 100%; height: 100%;"
-    >
+    <svg style="width: 100%; height: 100%;">
       <VLasso
         :width="width"
         :height="height"
@@ -17,16 +15,22 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import {
+  defineComponent,
+  ref,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import { polygonContains } from 'd3';
 import type { Category, ILabel, ILabelPoints } from '@/commons/types';
 import VLasso from '@/plugins/lasso/VLasso.vue';
+import { useElementSize } from '@/components/composables/useResize';
 import { MouseOperationType } from './types';
 import type { ToolbarState } from './types';
 
 type Polygon = [number, number][];
 
-export default {
+export default defineComponent({
   name: 'BaseOverlay',
   components: { VLasso },
   props: {
@@ -51,6 +55,13 @@ export default {
       type: Function as PropType<() => ([number, number][] | null)>,
       required: true,
     },
+  },
+  setup() {
+    const container: Ref<HTMLElement | null> = ref(null);
+    return {
+      container,
+      ...useElementSize(container),
+    };
   },
   computed: {
     pointLabels(): ILabelPoints | null {
@@ -89,5 +100,5 @@ export default {
       this.$emit('upsert:label', { pointLabels: pointLabelsUpdated });
     },
   },
-};
+});
 </script>

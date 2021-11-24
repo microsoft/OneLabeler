@@ -9,7 +9,7 @@
         :id="markerId"
         viewBox="0 -5 10 10"
         refX="10"
-        refY="-0.5"
+        refY="0"
         markerWidth="10"
         markerHeight="10"
         orient="auto"

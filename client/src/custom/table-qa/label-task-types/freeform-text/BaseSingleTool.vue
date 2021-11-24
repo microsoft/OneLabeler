@@ -79,11 +79,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ILabelText } from '@/commons/types';
-import { ILabel } from '../../types';
+import type { PropType } from 'vue';
+import type { ILabelText } from '@/commons/types';
+import type { ILabel } from '../../types';
 
-export default Vue.extend({
+export default {
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -144,5 +144,5 @@ export default Vue.extend({
       this.text = queries[0].text;
     },
   },
-});
+};
 </script>

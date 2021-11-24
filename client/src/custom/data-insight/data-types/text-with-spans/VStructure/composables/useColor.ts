@@ -1,6 +1,6 @@
 import { color as d3color } from 'd3';
-import { Ref } from '@vue/composition-api';
-import { Category } from '@/commons/types';
+import type { Ref } from '@vue/composition-api';
+import type { Category } from '@/commons/types';
 
 const useColor = (label2color: Ref<(category: Category) => string>) => {
   const getColorByCategory = (category: Category): string => {

@@ -24,8 +24,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Query, IDataObject, ILabel } from '../../types';
+import type { PropType } from 'vue';
+import type { Query, IDataObject, ILabel } from '../../types';
 import VColumnMenu from './VColumnMenu.vue';
 import VQueryMenu from './VQueryMenu.vue';
 
@@ -33,7 +33,7 @@ const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
 );
 
-export default Vue.extend({
+export default {
   name: 'VSingleTool',
   components: { VColumnMenu, VQueryMenu },
   props: {
@@ -74,5 +74,5 @@ export default Vue.extend({
       return this.label?.queries ?? null;
     },
   },
-});
+};
 </script>

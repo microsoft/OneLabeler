@@ -2,11 +2,11 @@
  * Reference: https://github.com/joyceworks/flowchart-vue
  */
 
-import {
+import { PortDirection } from './types';
+import type {
   Box,
   Line,
   Point,
-  PortDirection,
 } from './types';
 
 export const isPointInBox = (p: Point, box: Box): boolean => (

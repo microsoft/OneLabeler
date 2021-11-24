@@ -1,11 +1,10 @@
 import axios from 'axios';
-import {
+import { LabelTaskType, UploadTarget } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  LabelTaskType,
-  UploadTarget,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
 import BaseDisplay from './BaseDisplay.vue';

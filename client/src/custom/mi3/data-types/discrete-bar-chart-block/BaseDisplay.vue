@@ -32,7 +32,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
-import { Category, IDataObject, ILabel } from '@/commons/types';
+import type { Category, IDataObject, ILabel } from '@/commons/types';
 import { useElementSize } from '@/components/composables/useResize';
 
 /**

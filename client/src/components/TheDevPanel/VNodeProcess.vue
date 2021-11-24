@@ -75,54 +75,25 @@
       </g>
     </g>
 
-    <template v-if="isInteractive">
-      <!-- icon denoting the node is interactive -->
-      <g :transform="`translate(${0},${node.height - 20})`">
-        <rect
-          width="20"
-          height="20"
-          fill="white"
-          stroke="#bbb"
-          stroke-width="1"
-        />
-        <text
-          x="10"
-          y="15"
-          style="
-            text-anchor: middle;
-            user-select: none;
-            font-family: Font Awesome\ 5 Free;
-            font-weight: 900;
-          "
-        >
-          &#xf233;
-        </text>
-      </g>
-    </template>
-    <template v-if="!isServerless">
-      <!-- icon denoting the node is not serverless -->
-      <g :transform="`translate(${isInteractive ? 20 : 0},${node.height - 20})`">
-        <rect
-          width="20"
-          height="20"
-          fill="white"
-          stroke="#bbb"
-          stroke-width="1"
-        />
-        <text
-          x="10"
-          y="15"
-          style="
-            text-anchor: middle;
-            user-select: none;
-            font-family: Font Awesome\ 5 Free;
-            font-weight: 900;
-          "
-        >
-          &#xf233;
-        </text>
-      </g>
-    </template>
+    <!-- The icons denoting module properties. -->
+    <g
+      v-for="(icon, i) in propertyIcons"
+      :key="i"
+      :transform="`translate(${node.width - cellSize},${node.height - cellSize * (i + 1)})`"
+    >
+      <rect
+        :width="cellSize"
+        :height="cellSize"
+        fill="white"
+        stroke="#bbb"
+        stroke-width="1"
+      />
+      <component
+        :is="icon"
+        :width="cellSize"
+        :height="cellSize"
+      />
+    </g>
 
     <text
       :y="(node.height - cellSize) / 2 + cellSize"
@@ -172,6 +143,8 @@ import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
 import IconModel from '@/plugins/icons/IconModel.vue';
 import IconSamples from '@/plugins/icons/IconSamples.vue';
 import IconStop from '@/plugins/icons/IconStop.vue';
+import IconServer from '@/plugins/icons/IconServer.vue';
+import IconUser from '@/plugins/icons/IconUser.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
 
 export default {
@@ -212,6 +185,14 @@ export default {
     outputs(): string[] {
       const { node } = this;
       return node === null ? [] : node.value?.outputs;
+    },
+    propertyIcons(): VueConstructor[] {
+      return [
+        // whether the node is interactive
+        ...(this.isInteractive ? [IconUser] : []),
+        // whether the node is serverless
+        ...(!this.isServerless ? [IconServer] : []),
+      ];
     },
   },
   methods: {

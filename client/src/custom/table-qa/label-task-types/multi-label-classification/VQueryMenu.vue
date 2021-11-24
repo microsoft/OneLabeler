@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
 type Query = {
   text: string;
@@ -48,7 +48,7 @@ type Query = {
   type: string;
 }
 
-export default Vue.extend({
+export default {
   name: 'VQueryMenu',
   props: {
     labelQueries: {
@@ -104,5 +104,5 @@ export default Vue.extend({
       return query.back_text ?? query.text;
     },
   },
-});
+};
 </script>

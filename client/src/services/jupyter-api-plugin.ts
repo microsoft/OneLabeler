@@ -29,6 +29,7 @@ class JupyterSocket {
   /** Get the round-trip delay between the client and socket server (unit being ms). */
   async getLatency(): Promise<number> {
     const { socket } = this;
+    if (socket === null) return Infinity;
     if (socket.disconnected) return Infinity;
     const startTime = Date.now();
     return new Promise((resolve) => {
@@ -41,15 +42,16 @@ class JupyterSocket {
 
   bindStore(store: Store<IState>): void {
     const { socket } = this;
+    if (socket === null) return;
 
     socket.on('jupyter:startNewProject', async (dataObjects) => {
-      await store.state.labels.deleteAll();
-      await store.state.statuses.deleteAll();
-      await store.state.dataObjects.deleteAll();
-      await store.state.dataObjects.upsertBulk(dataObjects);
-      store.commit('SET_DATA_OBJECTS', store.state.dataObjects.shallowCopy());
-      store.commit('SET_LABELS', store.state.labels.shallowCopy());
-      store.commit('SET_STATUSES', store.state.statuses.shallowCopy());
+      await store.state.labels?.deleteAll();
+      await store.state.statuses?.deleteAll();
+      await store.state.dataObjects?.deleteAll();
+      await store.state.dataObjects?.upsertBulk(dataObjects);
+      store.commit('SET_DATA_OBJECTS', store.state.dataObjects?.shallowCopy());
+      store.commit('SET_LABELS', store.state.labels?.shallowCopy());
+      store.commit('SET_STATUSES', store.state.statuses?.shallowCopy());
       store.commit('SET_QUERY_UUIDS', []);
     });
 
@@ -59,9 +61,9 @@ class JupyterSocket {
 
     socket.on('jupyter:setDataObjects', async (newValue) => {
       const { dataObjects } = store.state;
-      await dataObjects.deleteAll();
-      await dataObjects.upsertBulk(newValue);
-      store.commit('SET_DATA_OBJECTS', dataObjects.shallowCopy());
+      await dataObjects?.deleteAll();
+      await dataObjects?.upsertBulk(newValue);
+      store.commit('SET_DATA_OBJECTS', dataObjects?.shallowCopy());
     });
 
     socket.on('jupyter:getLabels', async (callback) => {
@@ -70,9 +72,9 @@ class JupyterSocket {
 
     socket.on('jupyter:setLabels', async (newValue) => {
       const { labels } = store.state;
-      await labels.deleteAll();
-      await labels.upsertBulk(newValue);
-      store.commit('SET_LABELS', labels.shallowCopy());
+      await labels?.deleteAll();
+      await labels?.upsertBulk(newValue);
+      store.commit('SET_LABELS', labels?.shallowCopy());
     });
   }
 }

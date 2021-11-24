@@ -1,4 +1,4 @@
-import { ILabelTaskTypeSetup } from '@/commons/types';
+import type { ILabelTaskTypeSetup } from '@/commons/types';
 import BaseSingleTool from './BaseSingleTool.vue';
 
 export default {

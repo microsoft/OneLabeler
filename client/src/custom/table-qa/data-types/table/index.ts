@@ -1,9 +1,9 @@
-import {
+import { UploadTarget } from '@/commons/types';
+import type {
   IDataObject,
   IDataObjectStorage,
   IDataTypeSetup,
   ILabel,
-  UploadTarget,
 } from '@/commons/types';
 import {
   parseJsonFile,

@@ -48,7 +48,7 @@ import type {
 import dataTypeSetups from '@/builtins/data-types/index';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheTimeSpanBoardBody',
   components: { TheTimeSpanAnnotation },
   props: {
@@ -155,5 +155,5 @@ export default Vue.extend({
       return { left: rect.left, width: rect.width };
     },
   },
-});
+};
 </script>

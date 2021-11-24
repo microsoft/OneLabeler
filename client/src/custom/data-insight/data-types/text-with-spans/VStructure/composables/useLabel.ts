@@ -127,6 +127,7 @@ const useLabel = (label: Ref<ILabel | null>) => {
 
   return {
     spans,
+    getRelatedSpans,
     getSpansByCategory,
     getSpansByCategories,
     getSpanTextByCategory,

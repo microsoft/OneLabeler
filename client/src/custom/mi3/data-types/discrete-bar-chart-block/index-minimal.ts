@@ -1,5 +1,5 @@
 /* eslint-disable */
-import Vue from 'vue';
+import type { FunctionalComponentOptions } from 'vue';
 import axios from 'axios';
 
 const getBase64 = (file) => new Promise((resolve) => {
@@ -20,7 +20,7 @@ export default {
       .data.blocks.map((d) => ({ ...d, src: img }));
     storage.upsertBulk(dataObjects);
   },
-  display: Vue.extend({
+  display: {
     functional: true,
     props: ['dataObject'],
     // TODO: transform the svg to move the polygon to center;
@@ -37,5 +37,5 @@ export default {
         )
       ])
     ),
-  }),
+  } as FunctionalComponentOptions,
 };

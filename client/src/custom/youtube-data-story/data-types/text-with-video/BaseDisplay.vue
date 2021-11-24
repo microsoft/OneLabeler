@@ -40,7 +40,7 @@ type ITextWithVideo = {
   };
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   components: { VMedia },
   props: {
@@ -77,7 +77,7 @@ export default Vue.extend({
       return textNode;
     },
   },
-});
+};
 </script>
 
 <style scoped>

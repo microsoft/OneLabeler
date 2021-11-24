@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { ILabel, ILabelCategory } from '@/commons/types';
+import type { PropType, VueConstructor } from 'vue';
+import type { ILabel, ILabelCategory } from '@/commons/types';
 import VStructureAggregation from './VStructureAggregation.vue';
 import VStructureAssociation from './VStructureAssociation.vue';
 import VStructureCategorization from './VStructureCategorization.vue';
@@ -43,7 +43,7 @@ enum SentenceCategory {
   others = 'others',
 }
 
-export default Vue.extend({
+export default {
   name: 'VStructure',
   props: {
     label: {
@@ -59,7 +59,7 @@ export default Vue.extend({
     labelCategory(): ILabelCategory | null {
       return this.label?.category ?? null;
     },
-    component(): Vue.VueConstructor | null {
+    component(): VueConstructor | null {
       const category = this.labelCategory;
       if (category === SentenceCategory.aggregation) return VStructureAggregation;
       if (category === SentenceCategory.association) return VStructureAssociation;
@@ -75,5 +75,5 @@ export default Vue.extend({
       return null;
     },
   },
-});
+};
 </script>

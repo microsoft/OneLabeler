@@ -37,9 +37,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 
-export default Vue.extend({
+export default {
   name: 'VColumnMenu',
   props: {
     labelColumns: {
@@ -80,5 +80,5 @@ export default Vue.extend({
       return this.labelColumns?.includes(column) ?? false;
     },
   },
-});
+};
 </script>

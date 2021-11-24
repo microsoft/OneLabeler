@@ -1,5 +1,5 @@
 /* eslint-disable */
-import Vue from 'vue';
+import type { FunctionalComponentOptions } from 'vue';
 
 const parseJsonFile = (file) => new Promise((resolve) => {
   const reader = new FileReader();
@@ -24,11 +24,11 @@ export default {
       return idx ? { ...labels[idx], ...partial } : partial;
     });
   },
-  display: Vue.extend({
+  display: {
     functional: true,
     props: ['dataObject'],
     render: (h, { props }) => (
       h('iframe', { attrs: { src: props.dataObject.src } })
     ),
-  }),
+  } as FunctionalComponentOptions,
 };

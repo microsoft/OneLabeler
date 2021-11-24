@@ -4,9 +4,9 @@ import {
   LabelTaskType,
   PortDirection,
   ProcessType,
-  WorkflowGraph,
   WorkflowNodeType,
 } from '@/commons/types';
+import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
 import DOSEntropyDiversityDensity from '@/builtins/modules/data-object-selection/entropy-diversity-density';
 import DOSImageOverview from '@/builtins/modules/data-object-selection/image-overview';

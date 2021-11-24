@@ -55,8 +55,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { IDataObject } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { IDataObject } from '@/commons/types';
 
 interface ITextWithTable extends IDataObject {
   /** The content of the data object. */
@@ -68,7 +68,7 @@ interface ITextWithTable extends IDataObject {
   };
 }
 
-export default Vue.extend({
+export default {
   name: 'BaseDisplay',
   props: {
     dataObject: {
@@ -97,5 +97,5 @@ export default Vue.extend({
       return textNode;
     },
   },
-});
+};
 </script>

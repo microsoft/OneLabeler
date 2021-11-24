@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { LabelTaskType } from '@/commons/types';
 import type {
   Category,
@@ -112,7 +112,7 @@ const MouseOperationType = {
 // eslint-disable-next-line no-redeclare
 type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperationType;
 
-export default Vue.extend({
+export default {
   name: 'ThePaintBoardHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
@@ -220,5 +220,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

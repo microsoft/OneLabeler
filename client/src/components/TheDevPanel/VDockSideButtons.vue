@@ -57,7 +57,6 @@
     </v-btn>
 
     <v-btn
-      class="mr-1"
       title="Close"
       color="white"
       icon

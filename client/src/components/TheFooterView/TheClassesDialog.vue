@@ -49,14 +49,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { Category, LabelTaskType } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { Category, LabelTaskType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 import TheCategoryEntry from './TheCategoryEntry.vue';
 
 type InputValidator = (input: unknown) => true | string;
 
-export default Vue.extend({
+export default {
   name: 'TheClassesDialog',
   components: {
     VDialogButton,
@@ -123,5 +123,5 @@ export default Vue.extend({
       form.resetValidation();
     },
   },
-});
+};
 </script>

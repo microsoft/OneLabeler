@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { xor4096 } from 'seedrandom';
-import Vue, { PropType, VueConstructor } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
 import { ProjectionMethodType } from '@/commons/types';
 import type { Category, ILabelCategory } from '@/commons/types';
@@ -47,7 +47,7 @@ import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
 
-export default Vue.extend({
+export default {
   name: 'VConfigurableProjection',
   components: {
     VScatterplot,
@@ -267,5 +267,5 @@ export default Vue.extend({
       return null;
     },
   },
-});
+};
 </script>

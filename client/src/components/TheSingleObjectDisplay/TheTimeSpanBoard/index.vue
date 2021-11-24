@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import type {
   Category,
   DataType,
@@ -82,7 +82,7 @@ import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheTimeSpanBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -231,5 +231,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

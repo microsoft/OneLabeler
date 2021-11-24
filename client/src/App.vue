@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { VueConstructor } from 'vue';
+import type { VueConstructor } from 'vue';
 import { mapActions, mapState } from 'vuex';
 import {
   TaskWindow,
@@ -86,7 +86,7 @@ import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 import TheDevPanel from '@/components/TheDevPanel/TheDevPanel.vue';
 
-export default Vue.extend({
+export default {
   name: 'App',
   components: {
     TheNavBarView,
@@ -123,7 +123,7 @@ export default Vue.extend({
       this.setDockSide(DockSideType.HIDE);
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

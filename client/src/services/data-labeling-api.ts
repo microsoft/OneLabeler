@@ -3,7 +3,7 @@
  * @namespace
  */
 
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { xor4096 } from 'seedrandom';
 import { randomChoice } from '@/plugins/random';
 import { StatusType } from '@/commons/types';
@@ -91,7 +91,10 @@ export const defaultLabeling = async (
     )).data as { labels: Partial<ILabel>[] };
     labels = data.labels;
   } catch (e) {
-    if (e.request !== undefined && e.response === undefined) {
+    if (
+      (e as AxiosError).request !== undefined
+      && (e as AxiosError).response === undefined
+    ) {
       // The service cannot be connected.
       throw new TypeError('Cannot Connect to Default Labeling Server');
     } else {
@@ -185,7 +188,10 @@ export const dataObjectSelection = async (
     ).data as { queryIndices: number[] };
     queryIndices = data.queryIndices;
   } catch (e) {
-    if (e.request !== undefined && e.response === undefined) {
+    if (
+      (e as AxiosError).request !== undefined
+      && (e as AxiosError).response === undefined
+    ) {
       // The service cannot be connected.
       throw new TypeError('Cannot Connect to Data Object Selection Server');
     } else {
@@ -245,7 +251,10 @@ export const modelTraining = async (
     ).data as { model: ModelService };
     modelUpdated = data.model;
   } catch (e) {
-    if (e.request !== undefined && e.response === undefined) {
+    if (
+      (e as AxiosError).request !== undefined
+      && (e as AxiosError).response === undefined
+    ) {
       // The service cannot be connected.
       throw new TypeError('Cannot Connect to Interim Model Training Server');
     } else {

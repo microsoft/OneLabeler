@@ -305,8 +305,8 @@ class StorageStore implements IStorageStore {
   async init(): Promise<void> {
     try {
       await mongoose.connect(DB_URL);
-    } catch (err) {
-      console.log(`Mongoose connection error: ${(err as Error).message}`);
+    } catch (e) {
+      console.error(`Mongoose connection error: ${(e as Error).message}`);
     }
   }
 }

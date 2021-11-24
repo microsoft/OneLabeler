@@ -29,18 +29,18 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import {
+import { LabelTaskType } from '@/commons/types';
+import type {
   ILabel,
   ILabelRelation,
   ILabelTextSpan,
-  LabelTaskType,
 } from '@/commons/types';
-import { ToolbarState } from './types';
+import type { ToolbarState } from './types';
 import VLabelSpan from './VLabelSpan.vue';
 
-export default Vue.extend({
+export default {
   name: 'BasePanel',
   components: { VLabelSpan },
   props: {
@@ -125,7 +125,7 @@ export default Vue.extend({
       return sourceUuid !== null && sourceUuid === span.uuid;
     },
   },
-});
+};
 </script>
 
 <style lang="scss" scoped>

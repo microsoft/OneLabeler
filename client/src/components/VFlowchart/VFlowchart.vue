@@ -90,11 +90,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import {
+import type { PropType } from 'vue';
+import { PortDirection } from './types';
+import type {
   Box,
   Point,
-  PortDirection,
   FlowchartEdge,
   FlowchartNode,
   FlowchartPort,
@@ -112,7 +112,7 @@ const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
 );
 
-export default Vue.extend({
+export default {
   name: 'VFlowchart',
   components: {
     VEdge,
@@ -433,5 +433,5 @@ export default Vue.extend({
       return this.selectedEdgeIds.findIndex((id) => id === edge.id) >= 0;
     },
   },
-});
+};
 </script>
