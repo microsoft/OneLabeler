@@ -1,5 +1,6 @@
 <template>
   <v-menu
+    v-model="show"
     :close-on-content-click="false"
     offset-y
     left
@@ -103,7 +104,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import {
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from '@vue/composition-api';
 import {
   getAlgorithmServerLatency,
   getDatabaseServerLatency,
@@ -111,21 +118,40 @@ import {
 } from '@/services/ping-api';
 import socket from '@/services/jupyter-api-plugin';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'TheNetworkMenu',
-  data() {
-    return {
-      algorithmServerLatency: null as number | null,
-      databaseServerLatency: null as number | null,
-      pythonApiServerLatency: null as number | null,
+  setup() {
+    const show = ref(false);
+    const algorithmServerLatency = ref(Infinity);
+    const databaseServerLatency = ref(Infinity);
+    const pythonApiServerLatency = ref(Infinity);
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    const updateInterval = () => {
+      if (show.value === false && interval !== null) {
+        clearInterval(interval);
+        interval = null;
+      } else if (show.value === true && interval === null) {
+        interval = setInterval(async () => {
+          algorithmServerLatency.value = await getAlgorithmServerLatency();
+          databaseServerLatency.value = await getDatabaseServerLatency();
+          pythonApiServerLatency.value = await getPythonApiServerLatency();
+        }, 1000);
+      }
     };
-  },
-  mounted() {
-    setInterval(async () => {
-      this.algorithmServerLatency = await getAlgorithmServerLatency();
-      this.databaseServerLatency = await getDatabaseServerLatency();
-      this.pythonApiServerLatency = await getPythonApiServerLatency();
-    }, 1000);
+
+    watch(show, updateInterval);
+    onMounted(updateInterval);
+    onUnmounted(() => {
+      if (interval !== null) clearInterval(interval);
+    });
+
+    return {
+      show,
+      algorithmServerLatency,
+      databaseServerLatency,
+      pythonApiServerLatency,
+    };
   },
   methods: {
     onTogglePythonApiServer(enabled: (true | null)) {
