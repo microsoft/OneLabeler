@@ -38,11 +38,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { WorkflowGraph } from '@/commons/types';
+import type { PropType } from 'vue';
+import type { WorkflowGraph } from '@/commons/types';
 import templates from '@/builtins/workflow-templates/index';
 
-export default Vue.extend({
+export default {
   name: 'VTemplateMenu',
   props: {
     workflow: {
@@ -53,5 +53,5 @@ export default Vue.extend({
   data() {
     return { templates };
   },
-});
+};
 </script>

@@ -44,33 +44,14 @@
 <script lang="ts">
 import {
   defineComponent,
-  onMounted,
   ref,
   PropType,
   Ref,
 } from '@vue/composition-api';
 import VHeatmap, { Axis, BinDatum } from '@/plugins/heatmap/VHeatmap.vue';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useElementSize } from '@/components/composables/useResize';
 
 type Point = [number, number];
-
-/** Get continuously updated element size. */
-const useElementSize = (element: Ref<HTMLElement | null>) => {
-  const width: Ref<number | null> = ref(null);
-  const height: Ref<number | null> = ref(null);
-
-  // Store the size of the element.
-  const getSize = (): void => {
-    if (element.value === null) return;
-    width.value = element.value.clientWidth;
-    height.value = element.value.clientHeight;
-  };
-
-  useResizeObserver(element, getSize);
-  onMounted(getSize);
-
-  return { width, height };
-};
 
 export default defineComponent({
   name: 'VHeatmapWrapper',
@@ -102,14 +83,10 @@ export default defineComponent({
     },
   },
   setup() {
-    const svg: Ref<HTMLElement | null> = ref(null);
     const container: Ref<HTMLElement | null> = ref(null);
-    const { width, height } = useElementSize(container);
     return {
-      svg,
       container,
-      width,
-      height,
+      ...useElementSize(container),
     };
   },
   computed: {

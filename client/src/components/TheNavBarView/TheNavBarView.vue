@@ -1,11 +1,8 @@
 <template>
   <div
     class="app-header pl-1"
-    :style="{
-      'display': 'flex',
-      'align-items': 'center',
-      'height': `${height}px`,
-    }"
+    style="display: flex; align-items: center;"
+    :style="{ height: `${height}px` }"
   >
     <!-- The new project button. -->
     <VUploadButton
@@ -170,7 +167,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import Vue, { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
@@ -226,8 +223,8 @@ export default Vue.extend({
   },
   props: {
     height: {
+      type: Number as PropType<number>,
       default: 35,
-      type: Number,
     },
   },
   data() {

@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
+import type { PropType, VueConstructor } from 'vue';
 import {
   Category,
   DataType,
@@ -31,7 +31,7 @@ import ThePaintBoard from './ThePaintBoard/index.vue';
 import TheSingleObjectBoard from './TheSingleObjectBoard/index.vue';
 import TheTimeSpanBoard from './TheTimeSpanBoard/index.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheSingleObjectDisplay',
   props: {
     dataObjects: {
@@ -90,5 +90,5 @@ export default Vue.extend({
       this.$emit('user-edit-label', uuids, newValues);
     },
   },
-});
+};
 </script>

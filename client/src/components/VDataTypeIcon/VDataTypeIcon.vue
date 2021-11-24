@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { DataType } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VDataTypeIcon',
   props: {
     dataType: {
@@ -31,5 +31,5 @@ export default Vue.extend({
   data() {
     return { DataType };
   },
-});
+};
 </script>

@@ -14,6 +14,13 @@ import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
 import MTRetrain from '@/builtins/modules/model-training/retrain';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
 
+const MARGIN_LEFT = 20;
+const MARGIN_TOP = 20;
+const NODE_WIDTH = 120;
+const NODE_HEIGHT = 80;
+const NODE_PADDING_X = 40;
+const NODE_PADDING_Y = 20;
+
 export default parseWorkflow({
   label: 'MI3 Block',
   nodes: [
@@ -24,7 +31,7 @@ export default parseWorkflow({
         dataType: 'MI3-block',
         labelTasks: [LabelTaskType.Classification],
       },
-      layout: { x: 40, y: 40 },
+      layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
       label: 'active learning',
@@ -37,7 +44,10 @@ export default parseWorkflow({
           },
         },
       })],
-      layout: { x: 160, y: 40 },
+      layout: {
+        x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
+      },
     },
     {
       label: 'decision tree prelabel',
@@ -62,17 +72,18 @@ export default parseWorkflow({
         api: 'http://localhost:8005/defaultLabels/ModelPrediction',
       },
       layout: {
-        x: 280,
-        y: 40,
-        width: 80,
-        height: 60,
+        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
       },
     },
     {
       label: 'overview',
       type: WorkflowNodeType.DataObjectSelection,
       value: [DOSImageOverview],
-      layout: { x: 400, y: 40 },
+      layout: {
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
+      },
     },
     {
       label: 'grid matrix',
@@ -89,29 +100,44 @@ export default parseWorkflow({
           },
         },
       })],
-      layout: { x: 400, y: 140 },
+      layout: {
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
     {
       label: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
       value: SAAllChecked,
-      layout: { x: 280, y: 140 },
+      layout: {
+        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
     {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
-      layout: { x: 160, y: 140 },
+      layout: {
+        x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
     {
       label: 'exit',
       type: WorkflowNodeType.Exit,
-      layout: { x: 170, y: 240 },
+      layout: {
+        x: MARGIN_LEFT + 20 + (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + 2 * (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
     {
       label: 'model training',
       type: WorkflowNodeType.ModelTraining,
       value: MTRetrain,
-      layout: { x: 40, y: 140 },
+      layout: {
+        x: MARGIN_LEFT,
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
   ],
   edges: [

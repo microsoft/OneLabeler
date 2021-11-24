@@ -40,7 +40,7 @@ import {
   ILabelTextSpan,
   IText,
 } from '@/commons/types';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useResizeObserver } from '@/components/composables/useResize';
 import { Box, ToolbarState } from './types';
 import useBoxes from './useBoxes';
 

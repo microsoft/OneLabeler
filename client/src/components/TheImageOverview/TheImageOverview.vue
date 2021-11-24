@@ -42,17 +42,17 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { getImgSize } from '@/commons/utils';
 import { calFittingTransform } from '@/commons/geometry';
-import {
+import type {
   Category,
   IDataObject,
   ILabel,
 } from '@/commons/types';
 import TheImageOverviewHeader from './TheImageOverviewHeader.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheImageOverview',
   components: { TheImageOverviewHeader },
   props: {
@@ -115,5 +115,5 @@ export default Vue.extend({
       return label2color(unlabeledMark);
     },
   },
-});
+};
 </script>

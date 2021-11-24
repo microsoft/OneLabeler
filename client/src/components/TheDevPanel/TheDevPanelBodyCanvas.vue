@@ -15,7 +15,7 @@
       @contextmenu="onContextMenuOfCanvas"
       @contextmenu:edge="onContextMenuOfEdge"
     >
-      <template #node-shape="props">
+      <template #node="props">
         <VNode
           :node="extendNode(props.node)"
           :is-executing="isNodeExecuting(props.node)"
@@ -26,120 +26,36 @@
     </VFlowchart>
 
     <!-- The context menu for canvas. -->
-    <v-menu
-      v-model="showMenuOfCanvas"
+    <TheMenuOfCanvas
+      v-if="showMenuOfCanvas"
+      :show="showMenuOfCanvas"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      content-class="elevation-2"
-      offset-y
-    >
-      <v-list
-        class="py-0"
-        style="font-size:12px"
-      >
-        <v-list-item
-          v-for="(option, i) in createNodeMenu"
-          :key="i"
-          class="py-0 px-1"
-          style="min-height:24px"
-          @click="onCreateNode($event, option.value)"
-        >
-          {{ option.label }}
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      @click:option="onCreateNode($event)"
+      @update:show="showMenuOfCanvas = $event"
+    />
 
     <!-- The context menu for edges. -->
-    <v-menu
-      v-model="showMenuOfEdge"
+    <TheMenuOfEdge
+      v-if="showMenuOfEdge"
+      :show="showMenuOfEdge"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      content-class="elevation-2"
-      offset-y
-    >
-      <v-list
-        class="py-0"
-        style="font-size:12px"
-      >
-        <v-list-item
-          class="py-0 pl-0 pr-1"
-          style="min-height:24px"
-          @click="onRemoveSelected"
-        >
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            style="font-size:12px; width: 1.5rem;"
-            small
-          >
-            $vuetify.icons.values.reset
-          </v-icon>
-          Remove
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      @remove:selected="onRemoveSelected"
+      @update:show="showMenuOfEdge = $event"
+    />
 
     <!-- The context menu for nodes. -->
-    <v-menu
-      v-model="showMenuOfNode"
+    <TheMenuOfNode
+      v-if="showMenuOfNode"
+      :show="showMenuOfNode"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      content-class="elevation-2"
-      offset-y
-    >
-      <v-list
-        class="py-0"
-        style="font-size:12px"
-      >
-        <v-list-item
-          v-if="selectedEdges.length === 0 && selectedNodes.length === 1"
-          class="py-0 pl-0 pr-1"
-          style="min-height:24px"
-          @click="onFlowFromSelectedNode"
-        >
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            style="font-size:12px; width: 1.5rem;"
-            small
-          >
-            $vuetify.icons.values.flowChart
-          </v-icon>
-          Jump To & Flow
-        </v-list-item>
-        <v-list-item
-          v-if="selectedEdges.length === 0 && selectedNodes.length === 1"
-          class="py-0 pl-0 pr-1"
-          style="min-height:24px"
-          @click="onJumpToSelectedNode"
-        >
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            style="font-size:12px; width: 1.5rem;"
-            small
-          >
-            $vuetify.icons.values.skip
-          </v-icon>
-          Jump To
-        </v-list-item>
-        <v-list-item
-          class="py-0 pl-0 pr-1"
-          style="min-height:24px"
-          @click="onRemoveSelected"
-        >
-          <v-icon
-            class="px-2"
-            aria-hidden="true"
-            style="font-size:12px; width: 1.5rem;"
-            small
-          >
-            $vuetify.icons.values.reset
-          </v-icon>
-          Remove
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      @flowfrom:node="onFlowFromSelectedNode"
+      @jumpto:node="onJumpToSelectedNode"
+      @remove:selected="onRemoveSelected"
+      @update:show="showMenuOfNode = $event"
+    />
   </div>
 </template>
 
@@ -152,6 +68,7 @@ import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
+import { getDefaultNodeSize } from '@/commons/workflow-utils/parse-node';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import {
   FlowchartEdge,
@@ -159,6 +76,9 @@ import {
   PortDirection,
 } from '../VFlowchart/types';
 import VNode from './VNode.vue';
+import TheMenuOfCanvas from './TheMenuOfCanvas.vue';
+import TheMenuOfEdge from './TheMenuOfEdge.vue';
+import TheMenuOfNode from './TheMenuOfNode.vue';
 
 // TODO: may reduce the frequency of syncing the flowchart graph
 // and workflow graph to improve the performance.
@@ -173,49 +93,6 @@ type FlowchartGraph = {
   nodes: FlowchartNode[];
   edges: FlowchartEdge[];
 }
-
-const createNodeMenu = [
-  {
-    label: 'create initialization node',
-    value: WorkflowNodeType.Initialization,
-  },
-  {
-    label: 'create feature extraction node',
-    value: WorkflowNodeType.FeatureExtraction,
-  },
-  {
-    label: 'create data object selection node',
-    value: WorkflowNodeType.DataObjectSelection,
-  },
-  {
-    label: 'create default labeling node',
-    value: WorkflowNodeType.DefaultLabeling,
-  },
-  {
-    label: 'create interactive labeling node',
-    value: WorkflowNodeType.InteractiveLabeling,
-  },
-  {
-    label: 'create stoppage analysis node',
-    value: WorkflowNodeType.StoppageAnalysis,
-  },
-  {
-    label: 'create model training node',
-    value: WorkflowNodeType.ModelTraining,
-  },
-  {
-    label: 'create custom node',
-    value: WorkflowNodeType.Custom,
-  },
-  {
-    label: 'create decision node',
-    value: WorkflowNodeType.Decision,
-  },
-  {
-    label: 'create exit node',
-    value: WorkflowNodeType.Exit,
-  },
-];
 
 const nodeAdaptor = (node: WorkflowNode): FlowchartNode => ({
   id: node.id,
@@ -249,6 +126,9 @@ export default Vue.extend({
   components: {
     VFlowchart,
     VNode,
+    TheMenuOfCanvas,
+    TheMenuOfEdge,
+    TheMenuOfNode,
   },
   props: {
     graph: {
@@ -269,7 +149,6 @@ export default Vue.extend({
       rightClickClientY: null as null | number,
       rightClickCanvasX: null as null | number,
       rightClickCanvasY: null as null | number,
-      createNodeMenu,
       selectedNodeIds: [] as string[],
       selectedEdgeIds: [] as string[],
     };
@@ -347,7 +226,7 @@ export default Vue.extend({
       this.rightClickCanvasX = e.offsetX;
       this.rightClickCanvasY = e.offsetY;
     },
-    onCreateNode(e: MouseEvent, type: WorkflowNodeType) {
+    onCreateNode(type: WorkflowNodeType): void {
       const labelMapper = {
         [WorkflowNodeType.Initialization]: 'initialization',
         [WorkflowNodeType.FeatureExtraction]: 'feature extraction',
@@ -380,14 +259,13 @@ export default Vue.extend({
         layout: {
           x: this.rightClickCanvasX,
           y: this.rightClickCanvasY,
-          width: type === WorkflowNodeType.Exit ? 60 : 80,
-          height: 60,
+          ...getDefaultNodeSize(type),
         },
       } as WorkflowNode;
       this.$emit('create:node', node);
       this.focusToCanvas();
     },
-    onEditNode(node: FlowchartNode) {
+    onEditNode(node: FlowchartNode): void {
       const { id } = node;
       const workflowNode = this.graph.nodes.find((d) => d.id === id) as WorkflowNode;
       const newValue: WorkflowNode = {
@@ -402,13 +280,13 @@ export default Vue.extend({
       };
       this.$emit('edit:node', newValue);
     },
-    onSelectNodes(nodes: FlowchartNode[]) {
+    onSelectNodes(nodes: FlowchartNode[]): void {
       // Note: store the node ids instead of directly storing the nodes
       // in case the node properties stored in the child component is not up to date.
       this.selectedNodeIds = nodes.map((d) => d.id);
       this.$emit('select:nodes', this.selectedNodeIds);
     },
-    onCreateEdge(edge: FlowchartEdge) {
+    onCreateEdge(edge: FlowchartEdge): void {
       // Do not allow self loop.
       if (edge.source.nodeId === edge.target.nodeId) return;
 
@@ -420,10 +298,8 @@ export default Vue.extend({
         const pairedEdge = this.graph.edges.find((d) => d.source === edge.source.nodeId);
         if (pairedEdge !== undefined) {
           condition = { condition: !pairedEdge.condition };
-        } else if (edge.source.direction === PortDirection.Bottom) {
-          condition = { condition: true };
         } else {
-          condition = { condition: false };
+          condition = { condition: edge.source.direction === PortDirection.Bottom };
         }
       }
 
@@ -447,13 +323,13 @@ export default Vue.extend({
       };
       this.$emit('create:edge', newValue);
     },
-    onSelectEdges(edges: FlowchartEdge[]) {
+    onSelectEdges(edges: FlowchartEdge[]): void {
       // Note: store the node ids instead of directly storing the nodes
       // in case the node properties stored in the child component is not up to date.
       this.selectedEdgeIds = edges.map((d) => d.id);
       this.$emit('select:edges', this.selectedEdgeIds);
     },
-    onRemoveSelected() {
+    onRemoveSelected(): void {
       const toBeRemovedNodes = this.selectedNodes;
       const toBeRemovedEdges = this.flowchartGraph.edges.filter((edge) => (
         this.selectedEdges.find((d) => d.id === edge.id) !== undefined
@@ -468,13 +344,13 @@ export default Vue.extend({
       });
       this.focusToCanvas();
     },
-    onJumpToSelectedNode() {
+    onJumpToSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('jumpto:node', node);
       this.focusToCanvas();
     },
-    onFlowFromSelectedNode() {
+    onFlowFromSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('flowfrom:node', node);

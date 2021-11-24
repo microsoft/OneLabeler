@@ -1,7 +1,6 @@
 <template>
   <div ref="container">
     <svg
-      ref="svg"
       width="0"
       height="0"
       style="width: 100%; height: 100%;"
@@ -22,8 +21,6 @@
 import {
   computed,
   defineComponent,
-  onMounted,
-  onUpdated,
   ref,
   toRefs,
   ComputedRef,
@@ -32,7 +29,7 @@ import {
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
 import { IImage } from '@/commons/types';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useElementSize } from '@/components/composables/useResize';
 
 /**
  * Implementation note:
@@ -43,28 +40,6 @@ import useResizeObserver from '@/components/composables/useResizeObserver';
  * svg size (with width being 300 and height being 150)
  * and set width: 100%; height: 100%; to make it responsive.
  */
-
-/** Get continuously updated svg size. */
-const useSvgSize = (
-  container: Ref<HTMLElement | null>,
-  svg: Ref<HTMLElement | null>,
-) => {
-  const svgWidth: Ref<number | null> = ref(null);
-  const svgHeight: Ref<number | null> = ref(null);
-
-  // Store the size of the svg.
-  const getSvgSize = (): void => {
-    if (svg.value === null) return;
-    svgWidth.value = svg.value.clientWidth;
-    svgHeight.value = svg.value.clientHeight;
-  };
-
-  useResizeObserver(container, getSvgSize);
-  onMounted(getSvgSize);
-  onUpdated(getSvgSize);
-
-  return { svgWidth, svgHeight };
-};
 
 export default defineComponent({
   name: 'BaseDisplay',
@@ -78,12 +53,11 @@ export default defineComponent({
   setup(props) {
     const { dataObject } = toRefs(props);
     const container: Ref<HTMLElement | null> = ref(null);
-    const svg: Ref<HTMLElement | null> = ref(null);
-    const { svgWidth, svgHeight } = useSvgSize(container, svg);
+    const { width, height } = useElementSize(container);
 
     // Compute the scaling of the image to fit the svg.
     const transform: ComputedRef<string> = computed(() => {
-      if (svgWidth.value === null || svgHeight.value === null) return '';
+      if (width.value === null || height.value === null) return '';
       const imgWidth = dataObject.value?.width ?? null;
       const imgHeight = dataObject.value?.height ?? null;
       if (imgWidth === null || imgHeight === null) return '';
@@ -92,10 +66,10 @@ export default defineComponent({
         xMax: imgWidth,
         yMin: 0,
         yMax: imgHeight,
-      }, svgWidth.value, svgHeight.value);
+      }, width.value, height.value);
     });
 
-    return { container, svg, transform };
+    return { container, transform };
   },
   computed: {
     src(): string {

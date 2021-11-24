@@ -18,14 +18,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import { UploadTarget } from '@/commons/types';
 
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
 type KeyboardTrigger = ((e: KeyboardEvent) => boolean) | null
 
-export default Vue.extend({
+export default {
   name: 'VUploadButton',
   props: {
     title: {
@@ -119,5 +119,5 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>

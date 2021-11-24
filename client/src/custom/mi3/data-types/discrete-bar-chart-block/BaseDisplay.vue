@@ -1,7 +1,6 @@
 <template>
   <div ref="container">
     <svg
-      ref="svg"
       width="0"
       height="0"
       style="width: 100%; height: 100%;"
@@ -26,8 +25,6 @@
 import {
   computed,
   defineComponent,
-  onMounted,
-  onUpdated,
   ref,
   toRefs,
   ComputedRef,
@@ -36,7 +33,7 @@ import {
 } from '@vue/composition-api';
 import { calFittingTransform } from '@/commons/geometry';
 import { Category, IDataObject, ILabel } from '@/commons/types';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useElementSize } from '@/components/composables/useResize';
 
 /**
  * Implementation note:
@@ -54,28 +51,6 @@ interface IBlock extends IDataObject {
   width: number;
   height: number;
 }
-
-/** Get continuously updated svg size. */
-const useSvgSize = (
-  container: Ref<HTMLElement | null>,
-  svg: Ref<HTMLElement | null>,
-) => {
-  const svgWidth: Ref<number | null> = ref(null);
-  const svgHeight: Ref<number | null> = ref(null);
-
-  // Store the size of the svg.
-  const getSvgSize = (): void => {
-    if (svg.value === null) return;
-    svgWidth.value = svg.value.clientWidth;
-    svgHeight.value = svg.value.clientHeight;
-  };
-
-  useResizeObserver(container, getSvgSize);
-  onMounted(getSvgSize);
-  onUpdated(getSvgSize);
-
-  return { svgWidth, svgHeight };
-};
 
 export default defineComponent({
   name: 'BaseDisplay',
@@ -102,12 +77,11 @@ export default defineComponent({
   setup(props) {
     const { dataObject } = toRefs(props);
     const container: Ref<HTMLElement | null> = ref(null);
-    const svg: Ref<HTMLElement | null> = ref(null);
-    const { svgWidth, svgHeight } = useSvgSize(container, svg);
+    const { width, height } = useElementSize(container);
 
     // Compute the scaling of the image to fit the svg.
     const transform: ComputedRef<string> = computed(() => {
-      if (svgWidth.value === null || svgHeight.value === null) return '';
+      if (width.value === null || height.value === null) return '';
       if (dataObject.value === null || dataObject.value.width === null) return '';
       if (dataObject.value === null || dataObject.value.height === null) return '';
       return calFittingTransform({
@@ -115,10 +89,10 @@ export default defineComponent({
         xMax: dataObject.value.xMin + dataObject.value.width,
         yMin: dataObject.value.yMin,
         yMax: dataObject.value.yMin + dataObject.value.height,
-      }, svgWidth.value, svgHeight.value);
+      }, width.value, height.value);
     });
 
-    return { svg, transform };
+    return { container, transform };
   },
   computed: {
     src(): string {

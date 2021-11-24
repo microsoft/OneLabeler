@@ -26,14 +26,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import TheDataManagementPanel from '../TheDataManagementPanel/TheDataManagementPanel.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheNavBarViewDashboardDialogButton',
   components: { TheDataManagementPanel },
   data() {
     return { dialog: false };
   },
-});
+};
 </script>

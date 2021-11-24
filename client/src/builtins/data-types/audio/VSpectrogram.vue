@@ -21,7 +21,7 @@ import {
   Ref,
 } from '@vue/composition-api';
 import { resample2d } from '@/plugins/sampling';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useResizeObserver } from '@/components/composables/useResize';
 
 const getFFT = async (
   url: string,

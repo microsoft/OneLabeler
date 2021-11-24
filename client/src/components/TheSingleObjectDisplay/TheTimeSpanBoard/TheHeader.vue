@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import {
   Category,
   DataType,
@@ -42,7 +42,7 @@ import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
-export default Vue.extend({
+export default {
   name: 'TheTimeSpanBoardHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
@@ -87,5 +87,5 @@ export default Vue.extend({
       return categoriesFiltered;
     },
   },
-});
+};
 </script>

@@ -8,17 +8,17 @@ import { parseProcess } from './parse-process';
 export type TrimmedNode = Partial<WorkflowNode> & Omit<WorkflowNode, 'id' | 'layout'>;
 
 /** Get default { width, height } for a node given node type. */
-const getDefaultNodeSize = (
+export const getDefaultNodeSize = (
   type: WorkflowNodeType,
 ): { width: number, height: number } => {
-  const INITIAL_NODE_WIDTH = 80;
-  const INITIAL_NODE_HEIGHT = 60;
-  const DECISION_NODE_WIDTH = 80;
-  const DECISION_NODE_HEIGHT = 60;
-  const EXIT_NODE_WIDTH = 60;
-  const EXIT_NODE_HEIGHT = 60;
-  const MODULE_NODE_WIDTH = 80;
-  const MODULE_NODE_HEIGHT = 60;
+  const INITIAL_NODE_WIDTH = 120;
+  const INITIAL_NODE_HEIGHT = 80;
+  const DECISION_NODE_WIDTH = 120;
+  const DECISION_NODE_HEIGHT = 80;
+  const EXIT_NODE_WIDTH = 80;
+  const EXIT_NODE_HEIGHT = 80;
+  const MODULE_NODE_WIDTH = 120;
+  const MODULE_NODE_HEIGHT = 80;
 
   let width = MODULE_NODE_WIDTH;
   let height = MODULE_NODE_HEIGHT;

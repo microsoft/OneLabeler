@@ -9,7 +9,7 @@
     @contextmenu="$emit('contextmenu', $event)"
   >
     <!-- The flowchart edges. -->
-    <g
+    <VEdge
       v-for="edge in [...edges].sort((a, b) => {
         // Render the selected edges later than unselected ones.
         if (selectedEdges.length === 0) return 1;
@@ -18,55 +18,33 @@
         return 0;
       })"
       :key="edge.id"
-      cursor="pointer"
+      :edge="edge"
+      :source-node="getNodeFromPort(edge.source)"
+      :target-node="getNodeFromPort(edge.target)"
+      :color="getEdgeColor(edge)"
       @mousedown="onMouseDownEdge(edge, $event)"
-      @contextmenu.stop="$emit('contextmenu:edge', edge, $event)"
-    >
-      <slot
-        name="edge"
-        :edge="edge"
-        :is-selected="isEdgeSelected(edge)"
-      >
-        <!-- The visible edge. -->
-        <path
-          :d="`M${getEdgePathPoints(edge).map((d) => d.join(',')).join('L')}`"
-          :stroke="getEdgeColor(edge)"
-          stroke-width="1"
-          fill="none"
-          :marker-end="`url(#${
-            isEdgeSelected(edge) ? markerIdOfSelected : markerIdOfUnselected
-          })`"
-        />
-
-        <!-- The invisible widened edge to make the edge easier to select. -->
-        <path
-          :d="`M${getEdgePathPoints(edge).map((d) => d.join(',')).join('L')}`"
-          stroke="transparent"
-          stroke-width="10"
-          fill="none"
-        />
-      </slot>
-    </g>
+      @contextmenu="$emit('contextmenu:edge', edge, $event)"
+    />
 
     <!-- The new edge under creation. -->
-    <path
-      v-if="partialNewEdgePoints !== null"
-      :d="`M${partialNewEdgePoints.map((d) => d.join(',')).join('L')}`"
-      stroke="black"
-      storke-width="1"
-      fill="none"
-      :marker-end="`url(#${markerIdOfSelected})`"
+    <VEdge
+      v-if="draggedPort !== null"
+      :edge="{
+        source: draggedPort,
+        target: hoveredPort === null ? undefined : hoveredPort,
+      }"
+      :source-node="getNodeFromPort(draggedPort)"
+      :target-point="mousePosition"
+      color="black"
     />
 
     <!-- The grid alignment guidelines. -->
-    <path
-      v-for="(line, i) in guidelines"
-      :key="i"
-      :d="`M${line.x1},${line.y1}L${line.x2},${line.y2}`"
-      stroke-width="1"
-      stroke="#a3a3a3"
-      fill="none"
-      stroke-dasharray="5,3"
+    <VGuidelines
+      v-if="enableGuideline && draggedNode !== null"
+      :node="draggedNode"
+      :nodes="nodes"
+      :format="nodePositionFormatter"
+      color="#a3a3a3"
     />
 
     <!-- The flowchart nodes. -->
@@ -80,29 +58,19 @@
       })"
       :key="node.id"
       :node="node"
-      :is-hovered="isNodeHovered(node)"
+      :is-hovered="hoveredNode !== null && hoveredNode.id === node.id"
       :is-selected="isNodeSelected(node)"
-      :is-dragged="isNodeDragged(node)"
       :hovered-port="hoveredPort"
-      @hover:node="onMouseOverNode"
+      @hover:node="hoveredNode = $event"
       @mousedown:node="onMouseDownNode"
-      @leave:node="onMouseLeaveNode"
-      @drag:port="onMouseDownPort"
+      @leave:node="hoveredNode = null"
+      @drag:port="draggedPort = $event"
     >
-      <template #node-shape>
+      <template #node="props">
         <slot
-          name="node-shape"
-          :node="node"
-          :is-selected="isNodeSelected(node)"
-        >
-          <rect
-            :width="node.width"
-            :height="node.height"
-            :stroke="isNodeSelected(node) ? 'black' : '#bbb'"
-            fill-opacity="0"
-            stroke-width="1"
-          />
-        </slot>
+          name="node"
+          v-bind="props"
+        />
       </template>
     </VNode>
 
@@ -118,36 +86,6 @@
       fill="black"
       fill-opacity="0.1"
     />
-
-    <!-- The edge arrow head. -->
-    <marker
-      :id="markerIdOfSelected"
-      viewBox="0 -5 10 10"
-      refX="10"
-      refY="-0.5"
-      markerWidth="10"
-      markerHeight="10"
-      orient="auto"
-    >
-      <path
-        d="M0,-5L10,0L0,5"
-        fill="black"
-      />
-    </marker>
-    <marker
-      :id="markerIdOfUnselected"
-      viewBox="0 -5 10 10"
-      refX="10"
-      refY="-0.5"
-      markerWidth="10"
-      markerHeight="10"
-      orient="auto"
-    >
-      <path
-        d="M0,-5L10,0L0,5"
-        fill="#bbb"
-      />
-    </marker>
   </svg>
 </template>
 
@@ -155,7 +93,6 @@
 import Vue, { PropType } from 'vue';
 import {
   Box,
-  Line,
   Point,
   PortDirection,
   FlowchartEdge,
@@ -167,7 +104,9 @@ import {
   getBBoxOfPoints,
   getZaggedPathPoints,
 } from './geometry';
+import VEdge from './VEdge.vue';
 import VNode from './VNode.vue';
+import VGuidelines from './VGuidelines.vue';
 
 const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
@@ -176,7 +115,9 @@ const isSuperset = (set: string[], subset: string[]) => (
 export default Vue.extend({
   name: 'VFlowchart',
   components: {
+    VEdge,
     VNode,
+    VGuidelines,
   },
   props: {
     nodes: {
@@ -198,8 +139,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      markerIdOfSelected: 'arrow-head-selected',
-      markerIdOfUnselected: 'arrow-head-unselected',
       // The mouse position in svg when drag started.
       // The position is used by all the drag interactions:
       // box selection, node(s) dragging, edge creation.
@@ -209,9 +148,6 @@ export default Vue.extend({
       dragLastPoint: null as Point | null,
       draggedNodeId: null as string | null,
       draggedPort: null as FlowchartPort | null,
-      // The points of the new edge under creation
-      // linking the dragged port to the current mouse position.
-      partialNewEdgePoints: null as null | [number, number][],
       // The ids of click selected and/or box selected nodes/edges.
       selectedNodeIds: [] as string[],
       selectedEdgeIds: [] as string[],
@@ -222,73 +158,13 @@ export default Vue.extend({
   },
   computed: {
     draggedNode(): FlowchartNode | null {
-      const node = this.nodes.find(
-        (d: FlowchartNode) => d.id === this.draggedNodeId,
-      );
-      return node ?? null;
+      return this.nodes.find((d) => d.id === this.draggedNodeId) ?? null;
     },
     selectedNodes(): FlowchartNode[] {
       return this.nodes.filter((d) => this.isNodeSelected(d));
     },
     selectedEdges(): FlowchartEdge[] {
       return this.edges.filter((d) => this.isEdgeSelected(d));
-    },
-    guidelines(): Line[] {
-      if (!this.enableGuideline) return [];
-      const node = this.draggedNode;
-      if (node === null) return [];
-      const { nodePositionFormatter } = this as {
-        nodePositionFormatter: (d: number) => number
-      };
-      const xMin = node.x;
-      const xMax = node.x + node.width;
-      const yMin = node.y;
-      const yMax = node.y + node.height;
-      const xMinRound = nodePositionFormatter(xMin);
-      const xMaxRound = nodePositionFormatter(xMax);
-      const yMinRound = nodePositionFormatter(yMin);
-      const yMaxRound = nodePositionFormatter(yMax);
-      const guidelines: Line[] = [];
-      this.nodes.forEach((d) => {
-        if (d.id === node.id) return;
-        [xMinRound, xMaxRound].forEach((xRound) => {
-          if (d.x !== xRound) return;
-          if (d.y < yMinRound) {
-            guidelines.push({
-              x1: d.x,
-              y1: d.y + d.height,
-              x2: d.x,
-              y2: yMinRound,
-            });
-          } else {
-            guidelines.push({
-              x1: d.x,
-              y1: yMinRound + d.height,
-              x2: d.x,
-              y2: d.y,
-            });
-          }
-        });
-        [yMinRound, yMaxRound].forEach((yRound) => {
-          if (d.y !== yRound) return;
-          if (d.x < xMinRound) {
-            guidelines.push({
-              x1: d.x + d.width,
-              y1: d.y,
-              x2: xMinRound,
-              y2: d.y,
-            });
-          } else {
-            guidelines.push({
-              x1: xMinRound + d.width,
-              y1: d.y,
-              x2: d.x,
-              y2: d.y,
-            });
-          }
-        });
-      });
-      return guidelines;
     },
     selectionBox(): Box | null {
       const {
@@ -388,12 +264,6 @@ export default Vue.extend({
         this.selectedNodeIds = [...this.selectedNodeIds, node.id];
       }
     },
-    onMouseOverNode(node: FlowchartNode): void {
-      this.hoveredNode = node;
-    },
-    onMouseLeaveNode(): void {
-      this.hoveredNode = null;
-    },
     onMouseDownCanvas(e: MouseEvent): void {
       if (!e.ctrlKey && e.target === this.$refs.svg) {
         this.selectedNodeIds = [];
@@ -431,26 +301,6 @@ export default Vue.extend({
           });
         });
         this.dragLastPoint = mousePosition;
-      }
-
-      // edge on:creating
-      const { draggedPort, hoveredPort } = this;
-      if (draggedPort !== null) {
-        const sourcePosition = this.getPortPosition(draggedPort);
-        if (sourcePosition !== null) {
-          // compute points on the partially created edge
-          const points = getZaggedPathPoints(
-            {
-              x1: sourcePosition.x,
-              y1: sourcePosition.y,
-              x2: mousePosition.x,
-              y2: mousePosition.y,
-            },
-            draggedPort.direction,
-            hoveredPort === null ? undefined : hoveredPort.direction,
-          );
-          this.partialNewEdgePoints = points;
-        }
       }
     },
     onMouseUpCanvas(): void {
@@ -510,16 +360,14 @@ export default Vue.extend({
       this.mousePosition = null;
       this.clearDragState();
     },
-    onMouseDownPort(port: FlowchartPort): void {
-      // port on:drag-start
-      this.draggedPort = port;
-    },
     clearDragState(): void {
       this.dragStartPoint = null;
       this.dragLastPoint = null;
       this.draggedNodeId = null;
       this.draggedPort = null;
-      this.partialNewEdgePoints = null;
+    },
+    getNodeFromPort(port: FlowchartPort): FlowchartNode | null {
+      return this.nodes.find((d) => d.id === port.nodeId) ?? null;
     },
     getPorts(node: FlowchartNode): FlowchartPort[] {
       if (node.ports !== undefined) return node.ports;
@@ -578,16 +426,8 @@ export default Vue.extend({
       if (edge.condition === false) return '#f5504e';
       return '#bbb';
     },
-    isNodeHovered(node: FlowchartNode): boolean {
-      if (this.hoveredNode === null) return false;
-      return this.hoveredNode.id === node.id;
-    },
     isNodeSelected(node: FlowchartNode): boolean {
       return this.selectedNodeIds.findIndex((id) => id === node.id) >= 0;
-    },
-    isNodeDragged(node: FlowchartNode): boolean {
-      if (this.draggedNodeId === null) return false;
-      return this.draggedNodeId === node.id;
     },
     isEdgeSelected(edge: FlowchartEdge): boolean {
       return this.selectedEdgeIds.findIndex((id) => id === edge.id) >= 0;

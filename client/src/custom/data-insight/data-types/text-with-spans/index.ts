@@ -66,10 +66,9 @@ export default {
     dataObjects: T[],
     labels: ILabel[],
   ): IExport<T> => {
-    const uuid2idxInLabels: Record<string, number> = {};
-    labels.forEach((d: ILabel, i) => {
-      uuid2idxInLabels[d.uuid] = i;
-    });
+    const uuid2idxInLabels = Object.fromEntries(
+      labels.map((d, i) => [d.uuid, i]),
+    );
     return dataObjects.map((d) => {
       const partial = {
         uuid: d.uuid,

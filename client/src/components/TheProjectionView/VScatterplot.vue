@@ -3,10 +3,7 @@
     ref="container"
     style="display: flex"
   >
-    <svg
-      ref="svg"
-      style="flex: 1 1 auto;"
-    >
+    <svg style="flex: 1 1 auto">
       <VScatterplot
         :data="data"
         :width="width"
@@ -31,7 +28,6 @@
 <script lang="ts">
 import {
   defineComponent,
-  onMounted,
   ref,
   PropType,
   Ref,
@@ -39,28 +35,10 @@ import {
 import { polygonContains } from 'd3';
 import VLasso from '@/plugins/lasso/VLasso.vue';
 import VScatterplot, { Axis } from '@/plugins/scatterplot/VScatterplot.vue';
-import useResizeObserver from '@/components/composables/useResizeObserver';
+import { useElementSize } from '@/components/composables/useResize';
 
 type Point = [number, number];
 type Polygon = Point[];
-
-/** Get continuously updated element size. */
-const useElementSize = (element: Ref<HTMLElement | null>) => {
-  const width: Ref<number | null> = ref(null);
-  const height: Ref<number | null> = ref(null);
-
-  // Store the size of the element.
-  const getSize = (): void => {
-    if (element.value === null) return;
-    width.value = element.value.clientWidth;
-    height.value = element.value.clientHeight;
-  };
-
-  useResizeObserver(element, getSize);
-  onMounted(getSize);
-
-  return { width, height };
-};
 
 export default defineComponent({
   name: 'VScatterplotWrapper',
@@ -92,14 +70,10 @@ export default defineComponent({
     },
   },
   setup() {
-    const svg: Ref<HTMLElement | null> = ref(null);
     const container: Ref<HTMLElement | null> = ref(null);
-    const { width, height } = useElementSize(container);
     return {
-      svg,
       container,
-      width,
-      height,
+      ...useElementSize(container),
     };
   },
   data() {
@@ -139,9 +113,9 @@ export default defineComponent({
   },
   methods: {
     getSelectedIndices(lassoPolygon: Polygon): number[] {
-      const svg = this.$refs.svg as SVGSVGElement;
+      const container = this.$refs.container as HTMLElement;
       const selectedIndices: number[] = [];
-      [...svg.getElementsByTagName('circle')]
+      [...container.getElementsByTagName('circle')]
         .forEach((d: SVGCircleElement, i: number) => {
           const x = +(d.getAttribute('cx') as string);
           const y = +(d.getAttribute('cy') as string);

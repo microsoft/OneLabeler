@@ -10,8 +10,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import { DefinedError } from 'ajv';
+import type { DefinedError } from 'ajv';
 import {
   IMessage,
   MessageType,
@@ -47,7 +46,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   return null;
 };
 
-export default Vue.extend({
+export default {
   name: 'VUploadWorkflowButton',
   components: { VUploadButton },
   methods: {
@@ -71,5 +70,5 @@ export default Vue.extend({
       }
     },
   },
-});
+};
 </script>

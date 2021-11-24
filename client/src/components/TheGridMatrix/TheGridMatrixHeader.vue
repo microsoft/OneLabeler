@@ -18,7 +18,7 @@
         <component
           :is="setup.batchTool"
           :key="`${i}-tool`"
-          :categories="filterCategoriesByLabelTask(setup.type)"
+          :categories="filterCategories(setup.type)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
           @upsert-bulk:label="$emit('upsert-bulk:label', $event)"
@@ -29,7 +29,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import {
+  defineComponent,
+  toRefs,
+  PropType,
+} from '@vue/composition-api';
 import {
   Category,
   DataType,
@@ -39,8 +43,9 @@ import {
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
+import useFilterCategories from '@/components/composables/useCategories';
 
-export default Vue.extend({
+export default defineComponent({
   name: 'TheGridMatrixHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
@@ -54,7 +59,7 @@ export default Vue.extend({
       required: true,
     },
     categoryTasks: {
-      type: Object as PropType<Record<Category, LabelTaskType[] | null>>,
+      type: Object as PropType<Record<Category, LabelTaskType[]>>,
       required: true,
     },
     unlabeledMark: {
@@ -66,23 +71,16 @@ export default Vue.extend({
       required: true,
     },
   },
+  setup(props) {
+    const { categoryTasks } = toRefs(props);
+    return { ...useFilterCategories(categoryTasks) };
+  },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {
       const { labelTasks } = this;
       return labelTaskTypeSetups
         .filter((d) => (labelTasks as string[]).includes(d.type))
         .filter((d) => d.batchTool !== undefined);
-    },
-  },
-  methods: {
-    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
-          usedInTasks === null || usedInTasks.includes(labelTask)
-        )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
 });

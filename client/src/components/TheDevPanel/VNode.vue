@@ -1,113 +1,75 @@
 <template>
   <g @contextmenu.stop="$emit('contextmenu:node', node, $event)">
     <template v-if="isInitialization || isProcess">
-      <template v-if="isInteractive">
-        <!-- icon denoting the node is interactive -->
-        <g :transform="`translate(${0},${-20})`">
-          <rect
-            width="20"
-            height="20"
-            fill="white"
-            stroke="#bbb"
-            stroke-width="1"
-          />
-          <text
-            x="10"
-            y="15"
-            style="
-              text-anchor: middle;
-              user-select: none;
-              font-family: Font Awesome\ 5 Free;
-              font-weight: 900;
-            "
-          >
-            &#xf007;
-          </text>
-        </g>
-      </template>
-      <template v-if="!isServerless">
-        <!-- icon denoting the node is not serverless -->
-        <g :transform="`translate(${isInteractive ? 20 : 0},${-20})`">
-          <rect
-            width="20"
-            height="20"
-            fill="white"
-            stroke="#bbb"
-            stroke-width="1"
-          />
-          <text
-            x="10"
-            y="15"
-            style="
-              text-anchor: middle;
-              user-select: none;
-              font-family: Font Awesome\ 5 Free;
-              font-weight: 900;
-            "
-          >
-            &#xf233;
-          </text>
-        </g>
-      </template>
-      <rect
-        :width="node.width"
-        :height="node.height"
-        :stroke="isSelected
-          ? 'black'
-          : (isExecuting ? 'red' : '#bbb')"
-        fill="white"
-        stroke-width="1"
-      />
-      <rect
-        :width="node.width"
-        :fill="isProcess ? '#8C564B' : '#FF7F0E'"
-        height="5"
+      <VNodeProcess
+        :node="node"
+        :is-executing="isExecuting"
+        :is-selected="isSelected"
       />
     </template>
-    <template v-else-if="isDecision">
-      <polygon
-        :points="`
-          ${node.width / 2},0
-          ${node.width},${node.height / 2}
-          ${node.width / 2},${node.height}
-          0,${node.height / 2}`"
-        :stroke="isSelected
-          ? 'black'
-          : (isExecuting ? 'red' : '#bbb')"
-        fill="white"
-        stroke-width="1"
-      />
-    </template>
-    <template v-else-if="isExit">
-      <circle
-        :r="node.height / 2"
-        :cx="node.width / 2"
-        :cy="node.height / 2"
-        :stroke="isSelected
-          ? 'black'
-          : (isExecuting ? 'red' : '#bbb')"
-        fill="white"
-        stroke-width="1"
-      />
+    <template v-else>
+      <template v-if="isDecision">
+        <polygon
+          :points="`
+            ${node.width / 2},0
+            ${node.width},${node.height / 2}
+            ${node.width / 2},${node.height}
+            0,${node.height / 2}`"
+          :stroke="isSelected
+            ? 'black'
+            : (isExecuting ? 'red' : '#bbb')"
+          fill="white"
+          stroke-width="1"
+        />
+      </template>
+      <template v-else-if="isExit">
+        <circle
+          :r="node.height / 2"
+          :cx="node.width / 2"
+          :cy="node.height / 2"
+          :stroke="isSelected
+            ? 'black'
+            : (isExecuting ? 'red' : '#bbb')"
+          fill="white"
+          stroke-width="1"
+        />
+      </template>
+      <text
+        :y="node.height / 2"
+        font-size="14px"
+        dominant-baseline="middle"
+        text-anchor="middle"
+        style="user-select: none; pointer-events: none;"
+      >
+        <tspan
+          v-for="(d, i) in node.label.split(' ')"
+          :key="i"
+          :x="node.width / 2"
+          :dy="i === 0
+            ? `${-(node.label.split(' ').length - 1) * 0.6}em`
+            : '1.2em'
+          "
+        >
+          {{ d }}
+        </tspan>
+      </text>
     </template>
   </g>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import {
   WorkflowNode,
   WorkflowNodeType,
 } from '@/commons/types';
-import {
-  isNodeProcess,
-  isNodeInteractive,
-  isNodeServerless,
-} from '@/commons/utils';
-import { FlowchartNode } from '../VFlowchart/types';
+import { isNodeProcess } from '@/commons/utils';
+import type { FlowchartNode } from '../VFlowchart/types';
+import VNodeProcess from './VNodeProcess.vue';
 
-export default Vue.extend({
+export default {
   name: 'VNode',
+  components: { VNodeProcess },
   props: {
     node: {
       type: Object as PropType<WorkflowNode & FlowchartNode>,
@@ -131,18 +93,12 @@ export default Vue.extend({
     isExit(): boolean {
       return this.node.type === WorkflowNodeType.Exit;
     },
-    isInteractive(): boolean {
-      return isNodeInteractive(this.node);
-    },
     isInitialization(): boolean {
       return this.node.type === WorkflowNodeType.Initialization;
     },
     isProcess(): boolean {
       return isNodeProcess(this.node);
     },
-    isServerless(): boolean {
-      return isNodeServerless(this.node);
-    },
   },
-});
+};
 </script>

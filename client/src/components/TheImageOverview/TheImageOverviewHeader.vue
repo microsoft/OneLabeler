@@ -17,11 +17,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheImageOverviewHeader',
   components: { VToolbar },
-});
+};
 </script>

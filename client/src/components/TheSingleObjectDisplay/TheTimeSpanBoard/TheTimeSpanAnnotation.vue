@@ -8,11 +8,7 @@
       v-for="(category, i) in categoriesFiltered"
       :key="`slot-${i}`"
       class="my-1"
-      :style="{
-        'height': '40px',
-        'display': 'flex',
-        'align-items': 'center',
-      }"
+      style="height: 40px; display: flex; align-items: center;"
     >
       <span class="subtitle-2 px-2">
         {{ category }}

@@ -42,8 +42,8 @@
             {{ `${nRows} x ${nColumns} layout` }}
           </div>
           <div
+            style="display: grid"
             :style="{
-              display: 'grid',
               'grid-template-rows': `repeat(${maxRows}, ${100/maxRows}%)`,
               'grid-template-columns': `repeat(${maxColumns}, ${100/maxColumns}%)`,
             }"
@@ -74,10 +74,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheProjectionViewHeader',
   components: { VToolbar },
   props: {
@@ -96,5 +96,5 @@ export default Vue.extend({
       maxColumns: 3,
     };
   },
-});
+};
 </script>

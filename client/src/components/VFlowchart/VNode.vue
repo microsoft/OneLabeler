@@ -6,41 +6,54 @@
     @mousedown="$emit('mousedown:node', node, $event)"
     @mouseleave="$emit('leave:node', node)"
   >
-    <!-- The geometric element of the node. -->
+    <!-- The body of the node (excluding ports). -->
     <slot
-      name="node-shape"
+      name="node"
       :node="node"
       :is-selected="isSelected"
     >
-      <rect
-        :width="node.width"
-        :height="node.height"
-        :stroke="isSelected ? 'black' : '#bbb'"
-        fill-opacity="0"
-        stroke-width="1"
-      />
-    </slot>
-
-    <!-- The text label of the node. -->
-    <text
-      :y="node.height / 2"
-      font-size="14px"
-      dominant-baseline="middle"
-      text-anchor="middle"
-      style="user-select: none; pointer-events: none;"
-    >
-      <tspan
-        v-for="(d, i) in node.label.split(' ')"
-        :key="i"
-        :x="node.width / 2"
-        :dy="i === 0
-          ? `${-(node.label.split(' ').length - 1) * 0.6}em`
-          : '1.2em'
-        "
+      <!-- The geometric element of the node. -->
+      <slot
+        name="node:shape"
+        :node="node"
+        :is-selected="isSelected"
       >
-        {{ d }}
-      </tspan>
-    </text>
+        <rect
+          :width="node.width"
+          :height="node.height"
+          :stroke="isSelected ? 'black' : '#bbb'"
+          fill-opacity="0"
+          stroke-width="1"
+        />
+      </slot>
+
+      <!-- The text label of the node. -->
+      <slot
+        name="node:label"
+        :node="node"
+        :is-selected="isSelected"
+      >
+        <text
+          :y="node.height / 2"
+          font-size="14px"
+          dominant-baseline="middle"
+          text-anchor="middle"
+          style="user-select: none; pointer-events: none;"
+        >
+          <tspan
+            v-for="(d, i) in node.label.split(' ')"
+            :key="i"
+            :x="node.width / 2"
+            :dy="i === 0
+              ? `${-(node.label.split(' ').length - 1) * 0.6}em`
+              : '1.2em'
+            "
+          >
+            {{ d }}
+          </tspan>
+        </text>
+      </slot>
+    </slot>
 
     <!-- The ports for linking edges. -->
     <circle
@@ -49,11 +62,7 @@
       :cx="port.dx"
       :cy="port.dy"
       :opacity="isPortActive(port) ? 1 : 0"
-      :stroke="hoveredPort !== null
-        && hoveredPort.nodeId === port.nodeId
-        && hoveredPort.direction === port.direction
-        ? 'red'
-        : '#bbb'"
+      :stroke="isPortHovered(port) ? 'red' : '#bbb'"
       :stroke-width="isPortActive(port) ? 1 : 0"
       fill="white"
       r="4"
@@ -64,14 +73,14 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import type { PropType } from 'vue';
 import {
   PortDirection,
   FlowchartNode,
   FlowchartPort,
 } from './types';
 
-export default Vue.extend({
+export default {
   name: 'VNode',
   props: {
     node: {
@@ -83,10 +92,6 @@ export default Vue.extend({
       default: false,
     },
     isSelected: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-    isDragged: {
       type: Boolean as PropType<boolean>,
       default: false,
     },
@@ -124,18 +129,17 @@ export default Vue.extend({
     },
   },
   methods: {
-    isPortActive(port: FlowchartPort): boolean {
+    isPortHovered(port: FlowchartPort): boolean {
       const { hoveredPort } = this;
-      // If the port is hovered, the port is active.
-      if (hoveredPort !== null
+      return hoveredPort !== null
         && hoveredPort.nodeId === port.nodeId
-        && hoveredPort.direction === port.direction
-      ) {
-        return true;
-      }
+        && hoveredPort.direction === port.direction;
+    },
+    isPortActive(port: FlowchartPort): boolean {
+      // If the port is hovered, the port is active.
       // If the node of the port is hovered, the port is active.
-      return this.isHovered;
+      return this.isPortHovered(port) || this.isHovered;
     },
   },
-});
+};
 </script>

@@ -1,0 +1,232 @@
+<template>
+  <g>
+    <!-- The background of the node. -->
+    <rect
+      :width="node.width"
+      :height="node.height"
+      fill="white"
+    />
+
+    <!-- The node header. -->
+    <rect
+      :width="node.width"
+      :fill="isProcess ? '#8C564B' : '#FF7F0E'"
+      :height="cellSize"
+    />
+
+    <!-- The icons denoting module inputs. -->
+    <g
+      v-for="(input, i) in inputs"
+      :key="`input-${i}`"
+      :transform="`translate(${cellSize * i},0)`"
+    >
+      <g transform="translate(2,2)">
+        <component
+          :is="getIcon(input)"
+          color="white"
+          width="16"
+          height="16"
+        />
+      </g>
+    </g>
+
+    <g color="white">
+      <defs>
+        <marker
+          id="arrow"
+          viewBox="0 -5 10 10"
+          refX="8"
+          refY="0"
+          markerWidth="5"
+          markerHeight="10"
+          orient="auto"
+        >
+          <path
+            d="M0,-5L10,0L0,5"
+            fill="currentcolor"
+          />
+        </marker>
+      </defs>
+      <line
+        v-if="inputs !== undefined && outputs !== undefined"
+        :x1="(inputs.length * cellSize + node.width - outputs.length * cellSize) / 2 - cellSize / 2"
+        :x2="(inputs.length * cellSize + node.width - outputs.length * cellSize) / 2 + cellSize / 2"
+        :y1="cellSize / 2"
+        :y2="cellSize / 2"
+        stroke="currentcolor"
+        stroke-width="1"
+        marker-end="url(#arrow)"
+      />
+    </g>
+
+    <!-- The icon denoting module output. -->
+    <g
+      v-for="(output, i) in outputs"
+      :key="`output-${i}`"
+      :transform="`translate(${node.width - cellSize * (i + 1)},0)`"
+    >
+      <g transform="translate(2,2)">
+        <component
+          :is="getIcon(output)"
+          color="white"
+          width="16"
+          height="16"
+        />
+      </g>
+    </g>
+
+    <template v-if="isInteractive">
+      <!-- icon denoting the node is interactive -->
+      <g :transform="`translate(${0},${node.height - 20})`">
+        <rect
+          width="20"
+          height="20"
+          fill="white"
+          stroke="#bbb"
+          stroke-width="1"
+        />
+        <text
+          x="10"
+          y="15"
+          style="
+            text-anchor: middle;
+            user-select: none;
+            font-family: Font Awesome\ 5 Free;
+            font-weight: 900;
+          "
+        >
+          &#xf233;
+        </text>
+      </g>
+    </template>
+    <template v-if="!isServerless">
+      <!-- icon denoting the node is not serverless -->
+      <g :transform="`translate(${isInteractive ? 20 : 0},${node.height - 20})`">
+        <rect
+          width="20"
+          height="20"
+          fill="white"
+          stroke="#bbb"
+          stroke-width="1"
+        />
+        <text
+          x="10"
+          y="15"
+          style="
+            text-anchor: middle;
+            user-select: none;
+            font-family: Font Awesome\ 5 Free;
+            font-weight: 900;
+          "
+        >
+          &#xf233;
+        </text>
+      </g>
+    </template>
+
+    <text
+      :y="(node.height - cellSize) / 2 + cellSize"
+      font-size="14px"
+      dominant-baseline="middle"
+      text-anchor="middle"
+      style="user-select: none; pointer-events: none;"
+    >
+      <tspan
+        v-for="(d, i) in node.label.split(' ')"
+        :key="i"
+        :x="node.width / 2"
+        :dy="i === 0
+          ? `${-(node.label.split(' ').length - 1) * 0.6}em`
+          : '1.2em'
+        "
+      >
+        {{ d }}
+      </tspan>
+    </text>
+
+    <!-- The boundary of the node. -->
+    <rect
+      :width="node.width"
+      :height="node.height"
+      :stroke="isSelected
+        ? 'black'
+        : (isExecuting ? 'red' : '#bbb')"
+      fill="none"
+      stroke-width="1"
+    />
+  </g>
+</template>
+
+<script lang="ts">
+import type { PropType, VueConstructor } from 'vue';
+import { WorkflowNode } from '@/commons/types';
+import {
+  isNodeProcess,
+  isNodeInteractive,
+  isNodeServerless,
+} from '@/commons/utils';
+import IconDataObjects from '@/plugins/icons/IconDataObjects.vue';
+import IconFeatureRepresentations from '@/plugins/icons/IconFeatureRepresentations.vue';
+import IconLabels from '@/plugins/icons/IconLabels.vue';
+import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
+import IconModel from '@/plugins/icons/IconModel.vue';
+import IconSamples from '@/plugins/icons/IconSamples.vue';
+import IconStop from '@/plugins/icons/IconStop.vue';
+import type { FlowchartNode } from '../VFlowchart/types';
+
+export default {
+  name: 'VNodeProcess',
+  props: {
+    node: {
+      type: Object as PropType<WorkflowNode & FlowchartNode>,
+      default: null,
+    },
+    /** Whether the node is currently executed. */
+    isExecuting: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    /** Whether the node is selected in the interface. */
+    isSelected: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+  },
+  data() {
+    return { cellSize: 20 };
+  },
+  computed: {
+    isInteractive(): boolean {
+      return isNodeInteractive(this.node);
+    },
+    isProcess(): boolean {
+      return isNodeProcess(this.node);
+    },
+    isServerless(): boolean {
+      return isNodeServerless(this.node);
+    },
+    inputs(): string[] {
+      const { node } = this;
+      return node === null ? [] : node.value?.inputs;
+    },
+    outputs(): string[] {
+      const { node } = this;
+      return node === null ? [] : node.value?.outputs;
+    },
+  },
+  methods: {
+    getIcon(input: string): VueConstructor | null {
+      const map: Record<string, VueConstructor> = {
+        dataObjects: IconDataObjects,
+        labels: IconLabels,
+        features: IconFeatureRepresentations,
+        model: IconModel,
+        samples: IconSamples,
+        categories: IconLabelSpace,
+        stop: IconStop,
+      };
+      return input in map ? map[input] : null;
+    },
+  },
+};
+</script>

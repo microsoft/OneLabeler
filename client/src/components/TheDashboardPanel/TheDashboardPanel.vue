@@ -17,7 +17,7 @@
         icon
         tile
         small
-        @click="onClickClose"
+        @click="$emit('click:close')"
       >
         <v-icon
           aria-hidden="true"
@@ -57,11 +57,6 @@ export default Vue.extend({
     ...mapGetters('workflow', ['labelTasks']),
     containsClassification(): boolean {
       return (this.labelTasks as LabelTaskType[]).includes(LabelTaskType.Classification);
-    },
-  },
-  methods: {
-    onClickClose(): void {
-      this.$emit('click:close');
     },
   },
 });

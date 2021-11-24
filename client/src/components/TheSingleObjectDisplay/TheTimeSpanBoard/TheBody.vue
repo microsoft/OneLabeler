@@ -99,9 +99,7 @@ export default Vue.extend({
       return this.labelTasks.includes(LabelTaskType.SpanClassification);
     },
     component(): VueConstructor | null {
-      const { dataType } = this;
-      const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
-      return dataTypeSetup?.display ?? null;
+      return dataTypeSetups.find((d) => d.type === this.dataType)?.display ?? null;
     },
     spans(): ILabelTimeSpan[] | null {
       return this.label?.spans ?? null;

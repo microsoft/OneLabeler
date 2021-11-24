@@ -37,11 +37,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import TheDataManagementView from './TheDataManagementView.vue';
 
-export default Vue.extend({
+export default {
   name: 'TheDashboardPanel',
   components: { TheDataManagementView },
-});
+};
 </script>

@@ -2,9 +2,9 @@ import Vue from 'vue';
 import Vuetify, { VuetifyPreset } from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import '@fortawesome/fontawesome-free/css/all.css';
-import IconDotCircle from '@/plugins/IconDotCircle.vue';
-import IconDrawPolygon from '@/plugins/IconDrawPolygon.vue';
-import IconDrawSquare from '@/plugins/IconDrawSquare.vue';
+import IconDotCircle from '@/plugins/icons/IconDotCircle.vue';
+import IconDrawPolygon from '@/plugins/icons/IconDrawPolygon.vue';
+import IconDrawSquare from '@/plugins/icons/IconDrawSquare.vue';
 
 Vue.use(Vuetify);
 

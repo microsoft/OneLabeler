@@ -19,10 +19,9 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapActions, mapState } from 'vuex';
 
-export default Vue.extend({
+export default {
   name: 'TheMessageView',
   data() {
     return {
@@ -34,18 +33,18 @@ export default Vue.extend({
     ...mapState(['message']),
   },
   watch: {
-    message() {
+    message(): void {
       if (this.message === null) return;
       this.snackbar = true;
     },
   },
   methods: {
     ...mapActions(['setMessage']),
-    onUpdate(snackbar: boolean) {
+    onUpdate(snackbar: boolean): void {
       if (snackbar === false) {
         this.setMessage(null);
       }
     },
   },
-});
+};
 </script>

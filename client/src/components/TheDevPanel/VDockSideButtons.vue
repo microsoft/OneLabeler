@@ -76,15 +76,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { Icon } from '@iconify/vue2';
 import { DockSideType } from '@/commons/types';
 
-export default Vue.extend({
+export default {
   name: 'VDockSideButtons',
   components: { Icon },
   data() {
     return { DockSideType };
   },
-});
+};
 </script>

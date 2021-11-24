@@ -11,6 +11,13 @@ import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
 
+const MARGIN_LEFT = 20;
+const MARGIN_TOP = 20;
+const NODE_WIDTH = 120;
+const NODE_HEIGHT = 80;
+const NODE_PADDING_X = 40;
+const NODE_PADDING_Y = 20;
+
 export default parseWorkflow({
   label: 'Webpage Classification',
   nodes: [
@@ -21,7 +28,7 @@ export default parseWorkflow({
         dataType: DataType.Webpage,
         labelTasks: [LabelTaskType.Classification],
       },
-      layout: { x: 40, y: 40 },
+      layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
       label: 'random sampling',
@@ -29,7 +36,10 @@ export default parseWorkflow({
       value: [merge(cloneDeep(DOSRandom), {
         params: { nBatch: { value: 2 } },
       })],
-      layout: { x: 160, y: 40 },
+      layout: {
+        x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
+      },
     },
     {
       label: 'grid matrix',
@@ -40,23 +50,35 @@ export default parseWorkflow({
           nColumns: { value: 2 },
         },
       })],
-      layout: { x: 280, y: 40 },
+      layout: {
+        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
+      },
     },
     {
       label: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
       value: SAAllChecked,
-      layout: { x: 400, y: 40 },
+      layout: {
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP,
+      },
     },
     {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
-      layout: { x: 400, y: 130 },
+      layout: {
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
     {
       label: 'exit',
       type: WorkflowNodeType.Exit,
-      layout: { x: 410, y: 220 },
+      layout: {
+        x: MARGIN_LEFT + 20 + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + 2 * (NODE_HEIGHT + NODE_PADDING_Y),
+      },
     },
   ],
   edges: [
