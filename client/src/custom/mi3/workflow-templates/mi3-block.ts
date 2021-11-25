@@ -36,14 +36,14 @@ export default parseWorkflow({
     {
       label: 'active learning',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [merge(cloneDeep(DOSEntropyDiversityDensity), {
+      value: merge(cloneDeep(DOSEntropyDiversityDensity), {
         params: {
           nBatch: {
             value: 16,
             options: [{ value: 16, label: '16' }],
           },
         },
-      })],
+      }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -79,7 +79,7 @@ export default parseWorkflow({
     {
       label: 'overview',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [DOSImageOverview],
+      value: DOSImageOverview,
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -88,7 +88,7 @@ export default parseWorkflow({
     {
       label: 'grid matrix',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: [merge(cloneDeep(ILGridMatrix), {
+      value: merge(cloneDeep(ILGridMatrix), {
         params: {
           nRows: {
             value: 4,
@@ -99,7 +99,7 @@ export default parseWorkflow({
             options: [{ value: 4, label: '4' }],
           },
         },
-      })],
+      }),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

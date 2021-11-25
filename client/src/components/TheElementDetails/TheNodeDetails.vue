@@ -25,9 +25,8 @@ import type {
   Process,
   WorkflowNode,
 } from '@/commons/types';
-import TheNodeDetailsMulti from './TheNodeDetailsMulti.vue';
 import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
-import TheNodeDetailsSingle from './TheNodeDetailsSingle.vue';
+import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
@@ -51,14 +50,14 @@ export default {
     component(): VueConstructor {
       const { node } = this;
       const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsMulti,
+        [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsModule,
         [WorkflowNodeType.Decision]: TheNodeDetailsDecision,
-        [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsSingle,
-        [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsSingle,
-        [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsMulti,
-        [WorkflowNodeType.ModelTraining]: TheNodeDetailsSingle,
-        [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsSingle,
-        [WorkflowNodeType.Custom]: TheNodeDetailsSingle,
+        [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsModule,
+        [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsModule,
+        [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsModule,
+        [WorkflowNodeType.ModelTraining]: TheNodeDetailsModule,
+        [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsModule,
+        [WorkflowNodeType.Custom]: TheNodeDetailsModule,
         [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
         [WorkflowNodeType.Exit]: TheNodeDetailsExit,
       } as Partial<Record<WorkflowNodeType, VueConstructor>>;
@@ -150,8 +149,7 @@ export default {
       } as Record<WorkflowNodeType, ProcessType>;
       if (!(node.type in mapper)) return [];
       const processType = mapper[node.type];
-      return (this.methods as Process[])
-        .filter((d) => d.type === processType);
+      return this.methods.filter((d) => d.type === processType);
     },
     modelsFiltered(): ModelService[] | null {
       const { node } = this;

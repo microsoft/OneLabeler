@@ -47,9 +47,9 @@ export default parseWorkflow({
     {
       label: 'clustering',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [merge(cloneDeep(DOSCluster), {
+      value: merge(cloneDeep(DOSCluster), {
         params: { nBatch: { value: 16 } },
-      })],
+      }),
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -86,7 +86,7 @@ export default parseWorkflow({
     {
       label: 'projection',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [DOSProjection],
+      value: DOSProjection,
       layout: {
         x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -123,12 +123,12 @@ export default parseWorkflow({
     {
       label: 'grid matrix',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: [merge(cloneDeep(ILGridMatrix), {
+      value: merge(cloneDeep(ILGridMatrix), {
         params: {
           nRows: { value: 4 },
           nColumns: { value: 4 },
         },
-      })],
+      }),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

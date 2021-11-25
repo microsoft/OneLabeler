@@ -2,7 +2,7 @@
   <!-- The method used to instantiated the process. -->
   <div style="display: flex; align-items: center;">
     <div style="flex: 1 1 40%;">
-      <VNodeSelectMethodSingle
+      <VNodeSelectMethod
         :title="label"
         :selected-method="service"
         :menu="menuOfServices"
@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import VNodeSelectMethodSingle from '../TheElementDetails/VNodeSelectMethodSingle.vue';
+import VNodeSelectMethod from '../TheElementDetails/VNodeSelectMethod.vue';
 
 interface IService {
   api: string;
@@ -47,7 +47,7 @@ interface IService {
 
 export default {
   name: 'VEditableService',
-  components: { VNodeSelectMethodSingle },
+  components: { VNodeSelectMethod },
   props: {
     label: {
       type: String,

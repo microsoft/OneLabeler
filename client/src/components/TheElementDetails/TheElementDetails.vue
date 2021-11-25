@@ -41,6 +41,7 @@ export default {
       type: Array as PropType<ModelService[]>,
       default: () => [],
     },
+    /** The list of selected nodes and edges. */
     selection: {
       type: Array as PropType<(WorkflowNode | WorkflowEdge)[]>,
       default: () => [],

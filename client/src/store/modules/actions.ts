@@ -127,21 +127,17 @@ export const updatedTaskWindowsByNodes = (
   const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
   const updatedTaskWindows: TaskWindow[] = [];
   nodesWithInterface.forEach((node) => {
-    const processes = Array.isArray(node.value)
-      ? node.value as Process[]
-      : [node.value as Process];
-    processes.forEach((process) => {
-      if (process.isAlgorithmic) return;
-      // Check if the task window is already created.
-      const match = taskWindows.find((d) => (
-        d.node.id === node.id && d.process.id === process.id
-      ));
-      updatedTaskWindows.push({
-        node,
-        process,
-        isPinned: match?.isPinned ?? false,
-        isMinimized: match?.isMinimized ?? false,
-      });
+    const process = node.value as Process;
+    if (process.isAlgorithmic) return;
+    // Check if the task window is already created.
+    const match = taskWindows.find((d) => (
+      d.node.id === node.id && d.process.id === process.id
+    ));
+    updatedTaskWindows.push({
+      node,
+      process,
+      isPinned: match?.isPinned ?? false,
+      isMinimized: match?.isMinimized ?? false,
     });
   });
   commit(types.SET_TASK_WINDOWS, updatedTaskWindows);

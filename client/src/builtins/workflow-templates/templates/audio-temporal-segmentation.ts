@@ -33,7 +33,7 @@ export default parseWorkflow({
     {
       label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
-      value: [merge(cloneDeep(DOSRandom), {
+      value: merge(cloneDeep(DOSRandom), {
         params: {
           nBatch: {
             value: 1,
@@ -44,7 +44,7 @@ export default parseWorkflow({
             ],
           },
         },
-      })],
+      }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -53,7 +53,7 @@ export default parseWorkflow({
     {
       label: 'single object display',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: [ILSingleObjectDisplay],
+      value: ILSingleObjectDisplay,
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,

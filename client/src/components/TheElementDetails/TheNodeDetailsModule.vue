@@ -27,7 +27,7 @@
 
     <!-- The method used to instantiated the process. -->
     <div class="py-2 px-4">
-      <VNodeSelectMethodSingle
+      <VNodeSelectMethod
         :selected-method="method"
         :menu="menuOfMethods"
         append-create-option
@@ -57,14 +57,14 @@ import type {
   WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableLabel from './VNodeEditableLabel.vue';
-import VNodeSelectMethodSingle from './VNodeSelectMethodSingle.vue';
+import VNodeSelectMethod from './VNodeSelectMethod.vue';
 import VMethod from './VMethod.vue';
 
 export default {
-  name: 'TheNodeDetailsSingle',
+  name: 'TheNodeDetailsModule',
   components: {
     VNodeEditableLabel,
-    VNodeSelectMethodSingle,
+    VNodeSelectMethod,
     VMethod,
   },
   props: {

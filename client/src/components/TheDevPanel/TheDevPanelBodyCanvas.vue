@@ -239,9 +239,9 @@ export default {
       const valueMapper = {
         [WorkflowNodeType.Initialization]: { dataType: null, labelTasks: [] },
         [WorkflowNodeType.FeatureExtraction]: null,
-        [WorkflowNodeType.DataObjectSelection]: [],
+        [WorkflowNodeType.DataObjectSelection]: null,
         [WorkflowNodeType.DefaultLabeling]: null,
-        [WorkflowNodeType.InteractiveLabeling]: [],
+        [WorkflowNodeType.InteractiveLabeling]: null,
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
         [WorkflowNodeType.Custom]: null,

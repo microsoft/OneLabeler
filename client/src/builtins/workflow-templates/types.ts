@@ -27,7 +27,6 @@ export type WorkflowNode = {
   label: string;
   type: WorkflowNodeType;
   value: Process // for node with a single instantiation
-    | Process[] // for node with multiple concurrent instantiations
     | InitializationParams // for initialization node
     | null // for node with a single instantiation not yet chosen
     | undefined; // for decision and exit nodes

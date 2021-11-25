@@ -480,27 +480,23 @@ export const executeModelTraining = showProgressBar(async (
 
   const { nodes } = state;
   nodes.filter((d) => isProcessNode(d))
-    .forEach((d) => {
-      const nodeMethods = Array.isArray(d.value)
-        ? d.value as Process[]
-        : [d.value as Process];
-      nodeMethods.forEach(async (nodeMethod) => {
-        if (!nodeMethod.isModelBased) return;
-        const model = nodeMethod.model as ModelService;
+    .forEach(async (d) => {
+      const nodeMethod = d.value as Process;
+      if (!nodeMethod.isModelBased) return;
+      const model = nodeMethod.model as ModelService;
 
-        try {
-          (await API.modelTraining(
-            method,
-            model,
-            unlabeledMark,
-            dataObjects,
-            labels,
-            statuses,
-          ));
-        } catch (e) {
-          handleAlgorithmServiceError(e, commit);
-        }
-      });
+      try {
+        (await API.modelTraining(
+          method,
+          model,
+          unlabeledMark,
+          dataObjects,
+          labels,
+          statuses,
+        ));
+      } catch (e) {
+        handleAlgorithmServiceError(e, commit);
+      }
     });
 });
 
@@ -554,15 +550,9 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.Decision) {
     const { stop } = rootState;
-    if (stop) {
-      [outputNode] = getOutputNodes(
-        node, nodes, edges.filter((d) => d.condition === true),
-      );
-    } else {
-      [outputNode] = getOutputNodes(
-        node, nodes, edges.filter((d) => d.condition === false),
-      );
-    }
+    [outputNode] = getOutputNodes(
+      node, nodes, edges.filter((d) => d.condition === stop),
+    );
   }
 
   if (node.type === WorkflowNodeType.LabelIdeation) {
@@ -576,20 +566,10 @@ export const executeWorkflow = async (
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
-    const algorithmicMethod = (node.value as Process[])
-      .find((d) => d.isAlgorithmic);
-    if (algorithmicMethod !== undefined) {
-      await executeDataObjectSelectionAlgorithmic(store, algorithmicMethod);
+    if ((node.value as Process).isAlgorithmic) {
+      await executeDataObjectSelectionAlgorithmic(store, node.value as Process);
     }
-    /*
-    const interactiveMethod = (node.value as Process[])
-      .find((d) => !d.isAlgorithmic);
-    if (interactiveMethod !== undefined) {
-      return;
-    }
-    */
     [outputNode] = getOutputNodes(node, nodes, edges);
-    // commit(types.SET_CURRENT_NODE, outputNode);
   }
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {

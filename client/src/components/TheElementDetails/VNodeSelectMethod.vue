@@ -81,7 +81,7 @@ interface MethodMenu {
 }
 
 export default {
-  name: 'VNodeSelectMethodSingle',
+  name: 'VNodeSelectMethod',
   props: {
     selectedMethod: {
       type: Object as PropType<IMethod | null>,
