@@ -80,6 +80,7 @@ export const defaultLabeling = async (
   let labels: Partial<ILabel>[];
 
   try {
+    if (method.api === undefined) throw new Error('Method API undefined.');
     const data = (await axios.post(
       method.api,
       JSON.stringify({

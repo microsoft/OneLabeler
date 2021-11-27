@@ -5,7 +5,7 @@ export default {
   label: 'Random (Dummy)',
   id: 'Random-73417867',
   inputs: ['labels'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

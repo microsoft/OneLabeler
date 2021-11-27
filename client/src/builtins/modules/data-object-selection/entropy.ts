@@ -6,7 +6,7 @@ export default {
   label: 'Entropy (Active Learning)',
   id: 'Entropy-49394355',
   inputs: ['features', 'labels', 'model'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

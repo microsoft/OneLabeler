@@ -26,10 +26,11 @@ export type WorkflowNode = {
   id: string;
   label: string;
   type: WorkflowNodeType;
-  value: Process // for node with a single instantiation
-    | InitializationParams // for initialization node
-    | null // for node with a single instantiation not yet chosen
-    | undefined; // for decision and exit nodes
+  value: Process // for node with an instantiation chosen
+    | (InitializationParams & { inputs: [], outputs: string[] }) // for initialization node
+    | null // for node with its instantiation not yet chosen
+    | { inputs: ['stop'], outputs: [] } // for decision nodes and exit nodes
+    | { inputs: [], outputs: [] }; // for exit nodes
   layout: {
     x: number;
     y: number;
@@ -46,7 +47,9 @@ export enum PortDirection {
 }
 
 export type WorkflowEdge = {
+  // The id of the source node.
   source: string;
+  // The id of the target node.
   target: string;
   id: string;
   condition?: boolean;

@@ -5,7 +5,7 @@ export default {
   label: 'Overview (User Sampling)',
   id: 'ImageOverview',
   inputs: ['dataObjects', 'labels'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: false,
   isBuiltIn: true,
   isModelBased: false,

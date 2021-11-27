@@ -15,7 +15,7 @@
     </div>
     <div style="overflow-y: scroll;">
       <div
-        v-for="(notification, i) in notifications"
+        v-for="(notification, i) in consoleMessages"
         :key="i"
         :style="{
           color: {
@@ -60,11 +60,8 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import {
-  Notification,
-  validateWorkflow,
-  validateInstantiations,
-} from '@/commons/graph-validate';
+import { mapGetters } from 'vuex';
+import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import type { WorkflowGraph } from '@/commons/types';
 
 export default {
@@ -76,37 +73,22 @@ export default {
     },
   },
   computed: {
-    notifications(): Notification[] {
-      const notificationsWorkflow = validateWorkflow(this.graph);
-      const notificationsInstantiations = validateInstantiations(this.graph);
-      const notifications = [
-        ...notificationsWorkflow,
-        ...notificationsInstantiations,
-      ];
-      if (notifications.length === 0) {
-        return [{
-          subject: null,
-          message: '🚀 The workflow is valid',
-          type: 'Success',
-        }];
-      }
-      return notifications;
-    },
+    ...mapGetters('workflow', ['consoleMessages']),
   },
   methods: {
-    onClickMessage(notification: Notification): void {
-      const { subject } = notification;
-      if (subject === null) return;
+    onClickMessage(notification: LintMessage): void {
+      const { subjects } = notification;
+      if (subjects.length === 0) return;
       if (this.isSubjectNode(notification)) {
-        this.$emit('select:nodes', [subject.id]);
+        this.$emit('select:nodes', subjects.map((d) => d.id));
       } else {
-        this.$emit('select:edges', [subject.id]);
+        this.$emit('select:edges', subjects.map((d) => d.id));
       }
     },
-    isSubjectNode(notification: Notification): boolean {
-      const { subject } = notification;
-      if (subject === null) return false;
-      if ('source' in subject) return false;
+    isSubjectNode(notification: LintMessage): boolean {
+      const { subjects } = notification;
+      if (subjects.length === 0) return false;
+      if ('source' in subjects[0]) return false;
       return true;
     },
   },

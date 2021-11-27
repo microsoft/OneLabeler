@@ -1,3 +1,4 @@
+import type { VueConstructor } from 'vue';
 import type { DataType } from '@/builtins/data-types/types';
 import type { LabelTaskType } from '@/builtins/label-task-types/types';
 
@@ -41,6 +42,8 @@ export interface Process {
   outputs: string[];
   // For serverless methods, the api is the method's unique key.
   api?: string;
+
+  // The properties of the module.
   isAlgorithmic: boolean;
   isBuiltIn: boolean;
   isModelBased: boolean;
@@ -51,7 +54,13 @@ export interface Process {
   // The restriction on label tasks that the process can handle.
   // If not given, the process is regarded agnostic of label tasks.
   labelTasks?: LabelTaskType[];
+
   model?: ModelService;
   params?: MethodParams;
+
+  /** The implementation of algorithm module. */
   run?: (inputs: Record<string, unknown>) => Promise<void | Record<string, unknown>>;
+
+  /** The implementation of interface module. */
+  render?: VueConstructor;
 }

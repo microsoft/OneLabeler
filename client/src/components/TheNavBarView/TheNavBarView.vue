@@ -446,9 +446,9 @@ export default {
       );
     },
     onClickWorkflowButton(): void {
-      const updatedDockSide = this.dockSide === DockSideType.HIDE
-        ? DockSideType.WINDOW
-        : DockSideType.HIDE;
+      const updatedDockSide = this.dockSide === DockSideType.Hide
+        ? DockSideType.Window
+        : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
     },
   },

@@ -1,4 +1,4 @@
-import { WorkflowNodeType } from '@/commons/types';
+import { InitializationParams, WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
 import type { TrimmedProcess } from './parse-process';
 import { parseProcess } from './parse-process';
@@ -65,23 +65,38 @@ const parseNodeLayout = (
   };
 };
 
-const parseNodeValue = (
+export const parseNodeValue = (
   value: TrimmedNode['value'],
   node: TrimmedNode,
 ): WorkflowNode['value'] => {
-  if (
-    node.type === WorkflowNodeType.Decision
-    || node.type === WorkflowNodeType.Exit
-    || node.type === WorkflowNodeType.Initialization
-  ) return value;
+  if (node.type === WorkflowNodeType.Exit) {
+    return {
+      inputs: [],
+      outputs: [],
+      ...value,
+    };
+  }
+
+  if (node.type === WorkflowNodeType.Decision) {
+    return {
+      inputs: ['stop'],
+      outputs: [],
+      ...value,
+    };
+  }
+
+  if (node.type === WorkflowNodeType.Initialization) {
+    return {
+      inputs: [],
+      outputs: ['dataObjects', 'labels'],
+      ...value as InitializationParams,
+    };
+  }
 
   if (value === null || value === undefined) {
     throw new Error(`node value empty: node = ${node}`);
   }
 
-  if (Array.isArray(value)) {
-    return value.map((d: TrimmedProcess) => parseProcess(d, node));
-  }
   return parseProcess(value as TrimmedProcess, node);
 };
 

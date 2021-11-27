@@ -83,7 +83,7 @@ export default {
           'labels',
           'features',
           'model',
-          'samples',
+          'queryUuids',
         ],
         [WorkflowNodeType.DefaultLabeling]: [
           'dataObjects',
@@ -92,7 +92,7 @@ export default {
           'model',
         ],
         [WorkflowNodeType.FeatureExtraction]: ['dataObjects', 'labels'],
-        [WorkflowNodeType.InteractiveLabeling]: ['dataObjects', 'samples'],
+        [WorkflowNodeType.InteractiveLabeling]: ['dataObjects', 'queryUuids'],
         [WorkflowNodeType.ModelTraining]: [
           'model',
           'features',
@@ -107,7 +107,7 @@ export default {
         [WorkflowNodeType.Custom]: [
           'dataObjects',
           'labels',
-          'samples',
+          'queryUuids',
           'features',
           'model',
           'stop',
@@ -118,7 +118,7 @@ export default {
     moduleOutputs(): string[] {
       const { node } = this;
       const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: ['samples'],
+        [WorkflowNodeType.DataObjectSelection]: ['queryUuids'],
         [WorkflowNodeType.DefaultLabeling]: ['labels'],
         [WorkflowNodeType.FeatureExtraction]: ['features'],
         [WorkflowNodeType.InteractiveLabeling]: ['labels'],
@@ -127,7 +127,7 @@ export default {
         [WorkflowNodeType.Custom]: [
           'dataObjects',
           'labels',
-          'samples',
+          'queryUuids',
           'features',
           'model',
           'stop',
@@ -184,7 +184,7 @@ export default {
           ...method,
           type: ProcessType.DataObjectSelection,
           inputs: ['labels'],
-          outputs: ['samples'],
+          outputs: ['queryUuids'],
         };
       }
       if (nodeType === WorkflowNodeType.DefaultLabeling) {

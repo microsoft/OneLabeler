@@ -5,7 +5,7 @@ export default {
   label: 'DatasetOrder (Dummy)',
   id: 'DatasetOrder',
   inputs: ['labels'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: false,

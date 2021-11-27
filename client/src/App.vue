@@ -1,36 +1,19 @@
 <template>
   <v-app>
     <div
+      style="flex: 1 1 auto; display: flex;"
       :style="{
-        flex: '1 1 auto',
-        display: 'flex',
-        'flex-direction': dockSide === DockSideType.BOTTOM ? 'column' : 'row',
+        'flex-direction': {
+          [DockSideType.Bottom]: 'column',
+          [DockSideType.Left]: 'row-reverse',
+          [DockSideType.Right]: 'row',
+        }[dockSide],
       }"
     >
-      <template v-if="dockSide === DockSideType.WINDOW">
-        <v-dialog
-          :value="true"
-          persistent
-          width="fit-content"
-          content-class="rounded-0"
-        >
-          <TheDevPanel
-            style="height: 600px; width: 1700px;"
-            @click:close="onClickClosePanel"
-          />
-        </v-dialog>
-      </template>
-      <template v-if="dockSide === DockSideType.LEFT">
-        <TheDevPanel
-          style="flex: 1 1 50%"
-          @click:close="onClickClosePanel"
-        />
-        <v-divider
-          style="border-width: 2px;"
-          vertical
-        />
-      </template>
-      <div style="flex: 1 1 50%; display: flex; flex-direction: column;">
+      <div
+        style="flex: 1 1 50%; display: flex; flex-direction: column;"
+        :style="dockSide === DockSideType.FullScreen ? 'display: none' : null"
+      >
         <TheNavBarView />
         <div
           class="windows-container"
@@ -47,20 +30,25 @@
         <TheFooterView />
         <TheMessageView />
       </div>
-      <template v-if="dockSide === DockSideType.BOTTOM">
-        <v-divider
-          style="border-width: 2px;"
-          horizontal
-        />
-        <TheDevPanel
-          style="flex: 1 1 50%"
-          @click:close="onClickClosePanel"
-        />
+      <template v-if="dockSide === DockSideType.Window">
+        <v-dialog
+          :value="true"
+          persistent
+          width="fit-content"
+          content-class="rounded-0"
+        >
+          <TheDevPanel
+            style="height: 600px; width: 1700px;"
+            @click:close="onClickClosePanel"
+          />
+        </v-dialog>
       </template>
-      <template v-if="dockSide === DockSideType.RIGHT">
+      <template v-else-if="dockSide !== DockSideType.Hide">
         <v-divider
+          v-if="dockSide !== DockSideType.FullScreen"
           style="border-width: 2px;"
-          vertical
+          :horizontal="dockSide === DockSideType.Bottom"
+          :vertical="dockSide === DockSideType.Right || dockSide === DockSideType.Left"
         />
         <TheDevPanel
           style="flex: 1 1 50%"
@@ -120,7 +108,7 @@ export default {
       return null;
     },
     onClickClosePanel(): void {
-      this.setDockSide(DockSideType.HIDE);
+      this.setDockSide(DockSideType.Hide);
     },
   },
 };

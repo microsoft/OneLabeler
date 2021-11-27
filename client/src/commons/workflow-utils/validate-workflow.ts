@@ -89,7 +89,7 @@ const schema: JSONSchemaType<TrimmedWorkflow> = {
   additionalProperties: false,
 };
 
-/** Validate the schema of the json. */
+/** Validate the schema of the json storing the workflow. */
 const validate = ajv.compile(schema);
 
 export default validate;

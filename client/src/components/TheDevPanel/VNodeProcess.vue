@@ -10,8 +10,8 @@
     <!-- The node header. -->
     <rect
       :width="node.width"
-      :fill="isProcess ? '#8C564B' : '#FF7F0E'"
       :height="cellSize"
+      :fill="isProcess ? '#8C564B' : '#FF7F0E'"
     />
 
     <!-- The icons denoting module inputs. -->
@@ -90,6 +90,7 @@
       />
       <component
         :is="icon"
+        color="#bbb"
         :width="cellSize"
         :height="cellSize"
       />
@@ -119,9 +120,7 @@
     <rect
       :width="node.width"
       :height="node.height"
-      :stroke="isSelected
-        ? 'black'
-        : (isExecuting ? 'red' : '#bbb')"
+      :stroke="isSelected ? 'black' : '#bbb'"
       fill="none"
       stroke-width="1"
     />
@@ -202,7 +201,7 @@ export default {
         labels: IconLabels,
         features: IconFeatureRepresentations,
         model: IconModel,
-        samples: IconSamples,
+        queryUuids: IconSamples,
         categories: IconLabelSpace,
         stop: IconStop,
       };

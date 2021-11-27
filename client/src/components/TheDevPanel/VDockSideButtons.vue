@@ -6,7 +6,7 @@
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.WINDOW)"
+      @click="$emit('set:dock-side', DockSideType.Window)"
     >
       <Icon
         icon="mdi:dock-window"
@@ -20,7 +20,7 @@
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.LEFT)"
+      @click="$emit('set:dock-side', DockSideType.Left)"
     >
       <Icon
         icon="mdi:dock-left"
@@ -34,7 +34,7 @@
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.BOTTOM)"
+      @click="$emit('set:dock-side', DockSideType.Bottom)"
     >
       <Icon
         icon="mdi:dock-bottom"
@@ -48,7 +48,7 @@
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.RIGHT)"
+      @click="$emit('set:dock-side', DockSideType.Right)"
     >
       <Icon
         icon="mdi:dock-right"
@@ -57,12 +57,28 @@
     </v-btn>
 
     <v-btn
+      title="Full Screen"
+      color="white"
+      icon
+      tile
+      small
+      @click="$emit('set:dock-side', DockSideType.FullScreen)"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.fullScreen
+      </v-icon>
+    </v-btn>
+
+    <v-btn
       title="Close"
       color="white"
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.HIDE)"
+      @click="$emit('set:dock-side', DockSideType.Hide)"
     >
       <v-icon
         aria-hidden="true"

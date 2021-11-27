@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import type { PropType } from 'vue';
-import VNodeSelectMethod from '../TheElementDetails/VNodeSelectMethod.vue';
+import VNodeSelectMethod from '@/components/TheElementDetails/VNodeSelectMethod.vue';
 
 interface IService {
   api: string;

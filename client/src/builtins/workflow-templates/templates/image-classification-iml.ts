@@ -4,7 +4,6 @@ import {
   DataType,
   LabelTaskType,
   PortDirection,
-  ProcessType,
   WorkflowNodeType,
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
@@ -15,6 +14,7 @@ import FEImageSvd from '@/builtins/modules/feature-extraction/image-svd';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
 import MTRetrain from '@/builtins/modules/model-training/retrain';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
+import DLModelPrediction from '@/builtins/modules/default-labeling/model-prediction';
 
 const MARGIN_LEFT = 20;
 const MARGIN_TOP = 20;
@@ -22,6 +22,15 @@ const NODE_WIDTH = 120;
 const NODE_HEIGHT = 80;
 const NODE_PADDING_X = 40;
 const NODE_PADDING_Y = 20;
+
+const model = {
+  type: 'DecisionTree',
+  label: 'DecisionTree (Supervised)',
+  objectId: (new ObjectId('DecisionTree')).toHexString(),
+  isBuiltIn: true,
+  isServerless: false,
+  isValidSampler: false,
+};
 
 export default parseWorkflow({
   label: 'Image Classification with IML',
@@ -32,6 +41,7 @@ export default parseWorkflow({
       value: {
         dataType: DataType.Image,
         labelTasks: [LabelTaskType.Classification],
+        outputs: ['dataObjects', 'labels', 'model'],
       },
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
@@ -59,25 +69,7 @@ export default parseWorkflow({
       id: 'decision tree prelabel - 1',
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
-      value: {
-        type: ProcessType.DefaultLabeling,
-        label: 'ModelPrediction',
-        id: 'ModelPrediction-29967546',
-        inputs: ['features', 'model'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: true,
-        isServerless: false,
-        model: {
-          type: 'DecisionTree',
-          label: 'DecisionTree (Supervised)',
-          objectId: (new ObjectId('DecisionTree')).toHexString(),
-          isBuiltIn: true,
-          isServerless: false,
-          isValidSampler: false,
-        },
-        api: 'http://localhost:8005/defaultLabels/ModelPrediction',
-      },
+      value: cloneDeep({ ...DLModelPrediction, model }),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -96,25 +88,7 @@ export default parseWorkflow({
       id: 'decision tree prelabel - 2',
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
-      value: {
-        type: ProcessType.DefaultLabeling,
-        label: 'ModelPrediction',
-        id: 'ModelPrediction-29967546',
-        inputs: ['features', 'model'],
-        isAlgorithmic: true,
-        isBuiltIn: true,
-        isModelBased: true,
-        isServerless: false,
-        model: {
-          type: 'DecisionTree',
-          label: 'DecisionTree (Supervised)',
-          objectId: (new ObjectId('DecisionTree')).toHexString(),
-          isBuiltIn: true,
-          isServerless: false,
-          isValidSampler: false,
-        },
-        api: 'http://localhost:8005/defaultLabels/ModelPrediction',
-      },
+      value: cloneDeep({ ...DLModelPrediction, model }),
       layout: {
         x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
@@ -162,7 +136,7 @@ export default parseWorkflow({
     {
       label: 'model training',
       type: WorkflowNodeType.ModelTraining,
-      value: MTRetrain,
+      value: cloneDeep({ ...MTRetrain, model }),
       layout: {
         x: MARGIN_LEFT,
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

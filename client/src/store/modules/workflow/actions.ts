@@ -206,14 +206,14 @@ export const executeCustom = showProgressBar(async (
 
   const requireDataObjects = method.inputs.includes('dataObjects');
   const requireLabels = method.inputs.includes('labels');
-  const requireSamples = method.inputs.includes('samples') || method.inputs.includes('queryUuids');
+  const requireQueryUuids = method.inputs.includes('queryUuids');
   const requireCategories = method.inputs.includes('categories');
   const requireModel = method.inputs.includes('model');
   const requireStop = method.inputs.includes('stop');
 
   const outputDataObjects = method.outputs.includes('dataObjects');
   const outputLabels = method.outputs.includes('labels');
-  const outputSamples = method.outputs.includes('samples');
+  const outputQueryUuids = method.outputs.includes('queryUuids');
   const outputFeatures = method.outputs.includes('features');
   const outputCategories = method.outputs.includes('categories');
   // const outputModel = method.outputs.includes('model');
@@ -223,7 +223,7 @@ export const executeCustom = showProgressBar(async (
     const inputs = {
       ...(requireDataObjects && { dataObjects }),
       ...(requireLabels && { labels, statuses }),
-      ...(requireSamples && { queryUuids }),
+      ...(requireQueryUuids && { queryUuids }),
       ...(requireCategories && { classes, unlabeledMark }),
       // ...(requireModel && { model }),
       ...(requireStop && { stop }),
@@ -241,7 +241,7 @@ export const executeCustom = showProgressBar(async (
       labels.upsertBulk(newValue);
       commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
     }
-    if (outputSamples) {
+    if (outputQueryUuids) {
       const { queryUuids: newValue } = response as { queryUuids: string[] };
       commit(rootTypes.SET_QUERY_UUIDS, newValue, { root: true });
     }

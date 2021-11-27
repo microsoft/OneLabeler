@@ -4,7 +4,7 @@ export default {
   type: ProcessType.InteractiveLabeling,
   label: 'Grid Matrix',
   id: 'GridMatrix-89670576',
-  inputs: ['dataObjects', 'samples'],
+  inputs: ['dataObjects', 'labels', 'queryUuids'],
   outputs: ['labels'],
   isAlgorithmic: false,
   isBuiltIn: true,

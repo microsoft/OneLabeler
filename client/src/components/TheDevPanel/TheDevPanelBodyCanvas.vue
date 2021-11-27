@@ -23,6 +23,12 @@
           @contextmenu:node="onContextMenuOfNode"
         />
       </template>
+      <template #edge="props">
+        <VEdge
+          v-bind="props"
+          :label="props.edge.condition === undefined ? '' : `${props.edge.condition}`"
+        />
+      </template>
     </VFlowchart>
 
     <!-- The context menu for canvas. -->
@@ -73,6 +79,7 @@ import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { PortDirection } from '../VFlowchart/types';
 import type { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
 import VNode from './VNode.vue';
+import VEdge from './VEdge.vue';
 import TheMenuOfCanvas from './TheMenuOfCanvas.vue';
 import TheMenuOfEdge from './TheMenuOfEdge.vue';
 import TheMenuOfNode from './TheMenuOfNode.vue';
@@ -123,6 +130,7 @@ export default {
   components: {
     VFlowchart,
     VNode,
+    VEdge,
     TheMenuOfCanvas,
     TheMenuOfEdge,
     TheMenuOfNode,
@@ -224,6 +232,10 @@ export default {
       this.rightClickCanvasY = e.offsetY;
     },
     onCreateNode(type: WorkflowNodeType): void {
+      if (this.rightClickCanvasX === null || this.rightClickCanvasY === null) {
+        throw new Error('New node position not specified');
+      }
+
       const labelMapper = {
         [WorkflowNodeType.Initialization]: 'initialization',
         [WorkflowNodeType.FeatureExtraction]: 'feature extraction',
@@ -245,10 +257,10 @@ export default {
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
         [WorkflowNodeType.Custom]: null,
-        [WorkflowNodeType.Decision]: undefined,
-        [WorkflowNodeType.Exit]: undefined,
+        [WorkflowNodeType.Decision]: null,
+        [WorkflowNodeType.Exit]: null,
       } as Record<WorkflowNodeType, unknown>;
-      const node = {
+      const node: WorkflowNode = {
         id: uuidv4(),
         type,
         label: labelMapper[type],
@@ -258,7 +270,7 @@ export default {
           y: this.rightClickCanvasY,
           ...getDefaultNodeSize(type),
         },
-      } as WorkflowNode;
+      };
       this.$emit('create:node', node);
       this.focusToCanvas();
     },

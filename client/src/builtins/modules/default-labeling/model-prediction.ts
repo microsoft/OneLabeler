@@ -5,7 +5,7 @@ export default {
   type: ProcessType.DefaultLabeling,
   label: 'ModelPrediction',
   id: 'ModelPrediction-29967546',
-  inputs: ['features', 'model'],
+  inputs: ['features', 'model', 'queryUuids'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,

@@ -22,9 +22,17 @@
       :source-node="getNodeFromPort(edge.source)"
       :target-node="getNodeFromPort(edge.target)"
       :color="getEdgeColor(edge)"
+      :is-selected="isEdgeSelected(edge)"
       @mousedown="onMouseDownEdge(edge, $event)"
       @contextmenu="$emit('contextmenu:edge', edge, $event)"
-    />
+    >
+      <template #default="props">
+        <slot
+          name="edge"
+          v-bind="props"
+        />
+      </template>
+    </VEdge>
 
     <!-- The new edge under creation. -->
     <VEdge
@@ -66,7 +74,7 @@
       @leave:node="hoveredNode = null"
       @drag:port="draggedPort = $event"
     >
-      <template #node="props">
+      <template #default="props">
         <slot
           name="node"
           v-bind="props"

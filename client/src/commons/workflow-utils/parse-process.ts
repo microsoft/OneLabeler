@@ -30,7 +30,6 @@ export const parseProcess = (
 
   // The builtin process with the same api as the current process.
   const builtinMatch = processes.find((d) => d.id === process.id);
-  // const builtinMatch = processes.find((d) => d.api === process.api);
 
   // Create process.id
   const id: string = process.id ?? builtinMatch?.id ?? uuidv4();

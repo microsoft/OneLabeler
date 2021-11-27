@@ -7,7 +7,7 @@ export default {
   type: ProcessType.DefaultLabeling,
   label: 'Random (Dummy)',
   id: 'Random-38398168',
-  inputs: ['dataObjects'],
+  inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,

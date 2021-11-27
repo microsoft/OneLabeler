@@ -17,7 +17,7 @@
     />
 
     <!-- The dataset overview display. -->
-    <compoent
+    <component
       :is="component"
       :points="pointsSampled"
       :highlight-indices="

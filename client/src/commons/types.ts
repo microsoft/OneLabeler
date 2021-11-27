@@ -166,13 +166,15 @@ export enum ProjectionMethodType {
 /** The enum of workflow panel dock location. */
 export enum DockSideType {
   /** Do not show the panel. */
-  HIDE = 'HIDE',
+  Hide = 'Hide',
   /** Show as a separate window. */
-  WINDOW = 'WINDOW',
+  Window = 'Window',
+  /** Show as full screen. */
+  FullScreen = 'FullScreen',
   /** Dock on the left of the created system. */
-  LEFT = 'LEFT',
+  Left = 'Left',
   /** Dock on the bottom of the created system. */
-  BOTTOM = 'BOTTOM',
+  Bottom = 'Bottom',
   /** Dock on the right of the created system. */
-  RIGHT = 'RIGHT',
+  Right = 'Right',
 }

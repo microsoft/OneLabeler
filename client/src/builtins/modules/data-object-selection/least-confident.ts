@@ -6,7 +6,7 @@ export default {
   label: 'LeastConfident (Active Learning)',
   id: 'LeastConfident-12520162',
   inputs: ['features', 'labels', 'model'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

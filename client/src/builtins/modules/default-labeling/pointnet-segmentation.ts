@@ -9,7 +9,7 @@ export default {
   type: ProcessType.DefaultLabeling,
   label: 'PointNet-segmentation',
   id: 'PointNet-segmentation-438546',
-  inputs: ['dataObjects'],
+  inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,

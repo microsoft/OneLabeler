@@ -69,6 +69,7 @@ const icons = {
   labels: 'fas fa-tags',
   network: 'fas fa-network-wired',
   python: 'fab fa-python',
+  fullScreen: 'far fa-square',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

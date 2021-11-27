@@ -4,23 +4,29 @@
     @mousedown="$emit('mousedown', $event)"
     @contextmenu.stop="$emit('contextmenu', $event)"
   >
-    <defs>
-      <marker
-        :id="markerId"
-        viewBox="0 -5 10 10"
-        refX="10"
-        refY="0"
-        markerWidth="10"
-        markerHeight="10"
-        orient="auto"
-      >
-        <path
-          d="M0,-5L10,0L0,5"
-          fill="currentcolor"
-        />
-      </marker>
-    </defs>
-    <slot name="edge">
+    <slot
+      :edge="edge"
+      :path="path"
+      :path-data="pathData"
+      :is-selected="isSelected"
+    >
+      <defs>
+        <marker
+          :id="markerId"
+          viewBox="0 -5 10 10"
+          refX="10"
+          refY="0"
+          markerWidth="10"
+          markerHeight="10"
+          orient="auto"
+        >
+          <path
+            d="M0,-5L10,0L0,5"
+            fill="currentcolor"
+          />
+        </marker>
+      </defs>
+
       <!-- The visible edge. -->
       <path
         :d="pathData"
@@ -61,7 +67,7 @@ export default {
     },
     /**
      * The source point of the edge.
-     * If not given, the source point will be infered
+     * If not given, the source point will be inferred
      * from source node position and port position.
      */
     sourcePoint: {
@@ -83,6 +89,10 @@ export default {
     targetNode: {
       type: Object as PropType<FlowchartNode | null>,
       default: null,
+    },
+    isSelected: {
+      type: Boolean as PropType<boolean>,
+      default: false,
     },
   },
   data() {

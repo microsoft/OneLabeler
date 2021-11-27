@@ -7,7 +7,7 @@ export default {
   type: ProcessType.DefaultLabeling,
   label: 'Null (Dummy)',
   id: 'Null-35514905',
-  inputs: ['dataObjects'],
+  inputs: ['queryUuids'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,

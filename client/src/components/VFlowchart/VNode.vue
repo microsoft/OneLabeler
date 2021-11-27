@@ -8,13 +8,12 @@
   >
     <!-- The body of the node (excluding ports). -->
     <slot
-      name="node"
       :node="node"
       :is-selected="isSelected"
     >
       <!-- The geometric element of the node. -->
       <slot
-        name="node:shape"
+        name="shape"
         :node="node"
         :is-selected="isSelected"
       >
@@ -29,7 +28,7 @@
 
       <!-- The text label of the node. -->
       <slot
-        name="node:label"
+        name="label"
         :node="node"
         :is-selected="isSelected"
       >

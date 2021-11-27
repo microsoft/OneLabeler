@@ -6,7 +6,7 @@ export default {
   label: 'EntropyDiversity (Active Learning)',
   id: 'EntropyDiversity-98931757',
   inputs: ['features', 'labels', 'model'],
-  outputs: ['samples'],
+  outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isModelBased: true,

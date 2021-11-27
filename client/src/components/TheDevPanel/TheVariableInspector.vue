@@ -82,7 +82,7 @@ export default {
     labels() {
       this.renderLabels();
     },
-    samples() {
+    queryUuids() {
       this.renderSamples();
     },
   },
@@ -94,16 +94,12 @@ export default {
   methods: {
     async renderDataObjects(): Promise<void> {
       const element = this.$refs.dataObjects as HTMLPreElement;
-      const data = this.dataObjects === null
-        ? null
-        : await this.dataObjects.getAll();
+      const data = await this.dataObjects?.getAll() ?? null;
       mount(data, element);
     },
     async renderLabels(): Promise<void> {
       const element = this.$refs.labels as HTMLPreElement;
-      const data = this.labels === null
-        ? null
-        : await this.labels.getAll();
+      const data = await this.labels?.getAll() ?? null;
       mount(data, element);
     },
     async renderSamples(): Promise<void> {
