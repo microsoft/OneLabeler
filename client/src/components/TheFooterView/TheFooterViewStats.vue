@@ -10,12 +10,12 @@
     </span>
     <v-divider vertical />
     <span class="footer-text">
-      {{ `${classes.length} classes` }}
+      {{ `${categories.length} classes` }}
     </span>
 
     <!-- The create new class option button. -->
     <TheClassesDialog
-      :categories="classes"
+      :categories="categories"
       :category-tasks="categoryTasks"
       :label-tasks="labelTasks"
       :unlabeled-mark="unlabeledMark"
@@ -71,11 +71,10 @@ export default {
     ...mapState([
       'dataObjects',
       'statuses',
-      'classes',
       'categoryTasks',
       'unlabeledMark',
     ]),
-    ...mapGetters(['label2color']),
+    ...mapGetters(['categories', 'label2color']),
     ...mapGetters('workflow', ['labelTasks']),
   },
   watch: {

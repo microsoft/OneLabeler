@@ -18,9 +18,6 @@ export default {
   [types.SET_DATA_OBJECTS](state: IState, dataObjects: IDataObjectStorage): void {
     state.dataObjects = dataObjects;
   },
-  [types.SET_CLASSES](state: IState, classes: Category[]): void {
-    state.classes = classes;
-  },
   [types.SET_CATEGORY_TASKS](
     state: IState,
     categoryTasks: Record<Category, LabelTaskType[] | null>,

@@ -28,8 +28,6 @@ export interface IState {
   queryUuids: string[];
   /** The decision whether the data labeling process should stop. */
   stop: boolean;
-  /** The label category options. */
-  classes: Category[];
   /** The applicable label task for each label category (null denotes applicable to every task). */
   categoryTasks: Record<Category, LabelTaskType[] | null>,
   /** The label mark of unlabeled data objects. */
@@ -67,7 +65,6 @@ export const createInitialState = (): IState => ({
   statuses: null,
   queryUuids: [],
   stop: false,
-  classes: [],
   categoryTasks: {},
   unlabeledMark: 'UNLABELED',
   featureNames: [],

@@ -107,13 +107,10 @@ export default {
   },
   methods: {
     filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
+      return Object.entries(this.categoryTasks)
+        .filter(([, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
 };

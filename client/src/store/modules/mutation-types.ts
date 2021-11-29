@@ -1,5 +1,4 @@
 export const SET_DATA_OBJECTS = 'SET_DATA_OBJECTS';
-export const SET_CLASSES = 'SET_CLASSES';
 export const SET_CATEGORY_TASKS = 'SET_CATEGORY_TASKS';
 export const SET_STOP = 'SET_STOP';
 export const SET_LABELS = 'SET_LABELS';

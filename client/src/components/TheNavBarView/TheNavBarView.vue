@@ -241,6 +241,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['categories']),
     ...mapGetters('workflow', [
       'dataType',
       'startNode',
@@ -253,7 +254,6 @@ export default {
       'dataObjects',
       'labels',
       'statuses',
-      'classes',
       'categoryTasks',
       'unlabeledMark',
       'featureNames',
@@ -396,7 +396,7 @@ export default {
     async onClickSave(): Promise<void> {
       const {
         dataObjects,
-        classes,
+        categories,
         categoryTasks,
         labels,
         statuses,
@@ -405,7 +405,7 @@ export default {
       } = this;
       const projectData: ProjectData = {
         dataObjects: await dataObjects.getAll(),
-        classes,
+        categories,
         categoryTasks,
         labels: await labels.getAll(),
         statuses: await statuses.getAll(),

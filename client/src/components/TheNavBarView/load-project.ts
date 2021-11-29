@@ -11,7 +11,7 @@ export type ProjectData = {
   dataObjects: IDataObject[];
   labels: ILabel[];
   statuses: IStatus[];
-  classes: Category[];
+  categories: Category[];
   categoryTasks: Record<Category, LabelTaskType[] | null>,
   unlabeledMark: Category;
   featureNames?: string[];
@@ -80,7 +80,7 @@ const schema: JSONSchemaType<ProjectData> = {
   required: [
     'dataObjects',
     'statuses',
-    'classes',
+    'categories',
     'unlabeledMark',
   ],
   properties: {
@@ -122,7 +122,7 @@ const schema: JSONSchemaType<ProjectData> = {
         $ref: '#/definitions/status',
       },
     },
-    classes: {
+    categories: {
       type: 'array',
       items: { type: 'string' },
     },

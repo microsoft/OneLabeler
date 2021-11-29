@@ -81,24 +81,18 @@ export default {
   },
   computed: {
     ...mapState([
-      'classes',
       'categoryTasks',
       'labels',
       'statuses',
     ]),
     ...mapGetters('workflow', ['labelTasks']),
     categoriesFiltered(): Category[] {
-      const classes = this.classes as Category[];
       const categoryTasks = this.categoryTasks as Record<Category, LabelTaskType[]>;
-      const { labelTasks } = this;
-      const categoriesFiltered: Category[] = [];
-      classes.forEach((category) => {
-        if (!(category in categoryTasks)) return;
-        const usedInTasks = categoryTasks[category];
-        const overlaps = isOverlapping(new Set(usedInTasks), new Set(labelTasks));
-        if (usedInTasks === null || overlaps) categoriesFiltered.push(category);
-      });
-      return categoriesFiltered;
+      const labelTasks = this.labelTasks as LabelTaskType[];
+      return Object.entries(categoryTasks)
+        .filter(([, usedInTasks]) => (
+          usedInTasks === null || isOverlapping(new Set(usedInTasks), new Set(labelTasks))
+        )).map((d) => d[0]);
     },
   },
   watch: {

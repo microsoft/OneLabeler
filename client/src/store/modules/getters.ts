@@ -2,7 +2,15 @@ import {
   scaleOrdinal,
   schemeCategory10,
 } from 'd3';
+import type { Category } from '@/commons/types';
 import type { IState } from './state';
+
+export const categories = (
+  state: IState,
+): Category[] => {
+  const { categoryTasks } = state;
+  return Object.keys(categoryTasks);
+};
 
 const schemeCategory20: string[] = [
   '#1f77b4',
@@ -30,15 +38,15 @@ const schemeCategory20: string[] = [
 type Mapper = (category: string) => string;
 
 /** The color scale for labels used in the system.  */
-// eslint-disable-next-line import/prefer-default-export
 export const label2color = (
   state: IState,
 ): Mapper => {
-  const { classes, unlabeledMark, colorMapper } = state;
-  const scheme = classes.length <= 9 ? schemeCategory10 : schemeCategory20;
+  const categoriesValue = categories(state);
+  const { unlabeledMark, colorMapper } = state;
+  const scheme = categoriesValue.length <= 9 ? schemeCategory10 : schemeCategory20;
 
   const scale = scaleOrdinal(['#bbbbbb', ...scheme])
-    .domain([unlabeledMark, ...classes]);
+    .domain([unlabeledMark, ...categoriesValue]);
   const mapper = (category: string): string => {
     if (category in colorMapper) return colorMapper[category];
     return scale(category);

@@ -33,7 +33,7 @@
           :rules="classNameRules"
           label="Class Name"
           required
-          desnse
+          dense
         />
         <v-btn
           x-small

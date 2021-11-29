@@ -68,8 +68,7 @@ export const addCategory = (
   { commit, state }: ActionContext<IState, IState>,
   category: Category,
 ): void => {
-  const { classes, categoryTasks } = state;
-  commit(types.SET_CLASSES, [...classes, category]);
+  const { categoryTasks } = state;
   commit(types.SET_CATEGORY_TASKS, { ...categoryTasks, [category]: null });
 };
 
@@ -77,8 +76,7 @@ export const removeCategory = (
   { commit, state }: ActionContext<IState, IState>,
   category: Category,
 ): void => {
-  const { classes, categoryTasks } = state;
-  commit(types.SET_CLASSES, classes.filter((d) => d !== category));
+  const { categoryTasks } = state;
   const updatedCategoryTasks = { ...categoryTasks };
   if (category in updatedCategoryTasks) delete updatedCategoryTasks[category];
   commit(types.SET_CATEGORY_TASKS, updatedCategoryTasks);
@@ -162,7 +160,6 @@ export const resetState = (
 ): void => {
   const {
     dataObjects,
-    classes,
     categoryTasks,
     labels,
     statuses,
@@ -173,7 +170,6 @@ export const resetState = (
     message,
   } = createInitialState();
   commit(types.SET_DATA_OBJECTS, dataObjects);
-  commit(types.SET_CLASSES, classes);
   commit(types.SET_CATEGORY_TASKS, categoryTasks);
   commit(types.SET_LABELS, labels);
   commit(types.SET_STATUSES, statuses);
@@ -188,7 +184,6 @@ type ProjectData = {
   dataObjects: IDataObject[];
   labels: ILabel[];
   statuses: IStatus[];
-  classes: Category[];
   categoryTasks: Record<Category, LabelTaskType[] | null>,
   unlabeledMark: Category;
   featureNames?: string[];
@@ -203,13 +198,11 @@ export const setProject = async (
     dataObjects,
     labels,
     statuses,
-    classes,
     categoryTasks,
     unlabeledMark,
     featureNames,
   } = projectData;
 
-  commit(types.SET_CLASSES, classes);
   commit(types.SET_CATEGORY_TASKS, categoryTasks);
   commit(types.SET_UNLABELED_MARK, unlabeledMark);
   commit(types.SET_FEATURE_NAMES,
