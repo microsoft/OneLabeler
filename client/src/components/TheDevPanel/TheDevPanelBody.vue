@@ -76,7 +76,7 @@ import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
 import TheDevPanelBodyCanvas from './TheDevPanelBodyCanvas.vue';
 import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
-import TheVariableInspector from './TheVariableInspector.vue';
+import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.vue';
 
 export default {
   name: 'TheDevPanelBody',

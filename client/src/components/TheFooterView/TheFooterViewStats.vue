@@ -35,17 +35,6 @@ import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
 import TheClassesDialog from './TheClassesDialog.vue';
 
 /*
-const useDataObjects = (dataObjects: Ref<IDataObjectStorage | null>) => {
-  const nTotal: Ref<number> = ref(0);
-  const updateNLabeled = async (): Promise<void> => {
-    if (dataObjects.value === null) nTotal.value = 0;
-    else nTotal.value = await dataObjects.value.count();
-  };
-  onMounted(updateNLabeled);
-  watch(dataObjects, updateNLabeled);
-  return { nTotal };
-};
-
 const useStatuses = (statuses: Ref<IStatusStorage | null>) => {
   const nLabeled: Ref<number> = ref(0);
   const updateNLabeled = async (): Promise<void> => {

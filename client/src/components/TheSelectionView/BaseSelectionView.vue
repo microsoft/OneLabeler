@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import type { VueConstructor } from 'vue';
-import { defineComponent, toRefs } from '@vue/composition-api';
+import { defineComponent, ref, toRefs } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { WorkflowNodeType } from '@/commons/types';
 import type {
@@ -74,7 +74,7 @@ export default defineComponent({
     } = toRefs(props);
     return {
       ...useFilteredDataObjects(dataObjects, scopeUuids),
-      ...useFilteredLabels(dataObjects, labels, scopeUuids),
+      ...useFilteredLabels(dataObjects, labels, scopeUuids, ref(false)),
     };
   },
   computed: {

@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import IconDotCircle from '@/plugins/icons/IconDotCircle.vue';
 import IconDrawPolygon from '@/plugins/icons/IconDrawPolygon.vue';
 import IconDrawSquare from '@/plugins/icons/IconDrawSquare.vue';
+import IconFeatureRepresentations from '@/plugins/icons/IconFeatureRepresentations.vue';
 import IconLabels from '@/plugins/icons/IconLabels.vue';
 import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
 import IconSamples from '@/plugins/icons/IconSamples.vue';
@@ -83,6 +84,10 @@ const icons = {
   drawSquare: {
     name: 'drawSquare',
     component: IconDrawSquare,
+  },
+  features: {
+    name: 'features',
+    component: IconFeatureRepresentations,
   },
   labels: {
     name: 'labels',

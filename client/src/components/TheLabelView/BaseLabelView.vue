@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import type { VueConstructor } from 'vue';
-import { defineComponent, toRefs } from '@vue/composition-api';
+import { defineComponent, ref, toRefs } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import {
   Category,
@@ -94,8 +94,8 @@ export default defineComponent({
     } = toRefs(props);
     return {
       ...useFilteredDataObjects(dataObjects, queryUuids),
-      ...useFilteredLabels(dataObjects, labels, queryUuids),
-      ...useFilteredStatuses(dataObjects, statuses, queryUuids),
+      ...useFilteredLabels(dataObjects, labels, queryUuids, ref(false)),
+      ...useFilteredStatuses(dataObjects, statuses, queryUuids, ref(false)),
     };
   },
   computed: {

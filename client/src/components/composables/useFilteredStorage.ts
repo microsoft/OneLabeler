@@ -36,9 +36,11 @@ export const useFilteredLabels = (
   dataObjects: Ref<IDataObjectStorage | null>,
   labels: Ref<ILabelStorage | null>,
   filterUuids: Ref<string[] | null>,
+  getEdited: Ref<boolean>,
 ) => {
   const filteredLabels: Ref<ILabel[]> = ref([]);
   const getFilteredLabels = async (): Promise<ILabel[]> => {
+    if (getEdited.value) return labels.value?.getAll() ?? [];
     if (dataObjects.value === null || labels.value === null) return [];
     const uuids = filterUuids.value ?? await dataObjects.value.uuids();
     return (await labels.value.getBulk(uuids))
@@ -54,9 +56,11 @@ export const useFilteredStatuses = (
   dataObjects: Ref<IDataObjectStorage | null>,
   statuses: Ref<IStatusStorage | null>,
   filterUuids: Ref<string[] | null>,
+  getEdited: Ref<boolean>,
 ) => {
   const filteredStatuses: Ref<ILabel[]> = ref([]);
   const getFilteredStatuses = async (): Promise<IStatus[]> => {
+    if (getEdited.value) return statuses.value?.getAll() ?? [];
     if (dataObjects.value === null || statuses.value === null) return [];
     const uuids = filterUuids.value ?? await dataObjects.value.uuids();
     return (await statuses.value.getBulk(uuids))
