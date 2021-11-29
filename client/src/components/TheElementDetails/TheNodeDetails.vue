@@ -7,6 +7,7 @@
     :view-title="viewTitle"
     :module-inputs="moduleInputs"
     :module-outputs="moduleOutputs"
+    style="width: 100%; height: 100%"
     @edit:node="$emit('edit:node', $event)"
     @create:method="onCreateMethod"
     @edit:method="$emit('edit:method', $event)"

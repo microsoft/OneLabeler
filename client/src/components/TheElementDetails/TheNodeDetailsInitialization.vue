@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    style="width: 100%; height: 100%"
-    tile
-  >
+  <v-card tile>
     <v-card-title class="view-header">
       <v-icon
         class="px-2"
