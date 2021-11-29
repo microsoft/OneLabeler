@@ -8,6 +8,7 @@ import {
   StorageType,
   StatusType,
   WorkflowNodeType,
+  Category,
 } from '@/commons/types';
 import type {
   MethodParams,
@@ -198,11 +199,14 @@ export const executeCustom = showProgressBar(async (
     labels,
     statuses,
     queryUuids,
-    classes,
+    categoryTasks,
     unlabeledMark,
     // model,
     stop,
   } = rootState;
+
+  // TODO: should only access categories visible to the current label task.
+  const classes: Category[] = Object.keys(categoryTasks);
 
   const requireDataObjects = method.inputs.includes('dataObjects');
   const requireLabels = method.inputs.includes('labels');
@@ -262,7 +266,9 @@ export const executeCustom = showProgressBar(async (
     }
     if (outputCategories) {
       const { categories: newValue } = response as { categories: string[] };
-      commit(rootTypes.SET_CLASSES, newValue, { root: true });
+      const newCategoryTasks = { ...categoryTasks };
+      newValue.forEach((category) => { newCategoryTasks[category] = null; });
+      commit(rootTypes.SET_CATEGORY_TASKS, newCategoryTasks, { root: true });
     }
     if (outputStop) {
       const { stop: newValue } = response as { stop: boolean };
@@ -430,10 +436,13 @@ export const executeDefaultLabeling = showProgressBar(async (
     labels,
     dataObjects,
     queryUuids,
-    classes,
+    categoryTasks,
     unlabeledMark,
   } = rootState;
   if (labels === null) return;
+
+  // TODO: should only access categories visible to the current label task.
+  const classes: Category[] = Object.keys(categoryTasks);
 
   const queriedDataObjects = (await (dataObjects as IDataObjectStorage)
     .getBulk(queryUuids)) as IDataObject[];

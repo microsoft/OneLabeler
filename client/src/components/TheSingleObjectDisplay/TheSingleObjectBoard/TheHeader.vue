@@ -37,7 +37,7 @@
           :label2color="label2color"
           :toolbar-state="toolbarState"
           :disabled="label === null"
-          @upsert:label="$emit('upsert:label', $event)"
+          @upsert:labels="$emit('upsert:labels', $event)"
           @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
         />
       </template>

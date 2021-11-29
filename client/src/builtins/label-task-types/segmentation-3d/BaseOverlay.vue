@@ -97,7 +97,7 @@ export default defineComponent({
       const pointLabelsUpdated = [...pointLabels].map((d, i) => (
         polygonContains(polygon, points2d[i]) ? category : d
       ));
-      this.$emit('upsert:label', { pointLabels: pointLabelsUpdated });
+      this.$emit('upsert:labels', { pointLabels: pointLabelsUpdated });
     },
   },
 });

@@ -6,9 +6,9 @@
       :category-tasks="categoryTasks"
       :label2color="label2color"
       :label="label"
-      @upsert:label="onUpsertLabel"
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @upsert:labels="onUpsertLabels"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <div
@@ -44,7 +44,7 @@
           :label2color="label2color"
           :disabled="label === null"
           style="flex: 1 1 25%"
-          @upsert:label="onUpsertLabel"
+          @upsert:labels="onUpsertLabels"
         />
       </div>
       <template v-if="enablePagination">
@@ -169,7 +169,7 @@ export default {
     window.addEventListener('keydown', this.onKey);
   },
   beforeDestroy(): void {
-    // Remove listener before distroy,
+    // Remove listener before destroy,
     // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', this.onKey);
   },
@@ -190,8 +190,8 @@ export default {
     onCreateLabelSpan(labelSpan: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
       if (dataObject === null) return;
-      const spans = labelSpans === null ? [labelSpan] : [...labelSpans, labelSpan];
-      this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
+      const spans = [...(labelSpans ?? []), labelSpan];
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, spans });
     },
     onUpdateLabelSpan(newValue: ILabelTimeSpan): void {
       const { dataObject, labelSpans } = this;
@@ -200,7 +200,7 @@ export default {
       if (!(index >= 0)) return;
       const spans = [...labelSpans];
       spans[index] = newValue;
-      this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, spans });
     },
     onRemoveLabelSpan(labelSpan: ILabelTimeSpan): void {
       const {
@@ -213,22 +213,19 @@ export default {
         this.selectedSpan = null;
       }
       const spans = labelSpans.filter((d) => d.uuid !== labelSpan.uuid);
-      this.$emit('user-edit-label', dataObject.uuid, { spans } as Partial<ILabel>);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, spans });
     },
-    onUpsertLabel(partialLabel: Partial<ILabel>): void {
+    onUpsertLabels(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
       const { uuid } = dataObject;
-      this.$emit('user-edit-label', uuid, partialLabel);
+      this.$emit('upsert:labels', { uuid, ...partialLabel });
     },
     filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
+      return Object.entries(this.categoryTasks)
+        .filter(([, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
 };

@@ -74,7 +74,7 @@
           :stroke-label="strokeLabel"
           :stroke-shape="strokeShape"
           :stroke-width="strokeWidth"
-          @upsert:label="$emit('upsert:label', $event)"
+          @upsert:labels="$emit('upsert:labels', $event)"
           @set:mouse-operation="$emit('set:mouse-operation', $event)"
           @set:stroke-label="$emit('set:stroke-label', $event)"
           @set:stroke-shape="$emit('set:stroke-shape', $event)"

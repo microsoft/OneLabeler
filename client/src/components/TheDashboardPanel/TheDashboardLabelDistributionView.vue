@@ -16,7 +16,7 @@
       style="flex: 1 1 auto; overflow-y: scroll;"
     >
       <div
-        v-for="category in categoriesFiltered"
+        v-for="category in categories"
         :key="category"
         style="min-height: 40px"
       >
@@ -86,7 +86,7 @@ export default {
       'statuses',
     ]),
     ...mapGetters('workflow', ['labelTasks']),
-    categoriesFiltered(): Category[] {
+    categories(): Category[] {
       const categoryTasks = this.categoryTasks as Record<Category, LabelTaskType[]>;
       const labelTasks = this.labelTasks as LabelTaskType[];
       return Object.entries(categoryTasks)
@@ -96,7 +96,7 @@ export default {
     },
   },
   watch: {
-    async categoriesFiltered() {
+    async categories() {
       this.nLabeledByCategory = await this.getNLabeledByCategory();
     },
     async labels() {
@@ -131,7 +131,7 @@ export default {
     },
     async getNLabeledByCategory(): Promise<Record<Category, number>> {
       const nLabeledByCategory: Record<Category, number> = {};
-      await Promise.all(this.categoriesFiltered.map(async (category: Category) => {
+      await Promise.all(this.categories.map(async (category: Category) => {
         const n = await this.getNLabeledOf(category);
         nLabeledByCategory[category] = n;
       }));

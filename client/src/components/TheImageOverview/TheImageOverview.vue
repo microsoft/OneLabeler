@@ -1,8 +1,8 @@
 <template>
   <v-card style="display: flex; flex-direction: column;">
     <TheImageOverviewHeader
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <div

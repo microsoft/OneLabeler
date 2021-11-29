@@ -2,6 +2,9 @@
   <svg
     class="spinner"
     viewBox="0 0 50 50"
+    aria-hidden="true"
+    role="img"
+    style="position: absolute"
   >
     <circle
       class="path"

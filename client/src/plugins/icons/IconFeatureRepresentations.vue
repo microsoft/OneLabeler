@@ -5,6 +5,9 @@
     viewBox="0 0 100 100"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    role="img"
+    style="position: absolute"
   >
     <path
       d="M22.6562 80.0391

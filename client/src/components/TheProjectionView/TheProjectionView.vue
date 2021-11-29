@@ -4,8 +4,8 @@
       :n-rows="nRows"
       :n-columns="nColumns"
       @set:matrix-shape="onSetMatrixShape"
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <div
@@ -38,7 +38,7 @@
         @click:projection-method="onClickProjectionMethod($event, i)"
         @update:binning="onUpdateBinning($event, i)"
         @update:subsampling="onUpdateSubsampling($event, i)"
-        @select:uuids="$emit('user-select-uuids', $event)"
+        @select:uuids="$emit('set:query-uuids', $event)"
       />
     </div>
     <div

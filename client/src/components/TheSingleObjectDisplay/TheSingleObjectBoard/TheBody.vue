@@ -7,7 +7,7 @@
       :label="label"
       :label2color="label2color"
       style="flex: 1 1 auto"
-      @upsert:label="$emit('upsert:label', $event)"
+      @upsert:labels="$emit('upsert:labels', $event)"
     >
       <template #overlay="props">
         <template v-for="(setup, i) in taskSetups">
@@ -22,7 +22,7 @@
             :label2color="label2color"
             :toolbar-state="toolbarState"
             style="grid-area: 1 / 1 / 2 / 2;"
-            @upsert:label="$emit('upsert:label', $event)"
+            @upsert:labels="$emit('upsert:labels', $event)"
             @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
           />
         </template>
@@ -40,7 +40,7 @@
         :label2color="label2color"
         :toolbar-state="toolbarState"
         style="flex: 0 1 20%"
-        @upsert:label="$emit('upsert:label', $event)"
+        @upsert:labels="$emit('upsert:labels', $event)"
         @upsert:toolbar-state="$emit('upsert:toolbar-state', $event)"
       />
     </template>

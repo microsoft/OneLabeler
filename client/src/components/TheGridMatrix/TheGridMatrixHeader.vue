@@ -21,7 +21,7 @@
           :categories="filterCategories(setup.type)"
           :unlabeled-mark="unlabeledMark"
           :label2color="label2color"
-          @upsert-bulk:label="$emit('upsert-bulk:label', $event)"
+          @upsert-bulk:labels="$emit('upsert-bulk:labels', $event)"
         />
       </template>
     </template>

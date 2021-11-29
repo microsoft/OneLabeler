@@ -126,7 +126,7 @@ export default {
       const partialLabel: Partial<ILabel> = { text };
       this.dialog = false;
       this.syncLabel();
-      this.$emit('upsert:label', partialLabel);
+      this.$emit('upsert:labels', partialLabel);
     },
     onClickCloseDialog(): void {
       this.dialog = false;

@@ -10,9 +10,9 @@
     :category-tasks="categoryTasks"
     :unlabeled-mark="unlabeledMark"
     :label2color="label2color"
-    @user-edit-label="onUserEditLabel"
-    @user-edit-labels="onUserEditLabels"
-    @edit-task-window="$emit('edit-task-window', $event)"
+    @upsert:labels="$emit('upsert:labels', $event)"
+    @upsert-bulk:labels="$emit('upsert-bulk:labels', $event)"
+    @update:task-window="$emit('update:task-window', $event)"
   />
 </template>
 
@@ -80,14 +80,6 @@ export default {
       if (dataType === DataType.YoutubeVideo) return TheTimeSpanBoard;
       if (dataType === DataType.Audio) return TheTimeSpanBoard;
       return TheSingleObjectBoard;
-    },
-  },
-  methods: {
-    onUserEditLabel(uuid: string, newValue: Partial<ILabel>) {
-      this.$emit('user-edit-label', uuid, newValue);
-    },
-    onUserEditLabels(uuids: string[], newValues: Partial<ILabel>[]) {
-      this.$emit('user-edit-label', uuids, newValues);
     },
   },
 };

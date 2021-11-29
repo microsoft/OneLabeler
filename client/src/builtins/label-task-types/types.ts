@@ -124,6 +124,9 @@ export interface ILabel {
   pointLabels?: ILabelPoints;
 }
 
+/** The query data structure for updating the label with the partial value. */
+export type LabelUpsertQuery = Partial<ILabel> & { uuid: string };
+
 /** The label task type setup. */
 export interface ILabelTaskTypeSetup {
   type: LabelTaskType | string;

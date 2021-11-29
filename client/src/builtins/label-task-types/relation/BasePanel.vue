@@ -74,7 +74,7 @@ export default {
       const { labelRelations } = this;
       if (labelRelations === null) return;
       const relations = labelRelations.filter((d) => d.uuid !== relation.uuid);
-      this.$emit('upsert:label', { relations } as Partial<ILabel>);
+      this.$emit('upsert:labels', { relations } as Partial<ILabel>);
     },
     getSpanByUuid(uuid: string): ILabelTextSpan | null {
       return this.uuid2span[uuid] ?? null;

@@ -1,46 +1,32 @@
 <template>
-  <component
-    :is="component"
-    :data-objects="scopedDataObjects"
-    :labels="scopedLabels"
-    :query-uuids="scopedQueryUuids"
-    :unlabeled-mark="unlabeledMark"
-    :label2color="label2color"
-    :feature-names="featureNames"
+  <BaseSelectionView
     :task-window="taskWindow"
-    @user-select-uuids="onUserSelectUuids"
-    @edit-task-window="editTaskWindow({ ...taskWindow, ...$event })"
+    :data-objects="dataObjects"
+    :labels="labels"
+    :query-uuids="queryUuids"
+    :scope-uuids="scopeUuids"
+    :unlabeled-mark="unlabeledMark"
+    :feature-names="featureNames"
+    :label2color="label2color"
+    @set:query-uuids="onSetQueryUuids"
+    @update:task-window="updateTaskWindow({ ...taskWindow, ...$event })"
   />
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import type { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { WorkflowNodeType } from '@/commons/types';
-import type {
-  IDataObject,
-  IDataObjectStorage,
-  ILabel,
-  ILabelStorage,
-  TaskWindow,
-} from '@/commons/types';
-import TheImageOverview from '@/components/TheImageOverview/TheImageOverview.vue';
-import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
+import type { TaskWindow } from '@/commons/types';
+import BaseSelectionView from './BaseSelectionView.vue';
 
 export default {
   name: 'TheSelectionView',
+  components: { BaseSelectionView },
   props: {
     taskWindow: {
       type: Object as PropType<TaskWindow>,
       required: true,
     },
-  },
-  data() {
-    return {
-      scopedDataObjects: [] as IDataObject[],
-      scopedLabels: [] as ILabel[],
-      scopedQueryUuids: [] as string[],
-    };
   },
   computed: {
     ...mapState([
@@ -53,54 +39,14 @@ export default {
     ]),
     ...mapGetters(['label2color']),
     ...mapGetters('workflow', ['nextNodes']),
-    component(): VueConstructor | null {
-      const { node, process } = this.taskWindow;
-      if (node.type !== WorkflowNodeType.DataObjectSelection) return null;
-      if (process.api === 'Projection') return TheProjectionView;
-      if (process.api === 'ImageOverview') return TheImageOverview;
-      return null;
-    },
-  },
-  watch: {
-    async dataObjects() {
-      const scopedDataObjects = await this.getScopedDataObjects();
-      const scopedLabels = await this.getScopedLabels();
-      this.scopedDataObjects = scopedDataObjects;
-      this.scopedLabels = scopedLabels;
-    },
-    async labels() {
-      this.scopedLabels = await this.getScopedLabels();
-    },
-    queryUuids() {
-      this.scopedQueryUuids = this.getScopedQueryUuids();
-    },
-    async scopeUuids() {
-      // Note: await the computation then set the values together
-      // to ensure [dataObjects, labels, statuses] almost always
-      // have the same length.
-      const scopedDataObjects = await this.getScopedDataObjects();
-      const scopedLabels = await this.getScopedLabels();
-      const scopedQueryUuids = this.getScopedQueryUuids();
-      this.scopedDataObjects = scopedDataObjects;
-      this.scopedLabels = scopedLabels;
-      this.scopedQueryUuids = scopedQueryUuids;
-    },
-  },
-  async mounted() {
-    const scopedDataObjects = await this.getScopedDataObjects();
-    const scopedLabels = await this.getScopedLabels();
-    const scopedQueryUuids = this.getScopedQueryUuids();
-    this.scopedDataObjects = scopedDataObjects;
-    this.scopedLabels = scopedLabels;
-    this.scopedQueryUuids = scopedQueryUuids;
   },
   methods: {
-    ...mapActions(['editTaskWindow']),
+    ...mapActions(['updateTaskWindow']),
     ...mapActions('workflow', [
       'executeDataObjectSelectionManual',
       'executeWorkflow',
     ]),
-    async onUserSelectUuids(uuids: string[]): Promise<void> {
+    async onSetQueryUuids(uuids: string[]): Promise<void> {
       if (uuids.length === 0) return;
       const { taskWindow } = this;
       await this.executeDataObjectSelectionManual(uuids);
@@ -108,30 +54,6 @@ export default {
 
       // await this.executeWorkflow(this.nextNodes[0]);
       await this.executeWorkflow(taskWindow.node);
-    },
-    async getScopedDataObjects(): Promise<IDataObject[]> {
-      const scopeUuids = this.scopeUuids as string[] | null;
-      const dataObjects = this.dataObjects as IDataObjectStorage | null;
-      if (dataObjects === null) return [];
-      if (scopeUuids === null) return dataObjects.getAll();
-      return dataObjects.getBulk(scopeUuids) as Promise<IDataObject[]>;
-    },
-    async getScopedLabels(): Promise<ILabel[]> {
-      const dataObjects = this.dataObjects as IDataObjectStorage | null;
-      const scopeUuids = this.scopeUuids as string[] | null;
-      const labels = this.labels as ILabelStorage | null;
-      if (dataObjects === null) return [];
-      if (labels === null) return [];
-      const uuids = scopeUuids ?? await dataObjects.uuids();
-      const scopedLabels: ILabel[] = (await labels.getBulk(uuids))
-        .map((d, i) => (d ?? { uuid: uuids[i] }));
-      return scopedLabels;
-    },
-    getScopedQueryUuids(): string[] {
-      const scopeUuids = this.scopeUuids as string[] | null;
-      const queryUuids = this.queryUuids as string[];
-      if (scopeUuids === null) return queryUuids;
-      return queryUuids.filter((d) => scopeUuids.includes(d));
     },
   },
 };

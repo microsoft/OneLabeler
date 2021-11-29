@@ -92,7 +92,7 @@ export default {
         uuid: uuidv4(),
       };
       const relations = [...(this.labelRelations ?? []), relation];
-      this.$emit('upsert:label', { relations } as Partial<ILabel>);
+      this.$emit('upsert:labels', { relations } as Partial<ILabel>);
       this.sourceUuid = null;
     },
     onRemoveSpan(span: ILabelTextSpan): void {
@@ -107,7 +107,7 @@ export default {
       // Remove the label span itself.
       const spans = labelSpans.filter((d) => d.uuid !== span.uuid);
 
-      this.$emit('upsert:label', { relations, spans } as Partial<ILabel>);
+      this.$emit('upsert:labels', { relations, spans } as Partial<ILabel>);
     },
     onSelectSpan(span: ILabelTextSpan): void {
       const partial: Partial<ToolbarState> = {

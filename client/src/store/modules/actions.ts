@@ -141,7 +141,7 @@ export const updatedTaskWindowsByNodes = (
   commit(types.SET_TASK_WINDOWS, updatedTaskWindows);
 };
 
-export const editTaskWindow = (
+export const updateTaskWindow = (
   { commit, state }: ActionContext<IState, IState>,
   newValue: TaskWindow,
 ): void => {

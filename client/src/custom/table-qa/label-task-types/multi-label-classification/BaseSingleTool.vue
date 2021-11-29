@@ -5,7 +5,7 @@
       :label-columns="labelColumns"
       :columns="columns"
       :disabled="disabled"
-      @set:label-columns="$emit('upsert:label', { columns: $event })"
+      @set:label-columns="$emit('upsert:labels', { columns: $event })"
     />
 
     <v-divider
@@ -18,7 +18,7 @@
       :label-queries="labelQueries"
       :queries="queries"
       :disabled="disabled"
-      @set:label-queries="$emit('upsert:label', { queries: $event })"
+      @set:label-queries="$emit('upsert:labels', { queries: $event })"
     />
   </div>
 </template>

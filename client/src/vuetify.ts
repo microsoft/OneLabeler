@@ -5,6 +5,10 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import IconDotCircle from '@/plugins/icons/IconDotCircle.vue';
 import IconDrawPolygon from '@/plugins/icons/IconDrawPolygon.vue';
 import IconDrawSquare from '@/plugins/icons/IconDrawSquare.vue';
+import IconLabels from '@/plugins/icons/IconLabels.vue';
+import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
+import IconSamples from '@/plugins/icons/IconSamples.vue';
+import IconStop from '@/plugins/icons/IconStop.vue';
 
 Vue.use(Vuetify);
 
@@ -65,8 +69,6 @@ const icons = {
   mute: 'fas fa-volume-mute',
   link: 'fas fa-link',
   arrowRight: 'fas fa-arrow-right',
-  samples: 'fas fa-vials',
-  labels: 'fas fa-tags',
   network: 'fas fa-network-wired',
   python: 'fab fa-python',
   fullScreen: 'far fa-square',
@@ -81,6 +83,22 @@ const icons = {
   drawSquare: {
     name: 'drawSquare',
     component: IconDrawSquare,
+  },
+  labels: {
+    name: 'labels',
+    component: IconLabels,
+  },
+  samples: {
+    name: 'samples',
+    component: IconSamples,
+  },
+  categories: {
+    name: 'categories',
+    component: IconLabelSpace,
+  },
+  stoppage: {
+    name: 'stoppage',
+    component: IconStop,
   },
 };
 

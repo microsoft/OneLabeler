@@ -6,9 +6,9 @@
       :category-tasks="categoryTasks"
       :unlabeled-mark="unlabeledMark"
       :label2color="label2color"
-      @upsert-bulk:label="onUpsertBulkLabel"
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @upsert-bulk:labels="onUpsertBulkLabels"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <VGridMatrix
@@ -24,7 +24,7 @@
       :items-per-row="itemsPerRow"
       :items-per-col="itemsPerCol"
       :label2color="label2color"
-      @upsert:label="onUpsertLabel"
+      @upsert:labels="$emit('upsert:labels', $event)"
       @click:grid="onClickGrid"
     />
     <div
@@ -45,6 +45,7 @@ import type {
   IDataObject,
   ILabel,
   LabelTaskType,
+  LabelUpsertQuery,
   StatusType,
   TaskWindow,
   Category,
@@ -111,18 +112,15 @@ export default {
     },
   },
   methods: {
-    onUpsertBulkLabel(partialLabel: Partial<ILabel>): void {
+    onUpsertBulkLabels(partialLabel: Partial<ILabel>): void {
       const { selectedUuids, dataObjects } = this;
       // If multi-selection is applied, set the labels for the selected objects.
       const uuids = selectedUuids.length !== 0
         ? selectedUuids
         : dataObjects.map((d) => d.uuid);
-      const newValues: Partial<ILabel>[] = new Array(uuids.length)
-        .fill(null).map(() => cloneDeep(partialLabel));
-      this.$emit('user-edit-labels', uuids, newValues);
-    },
-    onUpsertLabel(uuid: string, partialLabel: Partial<ILabel>): void {
-      this.$emit('user-edit-label', uuid, partialLabel);
+      const queries: LabelUpsertQuery[] = uuids
+        .map((uuid) => ({ uuid, ...cloneDeep(partialLabel) }));
+      this.$emit('upsert-bulk:labels', queries);
     },
     onClickGrid(dataObject: IDataObject, e: MouseEvent): void {
       const { uuid } = dataObject;

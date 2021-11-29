@@ -132,7 +132,7 @@ export default defineComponent({
       ));
       // Remove the label span itself.
       const spans = labelSpans.value.filter((d) => d.uuid !== span.uuid);
-      emit('upsert:label', { relations, spans } as Partial<ILabel>);
+      emit('upsert:labels', { relations, spans } as Partial<ILabel>);
     };
 
     useKey(() => {
@@ -178,7 +178,7 @@ export default defineComponent({
       };
 
       const spans = [...(labelSpans.value ?? []), span];
-      emit('upsert:label', { spans } as Partial<ILabel>);
+      emit('upsert:labels', { spans } as Partial<ILabel>);
       onSelectLabelSpan(null);
     };
     const onScrollMedium = updateBoxes;
@@ -227,7 +227,7 @@ export default defineComponent({
           ? { ...selectedSpan.value, category: strokeCategory.value }
           : d
       ));
-      emit('upsert:label', { spans } as Partial<ILabel>);
+      emit('upsert:labels', { spans } as Partial<ILabel>);
     });
 
     return {

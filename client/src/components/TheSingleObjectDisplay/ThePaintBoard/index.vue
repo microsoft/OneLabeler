@@ -16,9 +16,9 @@
       @set:stroke-shape="strokeShape = $event"
       @set:stroke-width="strokeWidth = $event"
       @set:mouse-operation="mouseOperation = $event"
-      @upsert:label="onUpsertLabel"
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @upsert:labels="onUpsertLabels"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <div
@@ -72,6 +72,7 @@ import type {
   ILabelShape,
   ILabelMask,
   LabelTaskType,
+  LabelUpsertQuery,
   TaskWindow,
 } from '@/commons/types';
 import { MouseOperationType, StrokeShapeType } from './types';
@@ -194,18 +195,23 @@ export default {
       }
     },
     async onSetLabelMask(labelMaskCanvas: HTMLCanvasElement): Promise<void> {
-      if (this.dataObject === null) return;
-      const { uuid } = this.dataObject;
-      const file = await canvasToFile(labelMaskCanvas, `${uuid}-mask.png`);
-      const mask: ILabelMask = { content: (await getBase64(file)) };
-      const newValue: Partial<ILabel> = { mask };
-      this.$emit('user-edit-label', uuid, newValue);
+      const { dataObject } = this;
+      if (dataObject === null) return;
+      const file = await canvasToFile(labelMaskCanvas, `${dataObject.uuid}-mask.png`);
+      const newValue: LabelUpsertQuery = {
+        uuid: dataObject.uuid,
+        mask: { content: (await getBase64(file)) } as ILabelMask,
+      };
+      this.$emit('upsert:labels', newValue);
     },
     onAddLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
       if (dataObject === null) return;
-      const shapes = labelShapes === null ? [labelShape] : [...labelShapes, labelShape];
-      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
+      const newValue: LabelUpsertQuery = {
+        uuid: dataObject.uuid,
+        shapes: [...(labelShapes ?? []), labelShape],
+      };
+      this.$emit('upsert:labels', newValue);
     },
     onUpdateLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
@@ -220,7 +226,7 @@ export default {
         shapes = [...labelShapes];
         shapes[index] = labelShape;
       }
-      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, shapes });
     },
     onRemoveLabelShape(labelShape: ILabelShape): void {
       const { dataObject, labelShapes } = this;
@@ -228,13 +234,12 @@ export default {
       const shapes: ILabelShape[] = labelShapes === null
         ? [labelShape]
         : labelShapes.filter((d) => d.uuid !== labelShape.uuid);
-      this.$emit('user-edit-label', dataObject.uuid, { shapes } as Partial<ILabel>);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, shapes });
     },
-    onUpsertLabel(partialLabel: Partial<ILabel>): void {
+    onUpsertLabels(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
-      const { uuid } = dataObject;
-      this.$emit('user-edit-label', uuid, partialLabel);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, ...partialLabel });
     },
     onResetImageSize(): void {
       (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();

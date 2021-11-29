@@ -22,7 +22,7 @@
       :label2color="label2color"
       :title="title"
       :style="{ 'height': `${headerHeight}px` }"
-      @upsert:label="$emit('upsert:label', $event)"
+      @upsert:labels="$emit('upsert:labels', $event)"
     />
     <component
       :is="component"

@@ -21,7 +21,10 @@
         :title="''"
         :is-selected="selectedUuids.includes(dataObjects[i].uuid)"
         @click:grid="$emit('click:grid', dataObjects[i], $event)"
-        @upsert:label="$emit('upsert:label', dataObjects[i].uuid, $event)"
+        @upsert:labels="$emit(
+          'upsert:labels',
+          { uuid: dataObjects[i].uuid, ...$event },
+        )"
       />
     </div>
 

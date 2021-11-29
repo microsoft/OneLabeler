@@ -18,7 +18,7 @@
         :key="i"
         class="subtitle-2"
         style="min-height: 30px"
-        @click="$emit('upsert:label', { category })"
+        @click="$emit('upsert:labels', { category })"
       >
         {{ category }}
         <div style="flex-grow: 1" />

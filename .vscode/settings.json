@@ -27,6 +27,7 @@
         "clusterer",
         "colorama",
         "colormap",
+        "composables",
         "configurability",
         "congruential",
         "conv",

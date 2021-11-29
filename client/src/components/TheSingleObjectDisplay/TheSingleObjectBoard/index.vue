@@ -7,10 +7,10 @@
       :category-tasks="categoryTasks"
       :label2color="label2color"
       :toolbar-state="toolbarState"
-      @upsert:label="onUpsertLabel"
+      @upsert:labels="onUpsertLabels"
       @upsert:toolbar-state="onUpsertToolbarState"
-      @window:minimize="$emit('edit-task-window', { isMinimized: true })"
-      @window:pin="$emit('edit-task-window', { isPinned: true })"
+      @window:minimize="$emit('update:task-window', { isMinimized: true })"
+      @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
     <div
@@ -26,7 +26,7 @@
         :label2color="label2color"
         :toolbar-state="toolbarState"
         style="height: 0px; flex: 1 1 auto;"
-        @upsert:label="onUpsertLabel"
+        @upsert:labels="onUpsertLabels"
         @upsert:toolbar-state="onUpsertToolbarState"
       />
       <template v-if="enablePagination">
@@ -139,11 +139,10 @@ export default {
     this.page = 1;
   },
   methods: {
-    onUpsertLabel(partialLabel: Partial<ILabel>): void {
+    onUpsertLabels(partialLabel: Partial<ILabel>): void {
       const { dataObject } = this;
       if (dataObject === null) return;
-      const { uuid } = dataObject;
-      this.$emit('user-edit-label', uuid, partialLabel);
+      this.$emit('upsert:labels', { uuid: dataObject.uuid, ...partialLabel });
     },
     onUpsertToolbarState(partialState: Partial<ToolbarState>): void {
       this.toolbarState = { ...this.toolbarState, ...partialState };

@@ -47,14 +47,14 @@ export default {
     ...mapState('workflow', ['nodes', 'currentNode']),
   },
   methods: {
-    ...mapActions(['editTaskWindow']),
+    ...mapActions(['updateTaskWindow']),
     isNodeCurrent(node: WorkflowNode): boolean {
       if (this.currentNode === null) return false;
       return node.id === this.currentNode.id;
     },
     onClickBar(taskWindow: TaskWindow): void {
       const { isMinimized } = taskWindow;
-      this.editTaskWindow({
+      this.updateTaskWindow({
         ...taskWindow,
         isMinimized: !isMinimized,
       });

@@ -67,7 +67,7 @@ export default {
       const text: ILabelText = { content: this.text };
       const partialLabel: Partial<ILabel> = { text };
       this.syncLabel();
-      this.$emit('upsert:label', partialLabel);
+      this.$emit('upsert:labels', partialLabel);
     },
     syncLabel(): void {
       const textContent = this.label?.text?.content ?? null;
