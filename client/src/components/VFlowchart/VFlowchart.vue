@@ -159,6 +159,7 @@ export default defineComponent({
       // The mouse position in svg when drag moved.
       // The position is used by node(s) dragging.
       dragLastPoint: null as Point | null,
+      draggedEdgeId: null as string | null,
       draggedNodeId: null as string | null,
       draggedPort: null as FlowchartPort | null,
       // The ids of click selected and/or box selected nodes/edges.
@@ -173,6 +174,9 @@ export default defineComponent({
     draggedNode(): FlowchartNode | null {
       return this.nodes.find((d) => d.id === this.draggedNodeId) ?? null;
     },
+    draggedEdge(): FlowchartEdge | null {
+      return this.edges.find((d) => d.id === this.draggedEdgeId) ?? null;
+    },
     selectedNodes(): FlowchartNode[] {
       return this.nodes.filter((d) => this.isNodeSelected(d));
     },
@@ -183,6 +187,7 @@ export default defineComponent({
       const {
         dragStartPoint,
         draggedNode,
+        draggedEdge,
         draggedPort,
         mousePosition,
       } = this;
@@ -190,6 +195,7 @@ export default defineComponent({
         dragStartPoint === null
         || mousePosition === null
         || draggedNode !== null
+        || draggedEdge !== null
         || draggedPort !== null
         || ((dragStartPoint.x === mousePosition.x)
           && (dragStartPoint.y === mousePosition.y))
@@ -249,6 +255,7 @@ export default defineComponent({
       this.$emit('create:edge', edge);
     },
     onMouseDownEdge(edge: FlowchartEdge, event: MouseEvent): void {
+      this.draggedEdgeId = edge.id;
       const { ctrlKey } = event;
       const isSelected = this.isEdgeSelected(edge);
       if (!ctrlKey && !isSelected) {
@@ -257,12 +264,13 @@ export default defineComponent({
       } else if (ctrlKey && isSelected) {
         this.selectedEdgeIds = this.selectedEdgeIds
           .filter((d) => d !== edge.id);
+        this.draggedEdgeId = null;
       } else if (ctrlKey && !isSelected) {
         this.selectedEdgeIds = [...this.selectedEdgeIds, edge.id];
       }
     },
     onMouseDownNode(node: FlowchartNode, event: MouseEvent): void {
-      // MouseDown node triggers node:selection and node:draggstart.
+      // MouseDown node triggers node:selection and node:dragstart.
       this.draggedNodeId = node.id;
       const { ctrlKey } = event;
       const isSelected = this.isNodeSelected(node);
@@ -377,6 +385,7 @@ export default defineComponent({
       this.dragStartPoint = null;
       this.dragLastPoint = null;
       this.draggedNodeId = null;
+      this.draggedEdgeId = null;
       this.draggedPort = null;
     },
     getNodeFromPort(port: FlowchartPort): FlowchartNode | null {
