@@ -56,7 +56,7 @@ const useKey = (onDelete: () => void): void => {
     window.addEventListener('keydown', onKey);
   });
   onBeforeUnmount(() => {
-    // Remove listener before distroy,
+    // Remove listener before destroy,
     // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', onKey);
   });
@@ -89,6 +89,10 @@ export default defineComponent({
       type: Function as PropType<() => HTMLElement>,
       required: true,
     },
+  },
+  emits: {
+    'upsert:labels': null,
+    'upsert:toolbar-state': null,
   },
   setup(props, { emit }) {
     const {
@@ -140,18 +144,11 @@ export default defineComponent({
     });
 
     const onSelectLabelSpan = (labelSpan: ILabelTextSpan | null): void => {
-      if (labelSpan !== null) {
-        const partial: Partial<ToolbarState> = {
-          strokeCategory: labelSpan.category,
-          selectedSpan: labelSpan,
-        };
-        emit('upsert:toolbar-state', partial);
-      } else {
-        const partial: Partial<ToolbarState> = {
-          selectedSpan: labelSpan,
-        };
-        emit('upsert:toolbar-state', partial);
-      }
+      const partial: Partial<ToolbarState> = {
+        ...(labelSpan !== null ? { strokeCategory: labelSpan.category } : {}),
+        selectedSpan: labelSpan,
+      };
+      emit('upsert:toolbar-state', partial);
     };
     const onTryCreateSpan = (): void => {
       if (strokeCategory.value === null) return;

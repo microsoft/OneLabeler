@@ -44,9 +44,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VMethodArgs',
   props: {
     label: {
@@ -70,6 +71,9 @@ export default {
       default: false,
     },
   },
+  emits: {
+    'edit:method-args': null,
+  },
   data() {
     return {
       classNameOfCheckbox: 'parameter-panel-checkbox',
@@ -85,7 +89,7 @@ export default {
       this.$emit('edit:method-args', sorted);
     },
   },
-};
+});
 </script>
 
 <style>

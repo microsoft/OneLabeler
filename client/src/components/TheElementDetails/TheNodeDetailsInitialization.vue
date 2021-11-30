@@ -111,7 +111,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   DataType,
   LabelTaskType,
@@ -133,13 +134,16 @@ const menuOfDataType = {
   })),
 };
 
-export default {
+export default defineComponent({
   name: 'TheNodeDetailsInitialization',
   props: {
     node: {
       type: Object as PropType<WorkflowNode>,
       default: null,
     },
+  },
+  emits: {
+    'edit:node': null,
   },
   data() {
     return {
@@ -202,5 +206,5 @@ export default {
       this.$emit('edit:node', newValue);
     },
   },
-};
+});
 </script>

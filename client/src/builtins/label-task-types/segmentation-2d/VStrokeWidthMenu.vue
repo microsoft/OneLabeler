@@ -48,9 +48,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VStrokeWidthMenu',
   props: {
     strokeWidth: {
@@ -62,10 +63,13 @@ export default {
       default: false,
     },
   },
+  emits: {
+    'set:stroke-width': null,
+  },
   data() {
     return {
       widths: [1, 5, 15],
     };
   },
-};
+});
 </script>

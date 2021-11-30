@@ -148,6 +148,9 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: {
+    timeupdate: null,
+  },
   setup(props, { emit }) {
     const { dataObject } = toRefs(props);
 

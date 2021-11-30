@@ -63,7 +63,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { ModelService } from '@/commons/types';
 
 interface ModelMenu {
@@ -74,7 +75,7 @@ interface ModelMenu {
   }]
 }
 
-export default {
+export default defineComponent({
   name: 'VMethodModel',
   props: {
     selectedModel: {
@@ -90,5 +91,9 @@ export default {
       default: true,
     },
   },
-};
+  emits: {
+    'update:selection': null,
+    'create:option': null,
+  },
+});
 </script>

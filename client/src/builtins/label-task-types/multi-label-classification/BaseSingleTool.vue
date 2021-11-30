@@ -9,7 +9,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import type { Category, ILabel, ILabelMultiCategory } from '@/commons/types';
 import VSingleToolMenu from './VSingleToolMenu.vue';
 import VSingleToolTags from './VSingleToolTags.vue';
@@ -19,7 +21,7 @@ enum Component {
   Tags = 'Tags',
 }
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -39,6 +41,9 @@ export default {
       default: Component.Tags,
     },
   },
+  emits: {
+    'upsert:label': null,
+  },
   computed: {
     element(): VueConstructor {
       const mapper: Record<Component, VueConstructor> = {
@@ -52,5 +57,5 @@ export default {
       return label?.multiCategory ?? null;
     },
   },
-};
+});
 </script>

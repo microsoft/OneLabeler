@@ -48,7 +48,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import type {
   Category,
   DataType,
@@ -61,7 +63,7 @@ import dataTypeSetups from '@/builtins/data-types/index';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'TheBody',
   props: {
     dataType: {
@@ -94,6 +96,10 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'upsert:labels': null,
+    'upsert:toolbar-state': null,
+  },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {
       const { labelTasks } = this;
@@ -107,5 +113,5 @@ export default {
       return dataTypeSetup.display;
     },
   },
-};
+});
 </script>

@@ -48,6 +48,8 @@ import {
   ref,
   toRefs,
   watch,
+} from '@vue/composition-api';
+import type {
   ComputedRef,
   PropType,
   Ref,
@@ -109,6 +111,10 @@ export default defineComponent({
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
+  },
+  emits: {
+    'click:grid': null,
+    'upsert:labels': null,
   },
   setup(props) {
     const { dataObjects, itemsPerCol, itemsPerRow } = toRefs(props);

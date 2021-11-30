@@ -17,7 +17,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
 import { ProcessType, WorkflowNodeType } from '@/commons/types';
@@ -31,7 +33,7 @@ import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
-export default {
+export default defineComponent({
   name: 'TheElementDetails',
   props: {
     methods: {
@@ -46,6 +48,13 @@ export default {
       type: Object as PropType<WorkflowNode>,
       default: null,
     },
+  },
+  emits: {
+    'edit:node': null,
+    'edit:method': null,
+    'edit:model': null,
+    'create:method': null,
+    'create:model': null,
   },
   computed: {
     component(): VueConstructor {
@@ -242,5 +251,5 @@ export default {
       this.$emit('create:model', model);
     },
   },
-};
+});
 </script>

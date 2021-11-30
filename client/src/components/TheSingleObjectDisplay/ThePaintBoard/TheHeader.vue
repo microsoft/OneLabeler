@@ -86,7 +86,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { LabelTaskType } from '@/commons/types';
 import type {
   Category,
@@ -112,7 +113,7 @@ const MouseOperationType = {
 // eslint-disable-next-line no-redeclare
 type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperationType;
 
-export default {
+export default defineComponent({
   name: 'ThePaintBoardHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
@@ -153,6 +154,16 @@ export default {
       type: String as PropType<MouseOperationType>,
       required: true,
     },
+  },
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+    'reset:image-size': null,
+    'set:mouse-operation': null,
+    'upsert:labels': null,
+    'set:stroke-label': null,
+    'set:stroke-shape': null,
+    'set:stroke-width': null,
   },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {
@@ -211,14 +222,11 @@ export default {
   },
   methods: {
     filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
+      return Object.entries(this.categoryTasks)
+        .filter(([, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
-};
+});
 </script>

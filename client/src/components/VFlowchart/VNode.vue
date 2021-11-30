@@ -72,11 +72,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { PortDirection } from './types';
 import type { FlowchartNode, FlowchartPort } from './types';
 
-export default {
+export default defineComponent({
   name: 'VNode',
   props: {
     node: {
@@ -95,6 +96,12 @@ export default {
       type: Object as PropType<FlowchartPort>,
       default: null,
     },
+  },
+  emits: {
+    'hover:node': null,
+    'mousedown:node': null,
+    'leave:node': null,
+    'drag:port': null,
   },
   computed: {
     ports(): FlowchartPort[] {
@@ -137,5 +144,5 @@ export default {
       return this.isPortHovered(port) || this.isHovered;
     },
   },
-};
+});
 </script>

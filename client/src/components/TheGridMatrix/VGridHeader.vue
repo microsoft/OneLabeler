@@ -40,7 +40,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { LabelTaskType, StatusType } from '@/commons/types';
 import type {
   Category,
@@ -49,7 +50,7 @@ import type {
 } from '@/commons/types';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
-export default {
+export default defineComponent({
   name: 'VGridHeader',
   props: {
     labelTasks: {
@@ -78,6 +79,9 @@ export default {
       default: '',
     },
   },
+  emits: {
+    'upsert:labels': null,
+  },
   data() {
     return { LabelTaskType };
   },
@@ -100,5 +104,5 @@ export default {
         )).map((d) => d[0]);
     },
   },
-};
+});
 </script>

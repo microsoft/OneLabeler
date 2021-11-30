@@ -29,11 +29,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category } from '@/commons/types';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   props: {
     categories: {
@@ -48,6 +49,9 @@ export default {
       type: Object as PropType<ToolbarState>,
       default: null,
     },
+  },
+  emits: {
+    'upsert:toolbar-state': null,
   },
   computed: {
     strokeCategory(): Category | string | null {
@@ -72,5 +76,5 @@ export default {
       return this.strokeCategory === category;
     },
   },
-};
+});
 </script>

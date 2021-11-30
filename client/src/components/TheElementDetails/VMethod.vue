@@ -133,14 +133,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { ModelService, Process } from '@/commons/types';
 import VMethodArgs from './VMethodArgs.vue';
 import VMethodLabel from './VMethodLabel.vue';
 import VMethodModel from './VMethodModel.vue';
 import VMethodParams from './VMethodParams.vue';
 
-export default {
+export default defineComponent({
   name: 'VMethod',
   components: {
     VMethodArgs,
@@ -165,6 +166,11 @@ export default {
       type: Array as PropType<string[]>,
       default: () => [],
     },
+  },
+  emits: {
+    'edit:method': null,
+    'create:model': null,
+    'edit:model': null,
   },
   computed: {
     model(): ModelService | undefined {
@@ -224,5 +230,5 @@ export default {
       this.$emit('edit:model', newValue);
     },
   },
-};
+});
 </script>

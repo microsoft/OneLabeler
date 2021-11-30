@@ -42,14 +42,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
 export enum StrokeShapeType {
   Circle = 'Circle',
   Square = 'Square',
 }
 
-export default {
+export default defineComponent({
   name: 'VStrokeShapeMenu',
   props: {
     strokeShape: {
@@ -60,6 +61,9 @@ export default {
       type: Boolean as PropType<boolean>,
       default: false,
     },
+  },
+  emits: {
+    'set:stroke-shape': null,
   },
   data() {
     return {
@@ -77,5 +81,5 @@ export default {
       return index;
     },
   },
-};
+});
 </script>

@@ -49,10 +49,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { MethodParams } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VMethodParams',
   props: {
     params: {
@@ -64,5 +65,8 @@ export default {
       default: true,
     },
   },
-};
+  emits: {
+    'click:param-option': null,
+  },
+});
 </script>

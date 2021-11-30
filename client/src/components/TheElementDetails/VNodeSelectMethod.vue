@@ -64,7 +64,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
 interface IMethod {
   label: string;
@@ -80,7 +81,7 @@ interface MethodMenu {
   }[];
 }
 
-export default {
+export default defineComponent({
   name: 'VNodeSelectMethod',
   props: {
     selectedMethod: {
@@ -100,5 +101,9 @@ export default {
       default: false,
     },
   },
-};
+  emits: {
+    'update:selection': null,
+    'create:option': null,
+  },
+});
 </script>

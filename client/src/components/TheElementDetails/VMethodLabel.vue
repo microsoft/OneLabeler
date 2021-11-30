@@ -47,9 +47,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VMethodLabel',
   props: {
     label: {
@@ -60,6 +61,9 @@ export default {
       type: Boolean as PropType<boolean>,
       default: false,
     },
+  },
+  emits: {
+    'edit:label': null,
   },
   data() {
     return {
@@ -74,5 +78,5 @@ export default {
       this.isLabelEditable = false;
     },
   },
-};
+});
 </script>

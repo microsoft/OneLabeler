@@ -74,10 +74,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
-export default {
+export default defineComponent({
   name: 'TheProjectionViewHeader',
   components: { VToolbar },
   props: {
@@ -90,11 +91,16 @@ export default {
       required: true,
     },
   },
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+    'set:matrix-shape': null,
+  },
   data() {
     return {
       maxRows: 3,
       maxColumns: 3,
     };
   },
-};
+});
 </script>

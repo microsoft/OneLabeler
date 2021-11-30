@@ -149,6 +149,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import type { WorkflowGraph } from '@/commons/types';
@@ -163,7 +164,7 @@ import VTemplateMenu from './VTemplateMenu.vue';
 import VDockSideButtons from './VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDevPanelHeader',
   components: {
     Icon,
@@ -171,6 +172,9 @@ export default {
     VTemplateMenu,
     VDockSideButtons,
     VUploadWorkflowButton,
+  },
+  emits: {
+    'toggle:inspect': null,
   },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
@@ -190,5 +194,5 @@ export default {
       'resetGraph',
     ]),
   },
-};
+});
 </script>

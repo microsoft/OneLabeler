@@ -62,9 +62,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'TheMenuOfNode',
   props: {
     show: {
@@ -80,5 +81,11 @@ export default {
       required: true,
     },
   },
-};
+  emits: {
+    'update:show': null,
+    'flowfrom:node': null,
+    'jumpto:node': null,
+    'remove:selected': null,
+  },
+});
 </script>

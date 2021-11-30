@@ -35,10 +35,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category, ILabel } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -58,6 +59,9 @@ export default {
       default: false,
     },
   },
+  emits: {
+    'upsert:labels': null,
+  },
   computed: {
     buttonColor(): string | null {
       const { label, label2color } = this;
@@ -68,5 +72,5 @@ export default {
       return label2color(label.category);
     },
   },
-};
+});
 </script>

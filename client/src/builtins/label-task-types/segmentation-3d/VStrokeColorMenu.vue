@@ -59,10 +59,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VStrokeColorMenu',
   props: {
     categories: {
@@ -82,6 +83,9 @@ export default {
       default: false,
     },
   },
+  emits: {
+    'set:stroke-category': null,
+  },
   watch: {
     categories(newValue: Category[], oldValue: Category[]): void {
       // When the first category is added to categories,
@@ -99,5 +103,5 @@ export default {
       this.$emit('set:stroke-category', categories[0]);
     }
   },
-};
+});
 </script>

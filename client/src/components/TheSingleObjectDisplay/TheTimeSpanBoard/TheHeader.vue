@@ -30,7 +30,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   Category,
   DataType,
@@ -42,7 +43,7 @@ import VDataTypeIcon from '@/components/VDataTypeIcon/VDataTypeIcon.vue';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
-export default {
+export default defineComponent({
   name: 'TheTimeSpanBoardHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
@@ -68,6 +69,11 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+    'upsert:labels': null,
+  },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {
       const { labelTasks } = this;
@@ -84,5 +90,5 @@ export default {
         )).map((d) => d[0]);
     },
   },
-};
+});
 </script>

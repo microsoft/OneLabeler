@@ -36,10 +36,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { LabelTaskType } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'TheLabelTaskMenu',
   props: {
     labelTasks: {
@@ -55,6 +56,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  emits: {
+    'set:selected-label-tasks': null,
   },
   methods: {
     onClickLabelTask(labelTask: LabelTaskType): void {
@@ -76,5 +80,5 @@ export default {
       return selectedLabelTasks.includes(labelTask);
     },
   },
-};
+});
 </script>

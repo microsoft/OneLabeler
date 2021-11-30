@@ -67,7 +67,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   Category,
   DataType,
@@ -82,7 +83,7 @@ import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
 
-export default {
+export default defineComponent({
   name: 'TheTimeSpanBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -115,6 +116,10 @@ export default {
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
+  },
+  emits: {
+    'update:task-window': null,
+    'upsert:labels': null,
   },
   data() {
     return {
@@ -228,5 +233,5 @@ export default {
         )).map((d) => d[0]);
     },
   },
-};
+});
 </script>

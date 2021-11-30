@@ -62,8 +62,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
-import { getBase64 } from '@/plugins/file';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType, ComponentInstance } from '@vue/composition-api';
+import { canvasToFile, getBase64 } from '@/plugins/file';
 import type {
   Category,
   DataType,
@@ -79,22 +80,7 @@ import { MouseOperationType, StrokeShapeType } from './types';
 import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
 
-const canvasToFile = async (
-  canvas: HTMLCanvasElement,
-  filename: string,
-): Promise<File> => new Promise((resolve) => {
-  canvas.toBlob(async (blob: Blob | null) => {
-    if (blob === null) return;
-    const file = new File(
-      [blob],
-      filename,
-      { type: blob.type },
-    );
-    resolve(file);
-  });
-});
-
-export default {
+export default defineComponent({
   name: 'ThePaintBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -131,6 +117,10 @@ export default {
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
+  },
+  emits: {
+    'update:task-window': null,
+    'upsert:labels': null,
   },
   data() {
     return {
@@ -242,8 +232,8 @@ export default {
       this.$emit('upsert:labels', { uuid: dataObject.uuid, ...partialLabel });
     },
     onResetImageSize(): void {
-      (this.$refs.canvas as Vue & { resetStageZoom: () => void }).resetStageZoom();
+      (this.$refs.canvas as ComponentInstance & { resetStageZoom: () => void }).resetStageZoom();
     },
   },
-};
+});
 </script>

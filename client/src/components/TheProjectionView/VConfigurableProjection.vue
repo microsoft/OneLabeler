@@ -36,8 +36,10 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import { xor4096 } from 'seedrandom';
-import type { PropType, VueConstructor } from 'vue';
 import * as projectionAPI from '@/services/projection-api';
 import { ProjectionMethodType } from '@/commons/types';
 import type { Category, ILabelCategory } from '@/commons/types';
@@ -47,7 +49,7 @@ import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
 import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
 
-export default {
+export default defineComponent({
   name: 'VConfigurableProjection',
   components: {
     VScatterplot,
@@ -111,6 +113,13 @@ export default {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  emits: {
+    'update:feature-indices': null,
+    'click:projection-method': null,
+    'update:binning': null,
+    'update:subsampling': null,
+    'select:uuids': null,
   },
   data() {
     return {
@@ -267,5 +276,5 @@ export default {
       return null;
     },
   },
-};
+});
 </script>

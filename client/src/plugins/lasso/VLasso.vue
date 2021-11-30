@@ -34,7 +34,8 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import * as d3 from 'd3';
 
 type Point = [number, number];
@@ -52,7 +53,7 @@ const distance = (pt1: Point, pt2: Point): number => Math.sqrt(
   ((pt2[0] - pt1[0]) ** 2) + ((pt2[1] - pt1[1]) ** 2),
 );
 
-export default {
+export default defineComponent({
   name: 'VLasso',
   props: {
     /** The width of the spared region. */
@@ -75,6 +76,11 @@ export default {
       type: Number as PropType<number>,
       default: 75,
     },
+  },
+  emits: {
+    'lasso:start': null,
+    'lasso:move': null,
+    'lasso:end': null,
   },
   data() {
     return {
@@ -129,5 +135,5 @@ export default {
     },
     polygonToPath,
   },
-};
+});
 </script>

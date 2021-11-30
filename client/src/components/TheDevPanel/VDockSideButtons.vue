@@ -91,14 +91,18 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { Icon } from '@iconify/vue2';
 import { DockSideType } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VDockSideButtons',
   components: { Icon },
+  emits: {
+    'set:dock-side': null,
+  },
   data() {
     return { DockSideType };
   },
-};
+});
 </script>

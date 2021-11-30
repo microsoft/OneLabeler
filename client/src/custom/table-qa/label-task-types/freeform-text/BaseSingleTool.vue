@@ -79,11 +79,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { ILabelText } from '@/commons/types';
 import type { ILabel } from '../../types';
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   props: {
     label: {
@@ -94,6 +95,10 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  emits: {
+    'upsert:labels': null,
+    'click:close': null,
   },
   data() {
     return {
@@ -144,5 +149,5 @@ export default {
       this.text = queries[0].text;
     },
   },
-};
+});
 </script>

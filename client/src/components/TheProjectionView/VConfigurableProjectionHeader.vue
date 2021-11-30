@@ -35,7 +35,7 @@
             dense
             subheader
           >
-            <!-- The buttons for reseting feature selection. -->
+            <!-- The buttons for resetting feature selection. -->
             <div
               class="py-2"
               style="display: flex; flex-direction: row;"
@@ -54,7 +54,7 @@
                 class="view-header-button subtitle-2"
                 title="Clear Feature Selection"
                 x-small
-                @click="onClickUnselectAllFeatures"
+                @click="$emit('update:feature-indices', [])"
               >
                 Clear Selection
               </v-btn>
@@ -111,7 +111,7 @@
                     :key="i"
                     class="subtitle-2"
                     style="min-height: 30px"
-                    @click="onClickProjectionMethod(option, i)"
+                    @click="$emit('click:projection-method', option)"
                   >
                     {{ projectionMethodMenu.optionsText[i] }}
                   </v-list-item>
@@ -302,10 +302,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { ProjectionMethodType } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VConfigurableProjectionHeader',
   props: {
     featureNames: {
@@ -340,6 +341,11 @@ export default {
       type: Number as PropType<number>,
       required: true,
     },
+  },
+  emits: {
+    'update:feature-indices': null,
+    'update:binning': null,
+    'update:subsampling': null,
   },
   data() {
     return {
@@ -376,17 +382,11 @@ export default {
     },
   },
   methods: {
-    onClickProjectionMethod(projectionMethod: ProjectionMethodType) {
-      this.$emit('click:projection-method', projectionMethod);
-    },
     onClickSelectAllFeatures() {
       const { featureNames } = this;
       const nFeatures = featureNames.length;
       const selectedFeatureIndices = new Array(nFeatures).fill(null).map((d, i) => i);
       this.$emit('update:feature-indices', selectedFeatureIndices);
-    },
-    onClickUnselectAllFeatures() {
-      this.$emit('update:feature-indices', []);
     },
     onAddSingleFeature(featureName: string) {
       const featureIndex = this.featureNames.findIndex((d) => d === featureName);
@@ -462,5 +462,5 @@ export default {
       this.$emit('update:subsampling', subsamplingUpdated);
     },
   },
-};
+});
 </script>

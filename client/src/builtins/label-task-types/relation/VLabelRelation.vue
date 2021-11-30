@@ -58,11 +58,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { ILabelRelation, ILabelTextSpan } from '@/commons/types';
 import VLabelSpan from './VLabelSpan.vue';
 
-export default {
+export default defineComponent({
   name: 'VLabelRelation',
   components: { VLabelSpan },
   props: {
@@ -87,7 +88,11 @@ export default {
       default: null,
     },
   },
-};
+  emits: {
+    'select:span': null,
+    'remove:relation': null,
+  },
+});
 </script>
 
 <style scoped>

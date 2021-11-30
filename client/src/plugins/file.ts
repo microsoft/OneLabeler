@@ -57,3 +57,18 @@ export const parseCsvFile = (file: File): Promise<unknown> => {
   }) as Promise<unknown>;
   return promise;
 };
+
+export const canvasToFile = async (
+  canvas: HTMLCanvasElement,
+  filename: string,
+): Promise<File> => new Promise((resolve): void => {
+  canvas.toBlob((blob: Blob | null): void => {
+    if (blob === null) return;
+    const file = new File(
+      [blob],
+      filename,
+      { type: blob.type },
+    );
+    resolve(file);
+  });
+});

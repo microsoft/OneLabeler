@@ -39,15 +39,19 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VNodeEditableLabel',
   props: {
     label: {
       type: String as PropType<string>,
       default: '',
     },
+  },
+  emits: {
+    'edit:label': null,
   },
   data() {
     return {
@@ -62,5 +66,5 @@ export default {
       this.isLabelEditable = false;
     },
   },
-};
+});
 </script>

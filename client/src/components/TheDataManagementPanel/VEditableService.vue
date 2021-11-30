@@ -35,7 +35,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import VNodeSelectMethod from '@/components/TheElementDetails/VNodeSelectMethod.vue';
 
 interface IService {
@@ -45,12 +46,12 @@ interface IService {
   isServerless: boolean;
 }
 
-export default {
+export default defineComponent({
   name: 'VEditableService',
   components: { VNodeSelectMethod },
   props: {
     label: {
-      type: String,
+      type: String as PropType<string>,
       required: true,
     },
     service: {
@@ -62,12 +63,20 @@ export default {
       required: true,
     },
     disabled: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
   },
+  emits: {
+    'create:service': null,
+    'select:service': null,
+    'edit:service': null,
+  },
   computed: {
-    menuOfServices() {
+    menuOfServices(): {
+      label: string,
+      options: { value: IService, label: string }[],
+      } {
       return {
         label: this.label,
         options: (this.options as IService[]).map((d) => ({
@@ -84,5 +93,5 @@ export default {
       this.$emit('edit:service', newValue);
     },
   },
-};
+});
 </script>

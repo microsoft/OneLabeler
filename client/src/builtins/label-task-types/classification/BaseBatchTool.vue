@@ -34,10 +34,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VBatchTool',
   props: {
     categories: {
@@ -57,5 +58,8 @@ export default {
       default: false,
     },
   },
-};
+  emits: {
+    'upsert-bulk:labels': null,
+  },
+});
 </script>

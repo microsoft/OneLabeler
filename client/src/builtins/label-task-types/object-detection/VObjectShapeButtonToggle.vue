@@ -47,7 +47,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category } from '@/commons/types';
 
 export enum MouseOperationType {
@@ -58,7 +59,7 @@ export enum MouseOperationType {
   ScissorsCreatePolygon = 'ScissorsCreatePolygon',
 }
 
-export default {
+export default defineComponent({
   name: 'VObjectShapeButtonToggle',
   props: {
     categories: {
@@ -69,6 +70,9 @@ export default {
       type: String as PropType<MouseOperationType>,
       required: true,
     },
+  },
+  emits: {
+    'set:mouse-operation': null,
   },
   data() {
     return {
@@ -94,7 +98,7 @@ export default {
           mouseOperation: MouseOperationType.LassoCreatePolygon,
         },
         {
-          title: 'intellignet scissors',
+          title: 'intelligent scissors',
           icon: this.$vuetify.icons.values.scissors,
           mouseOperation: MouseOperationType.ScissorsCreatePolygon,
         },
@@ -113,5 +117,5 @@ export default {
       return index;
     },
   },
-};
+});
 </script>

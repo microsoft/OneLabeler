@@ -28,17 +28,16 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { IText, ILabel } from '@/commons/types';
 import VStructure from './VStructure/VStructure.vue';
 
-export default {
+export default defineComponent({
   name: 'BaseDisplay',
   components: { VStructure },
   props: {
-    /**
-     * @description The data object to be rendered.
-     */
+    /** @description The data object to be rendered. */
     dataObject: {
       type: Object as PropType<IText>,
       required: true,
@@ -52,6 +51,9 @@ export default {
       required: true,
     },
   },
+  emits: {
+    scroll: null,
+  },
   methods: {
     /** Get the text node (needed by span annotation). */
     getTextNode(): Text {
@@ -60,5 +62,5 @@ export default {
       return textNode;
     },
   },
-};
+});
 </script>

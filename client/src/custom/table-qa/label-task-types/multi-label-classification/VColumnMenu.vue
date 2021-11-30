@@ -37,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VColumnMenu',
   props: {
     labelColumns: {
@@ -54,6 +55,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  emits: {
+    'set:label-columns': null,
   },
   data() {
     return { showMenu: true };
@@ -80,5 +84,5 @@ export default {
       return this.labelColumns?.includes(column) ?? false;
     },
   },
-};
+});
 </script>

@@ -10,6 +10,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import type { DefinedError } from 'ajv';
 import { MessageType } from '@/commons/types';
 import type { IMessage } from '@/commons/types';
@@ -44,9 +45,13 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   return null;
 };
 
-export default {
+export default defineComponent({
   name: 'VUploadWorkflowButton',
   components: { VUploadButton },
+  emits: {
+    'set:workflow': null,
+    'set:message': null,
+  },
   methods: {
     async onUploadFile(file: File): Promise<void> {
       if (file === null || file === undefined) return;
@@ -68,5 +73,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

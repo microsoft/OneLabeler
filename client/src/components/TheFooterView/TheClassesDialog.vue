@@ -49,14 +49,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category, LabelTaskType } from '@/commons/types';
 import VDialogButton from './VDialogButton.vue';
 import TheCategoryEntry from './TheCategoryEntry.vue';
 
 type InputValidator = (input: unknown) => true | string;
 
-export default {
+export default defineComponent({
   name: 'TheClassesDialog',
   components: {
     VDialogButton,
@@ -83,6 +84,12 @@ export default {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  emits: {
+    'set:category-tasks': null,
+    'upsert:color-mapper': null,
+    'remove:category': null,
+    'add:category': null,
   },
   data() {
     return {
@@ -123,5 +130,5 @@ export default {
       form.resetValidation();
     },
   },
-};
+});
 </script>

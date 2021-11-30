@@ -110,9 +110,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VMediaControl',
   props: {
     // The currentTime of the media.
@@ -151,12 +152,19 @@ export default {
       default: 40,
     },
   },
+  emits: {
+    stop: null,
+    'set:muted': null,
+    'set:playback-rate': null,
+    'set:paused': null,
+    'set:current-time': null,
+  },
   created(): void {
     // Bind keyboard events.
     window.addEventListener('keydown', this.onKey);
   },
   beforeDestroy(): void {
-    // Remove listener before distroy,
+    // Remove listener before destroy,
     // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', this.onKey);
   },
@@ -197,7 +205,7 @@ export default {
       return this.$refs.progress as HTMLProgressElement;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

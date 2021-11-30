@@ -29,7 +29,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { LabelTaskType } from '@/commons/types';
 import type { Category } from '@/commons/types';
 import VStrokeColorMenu from '@/builtins/label-task-types/segmentation-2d/VStrokeColorMenu.vue';
@@ -43,7 +44,7 @@ export enum MouseOperationType {
   ScissorsCreatePolygon = 'ScissorsCreatePolygon',
 }
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   components: {
     VStrokeColorMenu,
@@ -71,6 +72,10 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'set:mouse-operation': null,
+    'set:stroke-label': null,
+  },
   data() {
     return { MouseOperationType };
   },
@@ -79,5 +84,5 @@ export default {
       return this.labelTasks.includes(LabelTaskType.Segmentation2d);
     },
   },
-};
+});
 </script>

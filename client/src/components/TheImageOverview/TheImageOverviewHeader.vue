@@ -17,10 +17,15 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
-export default {
+export default defineComponent({
   name: 'TheImageOverviewHeader',
   components: { VToolbar },
-};
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+  },
+});
 </script>

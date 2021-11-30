@@ -10,13 +10,14 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category } from '@/commons/types';
 import VStrokeColorMenu from './VStrokeColorMenu.vue';
 import { MouseOperationType } from './types';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'BaseSingleTool',
   components: { VStrokeColorMenu },
   props: {
@@ -33,6 +34,9 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'upsert:toolbar-state': null,
+  },
   data() {
     return { MouseOperationType };
   },
@@ -44,5 +48,5 @@ export default {
       return this.toolbarState?.strokeCategory ?? null;
     },
   },
-};
+});
 </script>

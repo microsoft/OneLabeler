@@ -78,11 +78,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category, LabelTaskType } from '@/commons/types';
 import TheLabelTaskMenu from './TheLabelTaskMenu.vue';
 
-export default {
+export default defineComponent({
   name: 'TheCategoryEntry',
   components: { TheLabelTaskMenu },
   props: {
@@ -107,6 +108,11 @@ export default {
       required: true,
     },
   },
+  emits: {
+    'upsert:color-mapper': null,
+    'set:category-tasks': null,
+    'remove:category': null,
+  },
   methods: {
     onSetSelectedLabelTasks(
       category: Category,
@@ -119,5 +125,5 @@ export default {
       this.$emit('set:category-tasks', updatedCategoryTasks);
     },
   },
-};
+});
 </script>

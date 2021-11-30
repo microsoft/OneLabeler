@@ -144,6 +144,7 @@
         "tolist",
         "tqdm",
         "tsne",
+        "Undock",
         "unstarted",
         "upsample",
         "upsert",

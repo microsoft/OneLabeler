@@ -90,7 +90,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
 import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
 import { LabelTaskType } from '@/commons/types';
@@ -119,7 +120,7 @@ interface SpanHandle {
   direction: HandleDirection;
 }
 
-export default {
+export default defineComponent({
   name: 'TheTimeSpanAnnotation',
   props: {
     duration: {
@@ -154,6 +155,12 @@ export default {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  emits: {
+    'update:span': null,
+    'create:span': null,
+    'select:span': null,
+    'select:slot': null,
   },
   data() {
     return {
@@ -201,7 +208,7 @@ export default {
     window.addEventListener('keydown', this.onKey);
   },
   beforeDestroy(): void {
-    // Remove listener before distroy,
+    // Remove listener before destroy,
     // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', this.onKey);
   },
@@ -227,7 +234,7 @@ export default {
         duration,
         spans,
       } = this;
-      const mousePoisition = { x: e.clientX, y: e.clientY };
+      const mousePosition = { x: e.clientX, y: e.clientY };
       if (dragLastPoint !== null
         && draggedSpanHandle !== null
         && spans !== null
@@ -235,7 +242,7 @@ export default {
         const span = spans.find((d) => d.uuid === draggedSpanHandle.spanUuid);
         if (span !== undefined) {
           const newValue = { ...span };
-          const dx = mousePoisition.x - dragLastPoint.x;
+          const dx = mousePosition.x - dragLastPoint.x;
           const dt = (this.duration * dx) / this.slotXRange.width;
           if (draggedSpanHandle.direction === HandleDirection.Left) {
             newValue.start = Math.max(newValue.start + dt, 0);
@@ -245,7 +252,7 @@ export default {
           this.$emit('update:span', newValue);
         }
       }
-      this.dragLastPoint = mousePoisition;
+      this.dragLastPoint = mousePosition;
     },
     onMouseUpSlot(): void {
       this.dragLastPoint = null;
@@ -317,7 +324,7 @@ export default {
       ];
     },
     getContainer(): HTMLElement | null {
-      const container = this.$refs.container as Vue | undefined;
+      const container = this.$refs.container as ComponentInstance | undefined;
       if (container === undefined) return null;
       return container.$el as HTMLElement;
     },
@@ -335,14 +342,11 @@ export default {
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
     },
     filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      const { categoryTasks } = this;
-      const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
+      return Object.entries(this.categoryTasks)
+        .filter(([, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
-      return categoriesFiltered;
     },
   },
-};
+});
 </script>

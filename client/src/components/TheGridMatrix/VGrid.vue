@@ -41,7 +41,9 @@
  * This component have access to the global state.
  */
 
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import { StatusType } from '@/commons/types';
 import type {
   Category,
@@ -53,7 +55,7 @@ import type {
 import dataTypeSetups from '@/builtins/data-types/index';
 import VGridHeader from './VGridHeader.vue';
 
-export default {
+export default defineComponent({
   name: 'VGrid',
   components: { VGridHeader },
   props: {
@@ -99,6 +101,12 @@ export default {
       default: 29,
     },
   },
+  emits: {
+    'click:grid': null,
+    'hover:grid': null,
+    'leave:grid': null,
+    'upsert:labels': null,
+  },
   computed: {
     component(): VueConstructor | null {
       const { dataType } = this;
@@ -109,7 +117,7 @@ export default {
       return this.status === StatusType.Labeled;
     },
   },
-};
+});
 </script>
 
 <style scoped>

@@ -67,46 +67,40 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'VDialogButton',
   props: {
-    /**
-     * @description The icon in the button triggering dialog.
-     */
+    /** The icon in the button triggering dialog. */
     buttonIcon: {
       type: String as PropType<string>,
       default: undefined,
     },
-    /**
-     * @description The text in the button triggering dialog.
-     */
+    /** The text in the button triggering dialog. */
     buttonText: {
       type: String as PropType<string>,
       default: undefined,
     },
-    /**
-     * @description The title of the button triggering dialog.
-     */
+    /** The title of the button triggering dialog. */
     buttonTitle: {
       type: String as PropType<string>,
       default: undefined,
     },
-    /**
-     * @description The title in the dialog header.
-     */
+    /** The title in the dialog header. */
     dialogHeaderTitle: {
       type: String as PropType<string>,
       default: undefined,
     },
-    /**
-     * @description The maximum width for the component.
-     */
+    /** The maximum width for the component. */
     maxWidth: {
       type: String as PropType<string>,
       default: '600px',
     },
+  },
+  emits: {
+    'click:close': null,
   },
   data() {
     return {
@@ -119,5 +113,5 @@ export default {
       this.$emit('click:close');
     },
   },
-};
+});
 </script>

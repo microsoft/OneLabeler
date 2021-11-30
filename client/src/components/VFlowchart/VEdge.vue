@@ -48,14 +48,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { FlowchartPort, FlowchartNode } from './types';
 import { getZaggedPathPoints } from './geometry';
 
 type Point = [number, number];
 type Path = Point[];
 
-export default {
+export default defineComponent({
   name: 'VEdge',
   props: {
     edge: {
@@ -94,6 +95,10 @@ export default {
       type: Boolean as PropType<boolean>,
       default: false,
     },
+  },
+  emits: {
+    mousedown: null,
+    contextmenu: null,
   },
   data() {
     return {
@@ -155,5 +160,5 @@ export default {
       return `M${this.path.map((d) => d.join(',')).join('L')}`;
     },
   },
-};
+});
 </script>

@@ -38,11 +38,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { WorkflowGraph } from '@/commons/types';
 import templates from '@/builtins/workflow-templates/index';
 
-export default {
+export default defineComponent({
   name: 'VTemplateMenu',
   props: {
     workflow: {
@@ -50,8 +51,11 @@ export default {
       required: true,
     },
   },
+  emits: {
+    'set:workflow': null,
+  },
   data() {
     return { templates };
   },
-};
+});
 </script>

@@ -23,7 +23,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
 import VMedia from '@/builtins/data-types/video/VMedia.vue';
 import YoutubeVideoElement from '@/builtins/data-types/youtube-video/youtube-video';
 
@@ -40,17 +41,20 @@ type ITextWithVideo = {
   };
 }
 
-export default {
+export default defineComponent({
   name: 'BaseDisplay',
   components: { VMedia },
   props: {
-    /**
-     * @description The data object to be rendered.
-     */
+    /** The data object to be rendered. */
     dataObject: {
       type: Object as PropType<ITextWithVideo>,
       required: true,
     },
+  },
+  emits: {
+    timeupdate: null,
+    scroll: null,
+    loadedmetadata: null,
   },
   methods: {
     onLoadedMetadata(e: Event): void {
@@ -59,13 +63,13 @@ export default {
       this.$emit('loadedmetadata', e);
     },
     getMedia(): HTMLMediaElement {
-      const component = this.$refs.media as Vue & {
+      const component = this.$refs.media as ComponentInstance & {
         getMedia: () => HTMLMediaElement,
       };
       return component.getMedia();
     },
     getProgress(): HTMLProgressElement {
-      const component = this.$refs.media as Vue & {
+      const component = this.$refs.media as ComponentInstance & {
         getProgress: () => HTMLProgressElement,
       };
       return component.getProgress();
@@ -77,7 +81,7 @@ export default {
       return textNode;
     },
   },
-};
+});
 </script>
 
 <style scoped>

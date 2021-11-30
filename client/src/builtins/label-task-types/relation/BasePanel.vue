@@ -27,7 +27,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   ILabel,
   ILabelRelation,
@@ -36,7 +37,7 @@ import type {
 import VLabelRelation from './VLabelRelation.vue';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'BasePanel',
   components: { VLabelRelation },
   props: {
@@ -52,6 +53,10 @@ export default {
       type: Object as PropType<ToolbarState>,
       default: null,
     },
+  },
+  emits: {
+    'upsert:labels': null,
+    'upsert:toolbar-state': null,
   },
   computed: {
     labelSpans(): ILabelTextSpan[] | null {
@@ -83,7 +88,7 @@ export default {
       return span.uuid === this.selectedSpan?.uuid;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

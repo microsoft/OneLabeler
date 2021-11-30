@@ -38,7 +38,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { cloneDeep } from 'lodash';
 import type {
   DataType,
@@ -53,7 +54,7 @@ import type {
 import VGridMatrix from './VGridMatrix.vue';
 import TheGridMatrixHeader from './TheGridMatrixHeader.vue';
 
-export default {
+export default defineComponent({
   name: 'TheGridMatrix',
   components: {
     VGridMatrix,
@@ -98,6 +99,11 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'update:task-window': null,
+    'upsert:labels': null,
+    'upsert-bulk:labels': null,
+  },
   data() {
     return {
       selectedUuids: [] as string[],
@@ -136,5 +142,5 @@ export default {
         : [...selectedUuids, uuid];
     },
   },
-};
+});
 </script>

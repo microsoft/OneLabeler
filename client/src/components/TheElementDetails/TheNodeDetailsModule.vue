@@ -49,7 +49,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   ModelService,
   Process,
@@ -59,7 +60,7 @@ import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeSelectMethod from './VNodeSelectMethod.vue';
 import VMethod from './VMethod.vue';
 
-export default {
+export default defineComponent({
   name: 'TheNodeDetailsModule',
   components: {
     VNodeEditableLabel,
@@ -92,6 +93,13 @@ export default {
       default: () => [],
     },
   },
+  emits: {
+    'edit:node': null,
+    'edit:method': null,
+    'create:method': null,
+    'edit:model': null,
+    'create:model': null,
+  },
   data() {
     return {
       classNameOfPanel: 'parameter-panel',
@@ -117,7 +125,7 @@ export default {
       this.$emit('edit:method', newValue);
     },
   },
-};
+});
 </script>
 
 <style>

@@ -98,7 +98,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { PortDirection } from './types';
 import type {
   Box,
@@ -120,7 +121,7 @@ const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
 );
 
-export default {
+export default defineComponent({
   name: 'VFlowchart',
   components: {
     VEdge,
@@ -144,6 +145,14 @@ export default {
       type: Function as PropType<(d: number) => number>,
       default: (d: number) => Math.round(d / 10) * 10,
     },
+  },
+  emits: {
+    contextmenu: null,
+    'contextmenu:edge': null,
+    'select:nodes': null,
+    'select:edges': null,
+    'edit:node': null,
+    'create:edge': null,
   },
   data() {
     return {
@@ -441,5 +450,5 @@ export default {
       return this.selectedEdgeIds.findIndex((id) => id === edge.id) >= 0;
     },
   },
-};
+});
 </script>

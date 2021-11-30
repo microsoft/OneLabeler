@@ -37,7 +37,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
 type Query = {
   text: string;
@@ -48,7 +49,7 @@ type Query = {
   type: string;
 }
 
-export default {
+export default defineComponent({
   name: 'VQueryMenu',
   props: {
     labelQueries: {
@@ -67,6 +68,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  emits: {
+    'set:label-queries': null,
   },
   data() {
     return { showMenu: true };
@@ -104,5 +108,5 @@ export default {
       return query.back_text ?? query.text;
     },
   },
-};
+});
 </script>

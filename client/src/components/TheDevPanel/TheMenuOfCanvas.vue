@@ -25,7 +25,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { WorkflowNodeType } from '@/commons/types';
 
 const menuOptions = [
@@ -71,7 +72,7 @@ const menuOptions = [
   },
 ];
 
-export default {
+export default defineComponent({
   name: 'TheMenuOfCanvas',
   props: {
     show: {
@@ -87,8 +88,12 @@ export default {
       required: true,
     },
   },
+  emits: {
+    'update:show': null,
+    'click:option': null,
+  },
   data() {
     return { menuOptions };
   },
-};
+});
 </script>

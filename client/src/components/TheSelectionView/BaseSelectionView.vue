@@ -66,6 +66,10 @@ export default defineComponent({
       default: null,
     },
   },
+  emits: {
+    'set:query-uuids': null,
+    'update:task-window': null,
+  },
   setup(props) {
     const {
       dataObjects,

@@ -32,9 +32,10 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 
-export default {
+export default defineComponent({
   name: 'TheMenuOfEdge',
   props: {
     show: {
@@ -50,5 +51,9 @@ export default {
       required: true,
     },
   },
-};
+  emits: {
+    'update:show': null,
+    'remove:selected': null,
+  },
+});
 </script>

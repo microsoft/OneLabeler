@@ -69,6 +69,9 @@ export default defineComponent({
       default: 3,
     },
   },
+  emits: {
+    'select:indices': null,
+  },
   setup() {
     const container: Ref<HTMLElement | null> = ref(null);
     return {

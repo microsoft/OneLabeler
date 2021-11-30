@@ -47,7 +47,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
 import Konva from 'konva';
 import { v4 as uuidv4 } from 'uuid';
 import simplify from '@/plugins/simplify';
@@ -68,7 +69,7 @@ import TheLayerImage from './TheLayerImage.vue';
 import TheLayerPaint from './TheLayerPaint.vue';
 import TheLayerShapes from './TheLayerShapes.vue';
 
-export default {
+export default defineComponent({
   name: 'ThePaintBoardBody',
   components: {
     TheLayerImage,
@@ -115,6 +116,12 @@ export default {
       type: String as PropType<MouseOperationType>,
       required: true,
     },
+  },
+  emits: {
+    'update:shape': null,
+    'create:shape': null,
+    'delete:shape': null,
+    'update:mask': null,
   },
   data() {
     return {
@@ -745,20 +752,23 @@ export default {
       return (this.$refs.layerInteraction as VueKonvaLayer).getNode();
     },
     getLayerPaint(): Konva.Layer {
-      const component = this.$refs.layerPaint as Vue & { getLayer: () => Konva.Layer };
+      const component = this.$refs.layerPaint as ComponentInstance
+        & { getLayer: () => Konva.Layer };
       return component.getLayer();
     },
     getLayerShapes(): Konva.Layer {
-      const component = this.$refs.layerShapes as Vue & { getLayer: () => Konva.Layer };
+      const component = this.$refs.layerShapes as ComponentInstance
+        & { getLayer: () => Konva.Layer };
       return component.getLayer();
     },
     getShapes(): Konva.Shape[] {
-      const component = this.$refs.layerShapes as Vue & { getShapes: () => Konva.Shape[] };
+      const component = this.$refs.layerShapes as ComponentInstance
+        & { getShapes: () => Konva.Shape[] };
       return component.getShapes();
     },
     getStage(): Konva.Stage {
       return (this.$refs.stage as unknown as Konva.Stage).getStage() as Konva.Stage;
     },
   },
-};
+});
 </script>

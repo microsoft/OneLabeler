@@ -56,6 +56,9 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: {
+    'upsert:labels': null,
+  },
   setup() {
     const container: Ref<HTMLElement | null> = ref(null);
     return {

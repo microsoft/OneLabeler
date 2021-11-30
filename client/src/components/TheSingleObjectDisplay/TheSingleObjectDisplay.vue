@@ -17,7 +17,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import { DataType } from '@/commons/types';
 import type {
   Category,
@@ -31,7 +33,7 @@ import ThePaintBoard from './ThePaintBoard/index.vue';
 import TheSingleObjectBoard from './TheSingleObjectBoard/index.vue';
 import TheTimeSpanBoard from './TheTimeSpanBoard/index.vue';
 
-export default {
+export default defineComponent({
   name: 'TheSingleObjectDisplay',
   props: {
     dataObjects: {
@@ -72,6 +74,11 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'upsert:labels': null,
+    'upsert-bulk:labels': null,
+    'update:task-window': null,
+  },
   computed: {
     component(): VueConstructor | null {
       const { dataType } = this;
@@ -82,5 +89,5 @@ export default {
       return TheSingleObjectBoard;
     },
   },
-};
+});
 </script>

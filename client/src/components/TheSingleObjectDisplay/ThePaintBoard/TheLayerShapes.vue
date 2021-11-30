@@ -7,7 +7,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import Konva from 'konva';
 import { ObjectShapeType } from '@/commons/types';
 import type { ILabelShape } from '@/commons/types';
@@ -16,7 +17,7 @@ import EditableCircle from './editable-circle';
 import EditableRect from './editable-rect';
 import EditablePolygon from './editable-polygon';
 
-export default {
+export default defineComponent({
   name: 'TheLayerShapes',
   props: {
     labelShapes: {
@@ -35,6 +36,10 @@ export default {
       type: Boolean as PropType<boolean>,
       default: true,
     },
+  },
+  emits: {
+    'update:shape': null,
+    'update:selected-shapes': null,
   },
   data() {
     return {
@@ -183,5 +188,5 @@ export default {
       this.drawEditState();
     },
   },
-};
+});
 </script>

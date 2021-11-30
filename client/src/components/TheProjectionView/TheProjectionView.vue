@@ -59,7 +59,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { ProjectionMethodType } from '@/commons/types';
 import type {
   Category,
@@ -97,7 +98,7 @@ const createView = (nFeatures: number): FacetAttribute => ({
   },
 });
 
-export default {
+export default defineComponent({
   name: 'TheProjectionView',
   components: {
     TheProjectionViewHeader,
@@ -128,6 +129,10 @@ export default {
       type: Array as PropType<string[]>,
       required: true,
     },
+  },
+  emits: {
+    'update:task-window': null,
+    'set:query-uuids': null,
   },
   data() {
     return {
@@ -212,5 +217,5 @@ export default {
       this.views = updatedViews;
     },
   },
-};
+});
 </script>

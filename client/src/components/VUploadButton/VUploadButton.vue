@@ -18,14 +18,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { UploadTarget } from '@/commons/types';
 
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
 type KeyboardTrigger = ((e: KeyboardEvent) => boolean) | null
 
-export default {
+export default defineComponent({
   name: 'VUploadButton',
   props: {
     title: {
@@ -61,6 +62,10 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'upload:file': null,
+    'upload:files': null,
+  },
   created(): void {
     if (this.keyboardTrigger !== null) {
       // enable label flipping by number key
@@ -69,7 +74,7 @@ export default {
   },
   beforeDestroy(): void {
     if (this.keyboardTrigger !== null) {
-      // remove listener before distroy,
+      // remove listener before destroy,
       // otherwise the onKey method will be called multiple times
       window.removeEventListener('keydown', this.onKey);
     }
@@ -94,7 +99,7 @@ export default {
       const { keyboardTrigger } = this;
       if (keyboardTrigger === null) return;
       if (keyboardTrigger(e)) {
-        // override brower default short cut
+        // override browser default short cut
         e.preventDefault();
         this.onClick();
       }
@@ -110,14 +115,10 @@ export default {
           }
         }
         if (this.type === UploadTarget.Folder) {
-          if (target.files) {
-            this.$emit('upload:files', target.files);
-          } else {
-            this.$emit('upload:files', null);
-          }
+          this.$emit('upload:files', target.files);
         }
       }
     },
   },
-};
+});
 </script>

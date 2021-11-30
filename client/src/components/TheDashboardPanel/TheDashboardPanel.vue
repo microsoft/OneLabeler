@@ -41,16 +41,20 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import { LabelTaskType } from '@/commons/types';
 import TheDashboardProgressView from './TheDashboardProgressView.vue';
 import TheDashboardLabelDistributionView from './TheDashboardLabelDistributionView.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDashboardPanel',
   components: {
     TheDashboardProgressView,
     TheDashboardLabelDistributionView,
+  },
+  emits: {
+    'click:close': null,
   },
   computed: {
     ...mapGetters('workflow', ['labelTasks']),
@@ -58,5 +62,5 @@ export default {
       return (this.labelTasks as LabelTaskType[]).includes(LabelTaskType.Classification);
     },
   },
-};
+});
 </script>

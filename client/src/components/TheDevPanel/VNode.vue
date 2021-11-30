@@ -82,7 +82,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
@@ -92,7 +93,7 @@ import IconAnimatedSpinner from '@/plugins/icons/IconAnimatedSpinner.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
 import VNodeProcess from './VNodeProcess.vue';
 
-export default {
+export default defineComponent({
   name: 'VNode',
   components: { VNodeProcess, IconAnimatedSpinner },
   props: {
@@ -110,6 +111,9 @@ export default {
       type: Boolean as PropType<boolean>,
       default: false,
     },
+  },
+  emits: {
+    'contextmenu:node': null,
   },
   computed: {
     ...mapGetters('workflow', ['consoleMessages']),
@@ -132,5 +136,5 @@ export default {
       return isNodeProcess(this.node);
     },
   },
-};
+});
 </script>

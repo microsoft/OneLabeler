@@ -42,7 +42,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { getImgSize } from '@/commons/utils';
 import { calFittingTransform } from '@/commons/geometry';
 import type {
@@ -52,7 +53,7 @@ import type {
 } from '@/commons/types';
 import TheImageOverviewHeader from './TheImageOverviewHeader.vue';
 
-export default {
+export default defineComponent({
   name: 'TheImageOverview',
   components: { TheImageOverviewHeader },
   props: {
@@ -72,6 +73,9 @@ export default {
       type: Function as PropType<((label: string) => string) | null>,
       default: null,
     },
+  },
+  emits: {
+    'update:task-window': null,
   },
   data() {
     return { transform: '' };
@@ -115,5 +119,5 @@ export default {
       return label2color(unlabeledMark);
     },
   },
-};
+});
 </script>

@@ -85,6 +85,11 @@ export default defineComponent({
       default: () => [],
     },
   },
+  emits: {
+    'upsert:labels': null,
+    'upsert-bulk:labels': null,
+    'update:task-window': null,
+  },
   setup(props) {
     const {
       dataObjects,

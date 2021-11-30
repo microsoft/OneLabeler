@@ -66,7 +66,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
 import { v4 as uuidv4 } from 'uuid';
 import { WorkflowNodeType } from '@/commons/types';
 import type {
@@ -125,7 +126,7 @@ const edgeAdaptor = (edge: WorkflowEdge): FlowchartEdge => ({
   condition: edge.condition,
 });
 
-export default {
+export default defineComponent({
   name: 'TheDevPanelBodyCanvas',
   components: {
     VFlowchart,
@@ -144,6 +145,17 @@ export default {
       type: Object as PropType<WorkflowNode>,
       default: null,
     },
+  },
+  emits: {
+    'create:node': null,
+    'edit:node': null,
+    'select:nodes': null,
+    'remove:node': null,
+    'create:edge': null,
+    'select:edges': null,
+    'remove:edge': null,
+    'jumpto:node': null,
+    'flowfrom:node': null,
   },
   data() {
     return {
@@ -198,11 +210,11 @@ export default {
     isCanvasActive(): boolean {
       const { activeElement } = document;
       if (activeElement === null) return false;
-      const canvas = ((this.$refs.chart as Vue).$el as HTMLElement);
+      const canvas = ((this.$refs.chart as ComponentInstance).$el as HTMLElement);
       return activeElement === canvas;
     },
     focusToCanvas() {
-      const canvas = ((this.$refs.chart as Vue).$el as HTMLElement);
+      const canvas = ((this.$refs.chart as ComponentInstance).$el as HTMLElement);
       canvas.focus();
     },
     onContextMenuOfNode(node: WorkflowNode & FlowchartNode, e: MouseEvent): void {
@@ -388,7 +400,7 @@ export default {
       }
       if (key === 'a' && ctrlKey) {
         e.preventDefault();
-        const component = this.$refs.chart as Vue & {
+        const component = this.$refs.chart as ComponentInstance & {
           selectedNodeIds: string[],
           selectedEdgeIds: string[],
         };
@@ -400,7 +412,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>

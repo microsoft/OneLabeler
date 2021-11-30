@@ -37,10 +37,14 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import TheDataManagementView from './TheDataManagementView.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDashboardPanel',
   components: { TheDataManagementView },
-};
+  emits: {
+    'click:close': null,
+  },
+});
 </script>

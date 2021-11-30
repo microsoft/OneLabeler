@@ -36,7 +36,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import { LabelTaskType } from '@/commons/types';
 import type {
   Category,
@@ -48,7 +50,7 @@ import type {
 import dataTypeSetups from '@/builtins/data-types/index';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
 
-export default {
+export default defineComponent({
   name: 'TheTimeSpanBoardBody',
   components: { TheTimeSpanAnnotation },
   props: {
@@ -85,6 +87,12 @@ export default {
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  emits: {
+    'create:span': null,
+    'update:span': null,
+    'select:slot': null,
+    'select:span': null,
   },
   data() {
     return {
@@ -136,14 +144,14 @@ export default {
       this.slotClientXRange = this.getSlotClientXRange();
     },
     setMediaCurrentTime(time: number): void {
-      const component = this.$refs.dataObject as Vue & {
+      const component = this.$refs.dataObject as ComponentInstance & {
         getMedia: () => HTMLMediaElement,
       };
       const media = component.getMedia();
       media.currentTime = time;
     },
     getProgress(): HTMLProgressElement | null {
-      const component = this.$refs.dataObject as Vue & {
+      const component = this.$refs.dataObject as ComponentInstance & {
         getProgress: () => HTMLProgressElement,
       } | undefined;
       return component?.getProgress() ?? null;
@@ -155,5 +163,5 @@ export default {
       return { left: rect.left, width: rect.width };
     },
   },
-};
+});
 </script>

@@ -55,7 +55,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { IDataObject } from '@/commons/types';
 
 interface ITextWithTable extends IDataObject {
@@ -68,13 +69,16 @@ interface ITextWithTable extends IDataObject {
   };
 }
 
-export default {
+export default defineComponent({
   name: 'BaseDisplay',
   props: {
     dataObject: {
       type: Object as PropType<ITextWithTable>,
       required: true,
     },
+  },
+  emits: {
+    scroll: null,
   },
   computed: {
     table() {
@@ -97,5 +101,5 @@ export default {
       return textNode;
     },
   },
-};
+});
 </script>

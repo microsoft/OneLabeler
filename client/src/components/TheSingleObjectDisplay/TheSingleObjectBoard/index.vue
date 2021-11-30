@@ -49,7 +49,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   Category,
   DataType,
@@ -62,7 +63,7 @@ import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'TheSingleObjectBoard',
   components: { TheHeader, TheBody },
   props: {
@@ -99,6 +100,10 @@ export default {
       type: Object as PropType<TaskWindow>,
       required: true,
     },
+  },
+  emits: {
+    'update:task-window': null,
+    'upsert:labels': null,
   },
   data() {
     return {
@@ -148,5 +153,5 @@ export default {
       this.toolbarState = { ...this.toolbarState, ...partialState };
     },
   },
-};
+});
 </script>

@@ -59,18 +59,23 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import type { WorkflowGraph } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'TheDevPanelBodyConsole',
   props: {
     graph: {
       type: Object as PropType<WorkflowGraph>,
       default: null,
     },
+  },
+  emits: {
+    'select:nodes': null,
+    'select:edges': null,
   },
   computed: {
     ...mapGetters('workflow', ['consoleMessages']),
@@ -92,7 +97,7 @@ export default {
       return true;
     },
   },
-};
+});
 </script>
 
 <style scoped>

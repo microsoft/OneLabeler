@@ -14,7 +14,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import type {
   ModelService,
   Process,
@@ -30,7 +32,7 @@ const isElementNode = (
   element: WorkflowNode | WorkflowEdge,
 ): boolean => 'type' in element;
 
-export default {
+export default defineComponent({
   name: 'TheElementDetails',
   props: {
     methods: {
@@ -46,6 +48,13 @@ export default {
       type: Array as PropType<(WorkflowNode | WorkflowEdge)[]>,
       default: () => [],
     },
+  },
+  emits: {
+    'edit:node': null,
+    'create:method': null,
+    'edit:method': null,
+    'create:model': null,
+    'edit:model': null,
   },
   computed: {
     node(): WorkflowNode | null {
@@ -69,5 +78,5 @@ export default {
       return TheElementDetailsSelectionEmpty;
     },
   },
-};
+});
 </script>

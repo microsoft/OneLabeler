@@ -33,10 +33,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Category, ILabelMultiCategory } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'VSingleToolMenu',
   props: {
     labelMultiCategory: {
@@ -51,6 +52,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  emits: {
+    'set:label-multi-category': null,
   },
   methods: {
     onClickCategory(category: Category): void {
@@ -69,5 +73,5 @@ export default {
       return this.labelMultiCategory?.includes(category) ?? false;
     },
   },
-};
+});
 </script>

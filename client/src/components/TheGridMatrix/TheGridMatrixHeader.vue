@@ -29,11 +29,8 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  toRefs,
-  PropType,
-} from '@vue/composition-api';
+import { defineComponent, toRefs } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   Category,
   DataType,
@@ -70,6 +67,11 @@ export default defineComponent({
       type: Function as PropType<(label: string) => string>,
       required: true,
     },
+  },
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+    'upsert-bulk:labels': null,
   },
   setup(props) {
     const { categoryTasks } = toRefs(props);

@@ -46,7 +46,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { DataType } from '@/commons/types';
 import type {
   Category,
@@ -60,7 +61,7 @@ import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 import TheHeaderModeToggle from './TheHeaderModeToggle.vue';
 import type { ToolbarState } from './types';
 
-export default {
+export default defineComponent({
   name: 'TheHeader',
   components: {
     VDataTypeIcon,
@@ -94,6 +95,12 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'window:minimize': null,
+    'window:pin': null,
+    'upsert:toolbar-state': null,
+    'upsert:labels': null,
+  },
   data() {
     return { DataType };
   },
@@ -113,5 +120,5 @@ export default {
         )).map((d) => d[0]);
     },
   },
-};
+});
 </script>
