@@ -15,7 +15,7 @@
       <v-list-item
         class="py-0 pl-0 pr-1"
         style="min-height:24px"
-        @click="$emit('flowfrom:node')"
+        @click="$emit('execute-from:node')"
       >
         <v-icon
           class="px-2"
@@ -30,7 +30,7 @@
       <v-list-item
         class="py-0 pl-0 pr-1"
         style="min-height:24px"
-        @click="$emit('jumpto:node')"
+        @click="$emit('goto:node')"
       >
         <v-icon
           class="px-2"
@@ -83,8 +83,8 @@ export default defineComponent({
   },
   emits: {
     'update:show': null,
-    'flowfrom:node': null,
-    'jumpto:node': null,
+    'execute-from:node': null,
+    'goto:node': null,
     'remove:selected': null,
   },
 });

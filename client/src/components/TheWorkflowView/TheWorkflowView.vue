@@ -12,21 +12,29 @@
       @create:edge="onCreateEdge"
       @select:nodes="onSelectNodes"
       @select:edges="onSelectEdges"
-      @contextmenu="onContextMenuOfCanvas"
-      @contextmenu:edge="onContextMenuOfEdge"
+      @contextmenu.native.prevent="onContextMenuOfCanvas"
     >
       <template #node="props">
         <VNode
           :node="extendNode(props.node)"
           :is-executing="isNodeExecuting(props.node)"
-          :is-selected="props.isSelected"
-          @contextmenu:node="onContextMenuOfNode"
+          :color="props.isSelected
+            ? 'black'
+            : (idToConsoleMessages[props.node.id].length > 0 ? '#f5504e' : '#bbb')
+          "
+          @contextmenu.native.stop.prevent="onContextMenuOfNode"
         />
       </template>
       <template #edge="props">
         <VEdge
-          v-bind="props"
+          :path="props.path"
+          :path-data="props.pathData"
           :label="props.edge.condition === undefined ? '' : `${props.edge.condition}`"
+          :color="props.isSelected
+            ? 'black'
+            : (idToConsoleMessages[props.edge.id].length > 0 ? '#f5504e' : '#bbb')
+          "
+          @contextmenu.native.stop.prevent="onContextMenuOfEdge"
         />
       </template>
     </VFlowchart>
@@ -57,8 +65,8 @@
       :show="showMenuOfNode"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      @flowfrom:node="onFlowFromSelectedNode"
-      @jumpto:node="onJumpToSelectedNode"
+      @execute-from:node="onFlowFromSelectedNode"
+      @goto:node="onJumpToSelectedNode"
       @remove:selected="onRemoveSelected"
       @update:show="showMenuOfNode = $event"
     />
@@ -68,6 +76,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { ComponentInstance, PropType } from '@vue/composition-api';
+import { mapGetters } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import { WorkflowNodeType } from '@/commons/types';
 import type {
@@ -84,6 +93,7 @@ import VEdge from './VEdge.vue';
 import TheMenuOfCanvas from './TheMenuOfCanvas.vue';
 import TheMenuOfEdge from './TheMenuOfEdge.vue';
 import TheMenuOfNode from './TheMenuOfNode.vue';
+import { LintMessage } from '@/commons/workflow-utils';
 
 // TODO: may reduce the frequency of syncing the flowchart graph
 // and workflow graph to improve the performance.
@@ -127,7 +137,7 @@ const edgeAdaptor = (edge: WorkflowEdge): FlowchartEdge => ({
 });
 
 export default defineComponent({
-  name: 'TheDevPanelBodyCanvas',
+  name: 'TheWorkflowView',
   components: {
     VFlowchart,
     VNode,
@@ -154,8 +164,8 @@ export default defineComponent({
     'create:edge': null,
     'select:edges': null,
     'remove:edge': null,
-    'jumpto:node': null,
-    'flowfrom:node': null,
+    'goto:node': null,
+    'execute-from:node': null,
   },
   data() {
     return {
@@ -171,6 +181,25 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapGetters('workflow', ['consoleMessages']),
+    idToConsoleMessages(): Record<string, LintMessage[]> {
+      const consoleMessages = this.consoleMessages as LintMessage[];
+      const graph = this.graph as WorkflowGraph;
+
+      const map: Record<string, LintMessage[]> = {};
+      graph.nodes.forEach((node) => { map[node.id] = []; });
+      graph.edges.forEach((edge) => { map[edge.id] = []; });
+      consoleMessages.forEach((message) => {
+        const { subjects } = message;
+        subjects.forEach((subject) => {
+          map[subject.id] = [
+            ...(subject.id in map ? map[subject.id] : []),
+            message,
+          ];
+        });
+      });
+      return map;
+    },
     flowchartGraph(): FlowchartGraph {
       const { graph } = this;
       return {
@@ -217,16 +246,14 @@ export default defineComponent({
       const canvas = ((this.$refs.chart as ComponentInstance).$el as HTMLElement);
       canvas.focus();
     },
-    onContextMenuOfNode(node: WorkflowNode & FlowchartNode, e: MouseEvent): void {
-      e.preventDefault();
+    onContextMenuOfNode(e: MouseEvent): void {
       this.showMenuOfCanvas = false;
       this.showMenuOfEdge = false;
       this.showMenuOfNode = true;
       this.rightClickClientX = e.clientX;
       this.rightClickClientY = e.clientY;
     },
-    onContextMenuOfEdge(edge: FlowchartNode, e: MouseEvent): void {
-      e.preventDefault();
+    onContextMenuOfEdge(e: MouseEvent): void {
       this.showMenuOfCanvas = false;
       this.showMenuOfEdge = true;
       this.showMenuOfNode = false;
@@ -234,7 +261,6 @@ export default defineComponent({
       this.rightClickClientY = e.clientY;
     },
     onContextMenuOfCanvas(e: MouseEvent): void {
-      e.preventDefault();
       this.showMenuOfCanvas = true;
       this.showMenuOfEdge = false;
       this.showMenuOfNode = false;
@@ -368,13 +394,13 @@ export default defineComponent({
     onJumpToSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
-      this.$emit('jumpto:node', node);
+      this.$emit('goto:node', node);
       this.focusToCanvas();
     },
     onFlowFromSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
-      this.$emit('flowfrom:node', node);
+      this.$emit('execute-from:node', node);
       this.focusToCanvas();
     },
     onKey(e: KeyboardEvent): void {

@@ -18,7 +18,7 @@
       <v-divider />
       <div style="display: flex; flex: 1 1 auto;">
         <!-- The graph canvas. -->
-        <TheDevPanelBodyCanvas
+        <TheWorkflowView
           :graph="{ nodes, edges }"
           :current-node="currentNode"
           style="flex: 1 1 auto"
@@ -26,8 +26,8 @@
           @edit:node="editNode($event)"
           @remove:node="onRemoveNode"
           @select:nodes="onSelectNodes"
-          @jumpto:node="setCurrentNode($event)"
-          @flowfrom:node="onFlowFromNode"
+          @goto:node="setCurrentNode($event)"
+          @execute-from:node="onFlowFromNode"
           @create:edge="pushEdges($event)"
           @remove:edge="removeEdge($event)"
           @select:edges="onSelectEdges"
@@ -74,7 +74,7 @@ import type { PropType } from 'vue';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
-import TheDevPanelBodyCanvas from './TheDevPanelBodyCanvas.vue';
+import TheWorkflowView from '../TheWorkflowView/TheWorkflowView.vue';
 import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
 import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.vue';
 
@@ -82,7 +82,7 @@ export default {
   name: 'TheDevPanelBody',
   components: {
     TheElementDetails,
-    TheDevPanelBodyCanvas,
+    TheWorkflowView,
     TheDevPanelBodyConsole,
     TheVariableInspector,
   },

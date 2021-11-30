@@ -2,9 +2,6 @@
   <g
     :transform="`translate(${node.x},${node.y})`"
     cursor="move"
-    @mouseover="$emit('hover:node', node)"
-    @mousedown="$emit('mousedown:node', node, $event)"
-    @mouseleave="$emit('leave:node', node)"
   >
     <!-- The body of the node (excluding ports). -->
     <slot
@@ -98,9 +95,6 @@ export default defineComponent({
     },
   },
   emits: {
-    'hover:node': null,
-    'mousedown:node': null,
-    'leave:node': null,
     'drag:port': null,
   },
   computed: {

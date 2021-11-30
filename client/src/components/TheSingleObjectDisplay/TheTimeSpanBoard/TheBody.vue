@@ -6,7 +6,7 @@
     <!-- The data object display. -->
     <component
       :is="component"
-      ref="dataObject"
+      ref="display"
       :data-object="dataObject"
       :label="label"
       :label2color="label2color"
@@ -36,8 +36,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
-import type { ComponentInstance, PropType } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
+import type {
+  ComponentInstance,
+  PropType,
+  Ref,
+} from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import { LabelTaskType } from '@/commons/types';
 import type {
@@ -48,7 +52,34 @@ import type {
   ILabelTimeSpan,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
+import { useResizeObserver } from '@/components/composables/useResize';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
+
+type XRange = { left: number, width: number };
+type MediaDisplay = ComponentInstance & {
+  getProgress: () => HTMLProgressElement,
+  getMedia: () => HTMLMediaElement,
+} | null;
+
+const useSlotClientXRange = (
+  container: Ref<HTMLDivElement | null>,
+  display: Ref<MediaDisplay>,
+) => {
+  const slotClientXRange: Ref<XRange | null> = ref(null);
+  const getProgress = (): HTMLProgressElement | null => (
+    display.value?.getProgress() ?? null
+  );
+  const getSlotClientXRange = (): XRange | null => {
+    const progress = getProgress();
+    if (progress === null) return null;
+    const rect = progress.getBoundingClientRect();
+    return { left: rect.left, width: rect.width };
+  };
+  useResizeObserver(container, () => {
+    slotClientXRange.value = getSlotClientXRange();
+  });
+  return { slotClientXRange };
+};
 
 export default defineComponent({
   name: 'TheTimeSpanBoardBody',
@@ -94,11 +125,19 @@ export default defineComponent({
     'select:slot': null,
     'select:span': null,
   },
+  setup() {
+    const container: Ref<HTMLDivElement | null> = ref(null);
+    const display: Ref<MediaDisplay> = ref(null);
+    const { slotClientXRange } = useSlotClientXRange(container, display);
+    return {
+      container,
+      display,
+      slotClientXRange,
+    };
+  },
   data() {
     return {
-      resizeObserver: null as ResizeObserver | null,
       currentTime: 0,
-      slotClientXRange: null as { left: number, width: number } | null,
       loadedDuration: null as number | null,
     };
   },
@@ -118,11 +157,6 @@ export default defineComponent({
       return 0;
     },
   },
-  mounted() {
-    this.slotClientXRange = this.getSlotClientXRange();
-    this.resizeObserver = new ResizeObserver(this.onResize);
-    this.resizeObserver.observe(this.$refs.container as HTMLElement);
-  },
   methods: {
     onSelectSpan(span: ILabelTimeSpan | null): void {
       this.$emit('select:span', span);
@@ -140,27 +174,11 @@ export default defineComponent({
       const media = e.target as HTMLMediaElement;
       this.loadedDuration = media.duration;
     },
-    onResize(): void {
-      this.slotClientXRange = this.getSlotClientXRange();
-    },
     setMediaCurrentTime(time: number): void {
-      const component = this.$refs.dataObject as ComponentInstance & {
-        getMedia: () => HTMLMediaElement,
-      };
+      const component = this.$refs.display as MediaDisplay;
+      if (component === null) return;
       const media = component.getMedia();
       media.currentTime = time;
-    },
-    getProgress(): HTMLProgressElement | null {
-      const component = this.$refs.dataObject as ComponentInstance & {
-        getProgress: () => HTMLProgressElement,
-      } | undefined;
-      return component?.getProgress() ?? null;
-    },
-    getSlotClientXRange(): { left: number, width: number } | null {
-      const progress = this.getProgress();
-      if (progress === null) return null;
-      const rect = progress.getBoundingClientRect();
-      return { left: rect.left, width: rect.width };
     },
   },
 });

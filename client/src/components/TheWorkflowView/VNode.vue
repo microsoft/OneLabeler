@@ -1,23 +1,7 @@
 <template>
-  <g @contextmenu.stop="$emit('contextmenu:node', node, $event)">
-    <!-- Highlight the nodes that have linting errors -->
-    <g transform="translate(-5,-5)">
-      <rect
-        v-if="relevantConsoleMessages.length !== 0"
-        :width="node.width + 10"
-        :height="node.height + 10"
-        fill="none"
-        stroke="#f5504e"
-        stroke-width="2"
-        stroke-dasharray="2, 2"
-      />
-    </g>
+  <g>
     <template v-if="isInitialization || isProcess">
-      <VNodeProcess
-        :node="node"
-        :is-executing="isExecuting"
-        :is-selected="isSelected"
-      />
+      <VNodeProcess :node="node" />
     </template>
     <template v-else>
       <template v-if="isDecision">
@@ -27,7 +11,7 @@
             ${node.width},${node.height / 2}
             ${node.width / 2},${node.height}
             0,${node.height / 2}`"
-          :stroke="isSelected ? 'black' : '#bbb'"
+          stroke="currentColor"
           fill="white"
           stroke-width="1"
         />
@@ -37,7 +21,7 @@
           :r="node.height / 2"
           :cx="node.width / 2"
           :cy="node.height / 2"
-          :stroke="isSelected ? 'black': '#bbb'"
+          stroke="currentColor"
           fill="white"
           stroke-width="1"
         />
@@ -84,10 +68,8 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { mapGetters } from 'vuex';
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
-import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import { isNodeProcess } from '@/commons/utils';
 import IconAnimatedSpinner from '@/plugins/icons/IconAnimatedSpinner.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
@@ -106,23 +88,8 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
-    /** Whether the node is selected in the interface. */
-    isSelected: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-  },
-  emits: {
-    'contextmenu:node': null,
   },
   computed: {
-    ...mapGetters('workflow', ['consoleMessages']),
-    relevantConsoleMessages(): LintMessage[] {
-      const consoleMessages = this.consoleMessages as LintMessage[];
-      return consoleMessages.filter(
-        (d) => d.subjects.map((s) => s.id).includes(this.node.id),
-      );
-    },
     isDecision(): boolean {
       return this.node.type === WorkflowNodeType.Decision;
     },

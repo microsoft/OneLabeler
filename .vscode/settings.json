@@ -92,6 +92,7 @@
         "outdegree",
         "outdegrees",
         "packagename",
+        "paintable",
         "peucker",
         "pipenv",
         "Pipfile",

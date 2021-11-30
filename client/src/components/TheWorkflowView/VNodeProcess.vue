@@ -30,6 +30,7 @@
       </g>
     </g>
 
+    <!-- The arrow pointing to outputs. -->
     <g color="white">
       <defs>
         <marker
@@ -43,7 +44,7 @@
         >
           <path
             d="M0,-5L10,0L0,5"
-            fill="currentcolor"
+            fill="currentColor"
           />
         </marker>
       </defs>
@@ -53,7 +54,7 @@
         :x2="(inputs.length * cellSize + node.width - outputs.length * cellSize) / 2 + cellSize / 2"
         :y1="cellSize / 2"
         :y2="cellSize / 2"
-        stroke="currentcolor"
+        stroke="currentColor"
         stroke-width="1"
         marker-end="url(#arrow)"
       />
@@ -68,9 +69,9 @@
       <g transform="translate(2,2)">
         <component
           :is="getIcon(output)"
+          :width="cellSize - 4"
+          :height="cellSize - 4"
           color="white"
-          width="16"
-          height="16"
         />
       </g>
     </g>
@@ -120,7 +121,7 @@
     <rect
       :width="node.width"
       :height="node.height"
-      :stroke="isSelected ? 'black' : '#bbb'"
+      stroke="currentColor"
       fill="none"
       stroke-width="1"
     />
@@ -128,7 +129,9 @@
 </template>
 
 <script lang="ts">
-import type { PropType, VueConstructor } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
+import type { VueConstructor } from 'vue';
 import type { WorkflowNode } from '@/commons/types';
 import {
   isNodeProcess,
@@ -146,22 +149,12 @@ import IconServer from '@/plugins/icons/IconServer.vue';
 import IconUser from '@/plugins/icons/IconUser.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
 
-export default {
+export default defineComponent({
   name: 'VNodeProcess',
   props: {
     node: {
       type: Object as PropType<WorkflowNode & FlowchartNode>,
       default: null,
-    },
-    /** Whether the node is currently executed. */
-    isExecuting: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-    /** Whether the node is selected in the interface. */
-    isSelected: {
-      type: Boolean as PropType<boolean>,
-      default: false,
     },
   },
   data() {
@@ -208,5 +201,5 @@ export default {
       return input in map ? map[input] : null;
     },
   },
-};
+});
 </script>

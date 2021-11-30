@@ -15,10 +15,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { ComponentInstance, PropType } from '@vue/composition-api';
 import Konva from 'konva';
 
-type VueKonvaImage = Vue & { getNode: () => Konva.Image };
+type VueKonvaImage = ComponentInstance & { getNode: () => Konva.Image };
 
 // Create an image element given the image url.
 const createImage = async (
@@ -33,7 +34,7 @@ const createImage = async (
   img.src = url;
 });
 
-export default {
+export default defineComponent({
   name: 'TheLayerImage',
   props: {
     /** The image url. */
@@ -81,5 +82,5 @@ export default {
       return (this.$refs.image as VueKonvaImage).getNode();
     },
   },
-};
+});
 </script>

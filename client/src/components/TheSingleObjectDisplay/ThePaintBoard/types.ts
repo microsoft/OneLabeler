@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import Vue from 'vue';
+import type { ComponentInstance } from '@vue/composition-api';
 
 export enum MouseOperationType {
   PanAndZoom = 'PanAndZoom',
@@ -40,4 +40,4 @@ export interface IEditableShape {
   setOnClick(value: (d: IEditableShape) => void): this;
 }
 
-export type VueKonvaLayer = Vue & { getNode: () => Konva.Layer };
+export type VueKonvaLayer = ComponentInstance & { getNode: () => Konva.Layer };

@@ -16,10 +16,9 @@
 
       <!-- The slot for a label category. -->
       <div
+        style="position: absolute; height: 40px;"
         :style="{
-          position: 'absolute',
           width: `${slotXRange.width}px`,
-          height: '40px',
           left: `${slotXRange.left}px`,
           border: `${label2color(category)} 1px solid`,
           'background-color': selectedSlot === category ? '#ddd' : undefined,
@@ -54,15 +53,13 @@
                 <div
                   v-for="handle in getHandles(span)"
                   :key="`span-${j}-handle-${handle.direction}`"
+                  style="position: absolute; width: 15px; cursor: ew-resize;"
                   :style="{
-                    position: 'absolute',
-                    width: `15px`,
                     height: `calc(100% - ${margin * 2}px)`,
                     left: handle.direction === HandleDirection.Left
                       ? `calc(${100 * span.start / duration}% - 7.5px)`
                       : `calc(${100 * span.end / duration}% - 7.5px)`,
                     top: `${margin}px`,
-                    cursor: 'ew-resize',
                   }"
                   @mousedown="onMouseDownHandle(handle, $event)"
                 />

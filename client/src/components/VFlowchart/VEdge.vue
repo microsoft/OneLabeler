@@ -1,9 +1,5 @@
 <template>
-  <g
-    cursor="pointer"
-    @mousedown="$emit('mousedown', $event)"
-    @contextmenu.stop="$emit('contextmenu', $event)"
-  >
+  <g cursor="pointer">
     <slot
       :edge="edge"
       :path="path"
@@ -95,10 +91,6 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
-  },
-  emits: {
-    mousedown: null,
-    contextmenu: null,
   },
   data() {
     return {

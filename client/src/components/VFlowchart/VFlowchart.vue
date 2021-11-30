@@ -6,7 +6,6 @@
     @mousemove="onMouseMoveCanvas"
     @mouseup="onMouseUpCanvas"
     @mouseleave="onMouseLeaveCanvas"
-    @contextmenu="$emit('contextmenu', $event)"
   >
     <!-- The flowchart edges. -->
     <VEdge
@@ -23,8 +22,7 @@
       :target-node="getNodeFromPort(edge.target)"
       :color="getEdgeColor(edge)"
       :is-selected="isEdgeSelected(edge)"
-      @mousedown="onMouseDownEdge(edge, $event)"
-      @contextmenu="$emit('contextmenu:edge', edge, $event)"
+      @mousedown.native="onMouseDownEdge(edge, $event)"
     >
       <template #default="props">
         <slot
@@ -69,9 +67,9 @@
       :is-hovered="hoveredNode !== null && hoveredNode.id === node.id"
       :is-selected="isNodeSelected(node)"
       :hovered-port="hoveredPort"
-      @hover:node="hoveredNode = $event"
-      @mousedown:node="onMouseDownNode"
-      @leave:node="hoveredNode = null"
+      @mouseover.native="hoveredNode = node"
+      @mousedown.native="onMouseDownNode(node, $event)"
+      @mouseleave.native="hoveredNode = null"
       @drag:port="draggedPort = $event"
     >
       <template #default="props">
@@ -147,8 +145,6 @@ export default defineComponent({
     },
   },
   emits: {
-    contextmenu: null,
-    'contextmenu:edge': null,
     'select:nodes': null,
     'select:edges': null,
     'edit:node': null,
@@ -437,11 +433,7 @@ export default defineComponent({
       return points;
     },
     getEdgeColor(edge: FlowchartEdge): string {
-      if (this.isEdgeSelected(edge)) return 'black';
-      if (edge.condition === undefined) return '#bbb';
-      if (edge.condition === true) return '#5aaf4b';
-      if (edge.condition === false) return '#f5504e';
-      return '#bbb';
+      return this.isEdgeSelected(edge) ? 'black' : '#bbb';
     },
     isNodeSelected(node: FlowchartNode): boolean {
       return this.selectedNodeIds.findIndex((id) => id === node.id) >= 0;

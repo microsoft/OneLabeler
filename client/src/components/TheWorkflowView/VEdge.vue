@@ -1,9 +1,6 @@
 <template>
-  <g
-    cursor="pointer"
-    @mousedown="$emit('mousedown', $event)"
-    @contextmenu.stop="$emit('contextmenu', $event)"
-  >
+  <g cursor="pointer">
+    <!-- The arrow. -->
     <defs>
       <marker
         :id="markerId"
@@ -16,7 +13,7 @@
       >
         <path
           d="M0,-5L10,0L0,5"
-          :fill="edgeColor"
+          fill="currentcolor"
         />
       </marker>
     </defs>
@@ -25,7 +22,7 @@
     <path
       :id="pathId"
       :d="pathData"
-      :stroke="edgeColor"
+      stroke="currentcolor"
       stroke-width="1"
       fill="none"
       :marker-end="`url(#${markerId})`"
@@ -75,14 +72,6 @@ export default defineComponent({
       type: String as PropType<string>,
       default: '',
     },
-    isSelected: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-  },
-  emits: {
-    mousedown: null,
-    contextmenu: null,
   },
   data() {
     return {
@@ -91,9 +80,6 @@ export default defineComponent({
     };
   },
   computed: {
-    edgeColor(): string {
-      return this.isSelected ? 'black' : '#bbb';
-    },
     firstPoint(): Point | null {
       return this.path.length >= 1 ? this.path[0] : null;
     },
