@@ -119,6 +119,74 @@ const isSuperset = (set: string[], subset: string[]) => (
   [...subset].every((d) => set.includes(d))
 );
 
+const filterNodesByBox = (
+  nodes: FlowchartNode[],
+  box: Box,
+): string[] => {
+  const ids = nodes.filter((node) => {
+    const {
+      x,
+      y,
+      width,
+      height,
+    } = node;
+    const points: Point[] = [
+      { x, y },
+      { x, y: y + height },
+      { x: x + width, y },
+      { x: x + width, y: y + height },
+    ];
+    return points.every((p) => isPointInBox(p, box));
+  }).map((d) => d.id);
+  return ids;
+};
+
+const getPortPosition = (
+  nodes: FlowchartNode[],
+  port: FlowchartPort,
+): Point | null => {
+  const node = nodes.find((d) => d.id === port.nodeId);
+  if (node === undefined) return null;
+  return {
+    x: node.x + port.dx,
+    y: node.y + port.dy,
+  };
+};
+
+const getEdgePathPoints = (
+  nodes: FlowchartNode[],
+  edge: FlowchartEdge,
+): [number, number][] => {
+  const { source, target } = edge;
+  const sourcePosition = getPortPosition(nodes, source);
+  const targetPosition = getPortPosition(nodes, target);
+  if (sourcePosition === null || targetPosition === null) return [];
+  const points = getZaggedPathPoints(
+    {
+      x1: sourcePosition.x,
+      y1: sourcePosition.y,
+      x2: targetPosition.x,
+      y2: targetPosition.y,
+    },
+    source.direction,
+    target.direction,
+  );
+  return points;
+};
+
+const filterEdgesByBox = (
+  nodes: FlowchartNode[],
+  edges: FlowchartEdge[],
+  box: Box,
+): string[] => {
+  const ids = edges.filter((edge) => {
+    const points: Point[] = getEdgePathPoints(nodes, edge)
+      .map(([x, y]) => ({ x, y }));
+    return points.every((p) => isPointInBox(p, box));
+  }).map((d) => d.id);
+  return ids;
+};
+
 export default defineComponent({
   name: 'VFlowchart',
   components: {
@@ -143,10 +211,20 @@ export default defineComponent({
       type: Function as PropType<(d: number) => number>,
       default: (d: number) => Math.round(d / 10) * 10,
     },
+    /** The ids of click selected and/or box selected nodes. */
+    selectedNodeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    /** The ids of click selected and/or box selected edges. */
+    selectedEdgeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
   },
   emits: {
-    'select:nodes': null,
-    'select:edges': null,
+    'update:selectedNodeIds': null,
+    'update:selectedEdgeIds': null,
     'edit:node': null,
     'create:edge': null,
   },
@@ -162,9 +240,6 @@ export default defineComponent({
       draggedEdgeId: null as string | null,
       draggedNodeId: null as string | null,
       draggedPort: null as FlowchartPort | null,
-      // The ids of click selected and/or box selected nodes/edges.
-      selectedNodeIds: [] as string[],
-      selectedEdgeIds: [] as string[],
       hoveredNode: null as FlowchartNode | null,
       // The mouse position in svg. Get null when mouse leave svg.
       mousePosition: null as Point | null,
@@ -205,12 +280,13 @@ export default defineComponent({
     hoveredPort(): FlowchartPort | null {
       // The port within a distance threshold from the currently hovered position.
       if (this.mousePosition === null) return null;
+      const { nodes } = this;
       const { x, y } = this.mousePosition;
       const distanceThreshold = 10;
       const ports = ([] as FlowchartPort[])
         .concat(...this.nodes.map((node) => this.getPorts(node)))
         .filter((port) => {
-          const pos = this.getPortPosition(port);
+          const pos = getPortPosition(nodes, port);
           if (pos === null) return false;
           return Math.hypot(pos.x - x, pos.y - y) < distanceThreshold;
         });
@@ -218,33 +294,21 @@ export default defineComponent({
     },
   },
   watch: {
-    selectedNodeIds(): void {
-      // Emit the nodes selected by clicking or box selection.
-      // Node: watch node ids instead of node themselves
-      // to avoid infinite recursion in the parent component
-      // when the parent component listens to select:nodes
-      // and then edit nodes (causing select:nodes to be triggered again).
-      this.$emit('select:nodes', this.selectedNodes);
-    },
-    selectedEdgeIds(): void {
-      // Emit the edges selected by clicking or box selection.
-      this.$emit('select:edges', this.selectedEdges);
-    },
     nodes(): void {
       const validNodeIds = this.nodes.map((d) => d.id);
       if (isSuperset(validNodeIds, this.selectedNodeIds)) return;
       // When the nodes is updated, update the node selection.
       // Typically needed when a new graph is passed.
-      this.selectedNodeIds = this.selectedNodeIds
-        .filter((d) => validNodeIds.includes(d));
+      this.$emit('update:selectedNodeIds', this.selectedNodeIds
+        .filter((d) => validNodeIds.includes(d)));
     },
     edges(): void {
       const validEdgeIds = this.edges.map((d) => d.id);
       if (isSuperset(validEdgeIds, this.selectedEdgeIds)) return;
       // When the edges is updated, update the edge selection.
       // Typically needed when a new graph is passed.
-      this.selectedEdgeIds = this.selectedEdgeIds
-        .filter((d) => validEdgeIds.includes(d));
+      this.$emit('update:selectedEdgeIds', this.selectedEdgeIds
+        .filter((d) => validEdgeIds.includes(d)));
     },
   },
   methods: {
@@ -259,14 +323,14 @@ export default defineComponent({
       const { ctrlKey } = event;
       const isSelected = this.isEdgeSelected(edge);
       if (!ctrlKey && !isSelected) {
-        this.selectedNodeIds = [];
-        this.selectedEdgeIds = [edge.id];
+        this.$emit('update:selectedNodeIds', []);
+        this.$emit('update:selectedEdgeIds', [edge.id]);
       } else if (ctrlKey && isSelected) {
-        this.selectedEdgeIds = this.selectedEdgeIds
-          .filter((d) => d !== edge.id);
+        this.$emit('update:selectedEdgeIds', this.selectedEdgeIds
+          .filter((d) => d !== edge.id));
         this.draggedEdgeId = null;
       } else if (ctrlKey && !isSelected) {
-        this.selectedEdgeIds = [...this.selectedEdgeIds, edge.id];
+        this.$emit('update:selectedEdgeIds', [...this.selectedEdgeIds, edge.id]);
       }
     },
     onMouseDownNode(node: FlowchartNode, event: MouseEvent): void {
@@ -275,20 +339,20 @@ export default defineComponent({
       const { ctrlKey } = event;
       const isSelected = this.isNodeSelected(node);
       if (!ctrlKey && !isSelected) {
-        this.selectedEdgeIds = [];
-        this.selectedNodeIds = [node.id];
+        this.$emit('update:selectedEdgeIds', []);
+        this.$emit('update:selectedNodeIds', [node.id]);
       } else if (ctrlKey && isSelected) {
-        this.selectedNodeIds = this.selectedNodeIds
-          .filter((d) => d !== node.id);
+        this.$emit('update:selectedNodeIds', this.selectedNodeIds
+          .filter((d) => d !== node.id));
         this.draggedNodeId = null;
       } else if (ctrlKey && !isSelected) {
-        this.selectedNodeIds = [...this.selectedNodeIds, node.id];
+        this.$emit('update:selectedNodeIds', [...this.selectedNodeIds, node.id]);
       }
     },
     onMouseDownCanvas(e: MouseEvent): void {
       if (!e.ctrlKey && e.target === this.$refs.svg) {
-        this.selectedNodeIds = [];
-        this.selectedEdgeIds = [];
+        this.$emit('update:selectedNodeIds', []);
+        this.$emit('update:selectedEdgeIds', []);
       }
       this.dragStartPoint = { x: e.offsetX, y: e.offsetY };
       this.dragLastPoint = { x: e.offsetX, y: e.offsetY };
@@ -328,26 +392,14 @@ export default defineComponent({
       // finish box selection
       const { selectionBox } = this;
       if (selectionBox !== null) {
-        this.selectedNodeIds = this.nodes.filter((node) => {
-          const {
-            x,
-            y,
-            width,
-            height,
-          } = node;
-          const points: Point[] = [
-            { x, y },
-            { x, y: y + height },
-            { x: x + width, y },
-            { x: x + width, y: y + height },
-          ];
-          return points.every((p) => isPointInBox(p, selectionBox));
-        }).map((d) => d.id);
-        this.selectedEdgeIds = this.edges.filter((edge) => {
-          const points: Point[] = this.getEdgePathPoints(edge)
-            .map(([x, y]) => ({ x, y }));
-          return points.every((p) => isPointInBox(p, selectionBox));
-        }).map((d) => d.id);
+        this.$emit(
+          'update:selectedNodeIds',
+          filterNodesByBox(this.nodes, selectionBox),
+        );
+        this.$emit(
+          'update:selectedEdgeIds',
+          filterEdgesByBox(this.nodes, this.edges, selectionBox),
+        );
       }
 
       // node on:drag-end
@@ -415,31 +467,6 @@ export default defineComponent({
         dx: width,
         dy: height / 2,
       }];
-    },
-    getPortPosition(port: FlowchartPort): Point | null {
-      const node = this.nodes.find((d) => d.id === port.nodeId);
-      if (node === undefined) return null;
-      return {
-        x: node.x + port.dx,
-        y: node.y + port.dy,
-      };
-    },
-    getEdgePathPoints(edge: FlowchartEdge): [number, number][] {
-      const { source, target } = edge;
-      const sourcePosition = this.getPortPosition(source);
-      const targetPosition = this.getPortPosition(target);
-      if (sourcePosition === null || targetPosition === null) return [];
-      const points = getZaggedPathPoints(
-        {
-          x1: sourcePosition.x,
-          y1: sourcePosition.y,
-          x2: targetPosition.x,
-          y2: targetPosition.y,
-        },
-        source.direction,
-        target.direction,
-      );
-      return points;
     },
     getEdgeColor(edge: FlowchartEdge): string {
       return this.isEdgeSelected(edge) ? 'black' : '#bbb';

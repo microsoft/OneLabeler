@@ -15,26 +15,27 @@
     </div>
     <div style="overflow-y: scroll;">
       <div
-        v-for="(notification, i) in consoleMessages"
+        v-for="(message, i) in consoleMessages"
         :key="i"
+        style="border-style: solid; border-width: 1px;"
         :style="{
           color: {
             'Success': '#5aaf4b',
             'Warning': '#fb8c00',
             'Error': '#f5504e',
-          }[notification.type],
+          }[message.type],
           'background-color': {
             'Success': '#ebf6ea',
             'Warning': '#fef1e0',
             'Error': '#fdebeb',
-          }[notification.type],
-          cursor: isSubjectNode(notification) ? 'pointer' : undefined,
-          'border-style': 'solid',
-          'border-width': '1px',
+          }[message.type],
+          cursor: !isSubjectEmpty(message) ? 'pointer' : undefined,
           'margin-top': i === 0 ? 0 : '-1px',
         }"
         class="px-2 shadow"
-        @click="onClickMessage(notification)"
+        @click="onClickMessage(message)"
+        @mouseover="onMouseoverMessage(message)"
+        @mouseleave="onMouseleaveMessage"
       >
         <v-icon
           aria-hidden="true"
@@ -42,7 +43,7 @@
             'Success': '#5aaf4b',
             'Warning': '#fb8c00',
             'Error': '#f5504e',
-          }[notification.type]"
+          }[message.type]"
           class="pr-1"
           small
         >
@@ -50,9 +51,9 @@
             'Success': $vuetify.icons.values.success,
             'Warning': $vuetify.icons.values.warning,
             'Error': $vuetify.icons.values.error,
-          }[notification.type] }}
+          }[message.type] }}
         </v-icon>
-        {{ notification.message }}
+        {{ message.message }}
       </div>
     </div>
   </v-card>
@@ -63,7 +64,9 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
-import type { WorkflowGraph } from '@/commons/types';
+import type { WorkflowEdge, WorkflowGraph, WorkflowNode } from '@/commons/types';
+
+const isElementEdge = (element: WorkflowNode | WorkflowEdge) => 'source' in element;
 
 export default defineComponent({
   name: 'TheDevPanelBodyConsole',
@@ -76,25 +79,32 @@ export default defineComponent({
   emits: {
     'select:nodes': null,
     'select:edges': null,
+    'hover:nodes': null,
+    'hover:edges': null,
   },
   computed: {
     ...mapGetters('workflow', ['consoleMessages']),
   },
   methods: {
-    onClickMessage(notification: LintMessage): void {
-      const { subjects } = notification;
+    onClickMessage(message: LintMessage): void {
+      const { subjects } = message;
       if (subjects.length === 0) return;
-      if (this.isSubjectNode(notification)) {
-        this.$emit('select:nodes', subjects.map((d) => d.id));
-      } else {
-        this.$emit('select:edges', subjects.map((d) => d.id));
-      }
+      this.$emit('select:nodes', subjects.filter((d) => !isElementEdge(d)).map((d) => d.id));
+      this.$emit('select:edges', subjects.filter((d) => isElementEdge(d)).map((d) => d.id));
     },
-    isSubjectNode(notification: LintMessage): boolean {
-      const { subjects } = notification;
-      if (subjects.length === 0) return false;
-      if ('source' in subjects[0]) return false;
-      return true;
+    onMouseoverMessage(message: LintMessage): void {
+      const { subjects } = message;
+      if (subjects.length === 0) return;
+      this.$emit('hover:nodes', subjects.filter((d) => !isElementEdge(d)).map((d) => d.id));
+      this.$emit('hover:edges', subjects.filter((d) => isElementEdge(d)).map((d) => d.id));
+    },
+    onMouseleaveMessage(): void {
+      this.$emit('hover:nodes', []);
+      this.$emit('hover:edges', []);
+    },
+    isSubjectEmpty(message: LintMessage): boolean {
+      const { subjects } = message;
+      return subjects === null || subjects === undefined || subjects.length === 0;
     },
   },
 });

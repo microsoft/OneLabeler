@@ -21,16 +21,18 @@
         <TheWorkflowView
           :graph="{ nodes, edges }"
           :current-node="currentNode"
+          :selected-node-ids.sync="selectedNodeIds"
+          :selected-edge-ids.sync="selectedEdgeIds"
+          :hovered-node-ids="hoveredNodeIds"
+          :hovered-edge-ids="hoveredEdgeIds"
           style="flex: 1 1 auto"
           @create:node="pushNodes($event)"
           @edit:node="editNode($event)"
           @remove:node="onRemoveNode"
-          @select:nodes="onSelectNodes"
           @goto:node="setCurrentNode($event)"
-          @execute-from:node="onFlowFromNode"
+          @execute-from:node="onExecuteFromNode"
           @create:edge="pushEdges($event)"
           @remove:edge="removeEdge($event)"
-          @select:edges="onSelectEdges"
         />
         <!-- The graph grammar checking console. -->
         <TheDevPanelBodyConsole
@@ -42,8 +44,10 @@
             right: '8px',
             height: '35%',
           }"
-          @select:nodes="onSelectNodes"
-          @select:edges="onSelectEdges"
+          @select:nodes="selectedNodeIds = $event"
+          @select:edges="selectedEdgeIds = $event"
+          @hover:nodes="hoveredNodeIds = $event"
+          @hover:edges="hoveredEdgeIds = $event"
         />
       </div>
     </v-card>
@@ -94,8 +98,12 @@ export default {
   },
   data() {
     return {
+      // Note: store the node/edge ids instead of directly storing the nodes/edges
+      // in case the node/edge properties stored in the child component is not up to date.
       selectedNodeIds: [] as string[],
       selectedEdgeIds: [] as string[],
+      hoveredNodeIds: [] as string[],
+      hoveredEdgeIds: [] as string[],
     };
   },
   computed: {
@@ -109,17 +117,14 @@ export default {
     selection(): (WorkflowNode | WorkflowEdge)[] {
       // Note: make the selection computed instead of directly stored
       // to ensure the selection is updated when the nodes/edges are modified.
-      const {
-        nodes,
-        edges,
-        selectedNodeIds,
-        selectedEdgeIds,
-      } = this;
+      const nodes = this.nodes as WorkflowNode[];
+      const edges = this.edges as WorkflowEdge[];
+      const { selectedNodeIds, selectedEdgeIds } = this;
       const selectedNodes = selectedNodeIds.map((d) => (
-        (nodes as WorkflowNode[]).find((node) => node.id === d) as WorkflowNode
+        nodes.find((node) => node.id === d) as WorkflowNode
       ));
       const selectedEdges = selectedEdgeIds.map((d) => (
-        (edges as WorkflowEdge[]).find((edge) => edge.id === d) as WorkflowEdge
+        edges.find((edge) => edge.id === d) as WorkflowEdge
       ));
       return [
         ...selectedNodes,
@@ -141,24 +146,16 @@ export default {
       'editProcess',
       'executeWorkflow',
     ]),
-    onRemoveNode(node: WorkflowNode) {
+    onRemoveNode(node: WorkflowNode): void {
       const { edges } = this;
       edges.forEach((edge: WorkflowEdge) => {
-        const { source, target } = edge;
-        const shouldRemove = source === node.id || target === node.id;
-        if (shouldRemove) this.removeEdge(edge);
+        if (edge.source === node.id || edge.target === node.id) this.removeEdge(edge);
       });
       this.removeNode(node);
     },
-    onSelectNodes(ids: string[]) {
-      this.selectedNodeIds = ids;
-    },
-    onFlowFromNode(node: WorkflowNode) {
+    onExecuteFromNode(node: WorkflowNode): void {
       this.setCurrentNode(node);
       this.executeWorkflow(node);
-    },
-    onSelectEdges(ids: string[]) {
-      this.selectedEdgeIds = ids;
     },
   },
 };

@@ -1,9 +1,8 @@
-import { lintWorkflow } from '@/commons/workflow-utils/lint-workflow';
+import { lintWorkflow, LintMessageType } from '@/commons/workflow-utils/lint-workflow';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import { WorkflowNodeType } from '@/commons/types';
 import type {
   DataType,
-  InitializationParams,
   LabelTaskType,
   Process,
   WorkflowNode,
@@ -59,16 +58,16 @@ export const processesValid = (state: IState): Process[] => {
 };
 
 export const consoleMessages = (state: IState): LintMessage[] => {
-  const notifications = lintWorkflow({
+  const messages = lintWorkflow({
     nodes: state.nodes,
     edges: state.edges,
   });
-  if (notifications.length === 0) {
+  if (messages.length === 0) {
     return [{
       subjects: [],
       message: '🚀 The workflow is valid',
-      type: 'Success',
+      type: LintMessageType.Success,
     }];
   }
-  return notifications;
+  return messages;
 };

@@ -6,13 +6,15 @@
       ref="chart"
       :nodes="flowchartGraph.nodes"
       :edges="flowchartGraph.edges"
+      :selected-node-ids="selectedNodeIds"
+      :selected-edge-ids="selectedEdgeIds"
       tabindex="-1"
       style="width: 100%; height: 100%;"
       @edit:node="onEditNode"
       @create:edge="onCreateEdge"
-      @select:nodes="onSelectNodes"
-      @select:edges="onSelectEdges"
       @contextmenu.native.prevent="onContextMenuOfCanvas"
+      @update:selectedNodeIds="$emit('update:selectedNodeIds', $event)"
+      @update:selectedEdgeIds="$emit('update:selectedEdgeIds', $event)"
     >
       <template #node="props">
         <VNode
@@ -22,6 +24,7 @@
             ? 'black'
             : (idToConsoleMessages[props.node.id].length > 0 ? '#f5504e' : '#bbb')
           "
+          :opacity="getNodeOpacity(props.node)"
           @contextmenu.native.stop.prevent="onContextMenuOfNode"
         />
       </template>
@@ -34,6 +37,7 @@
             ? 'black'
             : (idToConsoleMessages[props.edge.id].length > 0 ? '#f5504e' : '#bbb')
           "
+          :opacity="getEdgeOpacity(props.edge)"
           @contextmenu.native.stop.prevent="onContextMenuOfEdge"
         />
       </template>
@@ -65,8 +69,8 @@
       :show="showMenuOfNode"
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
-      @execute-from:node="onFlowFromSelectedNode"
-      @goto:node="onJumpToSelectedNode"
+      @execute-from:node="onExecuteFromSelectedNode"
+      @goto:node="onGotoSelectedNode"
       @remove:selected="onRemoveSelected"
       @update:show="showMenuOfNode = $event"
     />
@@ -155,14 +159,30 @@ export default defineComponent({
       type: Object as PropType<WorkflowNode>,
       default: null,
     },
+    selectedNodeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    selectedEdgeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    hoveredNodeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
+    hoveredEdgeIds: {
+      type: Array as PropType<string[]>,
+      default: () => [],
+    },
   },
   emits: {
+    'update:selectedNodeIds': null,
+    'update:selectedEdgeIds': null,
     'create:node': null,
     'edit:node': null,
-    'select:nodes': null,
     'remove:node': null,
     'create:edge': null,
-    'select:edges': null,
     'remove:edge': null,
     'goto:node': null,
     'execute-from:node': null,
@@ -176,8 +196,6 @@ export default defineComponent({
       rightClickClientY: null as null | number,
       rightClickCanvasX: null as null | number,
       rightClickCanvasY: null as null | number,
-      selectedNodeIds: [] as string[],
-      selectedEdgeIds: [] as string[],
     };
   },
   computed: {
@@ -242,9 +260,19 @@ export default defineComponent({
       const canvas = ((this.$refs.chart as ComponentInstance).$el as HTMLElement);
       return activeElement === canvas;
     },
-    focusToCanvas() {
+    focusToCanvas(): void {
       const canvas = ((this.$refs.chart as ComponentInstance).$el as HTMLElement);
       canvas.focus();
+    },
+    getNodeOpacity(node: FlowchartNode): number {
+      const { hoveredNodeIds, hoveredEdgeIds } = this;
+      if (hoveredNodeIds.length === 0 && hoveredEdgeIds.length === 0) return 1;
+      return hoveredNodeIds.includes(node.id) ? 1 : 0.3;
+    },
+    getEdgeOpacity(edge: FlowchartEdge): number {
+      const { hoveredNodeIds, hoveredEdgeIds } = this;
+      if (hoveredNodeIds.length === 0 && hoveredEdgeIds.length === 0) return 1;
+      return hoveredEdgeIds.includes(edge.id) ? 1 : 0.3;
     },
     onContextMenuOfNode(e: MouseEvent): void {
       this.showMenuOfCanvas = false;
@@ -287,7 +315,12 @@ export default defineComponent({
         [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {
-        [WorkflowNodeType.Initialization]: { dataType: null, labelTasks: [] },
+        [WorkflowNodeType.Initialization]: {
+          dataType: null,
+          labelTasks: [],
+          inputs: [],
+          outputs: ['dataObjects', 'labels'],
+        },
         [WorkflowNodeType.FeatureExtraction]: null,
         [WorkflowNodeType.DataObjectSelection]: null,
         [WorkflowNodeType.DefaultLabeling]: null,
@@ -296,7 +329,7 @@ export default defineComponent({
         [WorkflowNodeType.ModelTraining]: null,
         [WorkflowNodeType.Custom]: null,
         [WorkflowNodeType.Decision]: null,
-        [WorkflowNodeType.Exit]: null,
+        [WorkflowNodeType.Exit]: { inputs: [], outputs: [] },
       } as Record<WorkflowNodeType, unknown>;
       const node: WorkflowNode = {
         id: uuidv4(),
@@ -326,12 +359,6 @@ export default defineComponent({
         },
       };
       this.$emit('edit:node', newValue);
-    },
-    onSelectNodes(nodes: FlowchartNode[]): void {
-      // Note: store the node ids instead of directly storing the nodes
-      // in case the node properties stored in the child component is not up to date.
-      this.selectedNodeIds = nodes.map((d) => d.id);
-      this.$emit('select:nodes', this.selectedNodeIds);
     },
     onCreateEdge(edge: FlowchartEdge): void {
       // Do not allow self loop.
@@ -370,12 +397,6 @@ export default defineComponent({
       };
       this.$emit('create:edge', newValue);
     },
-    onSelectEdges(edges: FlowchartEdge[]): void {
-      // Note: store the node ids instead of directly storing the nodes
-      // in case the node properties stored in the child component is not up to date.
-      this.selectedEdgeIds = edges.map((d) => d.id);
-      this.$emit('select:edges', this.selectedEdgeIds);
-    },
     onRemoveSelected(): void {
       const toBeRemovedNodes = this.selectedNodes;
       const toBeRemovedEdges = this.flowchartGraph.edges.filter((edge) => (
@@ -391,13 +412,13 @@ export default defineComponent({
       });
       this.focusToCanvas();
     },
-    onJumpToSelectedNode(): void {
+    onGotoSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('goto:node', node);
       this.focusToCanvas();
     },
-    onFlowFromSelectedNode(): void {
+    onExecuteFromSelectedNode(): void {
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('execute-from:node', node);
