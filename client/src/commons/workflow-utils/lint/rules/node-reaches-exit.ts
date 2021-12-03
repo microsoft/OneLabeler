@@ -30,12 +30,12 @@ const checkNodeReachesExit = (
     const unreachableNodes = nodes.filter((d) => !visitedNodeIds.has(d.id));
     unreachableNodes.forEach((node) => {
       messages.push({
-        subjects: [node],
-        message: `node with label "${
-          node.label
-        }" cannot reach the exit node (ALL The Nodes Should Reach Exit Node)`,
         type: LintMessageType.Error,
+        message: `node with label "${node.label}" cannot reach the exit node`,
         category: ErrorCategory.TopologyError,
+        subjects: [node],
+        rule: 'ALL The Nodes Should Reach Exit Node',
+        fixes: [`create an outward edge from the node with label "${node.label}" to another node`],
       });
     });
   }

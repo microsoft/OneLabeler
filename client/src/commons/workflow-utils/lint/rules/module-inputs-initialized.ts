@@ -1,8 +1,25 @@
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
+import { filterNodeTypesByOutputs } from '../../build-node';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';
 import getPaths from '../utils/paths';
+
+/**
+ * Filter the message when all the subjects of the message
+ * have been mentioned in other messages.
+ */
+const filterDuplicate = (messages: LintMessage[]): LintMessage[] => {
+  const filteredMessages: LintMessage[] = [];
+  const visitedIds: Set<string> = new Set([]);
+  messages.forEach((message) => {
+    const subjectsAllVisited = message.subjects !== undefined
+      && message.subjects.every((subject) => visitedIds.has(subject.id));
+    if (!subjectsAllVisited) filteredMessages.push(message);
+    message.subjects?.forEach((subject) => visitedIds.add(subject.id));
+  });
+  return filteredMessages;
+};
 
 /** Check that all modules' inputs are initialized for all executions. */
 const checkModuleInputsInitialized = (
@@ -37,21 +54,28 @@ const checkModuleInputsInitialized = (
       const notInitializedInputs = inputs.filter((d) => !initializedStates.has(d));
       if (notInitializedInputs.length !== 0) {
         messages.push({
-          subjects: [node],
+          type: LintMessageType.Error,
           message: `node with label "${
             node.label
           }" has uninitialized inputs ${
             notInitializedInputs.map((d) => `"${d}"`).join(', ')
-          } (States Should Be Initialized Before Used)`,
-          type: LintMessageType.Error,
+          }`,
           category: ErrorCategory.ImplementationError,
+          subjects: [node],
+          rule: 'States Should Be Initialized Before Used',
+          fixes: notInitializedInputs.map((input): string[] => {
+            const nodeTypes = filterNodeTypesByOutputs([input]);
+            return nodeTypes.map((typeName) => (
+              `May consider to add ${typeName} before this node is visited to initialize ${input}.`
+            ));
+          }).flat(),
         });
       }
       outputs.forEach((d) => initializedStates.add(d));
     });
   });
 
-  return messages;
+  return filterDuplicate(messages);
 };
 
 export default checkModuleInputsInitialized;

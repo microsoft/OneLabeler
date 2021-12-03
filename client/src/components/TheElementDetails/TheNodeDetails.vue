@@ -90,29 +90,44 @@ export default defineComponent({
       const { node } = this;
       const mapper = {
         [WorkflowNodeType.DataObjectSelection]: [
+          'dataObjects',
           'labels',
           'features',
-          'model',
           'queryUuids',
+          'model',
         ],
         [WorkflowNodeType.DefaultLabeling]: [
           'dataObjects',
+          'labels',
+          'features',
           'queryUuids',
+          'model',
+        ],
+        [WorkflowNodeType.FeatureExtraction]: [
+          'dataObjects',
+          'labels',
           'features',
           'model',
         ],
-        [WorkflowNodeType.FeatureExtraction]: ['dataObjects', 'labels'],
-        [WorkflowNodeType.InteractiveLabeling]: ['dataObjects', 'queryUuids'],
-        [WorkflowNodeType.ModelTraining]: [
-          'model',
-          'features',
+        [WorkflowNodeType.InteractiveLabeling]: [
+          'dataObjects',
           'labels',
+          'features',
+          'queryUuids',
+          'categories',
+        ],
+        [WorkflowNodeType.ModelTraining]: [
+          'labels',
+          'features',
+          'model',
+          'queryUuids',
         ],
         [WorkflowNodeType.StoppageAnalysis]: [
-          'labels',
-          'model',
-          'features',
           'dataObjects',
+          'labels',
+          'features',
+          'model',
+          'stop',
         ],
         [WorkflowNodeType.Custom]: [
           'dataObjects',

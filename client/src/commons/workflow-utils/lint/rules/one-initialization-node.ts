@@ -12,10 +12,12 @@ const checkOneInitializationNode = (
   ));
   if (initializationNodes.length !== 1) {
     return [{
-      subjects: initializationNodes,
-      message: `found ${initializationNodes.length} initialization nodes (Need One Initialization Node)`,
       type: LintMessageType.Error,
+      message: `found ${initializationNodes.length} initialization nodes`,
       category: ErrorCategory.TopologyError,
+      subjects: initializationNodes,
+      rule: 'Need One Initialization Node',
+      fixes: ['create an initialization node'],
     }];
   }
 

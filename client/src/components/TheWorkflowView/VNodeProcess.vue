@@ -20,6 +20,15 @@
       :key="`input-${i}`"
       :transform="`translate(${cellSize * i},0)`"
     >
+      <!-- The square region where the tooltip can be triggered. -->
+      <rect
+        :width="cellSize"
+        :height="cellSize"
+        opacity="0"
+      />
+      <title>
+        {{ input }}
+      </title>
       <g transform="translate(2,2)">
         <component
           :is="getIcon(input)"
@@ -66,6 +75,15 @@
       :key="`output-${i}`"
       :transform="`translate(${node.width - cellSize * (i + 1)},0)`"
     >
+      <!-- The square region where the tooltip can be triggered. -->
+      <rect
+        :width="cellSize"
+        :height="cellSize"
+        opacity="0"
+      />
+      <title>
+        {{ output }}
+      </title>
       <g transform="translate(2,2)">
         <component
           :is="getIcon(output)"

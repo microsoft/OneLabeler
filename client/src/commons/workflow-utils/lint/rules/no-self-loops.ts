@@ -14,10 +14,12 @@ const checkNoSelfLoops = (
     const node = nodes.find((d) => d.id === source);
     if (node === undefined) return;
     messages.push({
-      subjects: [node],
-      message: `node with label "${node.label}" has self loop (Disallow Self Loops)`,
       type: LintMessageType.Error,
+      message: `node with label "${node.label}" has self loop`,
       category: ErrorCategory.TopologyError,
+      subjects: [node],
+      rule: 'Disallow Self Loops',
+      fixes: [`remove the self loop on the node with label "${node.label}"`],
     });
   });
 

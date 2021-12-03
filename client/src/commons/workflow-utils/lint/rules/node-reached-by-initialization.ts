@@ -23,12 +23,14 @@ const checkNodeReachedByInitialization = (
     const unreachableNodes = nodes.filter((d) => !visitedNodeIds.has(d.id));
     unreachableNodes.forEach((node) => {
       messages.push({
-        subjects: [node],
+        type: LintMessageType.Error,
         message: `node with label "${
           node.label
-        }" unreachable from the initialization node (ALL The Nodes Should Be Reachable)`,
-        type: LintMessageType.Error,
+        }" unreachable from the initialization node ()`,
         category: ErrorCategory.TopologyError,
+        subjects: [node],
+        rule: 'ALL The Nodes Should Be Reachable',
+        fixes: [`create an inward edge from another node to the node with label "${node.label}"`],
       });
     });
   }

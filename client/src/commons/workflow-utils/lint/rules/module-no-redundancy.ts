@@ -1,5 +1,6 @@
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
+import { filterNodeTypesByInputs, filterNodeTypesByOutputs } from '../../build-node';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';
 import getPaths from '../utils/paths';
@@ -50,14 +51,24 @@ const checkModuleNoRedundancy = (
       const unmodifiableOutputs = outputs.filter((d) => unmodifiableStates.has(d));
       if (unmodifiableOutputs.length !== 0) {
         messages.push({
-          subjects: [node],
+          type: LintMessageType.Error,
           message: `node with label "${
             node.label
           }" output overwrites unused state(s) ${
             unmodifiableOutputs.map((d) => `"${d}"`).join(', ')
-          } (States Should Be Used Before Overwritten)`,
-          type: LintMessageType.Error,
+          }`,
           category: ErrorCategory.ImplementationError,
+          subjects: [node],
+          rule: 'States Should Be Used Before Overwritten',
+          fixes: [
+            `consider whether the node with label "${node.label}" should be removed`,
+            ...outputs.map((output): string[] => {
+              const nodeTypes = filterNodeTypesByInputs([output]);
+              return nodeTypes.map((typeName) => (
+                `consider whether to add ${typeName} before this node is visited to consume ${output}.`
+              ));
+            }).flat(),
+          ],
         });
       }
       outputs.forEach((d) => unmodifiableStates.add(d));
@@ -78,12 +89,19 @@ const checkModuleNoRedundancy = (
       const { inputs, outputs } = node.value;
       if (unvisitableNodes.has(node.id)) {
         messages.push({
-          subjects: [node],
-          message: `node with label "${
-            node.label
-          }" revisited before its input(s) is edited (Module Inputs Be Edited Before Revisit)`,
           type: LintMessageType.Error,
+          message: `node with label "${node.label}" revisited before its input(s) is edited`,
           category: ErrorCategory.ImplementationError,
+          subjects: [node],
+          rule: 'Module Inputs Should Be Edited Before Revisit',
+          fixes: [
+            ...inputs.map((input): string[] => {
+              const nodeTypes = filterNodeTypesByOutputs([input]);
+              return nodeTypes.map((typeName) => (
+                `consider whether to add ${typeName} before this node is visited to modify ${input}.`
+              ));
+            }).flat(),
+          ],
         });
       }
 

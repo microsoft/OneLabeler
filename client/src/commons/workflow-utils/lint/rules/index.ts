@@ -18,6 +18,9 @@ export default [
   // 1.2. All the edge sources and targets are existing nodes
   checkEdgeVertexIdsExist,
 
+  // 5. The workflow involves labeling
+  checkHasLabeling,
+
   // 2. Ensuring the graph a valid flowchart
   // 2.1. Contains one initialization node
   checkOneInitializationNode,
@@ -37,9 +40,6 @@ export default [
 
   // 4. Modules are not redundant
   checkModuleNoRedundancy,
-
-  // 5. The workflow involves labeling
-  checkHasLabeling,
 
   // 6. All the nodes are implemented
   checkModuleImplemented,

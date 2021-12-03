@@ -12,10 +12,12 @@ const checkOneExitNode = (
   ));
   if (exitNodes.length !== 1) {
     return [{
-      subjects: exitNodes,
-      message: `found ${exitNodes.length} exit nodes (Need One Exit Node)`,
       type: LintMessageType.Error,
+      message: `found ${exitNodes.length} exit nodes`,
       category: ErrorCategory.TopologyError,
+      subjects: exitNodes,
+      rule: 'Need One Exit Node',
+      fixes: ['create an exit node'],
     }];
   }
 

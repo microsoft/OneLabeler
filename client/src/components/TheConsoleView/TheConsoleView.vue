@@ -14,47 +14,16 @@
       Console
     </div>
     <div style="overflow-y: scroll;">
-      <div
+      <VMessage
         v-for="(message, i) in consoleMessages"
-        :key="i"
+        :key="message.message"
+        :message="message"
+        :style="{ 'margin-top': i === 0 ? 0 : '-1px' }"
         style="border-style: solid; border-width: 1px;"
-        :style="{
-          color: {
-            'Success': '#5aaf4b',
-            'Warning': '#fb8c00',
-            'Error': '#f5504e',
-          }[message.type],
-          'background-color': {
-            'Success': '#ebf6ea',
-            'Warning': '#fef1e0',
-            'Error': '#fdebeb',
-          }[message.type],
-          cursor: !isSubjectEmpty(message) ? 'pointer' : undefined,
-          'margin-top': i === 0 ? 0 : '-1px',
-        }"
-        class="px-2 shadow"
         @click="onClickMessage(message)"
         @mouseover="onMouseoverMessage(message)"
         @mouseleave="onMouseleaveMessage"
-      >
-        <v-icon
-          aria-hidden="true"
-          :color="{
-            'Success': '#5aaf4b',
-            'Warning': '#fb8c00',
-            'Error': '#f5504e',
-          }[message.type]"
-          class="pr-1"
-          small
-        >
-          {{ {
-            'Success': $vuetify.icons.values.success,
-            'Warning': $vuetify.icons.values.warning,
-            'Error': $vuetify.icons.values.error,
-          }[message.type] }}
-        </v-icon>
-        {{ message.message }}
-      </div>
+      />
     </div>
   </v-card>
 </template>
@@ -65,11 +34,13 @@ import type { PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import type { WorkflowEdge, WorkflowGraph, WorkflowNode } from '@/commons/types';
+import VMessage from './VMessage.vue';
 
 const isElementEdge = (element: WorkflowNode | WorkflowEdge) => 'source' in element;
 
 export default defineComponent({
-  name: 'TheDevPanelBodyConsole',
+  name: 'TheConsoleView',
+  components: { VMessage },
   props: {
     graph: {
       type: Object as PropType<WorkflowGraph>,
@@ -102,10 +73,6 @@ export default defineComponent({
       this.$emit('hover:nodes', []);
       this.$emit('hover:edges', []);
     },
-    isSubjectEmpty(message: LintMessage): boolean {
-      const { subjects } = message;
-      return subjects === null || subjects === undefined || subjects.length === 0;
-    },
   },
 });
 </script>
@@ -115,5 +82,20 @@ export default defineComponent({
   -moz-box-shadow: inset 0px 0px 5px #aaa;
   -webkit-box-shadow: inset 0px 0px 5px #aaa;
   box-shadow: inset 0px 0px 5px #aaa;
+}
+
+.tree-node-arrow {
+  color: #6e6e6e;
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 3px;
+}
+
+.tree-node-arrow-expanded {
+  transform: rotate(90deg);
+}
+
+.tree-node-arrow-collapsed {
+  transform: rotate(0deg);
 }
 </style>

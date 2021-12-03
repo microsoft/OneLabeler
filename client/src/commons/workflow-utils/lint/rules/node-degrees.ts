@@ -40,23 +40,31 @@ const checkNodeDegrees = (
       if (indegree !== 0) {
         const inwardEdges = edges.filter((d) => d.target === id);
         messages.push({
-          subjects: [node, ...inwardEdges],
+          type: LintMessageType.Error,
           message: `initialization node with label "${
             node.label
-          }" has indegree ${indegree} (Initialize Node Indegree Should Be Zero)`,
-          type: LintMessageType.Error,
+          }" has indegree ${indegree}`,
           category: ErrorCategory.TopologyError,
+          subjects: [node, ...inwardEdges],
+          rule: 'Initialize Node Indegree Should Be Zero',
+          fixes: ['remove all the inward edges to the initialization node'],
         });
       }
       if (outdegree !== 1) {
         const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
-          subjects: [node, ...outwardEdges],
+          type: LintMessageType.Error,
           message: `initialization node with label "${
             node.label
-          }" has outdegree ${outdegree} (Initialize Node Outdegree Should Be One)`,
-          type: LintMessageType.Error,
+          }" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
+          subjects: [node, ...outwardEdges],
+          rule: 'Initialize Node Outdegree Should Be One',
+          fixes: [
+            outdegree === 0
+              ? 'create an outward edge from the initialization node to another node'
+              : 'remove an outward edge from the initialization node',
+          ],
         });
       }
     } else if (type === WorkflowNodeType.Decision) {
@@ -64,23 +72,29 @@ const checkNodeDegrees = (
 
       if (indegree === 0) {
         messages.push({
-          subjects: [node],
+          type: LintMessageType.Error,
           message: `decision node with label "${
             node.label
-          }" has indegree 0 (Decision Node Indegree Should Not Be Zero)`,
-          type: LintMessageType.Error,
+          }" has indegree 0`,
           category: ErrorCategory.TopologyError,
+          subjects: [node],
+          rule: 'Decision Node Indegree Should Not Be Zero',
+          fixes: ['create an inward edge from another node to the decision node'],
         });
       }
       if (outdegree !== 2) {
         const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
-          subjects: [node, ...outwardEdges],
-          message: `decision node with label "${
-            node.label
-          }" has outdegree ${outdegree} (Decision Node Outdegree Should Be Two)`,
           type: LintMessageType.Error,
+          message: `decision node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
+          subjects: [node, ...outwardEdges],
+          rule: 'Decision Node Outdegree Should Be Two',
+          fixes: [
+            outdegree <= 1
+              ? 'create an outward edge from the decision node to another node'
+              : 'remove an outward edge from the decision node',
+          ],
         });
       }
     } else if (type === WorkflowNodeType.Exit) {
@@ -88,23 +102,23 @@ const checkNodeDegrees = (
 
       if (indegree === 0) {
         messages.push({
-          subjects: [node],
-          message: `exit node with label "${
-            node.label
-          }" has indegree 0 (Exit Node Indegree Should Not Be Zero)`,
           type: LintMessageType.Error,
+          message: `exit node with label "${node.label}" has indegree 0`,
           category: ErrorCategory.TopologyError,
+          subjects: [node],
+          rule: 'Exit Node Indegree Should Not Be Zero',
+          fixes: ['create an inward edge from another node to the exit node'],
         });
       }
       if (outdegree !== 0) {
         const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
-          subjects: [node, ...outwardEdges],
-          message: `exit node with label "${
-            node.label
-          }" has outdegree ${outdegree} (Exit Node Outdegree Should Be Zero)`,
           type: LintMessageType.Error,
+          message: `exit node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
+          subjects: [node, ...outwardEdges],
+          rule: 'Exit Node Outdegree Should Be Zero',
+          fixes: ['remove outward edges from the exit node'],
         });
       }
     } else {
@@ -112,23 +126,27 @@ const checkNodeDegrees = (
 
       if (indegree === 0) {
         messages.push({
-          subjects: [node],
-          message: `process node with label "${
-            node.label
-          }" has indegree 0 (Process Node Indegree Should Not Be Zero)`,
           type: LintMessageType.Error,
+          message: `process node with label "${node.label}" has indegree 0`,
           category: ErrorCategory.TopologyError,
+          subjects: [node],
+          rule: 'Process Node Indegree Should Not Be Zero',
+          fixes: [`create an inward edge from another node to the node with label "${node.label}"`],
         });
       }
       if (outdegree !== 1) {
         const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
-          subjects: [node, ...outwardEdges],
-          message: `process node with label "${
-            node.label
-          }" has outdegree ${outdegree} (Process Node Outdegree Should Be One)`,
           type: LintMessageType.Error,
+          message: `process node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
+          subjects: [node, ...outwardEdges],
+          rule: 'Process Node Outdegree Should Be One',
+          fixes: [
+            outdegree === 0
+              ? `create an outward edge from the node with label "${node.label}" to another node`
+              : `remove an outward edge from the node with label "${node.label}"`,
+          ],
         });
       }
     }

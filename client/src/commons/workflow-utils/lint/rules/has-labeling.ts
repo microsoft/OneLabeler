@@ -15,10 +15,12 @@ const checkHasLabeling = (
   )) >= 0;
   if (!existInteractiveLabelingNode) {
     return [{
-      subjects: [],
-      message: 'no interactive labeling node exists (Should Involve Labeling)',
       type: LintMessageType.Error,
+      message: 'no interactive labeling node exists',
+      subjects: [],
       category: ErrorCategory.TopologyError,
+      rule: 'Should Involve Labeling',
+      fixes: ['create an interactive labeling node'],
     }];
   }
 
@@ -61,10 +63,12 @@ const checkHasLabeling = (
   )) !== undefined;
   if (!involveLabeling) {
     messages.push({
-      subjects: [],
-      message: 'exist an execution of the workflow that does not involve labeling (Should Involve Labeling)',
       type: LintMessageType.Error,
+      message: 'exist an execution of the workflow that does not involve labeling',
       category: ErrorCategory.TopologyError,
+      subjects: [],
+      rule: 'Should Involve Labeling',
+      fixes: [],
     });
   }
 

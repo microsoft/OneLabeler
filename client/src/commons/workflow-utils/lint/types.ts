@@ -13,8 +13,13 @@ export enum ErrorCategory {
 }
 
 export interface LintMessage {
-  subjects: (WorkflowNode | WorkflowEdge)[];
-  message: string;
   type: LintMessageType;
+  /** The lint message. */
+  message: string;
   category?: ErrorCategory;
+  subjects?: (WorkflowNode | WorkflowEdge)[];
+  /** The lint rule. */
+  rule?: string;
+  /** The recommended fixes. */
+  fixes?: string[];
 }

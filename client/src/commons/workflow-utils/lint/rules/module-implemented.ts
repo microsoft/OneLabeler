@@ -19,13 +19,17 @@ const checkModuleImplemented = (
   // For the initialization node, the data type should be chosen.
   const isDataTypeValid = initializationNode.value !== undefined
     && initializationNode.value !== null
-    && 'dataType' in initializationNode.value;
+    && 'dataType' in initializationNode.value
+    && initializationNode.value.dataType !== null
+    && initializationNode.value.dataType !== undefined;
   if (!isDataTypeValid) {
     messages.push({
-      subjects: [initializationNode],
-      message: 'data type not selected (Implementation Must Be Chosen)',
       type: LintMessageType.Error,
+      message: 'data type not selected',
       category: ErrorCategory.ImplementationError,
+      subjects: [initializationNode],
+      rule: 'Implementation Must Be Chosen',
+      fixes: ['choose the data type in the initialization node'],
     });
   }
 
@@ -37,10 +41,12 @@ const checkModuleImplemented = (
     && initializationNode.value.labelTasks.length !== 0;
   if (!isLabelTasksValid) {
     messages.push({
-      subjects: [initializationNode],
-      message: 'label task(s) not selected (Implementation Must Be Chosen)',
       type: LintMessageType.Error,
+      message: 'label task(s) not selected',
       category: ErrorCategory.ImplementationError,
+      subjects: [initializationNode],
+      rule: 'Implementation Must Be Chosen',
+      fixes: ['choose the label task type(s) in the initialization node'],
     });
   }
 
@@ -61,12 +67,16 @@ const checkModuleImplemented = (
       );
     if (!isModuleImplemented) {
       messages.push({
-        subjects: [node],
+        type: LintMessageType.Error,
         message: `Implementation is not chosen for node with label "${
           node.label
-        }" (Implementation Must Be Chosen)`,
-        type: LintMessageType.Error,
+        }"`,
         category: ErrorCategory.ImplementationError,
+        subjects: [node],
+        rule: 'Implementation Must Be Chosen',
+        fixes: [`configure the implementation for the node with label "${
+          node.label
+        }"`],
       });
     }
   });

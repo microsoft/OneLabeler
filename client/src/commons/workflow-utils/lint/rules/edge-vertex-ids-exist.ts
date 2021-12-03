@@ -13,22 +13,26 @@ const checkEdgeVertexIdsExist = (
     const { source, target } = edge;
     if (!nodeIds.has(source)) {
       messages.push({
-        subjects: [edge],
+        type: LintMessageType.Error,
         message: `edge source node with id "${
           source
-        }" does not exist (Edge Source Invalid)`,
-        type: LintMessageType.Error,
+        }" does not exist`,
         category: ErrorCategory.DataStructureError,
+        subjects: [edge],
+        rule: 'Disallow Invalid Edge Source',
+        fixes: ['remove this edge'],
       });
     }
     if (!nodeIds.has(target)) {
       messages.push({
-        subjects: [edge],
+        type: LintMessageType.Error,
         message: `edge target node with id "${
           source
-        }" does not exist (Edge Target Invalid)`,
-        type: LintMessageType.Error,
+        }" does not exist`,
         category: ErrorCategory.DataStructureError,
+        subjects: [edge],
+        rule: 'Disallow Invalid Edge Target',
+        fixes: ['remove this edge'],
       });
     }
   });

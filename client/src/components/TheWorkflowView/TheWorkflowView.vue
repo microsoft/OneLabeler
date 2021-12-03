@@ -328,7 +328,7 @@ export default defineComponent({
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
         [WorkflowNodeType.Custom]: null,
-        [WorkflowNodeType.Decision]: null,
+        [WorkflowNodeType.Decision]: { inputs: ['stop'], outputs: [] },
         [WorkflowNodeType.Exit]: { inputs: [], outputs: [] },
       } as Record<WorkflowNodeType, unknown>;
       const node: WorkflowNode = {

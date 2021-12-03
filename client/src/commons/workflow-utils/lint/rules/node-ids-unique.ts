@@ -11,22 +11,24 @@ const checkNodeIdsUnique = (
   // Store the mapping from id to indices of nodes with the id.
   const nodeIdToIndices: Record<string, number[]> = {};
   nodes.forEach(({ id }, i) => {
-    nodeIdToIndices[id] = id in nodeIdToIndices
-      ? [...nodeIdToIndices[id], i]
-      : [i];
+    nodeIdToIndices[id] = [
+      ...(id in nodeIdToIndices ? nodeIdToIndices[id] : []),
+      i,
+    ];
   });
 
   Object.entries(nodeIdToIndices).forEach(([id, indices]) => {
     if (indices.length === 1) return;
     // The nodes that share the same id.
     const subjects = indices.map((i) => nodes[i]);
+    const nodeNames = subjects.map((d) => `"${d.label}"`).join(', ');
     messages.push({
-      subjects,
-      message: `${indices.length} nodes with labels ${
-        subjects.map((d) => `"${d.label}"`).join(', ')
-      } have the same id "${id}" (Node ID Not Unique)`,
       type: LintMessageType.Error,
+      message: `${indices.length} nodes with labels ${nodeNames} have the same id "${id}"`,
       category: ErrorCategory.DataStructureError,
+      subjects,
+      rule: 'Node ID Not Unique',
+      fixes: [`Consider removing the nodes with labels ${nodeNames}`],
     });
   });
 

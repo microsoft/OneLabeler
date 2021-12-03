@@ -35,7 +35,7 @@
           @remove:edge="removeEdge($event)"
         />
         <!-- The graph grammar checking console. -->
-        <TheDevPanelBodyConsole
+        <TheConsoleView
           :graph="{ nodes, edges }"
           :style="{
             position: 'absolute',
@@ -79,7 +79,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
 import TheWorkflowView from '../TheWorkflowView/TheWorkflowView.vue';
-import TheDevPanelBodyConsole from './TheDevPanelBodyConsole.vue';
+import TheConsoleView from '../TheConsoleView/TheConsoleView.vue';
 import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.vue';
 
 export default {
@@ -87,7 +87,7 @@ export default {
   components: {
     TheElementDetails,
     TheWorkflowView,
-    TheDevPanelBodyConsole,
+    TheConsoleView,
     TheVariableInspector,
   },
   props: {
