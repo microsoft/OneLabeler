@@ -10,6 +10,7 @@
     @edit:method="$emit('edit:method', $event)"
     @create:model="$emit('create:model', $event)"
     @edit:model="$emit('edit:model', $event)"
+    @edit:edge="$emit('edit:edge', $event)"
   />
 </template>
 
@@ -55,6 +56,7 @@ export default defineComponent({
     'edit:method': null,
     'create:model': null,
     'edit:model': null,
+    'edit:edge': null,
   },
   computed: {
     node(): WorkflowNode | null {

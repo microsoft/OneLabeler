@@ -82,8 +82,9 @@ const checkNodeDegrees = (
           fixes: ['create an inward edge from another node to the decision node'],
         });
       }
+
+      const outwardEdges = edges.filter((d) => d.source === id);
       if (outdegree !== 2) {
-        const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
           type: LintMessageType.Error,
           message: `decision node with label "${node.label}" has outdegree ${outdegree}`,
@@ -96,6 +97,33 @@ const checkNodeDegrees = (
               : 'remove an outward edge from the decision node',
           ],
         });
+      } else {
+        outwardEdges.forEach((edge) => {
+          if (edge.condition !== undefined) return;
+          messages.push({
+            type: LintMessageType.Error,
+            message: `outward edge from decision node with label "${
+              node.label
+            }" to node with label "${edge.target}" has no condition`,
+            category: ErrorCategory.TopologyError,
+            subjects: [edge],
+            rule: 'Decision Node Outward Edge Should Have Condition',
+            fixes: ['remove this edge'],
+          });
+        });
+        const [edge1, edge2] = outwardEdges;
+        if (edge1.condition !== !edge2.condition) {
+          messages.push({
+            type: LintMessageType.Error,
+            message: `conditions of outward edges of decision node with label "${
+              node.label
+            }" are all ${edge1.condition}`,
+            category: ErrorCategory.TopologyError,
+            subjects: [edge1, edge2],
+            rule: 'Decision Node Outward Edge Conditions Should Be Exclusive',
+            fixes: ['remove one of the two edges'],
+          });
+        }
       }
     } else if (type === WorkflowNodeType.Exit) {
       // - an exist node has >= 1 indegree and outdegree 0

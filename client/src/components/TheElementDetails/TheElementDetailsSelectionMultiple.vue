@@ -16,7 +16,7 @@
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; align-items: center">
       <p class="mx-auto subtitle-1">
-        Multiple Modules Selected
+        Multiple Elements Selected
       </p>
     </div>
   </v-card>

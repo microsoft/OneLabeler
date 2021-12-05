@@ -20,9 +20,9 @@
         :message="message"
         :style="{ 'margin-top': i === 0 ? 0 : '-1px' }"
         style="border-style: solid; border-width: 1px;"
-        @click="onClickMessage(message)"
-        @mouseover="onMouseoverMessage(message)"
-        @mouseleave="onMouseleaveMessage"
+        @click.native="onClickMessage(message)"
+        @mouseover.native="onMouseoverMessage(message)"
+        @mouseleave.native="onMouseleaveMessage"
       />
     </div>
   </v-card>
@@ -37,6 +37,12 @@ import type { WorkflowEdge, WorkflowGraph, WorkflowNode } from '@/commons/types'
 import VMessage from './VMessage.vue';
 
 const isElementEdge = (element: WorkflowNode | WorkflowEdge) => 'source' in element;
+const filterNodeIds = (elements: (WorkflowNode | WorkflowEdge)[]) => (
+  elements.filter((d) => !isElementEdge(d)).map((d) => d.id)
+);
+const filterEdgeIds = (elements: (WorkflowNode | WorkflowEdge)[]) => (
+  elements.filter((d) => isElementEdge(d)).map((d) => d.id)
+);
 
 export default defineComponent({
   name: 'TheConsoleView',
@@ -59,15 +65,15 @@ export default defineComponent({
   methods: {
     onClickMessage(message: LintMessage): void {
       const { subjects } = message;
-      if (subjects.length === 0) return;
-      this.$emit('select:nodes', subjects.filter((d) => !isElementEdge(d)).map((d) => d.id));
-      this.$emit('select:edges', subjects.filter((d) => isElementEdge(d)).map((d) => d.id));
+      if (subjects === undefined || subjects.length === 0) return;
+      this.$emit('select:nodes', filterNodeIds(subjects));
+      this.$emit('select:edges', filterEdgeIds(subjects));
     },
     onMouseoverMessage(message: LintMessage): void {
       const { subjects } = message;
-      if (subjects.length === 0) return;
-      this.$emit('hover:nodes', subjects.filter((d) => !isElementEdge(d)).map((d) => d.id));
-      this.$emit('hover:edges', subjects.filter((d) => isElementEdge(d)).map((d) => d.id));
+      if (subjects === undefined || subjects.length === 0) return;
+      this.$emit('hover:nodes', filterNodeIds(subjects));
+      this.$emit('hover:edges', filterEdgeIds(subjects));
     },
     onMouseleaveMessage(): void {
       this.$emit('hover:nodes', []);

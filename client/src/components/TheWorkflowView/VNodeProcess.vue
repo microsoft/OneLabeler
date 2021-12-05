@@ -11,7 +11,7 @@
     <rect
       :width="node.width"
       :height="cellSize"
-      :fill="isProcess ? '#8C564B' : '#FF7F0E'"
+      :fill="nodeTypeToColor(node.type)"
     />
 
     <!-- The icons denoting module inputs. -->
@@ -152,9 +152,9 @@ import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import type { WorkflowNode } from '@/commons/types';
 import {
-  isNodeProcess,
   isNodeInteractive,
   isNodeServerless,
+  nodeTypeToColor,
 } from '@/commons/utils';
 import IconDataObjects from '@/plugins/icons/IconDataObjects.vue';
 import IconFeatureRepresentations from '@/plugins/icons/IconFeatureRepresentations.vue';
@@ -182,9 +182,6 @@ export default defineComponent({
     isInteractive(): boolean {
       return isNodeInteractive(this.node);
     },
-    isProcess(): boolean {
-      return isNodeProcess(this.node);
-    },
     isServerless(): boolean {
       return isNodeServerless(this.node);
     },
@@ -206,6 +203,7 @@ export default defineComponent({
     },
   },
   methods: {
+    nodeTypeToColor,
     getIcon(input: string): VueConstructor | null {
       const map: Record<string, VueConstructor> = {
         dataObjects: IconDataObjects,

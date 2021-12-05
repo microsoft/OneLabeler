@@ -12,12 +12,23 @@
       style="font-size:12px"
     >
       <v-list-item
+        class="py-0 px-1"
+        style="min-height: 24px; user-select: none;"
+      >
+        Create Node
+      </v-list-item>
+      <v-divider />
+      <v-list-item
         v-for="(option, i) in menuOptions"
         :key="i"
         class="py-0 px-1"
-        style="min-height:24px"
+        style="min-height: 24px"
         @click="$emit('click:option', option.value)"
       >
+        <div
+          style="width: 15px; height: 15px; margin-right: 4px;"
+          :style="{ 'background-color': nodeTypeToColor(option.value) }"
+        />
         {{ option.label }}
       </v-list-item>
     </v-list>
@@ -28,46 +39,47 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { WorkflowNodeType } from '@/commons/types';
+import { nodeTypeToColor } from '@/commons/utils';
 
 const menuOptions = [
   {
-    label: 'create initialization node',
+    label: 'initialization',
     value: WorkflowNodeType.Initialization,
   },
   {
-    label: 'create feature extraction node',
+    label: 'feature extraction',
     value: WorkflowNodeType.FeatureExtraction,
   },
   {
-    label: 'create data object selection node',
+    label: 'data object selection',
     value: WorkflowNodeType.DataObjectSelection,
   },
   {
-    label: 'create default labeling node',
+    label: 'default labeling',
     value: WorkflowNodeType.DefaultLabeling,
   },
   {
-    label: 'create interactive labeling node',
+    label: 'interactive labeling',
     value: WorkflowNodeType.InteractiveLabeling,
   },
   {
-    label: 'create stoppage analysis node',
+    label: 'stoppage analysis',
     value: WorkflowNodeType.StoppageAnalysis,
   },
   {
-    label: 'create model training node',
+    label: 'model training',
     value: WorkflowNodeType.ModelTraining,
   },
   {
-    label: 'create custom node',
+    label: 'custom',
     value: WorkflowNodeType.Custom,
   },
   {
-    label: 'create decision node',
+    label: 'decision',
     value: WorkflowNodeType.Decision,
   },
   {
-    label: 'create exit node',
+    label: 'exit',
     value: WorkflowNodeType.Exit,
   },
 ];
@@ -95,5 +107,6 @@ export default defineComponent({
   data() {
     return { menuOptions };
   },
+  methods: { nodeTypeToColor },
 });
 </script>

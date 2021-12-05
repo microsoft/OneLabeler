@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    :class="`fill-height ${classNameOfPanel}`"
-    tile
-  >
+  <v-card tile>
     <div class="view-header">
       <v-icon
         class="px-2"
@@ -14,14 +11,13 @@
       {{ viewTitle }}
     </div>
     <v-divider />
-    <div>
+    <div
+      class="my-2"
+      style="display: flex; flex-direction: column; gap: 8px;"
+    >
       <!-- The source node. -->
-      <v-card
-        flat
-        outlined
-        class="mt-2 mx-2"
-      >
-        <div class="view-header px-2">
+      <div class="card mx-2">
+        <div class="card view-header px-2">
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -29,11 +25,10 @@
             Source Node
           </span>
         </div>
-      </v-card>
+      </div>
 
-      <v-card
-        outlined
-        class="mt-2 mx-2"
+      <div
+        class="card mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -49,15 +44,11 @@
           hide-details
           single-line
         />
-      </v-card>
+      </div>
 
       <!-- The target node. -->
-      <v-card
-        flat
-        outlined
-        class="mt-2 mx-2"
-      >
-        <div class="view-header px-2">
+      <div class="card mx-2">
+        <div class="card view-header px-2">
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -65,11 +56,10 @@
             Target Node
           </span>
         </div>
-      </v-card>
+      </div>
 
-      <v-card
-        outlined
-        class="mt-2 mx-2"
+      <div
+        class="card mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -85,54 +75,55 @@
           hide-details
           single-line
         />
-      </v-card>
+      </div>
 
       <!-- The condition -->
       <template v-if="'condition' in edge">
-        <v-card
-          flat
-          outlined
-          class="mt-2 mx-2"
-        >
-          <div class="view-header px-2">
-            <span
-              class="subtitle-2"
-              style="padding-bottom: 7.4px; padding-top: 7px"
-            >
-              Branch
-            </span>
-          </div>
-        </v-card>
-
-        <v-card
-          outlined
-          class="mt-2 mx-2"
+        <v-divider />
+        <div
+          class="card mx-2 px-2"
           style="display: flex"
         >
-          <span class="pl-2 py-2 subtitle-2">
-            Option
+          <span class="py-2 subtitle-2">
+            Branch
           </span>
-          <v-text-field
-            :value="`${edge.condition}`"
-            disabled
-            class="ma-0 px-4 pt-1 subtitle-2"
-            style="padding-bottom: 6px !important"
-            type="text"
-            dense
-            hide-details
-            single-line
-          />
-        </v-card>
+          <v-spacer />
+          <v-menu offset-y>
+            <template #activator="{ on }">
+              <v-btn
+                class="subtitle-2 text-none"
+                style="border-color: #e0e0e0; align-self: center;"
+                small
+                outlined
+                v-on="on"
+              >
+                {{ edge.condition }}
+              </v-btn>
+            </template>
+            <v-list
+              class="subtitle-2"
+              dense
+            >
+              <v-list-item @click="updateCondition(true)">
+                true
+              </v-list-item>
+              <v-list-item @click="updateCondition(false)">
+                false
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </template>
     </div>
   </v-card>
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { WorkflowEdge } from '@/commons/types';
 
-export default {
+export default defineComponent({
   name: 'TheEdgeDetails',
   props: {
     edge: {
@@ -140,18 +131,25 @@ export default {
       default: null,
     },
   },
+  emits: {
+    'edit:edge': null,
+  },
   data() {
     return {
       viewTitle: 'Edge',
-      classNameOfPanel: 'parameter-panel',
     };
   },
-};
+  methods: {
+    updateCondition(condition: boolean): void {
+      this.$emit('edit:edge', { ...this.edge, condition });
+    },
+  },
+});
 </script>
 
-<style>
-/** Make the letter spacing of v-text-field the same as text outside. */
-.parameter-panel input {
-  letter-spacing: .0071428571em;
+<style lang="scss" scoped>
+.card {
+  border: thin solid rgba(0,0,0,.12) !important;
+  border-radius: 4px;
 }
 </style>

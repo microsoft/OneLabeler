@@ -28,15 +28,16 @@
             {{ param.options.find((d) => d.value === param.value).label }}
           </v-btn>
         </template>
-        <v-list dense>
+        <v-list
+          class="subtitle-2"
+          dense
+        >
           <v-list-item
             v-for="(option, optionIdx) in param.options"
             :key="optionIdx"
             @click="$emit('click:param-option', { paramKey, option })"
           >
-            <v-list-item-title class="subtitle-2">
-              {{ option.label }}
-            </v-list-item-title>
+            {{ option.label }}
           </v-list-item>
         </v-list>
       </v-menu>

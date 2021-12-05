@@ -1,56 +1,26 @@
 <template>
   <div style="display: flex; gap: 4px;">
-    <v-card
-      style="flex: 1 1 60%; display: flex; flex-direction: column;"
-      tile
+    <div
+      style="flex: 1 1 60%; display: grid; grid-template-rows: repeat(3, 1fr);"
     >
-      <div class="view-header">
-        <v-icon
-          class="px-2"
-          aria-hidden="true"
-          small
-        >
-          $vuetify.icons.values.flowChart
-        </v-icon>
-        Workflow
-      </div>
-      <v-divider />
-      <div style="display: flex; flex: 1 1 auto;">
-        <!-- The graph canvas. -->
-        <TheWorkflowView
-          :graph="{ nodes, edges }"
-          :current-node="currentNode"
-          :selected-node-ids.sync="selectedNodeIds"
-          :selected-edge-ids.sync="selectedEdgeIds"
-          :hovered-node-ids="hoveredNodeIds"
-          :hovered-edge-ids="hoveredEdgeIds"
-          style="flex: 1 1 auto"
-          @create:node="pushNodes($event)"
-          @edit:node="editNode($event)"
-          @remove:node="onRemoveNode"
-          @goto:node="setCurrentNode($event)"
-          @execute-from:node="onExecuteFromNode"
-          @create:edge="pushEdges($event)"
-          @edit:edge="editEdge($event)"
-          @remove:edge="removeEdge($event)"
-        />
-        <!-- The graph grammar checking console. -->
-        <TheConsoleView
-          :graph="{ nodes, edges }"
-          :style="{
-            position: 'absolute',
-            bottom: '8px',
-            left: '8px',
-            right: '8px',
-            height: '35%',
-          }"
-          @select:nodes="selectedNodeIds = $event"
-          @select:edges="selectedEdgeIds = $event"
-          @hover:nodes="hoveredNodeIds = $event"
-          @hover:edges="hoveredEdgeIds = $event"
-        />
-      </div>
-    </v-card>
+      <TheWorkflowView
+        style="grid-area: 1 / 1 / 4 / 2"
+        :selected-node-ids.sync="selectedNodeIds"
+        :selected-edge-ids.sync="selectedEdgeIds"
+        :hovered-node-ids.sync="hoveredNodeIds"
+        :hovered-edge-ids.sync="hoveredEdgeIds"
+      />
+
+      <!-- The graph grammar checking console. -->
+      <TheConsoleView
+        :graph="{ nodes, edges }"
+        style="margin: 4px; grid-area: 3 / 1 / 4 / 2;"
+        @select:nodes="selectedNodeIds = $event"
+        @select:edges="selectedEdgeIds = $event"
+        @hover:nodes="hoveredNodeIds = $event"
+        @hover:edges="hoveredEdgeIds = $event"
+      />
+    </div>
 
     <!-- The workflow element setting panel. -->
     <TheElementDetails
@@ -64,6 +34,7 @@
       @edit:method="editProcess($event)"
       @create:model="pushModelServices($event)"
       @edit:model="editModelService($event)"
+      @edit:edge="editEdge($event)"
     />
 
     <!-- The variable inspector. -->
@@ -113,7 +84,6 @@ export default {
   },
   computed: {
     ...mapState('workflow', [
-      'currentNode',
       'nodes',
       'edges',
       'modelServices',
@@ -139,30 +109,13 @@ export default {
   },
   methods: {
     ...mapActions('workflow', [
-      'setCurrentNode',
       'pushModelServices',
       'editModelService',
-      'pushNodes',
       'editNode',
-      'removeNode',
-      'pushEdges',
-      'editEdge',
-      'removeEdge',
       'pushProcesses',
       'editProcess',
-      'executeWorkflow',
+      'editEdge',
     ]),
-    onRemoveNode(node: WorkflowNode): void {
-      const { edges } = this;
-      edges.forEach((edge: WorkflowEdge) => {
-        if (edge.source === node.id || edge.target === node.id) this.removeEdge(edge);
-      });
-      this.removeNode(node);
-    },
-    onExecuteFromNode(node: WorkflowNode): void {
-      this.setCurrentNode(node);
-      this.executeWorkflow(node);
-    },
   },
 };
 </script>

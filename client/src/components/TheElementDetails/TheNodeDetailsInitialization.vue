@@ -35,15 +35,16 @@
             {{ selectedDataType }}
           </v-btn>
         </template>
-        <v-list dense>
+        <v-list
+          class="subtitle-2"
+          dense
+        >
           <v-list-item
             v-for="(option, i) in menuOfDataType.options"
             :key="i"
             @click="onUpdateDataTypeOption(option.value)"
           >
-            <v-list-item-title class="subtitle-2">
-              {{ option.label }}
-            </v-list-item-title>
+            {{ option.label }}
           </v-list-item>
         </v-list>
       </v-menu>
