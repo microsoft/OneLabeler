@@ -61,6 +61,7 @@
       :position-y="rightClickClientY"
       @remove:selected="onRemoveSelected"
       @update:show="showMenuOfEdge = $event"
+      @switch-direction="onSwitchEdgeDirection"
     />
 
     <!-- The context menu for nodes. -->
@@ -183,6 +184,7 @@ export default defineComponent({
     'edit:node': null,
     'remove:node': null,
     'create:edge': null,
+    'edit:edge': null,
     'remove:edge': null,
     'goto:node': null,
     'execute-from:node': null,
@@ -209,6 +211,7 @@ export default defineComponent({
       graph.edges.forEach((edge) => { map[edge.id] = []; });
       consoleMessages.forEach((message) => {
         const { subjects } = message;
+        if (subjects === undefined) return;
         subjects.forEach((subject) => {
           map[subject.id] = [
             ...(subject.id in map ? map[subject.id] : []),
@@ -396,6 +399,20 @@ export default defineComponent({
         ...condition,
       };
       this.$emit('create:edge', newValue);
+    },
+    onSwitchEdgeDirection(): void {
+      this.selectedEdges.forEach((edge) => {
+        const newValue = {
+          ...edge,
+          layout: {
+            source: edge.layout.target,
+            target: edge.layout.source,
+          },
+          source: edge.target,
+          target: edge.source,
+        };
+        this.$emit('edit:edge', newValue);
+      });
     },
     onRemoveSelected(): void {
       const toBeRemovedNodes = this.selectedNodes;

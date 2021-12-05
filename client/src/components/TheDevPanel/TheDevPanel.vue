@@ -4,9 +4,11 @@
     style="display: flex; flex-direction: column;"
   >
     <TheDevPanelHeader
-      @toggle:inspect="showInspector = !showInspector"
+      :show-element-setting.sync="showElementSetting"
+      :show-inspector.sync="showInspector"
     />
     <TheDevPanelBody
+      :show-element-setting="showElementSetting"
       :show-inspector="showInspector"
       class="pa-2 subtitle-2"
       style="flex: 1 1 auto"
@@ -26,7 +28,8 @@ export default {
   },
   data() {
     return {
-      showInspector: false,
+      showElementSetting: true,
+      showInspector: true,
     };
   },
 };

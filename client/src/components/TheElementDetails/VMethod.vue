@@ -1,88 +1,77 @@
 <template>
-  <v-container class="pa-0 pt-2 pb-0">
+  <div style="display: flex; flex-direction: column; gap: 8px;">
     <v-divider />
 
-    <!-- The label of the module instance. -->
-    <div class="pt-2 px-4">
+    <div
+      class="px-2"
+      style="display: flex; flex-direction: column; gap: 8px;"
+    >
+      <!-- The label of the module instance. -->
       <VMethodLabel
         :label="method.label"
         :disabled="method.isBuiltIn"
-        style="width: 100%"
         @edit:label="onUpsertMethod({ label: $event })"
       />
-    </div>
 
-    <!-- The input and output of the module instance. -->
-    <div
-      class="pt-2 px-4"
-      style="display: flex"
-    >
-      <div style="width: 70%">
-        <!-- The input box for module instance input parameters. -->
-        <VMethodArgs
-          :label="'Method Inputs'"
-          :module-args="moduleInputs"
-          :method-args="method.inputs"
-          :disabled="method.isBuiltIn"
-          @edit:method-args="onUpsertMethod({ inputs: $event })"
-        />
-      </div>
-      <div
-        class="pl-3"
-        style="width: 30%"
-      >
-        <!-- The display of module instance output parameters. -->
-        <VMethodArgs
-          :label="'Method Outputs'"
-          :module-args="moduleOutputs"
-          :method-args="method.outputs"
-          :disabled="method.isBuiltIn || moduleOutputs.length === 1"
-          @edit:method-args="onUpsertMethod({ outputs: $event })"
-        />
-      </div>
-    </div>
-
-    <!-- The url of the module instance service. -->
-    <v-card
-      class="mx-4 mt-2"
-      style="display: flex; flex: 1 1 100%;"
-      outlined
-    >
-      <span class="pl-4 py-2 subtitle-2">
-        API
-      </span>
-      <v-text-field
-        :value="method.isServerless ? 'serverless' : method.api"
+      <!-- The input box for module instance input parameters. -->
+      <VMethodArgs
+        :label="'Module Inputs'"
+        :module-args="moduleInputs"
+        :method-args="method.inputs"
         :disabled="method.isBuiltIn"
-        class="ma-0 px-4 pt-1 subtitle-2"
-        style="padding-bottom: 6px !important"
-        type="text"
-        dense
-        hide-details
-        single-line
-        @input="onUpsertMethod({ api: $event })"
+        @edit:method-args="onUpsertMethod({ inputs: $event })"
       />
-    </v-card>
 
-    <template v-if="requireModel">
-      <v-card
-        class="mx-4 mt-2"
-        outlined
+      <!-- The display of module instance output parameters. -->
+      <VMethodArgs
+        :label="'Module Outputs'"
+        :module-args="moduleOutputs"
+        :method-args="method.outputs"
+        :disabled="method.isBuiltIn || moduleOutputs.length === 1"
+        @edit:method-args="onUpsertMethod({ outputs: $event })"
+      />
+
+      <!-- The url of the module instance service. -->
+      <div
+        style="display: flex; align-items: center;
+        padding-left: 8px; padding-right: 8px; gap: 8px;
+        border: thin solid rgba(0,0,0,.12); border-radius: 4px;"
+      >
+        <span class="subtitle-2">
+          API
+        </span>
+        <v-text-field
+          :value="method.isServerless ? 'serverless' : method.api"
+          :disabled="method.isBuiltIn"
+          class="ma-0 pt-1 subtitle-2"
+          style="padding-bottom: 6px !important"
+          type="text"
+          dense
+          hide-details
+          single-line
+          @input="onUpsertMethod({ api: $event })"
+        />
+      </div>
+
+      <div
+        v-if="requireModel"
+        class="px-2"
+        style="display: flex; flex-direction: column;
+        border: thin solid rgba(0,0,0,.12); border-radius: 4px;"
       >
         <!-- The model used as input to the module. -->
-        <div class="px-4 py-2">
-          <VMethodModel
-            :selected-model="model"
-            :menu="menuOfModels"
-            append-create-option
-            @update:selection="onUpsertMethod({ model: $event })"
-            @create:option="$emit('create:model')"
-          />
-        </div>
+        <VMethodModel
+          :selected-model="model"
+          :menu="menuOfModels"
+          append-create-option
+          class="py-1"
+          @update:selection="onUpsertMethod({ model: $event })"
+          @create:option="$emit('create:model')"
+        />
 
         <template v-if="model !== undefined">
           <!-- The label of the model. -->
-          <v-list-item>
+          <div style="display: flex; flex-direction: row; align-items: center;">
             Model Label
             <v-text-field
               :value="model.label"
@@ -95,10 +84,10 @@
               single-line
               @input="onEditModelLabel($event)"
             />
-          </v-list-item>
+          </div>
 
           <!-- The url of the model. -->
-          <v-list-item>
+          <div style="display: flex; flex-direction: row; align-items: center;">
             Model Key
             <v-text-field
               :value="model.isServerless ? 'serverless' : model.objectId"
@@ -111,25 +100,21 @@
               single-line
               @input="onEditModelAPI($event)"
             />
-          </v-list-item>
+          </div>
         </template>
-      </v-card>
-    </template>
+      </div>
 
-    <v-list-item
-      v-if="method.params !== undefined"
-      class="pt-2"
-    >
+      <!-- The parameters of the implementation. -->
       <VMethodParams
+        v-if="method.params !== undefined"
         :params="method.params"
-        style="width: 100%"
         @click:param-option="onEditMethodParam(
           $event.paramKey,
           $event.option,
         )"
       />
-    </v-list-item>
-  </v-container>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

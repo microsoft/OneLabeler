@@ -26,6 +26,10 @@ export default [
   checkOneInitializationNode,
   // 2.2. Contains one exit node
   checkOneExitNode,
+
+  // 6. All the nodes are implemented
+  checkModuleImplemented,
+
   // 2.3. Indegree and outdegree requirements
   checkNodeDegrees,
   // 2.4. All the nodes can be reached from start node
@@ -40,7 +44,4 @@ export default [
 
   // 4. Modules are not redundant
   checkModuleNoRedundancy,
-
-  // 6. All the nodes are implemented
-  checkModuleImplemented,
 ];

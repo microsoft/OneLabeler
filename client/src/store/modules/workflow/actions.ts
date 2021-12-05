@@ -88,6 +88,17 @@ export const pushEdges = (
   commit(types.SET_EDGES, [...edges, edge]);
 };
 
+export const editEdge = (
+  { commit, state }: ActionContext<IState, IRootState>,
+  edgeUpdated: WorkflowEdge,
+): void => {
+  const { edges } = state;
+  const idx = edges.findIndex((d) => d.id === edgeUpdated.id);
+  const edgesUpdated = [...edges];
+  edgesUpdated[idx] = edgeUpdated;
+  commit(types.SET_EDGES, edgesUpdated);
+};
+
 export const removeEdge = (
   { commit, state }: ActionContext<IState, IRootState>,
   edge: WorkflowEdge,

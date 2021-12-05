@@ -73,6 +73,7 @@ const icons = {
   network: 'fas fa-network-wired',
   python: 'fab fa-python',
   fullScreen: 'far fa-square',
+  changeDirection: 'fas fa-exchange-alt',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

@@ -78,7 +78,7 @@ export class ExitNode extends DataLabelingWorkflowNode {
 }
 
 export class DataObjectSelectionNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['labels', 'features', 'model', 'queryUuids'];
+  static possibleInputs: string[] = ['dataObjects', 'labels', 'features', 'model', 'queryUuids'];
 
   static possibleOutputs: string[] = ['queryUuids'];
 
@@ -88,7 +88,7 @@ export class DataObjectSelectionNode extends DataLabelingWorkflowNode {
 }
 
 export class DefaultLabelingNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['dataObjects', 'queryUuids', 'features', 'model'];
+  static possibleInputs: string[] = ['queryUuids', 'features', 'model'];
 
   static possibleOutputs: string[] = ['labels'];
 
@@ -98,7 +98,7 @@ export class DefaultLabelingNode extends DataLabelingWorkflowNode {
 }
 
 export class FeatureExtractionNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['dataObjects', 'labels'];
+  static possibleInputs: string[] = ['dataObjects', 'labels', 'features', 'model'];
 
   static possibleOutputs: string[] = ['features'];
 
@@ -108,7 +108,7 @@ export class FeatureExtractionNode extends DataLabelingWorkflowNode {
 }
 
 export class InteractiveLabelingNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['dataObjects', 'queryUuids'];
+  static possibleInputs: string[] = ['dataObjects', 'labels', 'features', 'queryUuids', 'categories'];
 
   static possibleOutputs: string[] = ['labels'];
 
@@ -118,7 +118,7 @@ export class InteractiveLabelingNode extends DataLabelingWorkflowNode {
 }
 
 export class ModelTrainingNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['model', 'features', 'labels'];
+  static possibleInputs: string[] = ['labels', 'features', 'model', 'queryUuids'];
 
   static possibleOutputs: string[] = ['model'];
 
@@ -128,13 +128,19 @@ export class ModelTrainingNode extends DataLabelingWorkflowNode {
 }
 
 export class StoppageAnalysisNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['labels', 'model', 'features', 'dataObjects'];
+  static possibleInputs: string[] = ['dataObjects', 'labels', 'model', 'features', 'stop'];
 
   static possibleOutputs: string[] = ['stop'];
 
   static type = WorkflowNodeType.StoppageAnalysis;
 
   label = 'stoppage analysis';
+}
+
+export class CustomNode extends DataObjectSelectionNode {
+  static type = WorkflowNodeType.Custom;
+
+  label = 'custom';
 }
 
 const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {

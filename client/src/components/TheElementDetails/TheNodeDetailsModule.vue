@@ -17,23 +17,21 @@
     <v-divider />
 
     <!-- The label of the process node. -->
-    <div class="py-2 px-4">
-      <VNodeEditableLabel
-        :label="node.label"
-        @edit:label="$emit('edit:node', { ...node, label: $event })"
-      />
-    </div>
+    <VNodeEditableLabel
+      :label="node.label"
+      class="py-2 px-4"
+      @edit:label="$emit('edit:node', { ...node, label: $event })"
+    />
 
     <!-- The method used to instantiated the process. -->
-    <div class="py-2 px-4">
-      <VNodeSelectMethod
-        :selected-method="method"
-        :menu="menuOfMethods"
-        append-create-option
-        @update:selection="$emit('edit:node', { ...node, value: $event })"
-        @create:option="$emit('create:method')"
-      />
-    </div>
+    <VNodeSelectMethod
+      :selected-method="method"
+      :menu="menuOfMethods"
+      append-create-option
+      class="py-2 px-4"
+      @update:selection="$emit('edit:node', { ...node, value: $event })"
+      @create:option="$emit('create:method')"
+    />
 
     <VMethod
       v-if="method !== null"

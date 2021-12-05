@@ -28,10 +28,29 @@ import type {
   Process,
   WorkflowNode,
 } from '@/commons/types';
+import {
+  DataObjectSelectionNode,
+  DefaultLabelingNode,
+  FeatureExtractionNode,
+  InteractiveLabelingNode,
+  ModelTrainingNode,
+  StoppageAnalysisNode,
+  CustomNode,
+} from '@/commons/workflow-utils/build-node';
 import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
 import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
 import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
+
+const NODE_TYPES = [
+  DataObjectSelectionNode,
+  DefaultLabelingNode,
+  FeatureExtractionNode,
+  InteractiveLabelingNode,
+  ModelTrainingNode,
+  StoppageAnalysisNode,
+  CustomNode,
+];
 
 export default defineComponent({
   name: 'TheElementDetails',
@@ -88,77 +107,19 @@ export default defineComponent({
     },
     moduleInputs(): string[] {
       const { node } = this;
-      const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: [
-          'dataObjects',
-          'labels',
-          'features',
-          'queryUuids',
-          'model',
-        ],
-        [WorkflowNodeType.DefaultLabeling]: [
-          'dataObjects',
-          'labels',
-          'features',
-          'queryUuids',
-          'model',
-        ],
-        [WorkflowNodeType.FeatureExtraction]: [
-          'dataObjects',
-          'labels',
-          'features',
-          'model',
-        ],
-        [WorkflowNodeType.InteractiveLabeling]: [
-          'dataObjects',
-          'labels',
-          'features',
-          'queryUuids',
-          'categories',
-        ],
-        [WorkflowNodeType.ModelTraining]: [
-          'labels',
-          'features',
-          'model',
-          'queryUuids',
-        ],
-        [WorkflowNodeType.StoppageAnalysis]: [
-          'dataObjects',
-          'labels',
-          'features',
-          'model',
-          'stop',
-        ],
-        [WorkflowNodeType.Custom]: [
-          'dataObjects',
-          'labels',
-          'queryUuids',
-          'features',
-          'model',
-          'stop',
-        ],
-      } as Partial<Record<WorkflowNodeType, string[]>>;
-      return mapper[node.type] ?? [];
+      const typeToInputs: Partial<
+        Record<WorkflowNodeType, string[]>
+      > = Object.fromEntries(NODE_TYPES
+        .map((d) => ([d.type, d.possibleInputs])));
+      return typeToInputs[node.type] ?? [];
     },
     moduleOutputs(): string[] {
       const { node } = this;
-      const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: ['queryUuids'],
-        [WorkflowNodeType.DefaultLabeling]: ['labels'],
-        [WorkflowNodeType.FeatureExtraction]: ['features'],
-        [WorkflowNodeType.InteractiveLabeling]: ['labels'],
-        [WorkflowNodeType.ModelTraining]: ['model'],
-        [WorkflowNodeType.StoppageAnalysis]: ['stop'],
-        [WorkflowNodeType.Custom]: [
-          'dataObjects',
-          'labels',
-          'queryUuids',
-          'features',
-          'model',
-          'stop',
-        ],
-      } as Partial<Record<WorkflowNodeType, string[]>>;
-      return mapper[node.type] ?? [];
+      const typeToOutputs: Partial<
+        Record<WorkflowNodeType, string[]>
+      > = Object.fromEntries(NODE_TYPES
+        .map((d) => ([d.type, d.possibleOutputs])));
+      return typeToOutputs[node.type] ?? [];
     },
     methodsFiltered(): Process[] | null {
       const { node } = this;

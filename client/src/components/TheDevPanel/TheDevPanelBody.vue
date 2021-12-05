@@ -1,8 +1,7 @@
 <template>
-  <div style="display: flex">
+  <div style="display: flex; gap: 4px;">
     <v-card
-      class="mr-1"
-      style="flex-basis: 60%; display: flex; flex-direction: column;"
+      style="flex: 1 1 60%; display: flex; flex-direction: column;"
       tile
     >
       <div class="view-header">
@@ -32,6 +31,7 @@
           @goto:node="setCurrentNode($event)"
           @execute-from:node="onExecuteFromNode"
           @create:edge="pushEdges($event)"
+          @edit:edge="editEdge($event)"
           @remove:edge="removeEdge($event)"
         />
         <!-- The graph grammar checking console. -->
@@ -51,25 +51,26 @@
         />
       </div>
     </v-card>
-    <div style="display: flex; flex-direction: column; flex-basis: 40%;">
-      <!-- The process parameter panel. -->
-      <TheElementDetails
-        v-if="!showInspector"
-        :methods="processesValid"
-        :models="modelServices"
-        :selection="selection"
-        style="flex: 1 1 auto"
-        @edit:node="editNode($event)"
-        @create:method="pushProcesses($event)"
-        @edit:method="editProcess($event)"
-        @create:model="pushModelServices($event)"
-        @edit:model="editModelService($event)"
-      />
-      <TheVariableInspector
-        v-else
-        style="flex: 1 1 auto"
-      />
-    </div>
+
+    <!-- The workflow element setting panel. -->
+    <TheElementDetails
+      v-if="showElementSetting"
+      :methods="processesValid"
+      :models="modelServices"
+      :selection="selection"
+      style="flex: 0 1 30%"
+      @edit:node="editNode($event)"
+      @create:method="pushProcesses($event)"
+      @edit:method="editProcess($event)"
+      @create:model="pushModelServices($event)"
+      @edit:model="editModelService($event)"
+    />
+
+    <!-- The variable inspector. -->
+    <TheVariableInspector
+      v-if="showInspector"
+      style="flex: 0 1 30%"
+    />
   </div>
 </template>
 
@@ -91,6 +92,10 @@ export default {
     TheVariableInspector,
   },
   props: {
+    showElementSetting: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
     showInspector: {
       type: Boolean as PropType<boolean>,
       required: true,
@@ -141,6 +146,7 @@ export default {
       'editNode',
       'removeNode',
       'pushEdges',
+      'editEdge',
       'removeEdge',
       'pushProcesses',
       'editProcess',

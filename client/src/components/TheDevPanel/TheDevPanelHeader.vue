@@ -120,19 +120,48 @@
 
     <v-spacer />
 
-    <v-btn
-      title="Show variable inspector"
-      color="white"
-      icon
-      tile
-      small
-      @click="$emit('toggle:inspect')"
+    <v-btn-toggle
+      :value="showElementSetting"
+      class="view-header-button-toggle elevation-0"
     >
-      <Icon
-        icon="mdi:application-variable"
-        style="font-size: 16px"
-      />
-    </v-btn>
+      <v-btn
+        :value="true"
+        title="Show node & edge details"
+        color="white"
+        icon
+        tile
+        small
+        @click="$emit('update:showElementSetting', !showElementSetting)"
+      >
+        <v-icon
+          aria-hidden="true"
+          color="white"
+          small
+        >
+          $vuetify.icons.values.config
+        </v-icon>
+      </v-btn>
+    </v-btn-toggle>
+
+    <v-btn-toggle
+      :value="showInspector"
+      class="view-header-button-toggle elevation-0"
+    >
+      <v-btn
+        :value="true"
+        title="Show variable inspector"
+        color="white"
+        icon
+        tile
+        small
+        @click="$emit('update:showInspector', !showInspector)"
+      >
+        <Icon
+          icon="mdi:application-variable"
+          style="font-size: 16px"
+        />
+      </v-btn>
+    </v-btn-toggle>
 
     <TheNetworkMenu />
 
@@ -150,6 +179,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import type { WorkflowGraph } from '@/commons/types';
@@ -172,6 +202,16 @@ export default defineComponent({
     VTemplateMenu,
     VDockSideButtons,
     VUploadWorkflowButton,
+  },
+  props: {
+    showElementSetting: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
+    showInspector: {
+      type: Boolean as PropType<boolean>,
+      required: true,
+    },
   },
   emits: {
     'toggle:inspect': null,

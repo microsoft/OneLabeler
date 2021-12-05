@@ -61,7 +61,7 @@
       :stroke="isPortHovered(port) ? 'red' : '#bbb'"
       :stroke-width="isPortActive(port) ? 1 : 0"
       fill="white"
-      r="4"
+      r="6"
       style="cursor: crosshair"
       @mousedown.stop="$emit('drag:port', port)"
     />

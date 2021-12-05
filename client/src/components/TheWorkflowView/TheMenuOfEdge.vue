@@ -15,6 +15,21 @@
       <v-list-item
         class="py-0 pl-0 pr-1"
         style="min-height:24px"
+        @click="$emit('switch-direction')"
+      >
+        <v-icon
+          class="px-2"
+          aria-hidden="true"
+          style="font-size:12px; width: 1.5rem;"
+          small
+        >
+          $vuetify.icons.values.changeDirection
+        </v-icon>
+        Switch Direction
+      </v-list-item>
+      <v-list-item
+        class="py-0 pl-0 pr-1"
+        style="min-height:24px"
         @click="$emit('remove:selected')"
       >
         <v-icon
@@ -54,6 +69,7 @@ export default defineComponent({
   emits: {
     'update:show': null,
     'remove:selected': null,
+    'switch-direction': null,
   },
 });
 </script>

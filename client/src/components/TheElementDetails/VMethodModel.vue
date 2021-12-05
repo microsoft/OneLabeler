@@ -2,10 +2,11 @@
   <div style="display: flex; flex: 1 1 100%;">
     <span
       class="subtitle-2"
-      style="user-select: none; flex: 1 1 100%; align-self: center;"
+      style="user-select: none; align-self: center;"
     >
       Selected Model
     </span>
+    <v-spacer />
     <v-menu offset-y>
       <template #activator="{ on }">
         <v-btn

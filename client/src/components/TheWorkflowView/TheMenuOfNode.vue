@@ -25,7 +25,7 @@
         >
           $vuetify.icons.values.flowChart
         </v-icon>
-        Jump To & Flow
+        Goto & Execute
       </v-list-item>
       <v-list-item
         class="py-0 pl-0 pr-1"
@@ -40,7 +40,7 @@
         >
           $vuetify.icons.values.skip
         </v-icon>
-        Jump To
+        Goto
       </v-list-item>
       <v-list-item
         class="py-0 pl-0 pr-1"
