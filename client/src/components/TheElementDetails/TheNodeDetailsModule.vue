@@ -33,6 +33,9 @@
       @create:option="$emit('create:method')"
     />
 
+    <v-divider class="py-1" />
+
+    <!-- The hyperparameters chosen for the selected module instance. -->
     <VMethod
       v-if="method !== null"
       :method="method"

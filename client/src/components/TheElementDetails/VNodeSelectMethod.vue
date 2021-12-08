@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex: 1 1 100%;">
+  <div style="display: flex">
     <span
       class="subtitle-2"
       style="user-select: none; flex: 1 1 100%; align-self: center;"

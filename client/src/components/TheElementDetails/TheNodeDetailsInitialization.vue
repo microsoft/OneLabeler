@@ -10,6 +10,16 @@
       </v-icon>
       {{ viewTitle }}
     </div>
+
+    <v-divider />
+
+    <!-- The label of the process node. -->
+    <VNodeEditableLabel
+      :label="node.label"
+      class="py-2 px-4"
+      @edit:label="$emit('edit:node', { ...node, label: $event })"
+    />
+
     <v-divider />
 
     <!-- The data type selection. -->
@@ -114,6 +124,7 @@ import type {
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
+import VNodeEditableLabel from './VNodeEditableLabel.vue';
 
 const getValidLabelTasks = (dataType: DataType): LabelTaskType[] => {
   const setup = dataTypeSetups.find((d) => d.type === dataType);
@@ -130,6 +141,7 @@ const menuOfDataType = {
 
 export default defineComponent({
   name: 'TheNodeDetailsInitialization',
+  components: { VNodeEditableLabel },
   props: {
     node: {
       type: Object as PropType<WorkflowNode>,

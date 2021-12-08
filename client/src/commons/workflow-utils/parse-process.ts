@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { cloneDeep } from 'lodash';
 import type {
   MethodParams,
   Process,
@@ -37,8 +38,7 @@ export const parseProcess = (
   if (builtinMatch !== undefined) {
     let params: MethodParams | undefined;
     if (builtinMatch.params !== undefined) {
-      // deep copy the parameters
-      params = JSON.parse(JSON.stringify(builtinMatch.params));
+      params = cloneDeep(builtinMatch.params);
       if (process.params !== undefined) {
         Object.keys(builtinMatch.params).forEach((paramName) => {
           const param = (process.params as JsonMethodParams)[paramName];
