@@ -3,7 +3,7 @@ import * as MobileNet from '@tensorflow-models/mobilenet';
 import {
   DataType,
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 import type {
   IImage,
@@ -23,7 +23,7 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
 );
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'MobileNet-classification',
   id: 'MobileNet-classification-438546',
   inputs: ['dataObjects', 'queryUuids'],

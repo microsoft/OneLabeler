@@ -1,10 +1,10 @@
 import {
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'Random (Dummy)',
   id: 'Random-38398168',
   inputs: ['queryUuids', 'categories'],

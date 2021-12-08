@@ -3,7 +3,7 @@ import ObjectId from 'bson-objectid';
 import {
   LabelTaskType,
   PortDirection,
-  ProcessType,
+  ModuleType,
   WorkflowNodeType,
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
@@ -53,7 +53,7 @@ export default parseWorkflow({
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
       value: {
-        type: ProcessType.DefaultLabeling,
+        type: ModuleType.DefaultLabeling,
         label: 'ModelPrediction',
         id: 'ModelPrediction-29967546',
         inputs: ['features', 'model'],

@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { DataType, ProcessType } from '@/commons/types';
+import { DataType, ModuleType } from '@/commons/types';
 import type { IDataObject, IDataObjectStorage } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
@@ -18,7 +18,7 @@ const bindErrorHandler = (response: Promise<AxiosResponse>) => {
 type RunReturn = { features: number[][], featureNames: string[] };
 
 export default {
-  type: ProcessType.FeatureExtraction,
+  type: ModuleType.FeatureExtraction,
   label: 'SVD (Unsupervised)',
   id: 'image-SVD-25940167',
   inputs: ['dataObjects'],

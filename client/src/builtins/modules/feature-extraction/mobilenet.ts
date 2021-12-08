@@ -1,6 +1,6 @@
 import '@tensorflow/tfjs-backend-webgl';
 import * as MobileNet from '@tensorflow-models/mobilenet';
-import { DataType, ProcessType } from '@/commons/types';
+import { DataType, ModuleType } from '@/commons/types';
 import type { IImage, IDataObjectStorage } from '@/commons/types';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/mobilenet
@@ -15,7 +15,7 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
 );
 
 export default {
-  type: ProcessType.FeatureExtraction,
+  type: ModuleType.FeatureExtraction,
   label: 'MobileNet-embedding',
   id: 'MobileNet-embedding-438546',
   inputs: ['dataObjects', 'queryUuids'],

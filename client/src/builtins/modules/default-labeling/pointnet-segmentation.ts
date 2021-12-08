@@ -1,12 +1,12 @@
 import {
   DataType,
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'PointNet-segmentation',
   id: 'PointNet-segmentation-438546',
   inputs: ['dataObjects', 'queryUuids'],

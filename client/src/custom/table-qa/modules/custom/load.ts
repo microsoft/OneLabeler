@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { randomShuffle } from '@/plugins/random';
-import { IDataObject, ProcessType } from '@/commons/types';
+import { IDataObject, ModuleType } from '@/commons/types';
 
 interface ITable extends IDataObject {
   /** The content of the data object. */
@@ -24,7 +24,7 @@ const trimExt = (filename: string): string => (
 type Table = Record<string, string | number>[];
 
 export default {
-  type: ProcessType.Custom,
+  type: ModuleType.Custom,
   label: 'Load Data Objects',
   id: 'Custom-19914055',
   inputs: [],

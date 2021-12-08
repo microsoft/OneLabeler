@@ -1,8 +1,8 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
-  type: ProcessType.ModelTraining,
+  type: ModuleType.ModelTraining,
   label: 'Retrain',
   id: 'Retrain-16440841',
   inputs: ['features', 'labels', 'model'],

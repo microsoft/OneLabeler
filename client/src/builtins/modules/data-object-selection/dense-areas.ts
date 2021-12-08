@@ -1,8 +1,8 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
-  type: ProcessType.DataObjectSelection,
+  type: ModuleType.DataObjectSelection,
   label: 'DenseAreas (Clustering)',
   id: 'DenseAreas-67390401',
   inputs: ['features', 'labels'],

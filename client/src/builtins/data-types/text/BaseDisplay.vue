@@ -44,7 +44,7 @@ export default {
       const element = this.$refs.text as HTMLElement;
       const node = [...element.childNodes]
         .find((d) => d.nodeType === Node.TEXT_NODE) as Text | undefined;
-      if (node === undefined) throw Error('Text node inexist.');
+      if (node === undefined) throw Error('Text node does not exist.');
       return node;
     },
     /**

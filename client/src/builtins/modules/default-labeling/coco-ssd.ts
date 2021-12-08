@@ -6,7 +6,7 @@ import {
   DataType,
   LabelTaskType,
   ObjectShapeType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 import type {
   IImage,
@@ -27,7 +27,7 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
 );
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'COCO-SSD-object-detection',
   id: 'COCO-SSD-object-detection-438546',
   inputs: ['dataObjects', 'queryUuids'],

@@ -1,9 +1,9 @@
 import { xor4096 } from 'seedrandom';
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 import type { IDataObjectStorage } from '@/commons/types';
 
 export default {
-  type: ProcessType.FeatureExtraction,
+  type: ModuleType.FeatureExtraction,
   label: 'Random3D (Dummy)',
   id: 'Random-87333124',
   inputs: ['dataObjects', 'queryUuids'],

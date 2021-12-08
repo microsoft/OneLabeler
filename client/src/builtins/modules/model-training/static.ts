@@ -1,9 +1,9 @@
 import {
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 
 export default {
-  type: ProcessType.ModelTraining,
+  type: ModuleType.ModelTraining,
   label: 'Static',
   id: 'Static-72885436',
   inputs: ['model'],

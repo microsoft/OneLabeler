@@ -1,7 +1,7 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 
 export default {
-  type: ProcessType.DataObjectSelection,
+  type: ModuleType.DataObjectSelection,
   label: 'Projection (User Sampling)',
   id: 'Projection',
   inputs: ['features', 'labels', 'queryUuids'],

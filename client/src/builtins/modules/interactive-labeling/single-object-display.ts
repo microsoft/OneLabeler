@@ -1,7 +1,7 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 
 export default {
-  type: ProcessType.InteractiveLabeling,
+  type: ModuleType.InteractiveLabeling,
   label: 'Single Object Display',
   id: 'SingleObjectDisplay-48263667',
   inputs: ['dataObjects', 'labels', 'queryUuids'],

@@ -2,7 +2,7 @@ import type { VueConstructor } from 'vue';
 import type { DataType } from '@/builtins/data-types/types';
 import type { LabelTaskType } from '@/builtins/label-task-types/types';
 
-export enum ProcessType {
+export enum ModuleType {
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -37,7 +37,7 @@ export type MethodParams = Record<string, {
 export interface Process {
   label: string;
   id: string;
-  type: ProcessType;
+  type: ModuleType;
   inputs: string[];
   outputs: string[];
   // For serverless methods, the api is the method's unique key.

@@ -3,7 +3,7 @@ import MnistData from './mnist';
 import {
   DataType,
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 import type {
   IImage,
@@ -133,7 +133,7 @@ const urls2tensor = async (urls: string[]): Promise<tf.Tensor4D> => {
 };
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'CNN-classification',
   id: 'CNN-classification-438546',
   inputs: ['dataObjects', 'queryUuids'],

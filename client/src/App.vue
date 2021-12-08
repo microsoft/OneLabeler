@@ -39,7 +39,7 @@
         >
           <TheDevPanel
             style="height: 600px; width: 1700px;"
-            @click:close="onClickClosePanel"
+            @click:close="setDockSide(DockSideType.Hide)"
           />
         </v-dialog>
       </template>
@@ -52,7 +52,7 @@
         />
         <TheDevPanel
           style="flex: 1 1 50%"
-          @click:close="onClickClosePanel"
+          @click:close="setDockSide(DockSideType.Hide)"
         />
       </template>
     </div>
@@ -106,9 +106,6 @@ export default {
       if (node.type === WorkflowNodeType.DataObjectSelection) return TheSelectionView;
       if (node.type === WorkflowNodeType.InteractiveLabeling) return TheLabelView;
       return null;
-    },
-    onClickClosePanel(): void {
-      this.setDockSide(DockSideType.Hide);
     },
   },
 };

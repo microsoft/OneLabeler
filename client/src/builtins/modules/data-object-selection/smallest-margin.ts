@@ -1,8 +1,8 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
-  type: ProcessType.DataObjectSelection,
+  type: ModuleType.DataObjectSelection,
   label: 'SmallestMargin (Active Learning)',
   id: 'SmallestMargin-74021796',
   inputs: ['features', 'labels', 'model'],

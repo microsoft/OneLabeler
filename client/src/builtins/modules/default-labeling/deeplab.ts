@@ -3,7 +3,7 @@ import * as DeepLab from '@tensorflow-models/deeplab';
 import {
   DataType,
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 import type {
   IImage,
@@ -27,7 +27,7 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
 );
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'DeepLab-segmentation',
   id: 'DeepLab-segmentation-438546',
   inputs: ['dataObjects', 'queryUuids'],

@@ -1,10 +1,10 @@
 import {
   LabelTaskType,
-  ProcessType,
+  ModuleType,
 } from '@/commons/types';
 
 export default {
-  type: ProcessType.DefaultLabeling,
+  type: ModuleType.DefaultLabeling,
   label: 'Null (Dummy)',
   id: 'Null-35514905',
   inputs: ['queryUuids'],

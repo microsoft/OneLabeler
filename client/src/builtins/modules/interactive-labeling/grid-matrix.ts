@@ -1,7 +1,7 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 
 export default {
-  type: ProcessType.InteractiveLabeling,
+  type: ModuleType.InteractiveLabeling,
   label: 'Grid Matrix',
   id: 'GridMatrix-89670576',
   inputs: ['dataObjects', 'labels', 'queryUuids'],

@@ -1,7 +1,7 @@
-import { ProcessType } from '@/commons/types';
+import { ModuleType } from '@/commons/types';
 
 export default {
-  type: ProcessType.StoppageAnalysis,
+  type: ModuleType.StoppageAnalysis,
   label: 'AllChecked',
   id: 'AllChecked-46322013',
   inputs: ['labels'],

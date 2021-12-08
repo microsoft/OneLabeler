@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { DataType, ProcessType } from '@/commons/types';
+import { DataType, ModuleType } from '@/commons/types';
 import type {
   IDataObject,
   IDataObjectStorage,
@@ -25,7 +25,7 @@ const bindErrorHandler = (response: Promise<AxiosResponse>) => {
 type RunReturn = { features: number[][], featureNames: string[] };
 
 export default {
-  type: ProcessType.FeatureExtraction,
+  type: ModuleType.FeatureExtraction,
   label: 'LDA (Supervised)',
   id: 'image-LDA-45100847',
   inputs: ['dataObjects', 'labels'],

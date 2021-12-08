@@ -22,7 +22,7 @@ import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
-import { ProcessType, WorkflowNodeType } from '@/commons/types';
+import { ModuleType, WorkflowNodeType } from '@/commons/types';
 import type {
   ModelService,
   Process,
@@ -125,14 +125,14 @@ export default defineComponent({
       const { node } = this;
       if (node === null) return null;
       const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: ProcessType.DataObjectSelection,
-        [WorkflowNodeType.DefaultLabeling]: ProcessType.DefaultLabeling,
-        [WorkflowNodeType.FeatureExtraction]: ProcessType.FeatureExtraction,
-        [WorkflowNodeType.InteractiveLabeling]: ProcessType.InteractiveLabeling,
-        [WorkflowNodeType.ModelTraining]: ProcessType.ModelTraining,
-        [WorkflowNodeType.StoppageAnalysis]: ProcessType.StoppageAnalysis,
-        [WorkflowNodeType.Custom]: ProcessType.Custom,
-      } as Record<WorkflowNodeType, ProcessType>;
+        [WorkflowNodeType.DataObjectSelection]: ModuleType.DataObjectSelection,
+        [WorkflowNodeType.DefaultLabeling]: ModuleType.DefaultLabeling,
+        [WorkflowNodeType.FeatureExtraction]: ModuleType.FeatureExtraction,
+        [WorkflowNodeType.InteractiveLabeling]: ModuleType.InteractiveLabeling,
+        [WorkflowNodeType.ModelTraining]: ModuleType.ModelTraining,
+        [WorkflowNodeType.StoppageAnalysis]: ModuleType.StoppageAnalysis,
+        [WorkflowNodeType.Custom]: ModuleType.Custom,
+      } as Record<WorkflowNodeType, ModuleType>;
       if (!(node.type in mapper)) return [];
       const processType = mapper[node.type];
       return this.methods.filter((d) => d.type === processType);
@@ -168,7 +168,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.DataObjectSelection) {
         method = {
           ...method,
-          type: ProcessType.DataObjectSelection,
+          type: ModuleType.DataObjectSelection,
           inputs: ['labels'],
           outputs: ['queryUuids'],
         };
@@ -176,7 +176,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.DefaultLabeling) {
         method = {
           ...method,
-          type: ProcessType.DefaultLabeling,
+          type: ModuleType.DefaultLabeling,
           inputs: ['features', 'model'],
           outputs: ['labels'],
         };
@@ -184,7 +184,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.FeatureExtraction) {
         method = {
           ...method,
-          type: ProcessType.FeatureExtraction,
+          type: ModuleType.FeatureExtraction,
           inputs: ['dataObjects'],
           outputs: ['features'],
         };
@@ -192,7 +192,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.ModelTraining) {
         method = {
           ...method,
-          type: ProcessType.ModelTraining,
+          type: ModuleType.ModelTraining,
           inputs: ['model'],
           outputs: ['model'],
         };
@@ -200,7 +200,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.StoppageAnalysis) {
         method = {
           ...method,
-          type: ProcessType.StoppageAnalysis,
+          type: ModuleType.StoppageAnalysis,
           inputs: ['labels'],
           outputs: ['stop'],
         };
@@ -208,7 +208,7 @@ export default defineComponent({
       if (nodeType === WorkflowNodeType.Custom) {
         method = {
           ...method,
-          type: ProcessType.Custom,
+          type: ModuleType.Custom,
           inputs: [],
           outputs: [],
         };

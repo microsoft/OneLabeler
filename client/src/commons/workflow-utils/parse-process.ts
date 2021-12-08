@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type {
   MethodParams,
   Process,
-  ProcessType,
+  ModuleType,
   WorkflowNodeType,
 } from '@/commons/types';
 import processes from '@/builtins/modules';
@@ -21,12 +21,12 @@ export const parseProcess = (
   process: TrimmedProcess,
   node: TrimmedNode,
 ): Process => {
-  const nodeTypeToProcessType = (type: WorkflowNodeType) => (
-    type as unknown as ProcessType
+  const nodeTypeToModuleType = (type: WorkflowNodeType) => (
+    type as unknown as ModuleType
   );
 
   // Create process.type
-  const type: ProcessType = process.type ?? nodeTypeToProcessType(node.type);
+  const type: ModuleType = process.type ?? nodeTypeToModuleType(node.type);
 
   // The builtin process with the same api as the current process.
   const builtinMatch = processes.find((d) => d.id === process.id);
