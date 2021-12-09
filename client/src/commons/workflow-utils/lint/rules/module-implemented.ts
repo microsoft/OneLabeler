@@ -1,5 +1,9 @@
 import { WorkflowNodeType } from '@/commons/types';
-import type { Process, WorkflowNode } from '@/commons/types';
+import type {
+  IInitializationNode,
+  IModule,
+  WorkflowNode,
+} from '@/commons/types';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';
 
@@ -12,16 +16,15 @@ const checkModuleImplemented = (
   // Should have one initialization node
   const initializationNodes = nodes.filter((d) => (
     d.type === WorkflowNodeType.Initialization
-  ));
+  )) as IInitializationNode[];
   if (initializationNodes.length !== 1) return messages;
   const [initializationNode] = initializationNodes;
 
   // For the initialization node, the data type should be chosen.
   const isDataTypeValid = initializationNode.value !== undefined
     && initializationNode.value !== null
-    && 'dataType' in initializationNode.value
-    && initializationNode.value.dataType !== null
-    && initializationNode.value.dataType !== undefined;
+    && initializationNode.value.params.dataType.value !== null
+    && initializationNode.value.params.dataType.value !== undefined;
   if (!isDataTypeValid) {
     messages.push({
       type: LintMessageType.Error,
@@ -36,9 +39,8 @@ const checkModuleImplemented = (
   // For the initialization node, the label tasks should be chosen.
   const isLabelTasksValid = initializationNode.value !== undefined
     && initializationNode.value !== null
-    && 'labelTasks' in initializationNode.value
-    && Array.isArray(initializationNode.value.labelTasks)
-    && initializationNode.value.labelTasks.length !== 0;
+    && Array.isArray(initializationNode.value.params.labelTasks.value)
+    && initializationNode.value.params.labelTasks.value.length !== 0;
   if (!isLabelTasksValid) {
     messages.push({
       type: LintMessageType.Error,
@@ -56,7 +58,7 @@ const checkModuleImplemented = (
     if (node.type === WorkflowNodeType.Decision) return;
     if (node.type === WorkflowNodeType.Exit) return;
 
-    const instance = node.value as Process | null;
+    const instance = node.value as IModule | null;
 
     // Check an implementation is chosen for the node.
     const isModuleImplemented = instance !== null

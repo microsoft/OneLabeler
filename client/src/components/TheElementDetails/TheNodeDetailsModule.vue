@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    :class="classNameOfPanel"
-    tile
-  >
+  <v-card tile>
     <div class="view-header">
       <v-icon
         class="px-2"
@@ -25,6 +22,7 @@
 
     <!-- The method used to instantiated the process. -->
     <VNodeSelectMethod
+      v-if="!isInit"
       :selected-method="method"
       :menu="menuOfMethods"
       append-create-option
@@ -52,9 +50,10 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { WorkflowNodeType } from '@/commons/types';
 import type {
   ModelService,
-  Process,
+  IModule,
   WorkflowNode,
 } from '@/commons/types';
 import VNodeEditableLabel from './VNodeEditableLabel.vue';
@@ -70,7 +69,7 @@ export default defineComponent({
   },
   props: {
     methods: {
-      type: Array as PropType<Process[]>,
+      type: Array as PropType<IModule[]>,
       default: () => [],
     },
     models: {
@@ -101,16 +100,14 @@ export default defineComponent({
     'edit:model': null,
     'create:model': null,
   },
-  data() {
-    return {
-      classNameOfPanel: 'parameter-panel',
-    };
-  },
   computed: {
-    method(): Process | null {
-      return this.node.value as Process | null;
+    isInit(): boolean {
+      return this.node.type === WorkflowNodeType.Initialization;
     },
-    menuOfMethods() {
+    method(): IModule | null {
+      return this.node.value as IModule | null;
+    },
+    menuOfMethods(): { label: string, options: { value: IModule, label: string }[] } {
       return {
         label: 'Selected Method',
         options: this.methods.map((d) => ({
@@ -121,17 +118,10 @@ export default defineComponent({
     },
   },
   methods: {
-    onEditMethod(newValue: Process): void {
+    onEditMethod(newValue: IModule): void {
       this.$emit('edit:node', { ...this.node, value: newValue });
       this.$emit('edit:method', newValue);
     },
   },
 });
 </script>
-
-<style>
-/** Make the letter spacing of v-text-field the same as text outside. */
-.parameter-panel input {
-  letter-spacing: .0071428571em;
-}
-</style>

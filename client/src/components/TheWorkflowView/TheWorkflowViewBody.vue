@@ -83,13 +83,16 @@ import { defineComponent } from '@vue/composition-api';
 import type { ComponentInstance, PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
+import { cloneDeep } from 'lodash';
 import { WorkflowNodeType } from '@/commons/types';
 import type {
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
 } from '@/commons/types';
+import type { LintMessage } from '@/commons/workflow-utils';
 import { getDefaultNodeSize } from '@/commons/workflow-utils/parse-node';
+import BaseInitialization from '@/builtins/modules/initialization/base';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { PortDirection } from '../VFlowchart/types';
 import type { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
@@ -98,7 +101,6 @@ import VEdge from './VEdge.vue';
 import TheMenuOfCanvas from './TheMenuOfCanvas.vue';
 import TheMenuOfEdge from './TheMenuOfEdge.vue';
 import TheMenuOfNode from './TheMenuOfNode.vue';
-import { LintMessage } from '@/commons/workflow-utils';
 
 // TODO: may reduce the frequency of syncing the flowchart graph
 // and workflow graph to improve the performance.
@@ -313,24 +315,19 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: 'interactive labeling',
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
         [WorkflowNodeType.ModelTraining]: 'model training',
-        [WorkflowNodeType.Custom]: 'custom',
+        [WorkflowNodeType.Base]: 'custom',
         [WorkflowNodeType.Decision]: 'decision',
         [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {
-        [WorkflowNodeType.Initialization]: {
-          dataType: null,
-          labelTasks: [],
-          inputs: [],
-          outputs: ['dataObjects', 'labels'],
-        },
+        [WorkflowNodeType.Initialization]: cloneDeep(BaseInitialization),
         [WorkflowNodeType.FeatureExtraction]: null,
         [WorkflowNodeType.DataObjectSelection]: null,
         [WorkflowNodeType.DefaultLabeling]: null,
         [WorkflowNodeType.InteractiveLabeling]: null,
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
-        [WorkflowNodeType.Custom]: null,
+        [WorkflowNodeType.Base]: null,
         [WorkflowNodeType.Decision]: { inputs: ['stop'], outputs: [] },
         [WorkflowNodeType.Exit]: { inputs: [], outputs: [] },
       } as Record<WorkflowNodeType, unknown>;

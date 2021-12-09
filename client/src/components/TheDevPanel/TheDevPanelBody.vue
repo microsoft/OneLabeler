@@ -25,13 +25,13 @@
     <!-- The workflow element setting panel. -->
     <TheElementDetails
       v-if="showElementSetting"
-      :methods="processesValid"
+      :methods="validModules"
       :models="modelServices"
       :selection="selection"
       style="flex: 0 1 30%"
       @edit:node="editNode($event)"
-      @create:method="pushProcesses($event)"
-      @edit:method="editProcess($event)"
+      @create:method="pushModules($event)"
+      @edit:method="editModule($event)"
       @create:model="pushModelServices($event)"
       @edit:model="editModelService($event)"
       @edit:edge="editEdge($event)"
@@ -88,7 +88,7 @@ export default {
       'edges',
       'modelServices',
     ]),
-    ...mapGetters('workflow', ['processesValid']),
+    ...mapGetters('workflow', ['validModules']),
     selection(): (WorkflowNode | WorkflowEdge)[] {
       // Note: make the selection computed instead of directly stored
       // to ensure the selection is updated when the nodes/edges are modified.
@@ -112,8 +112,8 @@ export default {
       'pushModelServices',
       'editModelService',
       'editNode',
-      'pushProcesses',
-      'editProcess',
+      'pushModules',
+      'editModule',
       'editEdge',
     ]),
   },

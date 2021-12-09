@@ -7,6 +7,7 @@ import {
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
+import BaseInitialization from '@/builtins/modules/initialization/base';
 import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILSingleObjectDisplay from '@/builtins/modules/interactive-labeling/single-object-display';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
@@ -24,10 +25,12 @@ export default parseWorkflow({
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: {
-        dataType: DataType.Image,
-        labelTasks: [LabelTaskType.Segmentation2d],
-      },
+      value: merge(cloneDeep(BaseInitialization), {
+        params: {
+          dataType: { value: DataType.Image },
+          labelTasks: { value: [LabelTaskType.Segmentation2d] },
+        },
+      }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {

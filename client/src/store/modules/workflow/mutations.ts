@@ -1,6 +1,6 @@
 import type {
   ModelService,
-  Process,
+  IModule,
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
@@ -32,9 +32,9 @@ export default {
   ): void {
     state.modelServices = services;
   },
-  [types.SET_PROCESSES](
+  [types.SET_MODULES](
     state: IState,
-    processes: Process[],
+    processes: IModule[],
   ): void {
     state.processes = processes;
   },

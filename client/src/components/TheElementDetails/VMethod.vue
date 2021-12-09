@@ -5,6 +5,7 @@
   >
     <!-- The label of the module instance. -->
     <VMethodLabel
+      v-if="!isInit"
       :label="method.label"
       :disabled="method.isBuiltIn"
       @edit:label="onUpsertMethod({ label: $event })"
@@ -12,6 +13,7 @@
 
     <!-- The input box for module instance input parameters. -->
     <VMethodArgs
+      v-if="!isInit"
       :label="'Module Inputs'"
       :module-args="moduleInputs"
       :method-args="method.inputs"
@@ -24,12 +26,13 @@
       :label="'Module Outputs'"
       :module-args="moduleOutputs"
       :method-args="method.outputs"
-      :disabled="method.isBuiltIn || moduleOutputs.length === 1"
+      :disabled="!isInit && (method.isBuiltIn || moduleOutputs.length === 1)"
       @edit:method-args="onUpsertMethod({ outputs: $event })"
     />
 
     <!-- The url of the module instance service. -->
     <div
+      v-if="!method.isServerless"
       style="display: flex; align-items: center;
       padding-left: 8px; padding-right: 8px; gap: 8px;
       border: thin solid rgba(0,0,0,.12); border-radius: 4px;"
@@ -102,12 +105,12 @@
     </div>
 
     <!-- The parameters of the implementation. -->
-    <VMethodParams
+    <VModuleParams
       v-if="method.params !== undefined"
       :params="method.params"
       @click:param-option="onEditMethodParam(
         $event.paramKey,
-        $event.option,
+        $event.value,
       )"
     />
   </div>
@@ -116,11 +119,13 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import type { ModelService, Process } from '@/commons/types';
+import { cloneDeep } from 'lodash';
+import { ModuleType } from '@/commons/types';
+import type { ModelService, IModule } from '@/commons/types';
 import VMethodArgs from './VMethodArgs.vue';
 import VMethodLabel from './VMethodLabel.vue';
 import VMethodModel from './VMethodModel.vue';
-import VMethodParams from './VMethodParams.vue';
+import VModuleParams from './VModuleParams.vue';
 
 export default defineComponent({
   name: 'VMethod',
@@ -128,11 +133,11 @@ export default defineComponent({
     VMethodArgs,
     VMethodLabel,
     VMethodModel,
-    VMethodParams,
+    VModuleParams,
   },
   props: {
     method: {
-      type: Object as PropType<Process>,
+      type: Object as PropType<IModule>,
       required: true,
     },
     models: {
@@ -154,13 +159,16 @@ export default defineComponent({
     'edit:model': null,
   },
   computed: {
+    isInit(): boolean {
+      return this.method.type === ModuleType.Initialization;
+    },
     model(): ModelService | undefined {
       return this.method?.model;
     },
     requireModel(): boolean {
       return this.method.inputs.includes('model');
     },
-    menuOfModels() {
+    menuOfModels(): { label: string, options: { value: ModelService, label: string }[] } {
       return {
         label: 'Models',
         options: this.models.map((d) => ({
@@ -171,27 +179,18 @@ export default defineComponent({
     },
   },
   methods: {
-    onUpsertMethod(partial: Partial<Process>): void {
-      const newValue: Process = { ...this.method, ...partial };
+    onUpsertMethod(partial: Partial<IModule>): void {
+      const newValue: IModule = { ...this.method, ...partial };
       this.$emit('edit:method', newValue);
     },
-    onEditMethodParam(
-      paramKey: string,
-      option: { value: unknown, label: string },
-    ): void {
+    onEditMethodParam(paramKey: string, value: unknown): void {
       const { method } = this;
       const { params } = method;
       if (params === undefined) return;
-      const partial = {
-        params: {
-          ...params,
-          [paramKey]: {
-            ...params[paramKey],
-            value: option.value,
-          },
-        },
-      };
-      this.onUpsertMethod(partial);
+      const newValue = cloneDeep(method);
+      if (newValue.params === undefined) return;
+      newValue.params[paramKey].value = value;
+      this.$emit('edit:method', newValue);
     },
     onEditModelLabel(label: string): void {
       const { model } = this;

@@ -18,7 +18,7 @@ import type {
   ILabelStorage,
   ILabelCategory,
   ModelService,
-  Process,
+  IModule,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
 
@@ -52,7 +52,7 @@ export const dataObjectExtraction = async (
  * @returns defaultLabels - the default labels of the selected data objects.
  */
 export const defaultLabeling = async (
-  method: Process,
+  method: IModule,
   dataObjects: IDataObject[],
   model: ModelService,
   classes: Category[] | null = null,
@@ -114,7 +114,7 @@ export const defaultLabeling = async (
  * @returns queryUuids - the uuids of sampled data objects.
  */
 export const dataObjectSelection = async (
-  method: Process,
+  method: IModule,
   dataObjectStorage: IDataObjectStorage,
   statusStorage: IStatusStorage,
   nBatch: number,
@@ -214,7 +214,7 @@ export const dataObjectSelection = async (
  * @returns modelUpdated - the updated model.
  */
 export const modelTraining = async (
-  method: Process,
+  method: IModule,
   model: ModelService,
   unlabeledMark: Category,
   dataObjectStorage: IDataObjectStorage | null = null,

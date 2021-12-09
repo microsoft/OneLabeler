@@ -168,7 +168,7 @@ import IconUser from '@/plugins/icons/IconUser.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
 
 export default defineComponent({
-  name: 'VNodeProcess',
+  name: 'VNodeModule',
   props: {
     node: {
       type: Object as PropType<WorkflowNode & FlowchartNode>,

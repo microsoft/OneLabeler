@@ -7,7 +7,6 @@
     :view-title="viewTitle"
     :module-inputs="moduleInputs"
     :module-outputs="moduleOutputs"
-    style="width: 100%; height: 100%"
     @edit:node="$emit('edit:node', $event)"
     @create:method="onCreateMethod"
     @edit:method="$emit('edit:method', $event)"
@@ -19,16 +18,16 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import type { VueConstructor } from 'vue';
 import ObjectId from 'bson-objectid';
 import { v4 as uuidv4 } from 'uuid';
 import { ModuleType, WorkflowNodeType } from '@/commons/types';
 import type {
   ModelService,
-  Process,
+  IModule,
   WorkflowNode,
 } from '@/commons/types';
 import {
+  InitializationNode,
   DataObjectSelectionNode,
   DefaultLabelingNode,
   FeatureExtractionNode,
@@ -39,10 +38,10 @@ import {
 } from '@/commons/workflow-utils/build-node';
 import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
 import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
-import TheNodeDetailsInitialization from './TheNodeDetailsInitialization.vue';
 import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
 const NODE_TYPES = [
+  InitializationNode,
   DataObjectSelectionNode,
   DefaultLabelingNode,
   FeatureExtractionNode,
@@ -56,7 +55,7 @@ export default defineComponent({
   name: 'TheElementDetails',
   props: {
     methods: {
-      type: Array as PropType<Process[]>,
+      type: Array as PropType<IModule[]>,
       default: () => [],
     },
     models: {
@@ -76,32 +75,23 @@ export default defineComponent({
     'create:model': null,
   },
   computed: {
-    component(): VueConstructor {
+    component() {
       const { node } = this;
-      const mapper = {
-        [WorkflowNodeType.DataObjectSelection]: TheNodeDetailsModule,
-        [WorkflowNodeType.Decision]: TheNodeDetailsDecision,
-        [WorkflowNodeType.DefaultLabeling]: TheNodeDetailsModule,
-        [WorkflowNodeType.FeatureExtraction]: TheNodeDetailsModule,
-        [WorkflowNodeType.InteractiveLabeling]: TheNodeDetailsModule,
-        [WorkflowNodeType.ModelTraining]: TheNodeDetailsModule,
-        [WorkflowNodeType.StoppageAnalysis]: TheNodeDetailsModule,
-        [WorkflowNodeType.Custom]: TheNodeDetailsModule,
-        [WorkflowNodeType.Initialization]: TheNodeDetailsInitialization,
-        [WorkflowNodeType.Exit]: TheNodeDetailsExit,
-      } as Partial<Record<WorkflowNodeType, VueConstructor>>;
-      return mapper[node.type] as VueConstructor;
+      if (node.type === WorkflowNodeType.Exit) return TheNodeDetailsExit;
+      if (node.type === WorkflowNodeType.Decision) return TheNodeDetailsDecision;
+      return TheNodeDetailsModule;
     },
     viewTitle(): string {
       const { node } = this;
       const mapper = {
+        [WorkflowNodeType.Initialization]: 'Initialization Setting',
         [WorkflowNodeType.DataObjectSelection]: 'Data Object Selection Instantiation',
         [WorkflowNodeType.DefaultLabeling]: 'Default Labeling Instantiation',
         [WorkflowNodeType.FeatureExtraction]: 'Feature Extraction Instantiation',
         [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Instantiation',
         [WorkflowNodeType.ModelTraining]: 'Interim Model Training Instantiation',
         [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
-        [WorkflowNodeType.Custom]: 'Custom Instantiation',
+        [WorkflowNodeType.Base]: 'Custom Instantiation',
       } as Partial<Record<WorkflowNodeType, string>>;
       return mapper[node.type] ?? '';
     },
@@ -121,7 +111,7 @@ export default defineComponent({
         .map((d) => ([d.type, d.possibleOutputs])));
       return typeToOutputs[node.type] ?? [];
     },
-    methodsFiltered(): Process[] | null {
+    methodsFiltered(): IModule[] | null {
       const { node } = this;
       if (node === null) return null;
       const mapper = {
@@ -131,7 +121,7 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: ModuleType.InteractiveLabeling,
         [WorkflowNodeType.ModelTraining]: ModuleType.ModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: ModuleType.StoppageAnalysis,
-        [WorkflowNodeType.Custom]: ModuleType.Custom,
+        [WorkflowNodeType.Base]: ModuleType.Base,
       } as Record<WorkflowNodeType, ModuleType>;
       if (!(node.type in mapper)) return [];
       const processType = mapper[node.type];
@@ -164,7 +154,7 @@ export default defineComponent({
         isModelBased: false,
         isServerless: false,
         api: '',
-      } as Partial<Process>;
+      } as Partial<IModule>;
       if (nodeType === WorkflowNodeType.DataObjectSelection) {
         method = {
           ...method,
@@ -205,10 +195,10 @@ export default defineComponent({
           outputs: ['stop'],
         };
       }
-      if (nodeType === WorkflowNodeType.Custom) {
+      if (nodeType === WorkflowNodeType.Base) {
         method = {
           ...method,
-          type: ModuleType.Custom,
+          type: ModuleType.Base,
           inputs: [],
           outputs: [],
         };

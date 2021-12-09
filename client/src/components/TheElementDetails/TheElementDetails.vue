@@ -20,7 +20,7 @@ import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import type {
   ModelService,
-  Process,
+  IModule,
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
@@ -37,7 +37,7 @@ export default defineComponent({
   name: 'TheElementDetails',
   props: {
     methods: {
-      type: Array as PropType<Process[]>,
+      type: Array as PropType<IModule[]>,
       default: () => [],
     },
     models: {

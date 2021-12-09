@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { Process, WorkflowNodeType } from '@/commons/types';
+import { IModule, WorkflowNodeType } from '@/commons/types';
 
 type Layout = {
   x: number;
@@ -19,7 +19,7 @@ export class WorkflowNode {
 
   type: WorkflowNodeType;
 
-  value: Process;
+  value: IModule;
 
   layout?: {
     x: number;
@@ -32,7 +32,7 @@ export class WorkflowNode {
     id: string,
     label: string,
     type: WorkflowNodeType,
-    value: Process,
+    value: IModule,
     layout: Layout,
   ) {
     this.id = id;
@@ -138,7 +138,7 @@ export class StoppageAnalysisNode extends DataLabelingWorkflowNode {
 }
 
 export class CustomNode extends DataObjectSelectionNode {
-  static type = WorkflowNodeType.Custom;
+  static type = WorkflowNodeType.Base;
 
   label = 'custom';
 }

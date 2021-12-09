@@ -1,7 +1,9 @@
-import type { Process } from '@/commons/types';
+import type { IModule } from '@/commons/types';
 // custom modules
 import CustomExport from '@/custom/table-qa/modules/custom/export';
 import CustomLoad from '@/custom/table-qa/modules/custom/load';
+// initialization module
+import Initialization from './initialization/base';
 // data object selection modules
 import DOSCluster from './data-object-selection/cluster';
 import DOSClusterCentroids from './data-object-selection/cluster-centroids';
@@ -47,6 +49,8 @@ import SAAllChecked from './stoppage-analysis/all-checked';
  */
 
 const processes = [
+  // the initialization module:
+  Initialization,
   // data object selection modules:
   DOSCluster,
   DOSClusterCentroids,
@@ -88,6 +92,6 @@ const processes = [
   // custom modules:
   CustomExport,
   CustomLoad,
-] as Process[];
+] as IModule[];
 
 export default processes;

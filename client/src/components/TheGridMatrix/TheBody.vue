@@ -65,7 +65,7 @@ import type {
 import VGrid from './VGrid.vue';
 
 export default defineComponent({
-  name: 'VGridMatrix',
+  name: 'TheBody',
   components: { VGrid },
   props: {
     dataType: {

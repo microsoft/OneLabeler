@@ -1,5 +1,5 @@
 import { WorkflowNodeType } from '@/commons/types';
-import type { Process, WorkflowNode } from '@/commons/types';
+import type { IModule, WorkflowNode } from '@/commons/types';
 
 export const getImgSize = (
   content: string,
@@ -10,28 +10,22 @@ export const getImgSize = (
   img.src = content;
 });
 
-export const isNodeProcess = (node: WorkflowNode): boolean => (
-  (node.type === WorkflowNodeType.LabelIdeation)
-  || (node.type === WorkflowNodeType.FeatureExtraction)
-  || (node.type === WorkflowNodeType.DataObjectSelection)
-  || (node.type === WorkflowNodeType.DefaultLabeling)
-  || (node.type === WorkflowNodeType.InteractiveLabeling)
-  || (node.type === WorkflowNodeType.StoppageAnalysis)
-  || (node.type === WorkflowNodeType.ModelTraining)
-  || (node.type === WorkflowNodeType.QualityAssurance)
-  || (node.type === WorkflowNodeType.Custom)
+export const isNodeModule = (node: WorkflowNode): boolean => (
+  node.type !== WorkflowNodeType.Initialization
+    && node.type !== WorkflowNodeType.Decision
+    && node.type !== WorkflowNodeType.Exit
 );
 
 export const isNodeInteractive = (node: WorkflowNode): boolean => {
-  if (!isNodeProcess(node)) return false;
+  if (!isNodeModule(node)) return false;
   if (node.value === null) return false;
-  return !(node.value as Process).isAlgorithmic;
+  return !(node.value as IModule).isAlgorithmic;
 };
 
 export const isNodeServerless = (node: WorkflowNode): boolean => {
-  if (!isNodeProcess(node)) return true;
+  if (!isNodeModule(node)) return true;
   if (node.value === null) return true;
-  return (node.value as Process).isServerless;
+  return (node.value as IModule).isServerless;
 };
 
 export const nodeTypeToColor = (type: WorkflowNodeType): string => {

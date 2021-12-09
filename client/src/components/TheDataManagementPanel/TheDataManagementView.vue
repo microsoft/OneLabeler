@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    :class="classNameOfPanel"
-    tile
-  >
+  <v-card tile>
     <div class="view-header">
       <v-icon
         class="px-2"
@@ -52,11 +49,6 @@ import VEditableService from './VEditableService.vue';
 export default {
   name: 'TheDataManagementView',
   components: { VEditableService },
-  data() {
-    return {
-      classNameOfPanel: 'parameter-panel',
-    };
-  },
   computed: {
     ...mapState([
       'dataObjects',
@@ -101,10 +93,3 @@ export default {
   },
 };
 </script>
-
-<style>
-/** Make the letter spacing of v-text-field the same as text outside. */
-.parameter-panel input {
-  letter-spacing: .0071428571em;
-}
-</style>

@@ -10,7 +10,7 @@ import type {
   IStatus,
   IStorageStore,
   LabelTaskType,
-  Process,
+  IModule,
   SourceService,
   StorageService,
   TaskWindow,
@@ -125,8 +125,7 @@ export const updatedTaskWindowsByNodes = (
   const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
   const updatedTaskWindows: TaskWindow[] = [];
   nodesWithInterface.forEach((node) => {
-    const process = node.value as Process;
-    if (process.isAlgorithmic) return;
+    const process = node.value as IModule;
     // Check if the task window is already created.
     const match = taskWindows.find((d) => (
       d.node.id === node.id && d.process.id === process.id

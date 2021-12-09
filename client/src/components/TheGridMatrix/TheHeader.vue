@@ -43,7 +43,7 @@ import VToolbar from '@/components/VWindow/VToolbar.vue';
 import useFilterCategories from '@/components/composables/useCategories';
 
 export default defineComponent({
-  name: 'TheGridMatrixHeader',
+  name: 'TheHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {

@@ -1,27 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
 import { cloneDeep } from 'lodash';
 import type {
-  MethodParams,
-  Process,
+  ModuleParams,
+  IModule,
   ModuleType,
   WorkflowNodeType,
 } from '@/commons/types';
 import processes from '@/builtins/modules';
 import type { TrimmedNode } from './parse-node';
 
-type MethodParam = MethodParams[keyof MethodParams];
-type JsonMethodParams = Record<string, MethodParam | MethodParam['value']>;
+type MethodParam = ModuleParams[keyof ModuleParams];
+type JsonModuleParams = Record<string, MethodParam | MethodParam['value']>;
 
-export type TrimmedProcess = Omit<
-  Partial<Process>
-  & Omit<Process, 'id' | 'type' | 'api' | 'isAlgorithmic' | 'isBuiltIn' | 'isModelBased' | 'isServerless'>,
+export type IModuleTrimmed = Omit<
+  Partial<IModule>
+  & Omit<IModule, 'id' | 'type' | 'api' | 'isAlgorithmic' | 'isBuiltIn' | 'isModelBased' | 'isServerless'>,
   'run'
 >;
 
-export const parseProcess = (
-  process: TrimmedProcess,
+export const parseModule = (
+  process: IModuleTrimmed,
   node: TrimmedNode,
-): Process => {
+): IModule => {
   const nodeTypeToModuleType = (type: WorkflowNodeType) => (
     type as unknown as ModuleType
   );
@@ -36,19 +36,19 @@ export const parseProcess = (
   const id: string = process.id ?? builtinMatch?.id ?? uuidv4();
 
   if (builtinMatch !== undefined) {
-    let params: MethodParams | undefined;
+    let params: ModuleParams | undefined;
     if (builtinMatch.params !== undefined) {
       params = cloneDeep(builtinMatch.params);
       if (process.params !== undefined) {
         Object.keys(builtinMatch.params).forEach((paramName) => {
-          const param = (process.params as JsonMethodParams)[paramName];
+          const param = (process.params as JsonModuleParams)[paramName];
           const isObject = typeof param === 'object'
             && param !== null
             && 'value' in param;
           if (!isObject) {
-            (params as MethodParams)[paramName].value = param;
+            (params as ModuleParams)[paramName].value = param;
           } else {
-            (params as MethodParams)[paramName] = param as MethodParam;
+            (params as ModuleParams)[paramName] = param as MethodParam;
           }
         });
       }
@@ -60,7 +60,7 @@ export const parseProcess = (
       type,
       id,
       params,
-    } as Process;
+    } as IModule;
   }
 
   const urlRegex = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/;
@@ -70,7 +70,7 @@ export const parseProcess = (
   const isModelBased = process.model !== undefined;
   const isServerless = process.api !== undefined && process.api.match(urlRegex) !== null;
 
-  let params: MethodParams | undefined;
+  let params: ModuleParams | undefined;
   if (process.params !== undefined) {
     params = {};
     Object.entries(process.params).forEach(([paramName, param]) => {
@@ -78,7 +78,7 @@ export const parseProcess = (
         && param !== null
         && 'value' in param;
       if (!isObject) {
-        (params as MethodParams)[paramName] = {
+        (params as ModuleParams)[paramName] = {
           value: param,
           label: paramName,
           options: [{
@@ -87,7 +87,7 @@ export const parseProcess = (
           }],
         };
       } else {
-        (params as MethodParams)[paramName] = param as MethodParam;
+        (params as ModuleParams)[paramName] = param as MethodParam;
       }
     });
   }
@@ -101,5 +101,5 @@ export const parseProcess = (
     isModelBased,
     isServerless,
     params,
-  } as Process;
+  } as IModule;
 };

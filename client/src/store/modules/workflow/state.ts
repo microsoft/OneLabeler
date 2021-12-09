@@ -1,6 +1,6 @@
 import type {
   ModelService,
-  Process,
+  IModule,
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
@@ -23,7 +23,7 @@ export interface IState {
   /** The collection of model services. */
   modelServices: ModelService[];
   /** The collection of data labeling processes. */
-  processes: Process[];
+  processes: IModule[];
 }
 
 export const createInitialState = (): IState => ({

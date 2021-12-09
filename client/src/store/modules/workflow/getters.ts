@@ -4,8 +4,9 @@ import { WorkflowNodeType } from '@/commons/types';
 import type {
   DataType,
   LabelTaskType,
-  Process,
+  IModule,
   WorkflowNode,
+  IInitializationNode,
 } from '@/commons/types';
 import type { IState } from './state';
 
@@ -31,19 +32,18 @@ export const nextNodes = (state: IState): WorkflowNode[] | null => {
 export const labelTasks = (state: IState): LabelTaskType[] => {
   const { nodes } = state;
   const type = WorkflowNodeType.Initialization;
-  const node = nodes.find((d) => d.type === type);
-  if (node === undefined) return [];
-  return (node.value as { labelTasks: LabelTaskType[] }).labelTasks;
+  const node = nodes.find((d) => d.type === type) as IInitializationNode | undefined;
+  return node?.value?.params.labelTasks.value ?? [];
 };
 
 export const dataType = (state: IState): DataType | null => {
   const { nodes } = state;
   const type = WorkflowNodeType.Initialization;
-  const node = nodes.find((d) => d.type === type);
-  return node?.value?.dataType ?? null;
+  const node = nodes.find((d) => d.type === type) as IInitializationNode | undefined;
+  return node?.value?.params.dataType.value ?? null;
 };
 
-export const processesValid = (state: IState): Process[] => {
+export const validModules = (state: IState): IModule[] => {
   const { processes } = state;
   const dataTypeValue = dataType(state);
   const labelTasksValue = labelTasks(state);

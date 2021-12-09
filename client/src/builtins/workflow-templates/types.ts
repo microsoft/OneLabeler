@@ -1,6 +1,9 @@
-import type { DataType } from '@/builtins/data-types/types';
-import type { LabelTaskType } from '@/builtins/label-task-types/types';
-import type { Process } from '@/builtins/modules/types';
+import type {
+  DataType,
+  LabelTaskType,
+  ParamSpecification,
+  IModule,
+} from '@/commons/types';
 
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
@@ -12,22 +15,16 @@ export enum WorkflowNodeType {
   StoppageAnalysis = 'StoppageAnalysis',
   ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
-  Custom = 'Custom',
+  Base = 'Base',
   Decision = 'Decision',
   Exit = 'Exit',
 }
 
-export type InitializationParams = {
-  dataType: DataType | null;
-  labelTasks: LabelTaskType[];
-}
-
-export type WorkflowNode = {
+export interface WorkflowNode {
   id: string;
   label: string;
   type: WorkflowNodeType;
-  value: Process // for node with an instantiation chosen
-    | (InitializationParams & { inputs: [], outputs: string[] }) // for initialization node
+  value: IModule // for node with an instantiation chosen
     | null // for node with its instantiation not yet chosen
     | { inputs: ['stop'], outputs: [] } // for decision nodes and exit nodes
     | { inputs: [], outputs: [] }; // for exit nodes
@@ -37,6 +34,15 @@ export type WorkflowNode = {
     width: number;
     height: number;
   };
+}
+
+export interface IInitializationNode extends WorkflowNode {
+  value: null | (Exclude<IModule, 'params'> & {
+    params: {
+      dataType: ParamSpecification<DataType, false>,
+      labelTasks: ParamSpecification<LabelTaskType, true>,
+    }
+  })
 }
 
 export enum PortDirection {

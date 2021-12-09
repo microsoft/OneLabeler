@@ -158,7 +158,7 @@ const checkNodeDegrees = (
           message: `process node with label "${node.label}" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
-          rule: 'Process Node Indegree Should Not Be Zero',
+          rule: 'Module Node Indegree Should Not Be Zero',
           fixes: [`create an inward edge from another node to the node with label "${node.label}"`],
         });
       }
@@ -169,7 +169,7 @@ const checkNodeDegrees = (
           message: `process node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Process Node Outdegree Should Be One',
+          rule: 'Module Node Outdegree Should Be One',
           fixes: [
             outdegree === 0
               ? `create an outward edge from the node with label "${node.label}" to another node`

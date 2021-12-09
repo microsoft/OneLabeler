@@ -1,6 +1,6 @@
 <template>
   <v-card style="display: flex; flex-direction: column;">
-    <TheGridMatrixHeader
+    <TheHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
       :category-tasks="categoryTasks"
@@ -11,7 +11,7 @@
       @window:pin="$emit('update:task-window', { isPinned: true })"
     />
     <v-divider />
-    <VGridMatrix
+    <TheBody
       v-if="dataObjects.length !== 0"
       style="flex: 1 1 auto"
       :data-type="dataType"
@@ -51,14 +51,14 @@ import type {
   TaskWindow,
   Category,
 } from '@/commons/types';
-import VGridMatrix from './VGridMatrix.vue';
-import TheGridMatrixHeader from './TheGridMatrixHeader.vue';
+import TheBody from './TheBody.vue';
+import TheHeader from './TheHeader.vue';
 
 export default defineComponent({
   name: 'TheGridMatrix',
   components: {
-    VGridMatrix,
-    TheGridMatrixHeader,
+    TheBody,
+    TheHeader,
   },
   props: {
     dataObjects: {

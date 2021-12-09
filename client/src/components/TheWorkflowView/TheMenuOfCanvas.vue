@@ -72,7 +72,7 @@ const menuOptions = [
   },
   {
     label: 'custom',
-    value: WorkflowNodeType.Custom,
+    value: WorkflowNodeType.Base,
   },
   {
     label: 'decision',

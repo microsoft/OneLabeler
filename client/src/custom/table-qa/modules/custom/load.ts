@@ -24,7 +24,7 @@ const trimExt = (filename: string): string => (
 type Table = Record<string, string | number>[];
 
 export default {
-  type: ModuleType.Custom,
+  type: ModuleType.Base,
   label: 'Load Data Objects',
   id: 'Custom-19914055',
   inputs: [],

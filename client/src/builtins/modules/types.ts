@@ -3,6 +3,7 @@ import type { DataType } from '@/builtins/data-types/types';
 import type { LabelTaskType } from '@/builtins/label-task-types/types';
 
 export enum ModuleType {
+  Initialization = 'Initialization',
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -11,7 +12,7 @@ export enum ModuleType {
   StoppageAnalysis = 'StoppageAnalysis',
   ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
-  Custom = 'Custom',
+  Base = 'Base',
 }
 
 /** The interface of a model service. */
@@ -27,14 +28,26 @@ export interface ModelService {
   // isLocal: boolean;
 }
 
-export type MethodParams = Record<string, {
-  value: unknown,
-  label: string,
-  options: { value: unknown, label: string }[],
-}>;
+export type ParamSpecification<T, M extends boolean = false> = {
+  /** The single or multiple selected value(s) of the parameter. */
+  value: M extends true ? T[] : T;
+  /** The name of the parameter that appears in the interface. */
+  label: string;
+  /** The possible options of the parameter. */
+  options: { value: T, label: string }[];
+  /** Whether the parameter options can be multi-selected. */
+  multiple?: M,
+  /** Check if a value option is validate given all the parameter values. */
+  validate?: (
+    value: T,
+    params: Record<string, ParamSpecification<unknown>>,
+  ) => boolean,
+};
+
+export type ModuleParams = Record<string, ParamSpecification<unknown>>;
 
 /** The data labeling process class. */
-export interface Process {
+export interface IModule {
   label: string;
   id: string;
   type: ModuleType;
@@ -56,7 +69,9 @@ export interface Process {
   labelTasks?: LabelTaskType[];
 
   model?: ModelService;
-  params?: MethodParams;
+  params?: ModuleParams;
+
+  // Note: initialization node do not need run or render
 
   /** The implementation of algorithm module. */
   run?: (inputs: Record<string, unknown>) => Promise<void | Record<string, unknown>>;

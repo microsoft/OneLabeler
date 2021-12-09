@@ -8,6 +8,7 @@ import {
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
+import BaseInitialization from '@/builtins/modules/initialization/base';
 import DOSEntropyDiversityDensity from '@/builtins/modules/data-object-selection/entropy-diversity-density';
 import DOSImageOverview from '@/builtins/modules/data-object-selection/image-overview';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
@@ -27,10 +28,12 @@ export default parseWorkflow({
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: {
-        dataType: 'MI3-block',
-        labelTasks: [LabelTaskType.Classification],
-      },
+      value: merge(cloneDeep(BaseInitialization), {
+        params: {
+          dataType: { value: 'MI3-block' },
+          labelTasks: { value: [LabelTaskType.Classification] },
+        },
+      }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {

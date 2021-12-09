@@ -1,7 +1,7 @@
 <template>
   <g>
-    <template v-if="isInitialization || isProcess">
-      <VNodeProcess :node="node" />
+    <template v-if="isInitialization || isModule">
+      <VNodeModule :node="node" />
     </template>
     <template v-else>
       <template v-if="isDecision">
@@ -70,14 +70,14 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
-import { isNodeProcess } from '@/commons/utils';
+import { isNodeModule } from '@/commons/utils';
 import IconAnimatedSpinner from '@/plugins/icons/IconAnimatedSpinner.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
-import VNodeProcess from './VNodeProcess.vue';
+import VNodeModule from './VNodeModule.vue';
 
 export default defineComponent({
   name: 'VNode',
-  components: { VNodeProcess, IconAnimatedSpinner },
+  components: { VNodeModule, IconAnimatedSpinner },
   props: {
     node: {
       type: Object as PropType<WorkflowNode & FlowchartNode>,
@@ -99,8 +99,8 @@ export default defineComponent({
     isInitialization(): boolean {
       return this.node.type === WorkflowNodeType.Initialization;
     },
-    isProcess(): boolean {
-      return isNodeProcess(this.node);
+    isModule(): boolean {
+      return isNodeModule(this.node);
     },
   },
 });

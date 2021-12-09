@@ -33,8 +33,8 @@ import type {
   IStatusStorage,
   TaskWindow,
 } from '@/commons/types';
-import TheGridMatrix from '@/components/TheGridMatrix/TheGridMatrix.vue';
-import TheSingleObjectDisplay from '@/components/TheSingleObjectDisplay/TheSingleObjectDisplay.vue';
+import TheGridMatrix from '@/components/TheGridMatrix/index.vue';
+import TheSingleObjectDisplay from '@/components/TheSingleObjectDisplay/index.vue';
 import {
   useFilteredDataObjects,
   useFilteredLabels,

@@ -1,7 +1,7 @@
-import { InitializationParams, WorkflowNodeType } from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
-import type { TrimmedProcess } from './parse-process';
-import { parseProcess } from './parse-process';
+import type { IModuleTrimmed } from './parse-module';
+import { parseModule } from './parse-module';
 
 export type TrimmedNode = Partial<WorkflowNode> & Omit<WorkflowNode, 'id' | 'layout'>;
 
@@ -85,19 +85,11 @@ export const parseNodeValue = (
     };
   }
 
-  if (node.type === WorkflowNodeType.Initialization) {
-    return {
-      inputs: [],
-      outputs: ['dataObjects', 'labels'],
-      ...value as InitializationParams,
-    };
-  }
-
   if (value === null || value === undefined) {
     throw new Error(`node value empty: node = ${node}`);
   }
 
-  return parseProcess(value as TrimmedProcess, node);
+  return parseModule(value as IModuleTrimmed, node);
 };
 
 export const parseNode = (

@@ -11,20 +11,21 @@ import {
   Category,
 } from '@/commons/types';
 import type {
-  MethodParams,
+  ModuleParams,
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
   ILabel,
   IStatus,
   ModelService,
-  Process,
+  IModule,
   IDataObject,
   IDataObjectStorage,
   StorageService,
   IStorageStore,
   SourceService,
 } from '@/commons/types';
+import { isNodeModule } from '@/commons/utils';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import type { IState } from './state';
@@ -155,23 +156,23 @@ export const editModelService = (
   commit(types.SET_MODEL_SERVICES, newModelServices);
 };
 
-export const pushProcesses = (
+export const pushModules = (
   { commit, state }: ActionContext<IState, IRootState>,
-  process: Process,
+  process: IModule,
 ): void => {
   const { processes } = state;
-  commit(types.SET_PROCESSES, [...processes, process]);
+  commit(types.SET_MODULES, [...processes, process]);
 };
 
-export const editProcess = (
+export const editModule = (
   { commit, state }: ActionContext<IState, IRootState>,
-  processUpdated: Process,
+  processUpdated: IModule,
 ): void => {
   const { processes } = state;
   const idx = processes.findIndex((d) => d.id === processUpdated.id);
   const processesUpdated = [...processes];
   processesUpdated[idx] = processUpdated;
-  commit(types.SET_PROCESSES, processesUpdated);
+  commit(types.SET_MODULES, processesUpdated);
 };
 
 const pointsToSameDB = (
@@ -197,9 +198,9 @@ const handleAlgorithmServiceError = (
   throw e;
 };
 
-export const executeCustom = showProgressBar(async (
+export const executeModule = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
+  method: IModule,
 ): Promise<void> => {
   if (method.run === undefined || method.run === null) {
     throw Error('Method not implemented');
@@ -217,50 +218,41 @@ export const executeCustom = showProgressBar(async (
   } = rootState;
 
   // TODO: should only access categories visible to the current label task.
-  const classes: Category[] = Object.keys(categoryTasks);
+  const categories: Category[] = Object.keys(categoryTasks);
+  const { inputs, outputs } = method;
+  const nDataObjects = await dataObjects?.count() ?? null;
 
-  const requireDataObjects = method.inputs.includes('dataObjects');
-  const requireLabels = method.inputs.includes('labels');
-  const requireQueryUuids = method.inputs.includes('queryUuids');
-  const requireCategories = method.inputs.includes('categories');
-  const requireModel = method.inputs.includes('model');
-  const requireStop = method.inputs.includes('stop');
-
-  const outputDataObjects = method.outputs.includes('dataObjects');
-  const outputLabels = method.outputs.includes('labels');
-  const outputQueryUuids = method.outputs.includes('queryUuids');
-  const outputFeatures = method.outputs.includes('features');
-  const outputCategories = method.outputs.includes('categories');
-  // const outputModel = method.outputs.includes('model');
-  const outputStop = method.outputs.includes('stop');
+  const payload = {
+    ...(inputs.includes('dataObjects') && { dataObjects }),
+    ...(inputs.includes('labels') && { labels, statuses, nDataObjects }),
+    ...(inputs.includes('queryUuids') && { queryUuids }),
+    ...(inputs.includes('categories') && { categories, unlabeledMark }),
+    ...(inputs.includes('model') && { model: method.model }),
+    ...(inputs.includes('stop') && { stop }),
+  };
 
   try {
-    const inputs = {
-      ...(requireDataObjects && { dataObjects }),
-      ...(requireLabels && { labels, statuses }),
-      ...(requireQueryUuids && { queryUuids }),
-      ...(requireCategories && { classes, unlabeledMark }),
-      // ...(requireModel && { model }),
-      ...(requireStop && { stop }),
-    };
-    const response = await method.run(inputs);
-    if (outputDataObjects) {
+    const response = await method.run(payload);
+    if (outputs.includes('dataObjects')) {
       if (dataObjects === null) throw Error('Data object storage not initialized');
       const { dataObjects: newValue } = response as { dataObjects: IDataObject[] };
       dataObjects.upsertBulk(newValue);
       commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
     }
-    if (outputLabels) {
+    if (outputs.includes('labels')) {
       if (labels === null) throw Error('Label storage not initialized');
       const { labels: newValue } = response as { labels: ILabel[] };
       labels.upsertBulk(newValue);
       commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
     }
-    if (outputQueryUuids) {
+    if (outputs.includes('queryUuids')) {
       const { queryUuids: newValue } = response as { queryUuids: string[] };
       commit(rootTypes.SET_QUERY_UUIDS, newValue, { root: true });
     }
-    if (outputFeatures) {
+    if (outputs.includes('model')) {
+      // TODO
+    }
+    if (outputs.includes('features')) {
       if (dataObjects === null) throw Error('Data object storage not initialized');
       const features = response?.features as number[][];
       const featureNames = response?.featureNames
@@ -275,14 +267,20 @@ export const executeCustom = showProgressBar(async (
       commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
       commit(rootTypes.SET_FEATURE_NAMES, featureNames, { root: true });
     }
-    if (outputCategories) {
+    if (outputs.includes('categories')) {
       const { categories: newValue } = response as { categories: string[] };
       const newCategoryTasks = { ...categoryTasks };
       newValue.forEach((category) => { newCategoryTasks[category] = null; });
       commit(rootTypes.SET_CATEGORY_TASKS, newCategoryTasks, { root: true });
     }
-    if (outputStop) {
+    if (outputs.includes('stop')) {
       const { stop: newValue } = response as { stop: boolean };
+      if (newValue) {
+        commit(rootTypes.SET_MESSAGE, {
+          content: 'All Data Objects Labeled.',
+          type: MessageType.Success,
+        }, { root: true });
+      }
       commit(rootTypes.SET_STOP, newValue, { root: true });
     }
   } catch (e) {
@@ -334,7 +332,7 @@ export const executeDataObjectExtraction = showProgressBar(async (
 
 export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
+  method: IModule,
 ): Promise<void> => {
   const {
     labels,
@@ -362,7 +360,7 @@ export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   const { dataObjects } = rootState;
   if (dataObjects === null) throw Error('Data object storage not initialized.');
   const model = method.model as ModelService;
-  const nBatch = (method.params as MethodParams).nBatch.value as number;
+  const nBatch = (method.params as ModuleParams).nBatch.value as number;
 
   let newQueryUuids: string[] = [];
   try {
@@ -433,10 +431,10 @@ export const executeDataObjectSelectionManual = showProgressBar(async (
 
 export const executeDefaultLabeling = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
+  method: IModule,
 ): Promise<void> => {
   if (method.run !== undefined && method.run !== null) {
-    await executeCustom(
+    await executeModule(
       { commit, rootState } as ActionContext<IState, IRootState>,
       method,
     );
@@ -483,13 +481,8 @@ export const executeDefaultLabeling = showProgressBar(async (
 
 export const executeModelTraining = showProgressBar(async (
   { commit, state, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
+  method: IModule,
 ): Promise<void> => {
-  const isProcessNode = (node: WorkflowNode): boolean => (
-    node.type !== WorkflowNodeType.Initialization
-    && node.type !== WorkflowNodeType.Decision
-    && node.type !== WorkflowNodeType.Exit
-  );
   const {
     dataObjects,
     labels,
@@ -499,9 +492,9 @@ export const executeModelTraining = showProgressBar(async (
   if (labels === null || statuses === null) return;
 
   const { nodes } = state;
-  nodes.filter((d) => isProcessNode(d))
+  nodes.filter((d) => isNodeModule(d))
     .forEach(async (d) => {
-      const nodeMethod = d.value as Process;
+      const nodeMethod = d.value as IModule;
       if (!nodeMethod.isModelBased) return;
       const model = nodeMethod.model as ModelService;
 
@@ -518,24 +511,6 @@ export const executeModelTraining = showProgressBar(async (
         handleAlgorithmServiceError(e, commit);
       }
     });
-});
-
-export const executeStoppageAnalysis = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  method: Process,
-): Promise<void> => {
-  const { dataObjects, statuses } = rootState;
-  if (dataObjects === null || statuses === null) return;
-  const nDataObjects = await dataObjects.count();
-  const nLabeled = await statuses.count({ value: StatusType.Labeled });
-  const stop = nDataObjects === nLabeled;
-  if (stop) {
-    commit(rootTypes.SET_MESSAGE, {
-      content: 'All Data Objects Labeled.',
-      type: MessageType.Success,
-    }, { root: true });
-  }
-  commit(rootTypes.SET_STOP, stop, { root: true });
 });
 
 const getOutputNodes = (
@@ -580,20 +555,20 @@ export const executeWorkflow = async (
   }
 
   if (node.type === WorkflowNodeType.FeatureExtraction) {
-    const method = node.value as Process;
-    await executeCustom(store, method);
+    const method = node.value as IModule;
+    await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
-    if ((node.value as Process).isAlgorithmic) {
-      await executeDataObjectSelectionAlgorithmic(store, node.value as Process);
+    if ((node.value as IModule).isAlgorithmic) {
+      await executeDataObjectSelectionAlgorithmic(store, node.value as IModule);
     }
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {
-    const method = node.value as Process;
+    const method = node.value as IModule;
     await executeDefaultLabeling(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
@@ -603,13 +578,13 @@ export const executeWorkflow = async (
   }
 
   if (node.type === WorkflowNodeType.StoppageAnalysis) {
-    const method = node.value as Process;
-    await executeStoppageAnalysis(store, method);
+    const method = node.value as IModule;
+    await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.ModelTraining) {
-    const method = node.value as Process;
+    const method = node.value as IModule;
     await executeModelTraining(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
@@ -618,9 +593,9 @@ export const executeWorkflow = async (
     // TODO
   }
 
-  if (node.type === WorkflowNodeType.Custom) {
-    const method = node.value as Process;
-    await executeCustom(store, method);
+  if (node.type === WorkflowNodeType.Base) {
+    const method = node.value as IModule;
+    await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 

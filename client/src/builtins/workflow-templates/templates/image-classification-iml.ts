@@ -8,6 +8,7 @@ import {
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
+import BaseInitialization from '@/builtins/modules/initialization/base';
 import DOSCluster from '@/builtins/modules/data-object-selection/cluster';
 import DOSProjection from '@/builtins/modules/data-object-selection/projection';
 import FEImageSvd from '@/builtins/modules/feature-extraction/image-svd';
@@ -38,11 +39,13 @@ export default parseWorkflow({
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: {
-        dataType: DataType.Image,
-        labelTasks: [LabelTaskType.Classification],
+      value: merge(cloneDeep(BaseInitialization), {
+        params: {
+          dataType: { value: DataType.Image },
+          labelTasks: { value: [LabelTaskType.Classification] },
+        },
         outputs: ['dataObjects', 'labels', 'model'],
-      },
+      }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
