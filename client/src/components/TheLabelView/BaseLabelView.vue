@@ -33,8 +33,6 @@ import type {
   IStatusStorage,
   TaskWindow,
 } from '@/commons/types';
-import TheGridMatrix from '@/components/TheGridMatrix/index.vue';
-import TheSingleObjectDisplay from '@/components/TheSingleObjectDisplay/index.vue';
 import {
   useFilteredDataObjects,
   useFilteredLabels,
@@ -107,9 +105,8 @@ export default defineComponent({
     component(): VueConstructor | null {
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
-      if (process.api === 'SingleObjectDisplay') return TheSingleObjectDisplay;
-      if (process.api === 'GridMatrix') return TheGridMatrix;
-      return null;
+      if (process.render === undefined) return null;
+      return process.render();
     },
     ready(): boolean {
       return (this.filteredDataObjects.length === this.filteredLabels.length)

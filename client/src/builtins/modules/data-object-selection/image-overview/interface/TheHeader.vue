@@ -21,7 +21,7 @@ import { defineComponent } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default defineComponent({
-  name: 'TheImageOverviewHeader',
+  name: 'TheHeader',
   components: { VToolbar },
   emits: {
     'window:minimize': null,

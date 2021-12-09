@@ -1,4 +1,5 @@
 import { ModuleType } from '@/commons/types';
+import TheGridMatrix from './interface/index.vue';
 
 export default {
   type: ModuleType.InteractiveLabeling,
@@ -10,7 +11,6 @@ export default {
   isBuiltIn: true,
   isModelBased: false,
   isServerless: true,
-  api: 'GridMatrix',
   params: {
     nRows: {
       value: 6,
@@ -35,4 +35,5 @@ export default {
       ],
     },
   },
+  render: () => TheGridMatrix,
 };

@@ -307,7 +307,7 @@ import type { PropType } from '@vue/composition-api';
 import { ProjectionMethodType } from '@/commons/types';
 
 export default defineComponent({
-  name: 'VConfigurableProjectionHeader',
+  name: 'VProjectionHeader',
   props: {
     featureNames: {
       type: Array as PropType<string[]>,

@@ -1,4 +1,5 @@
 import { ModuleType } from '@/commons/types';
+import TheProjection from './interface/index.vue';
 
 export default {
   type: ModuleType.DataObjectSelection,
@@ -10,5 +11,5 @@ export default {
   isBuiltIn: true,
   isModelBased: false,
   isServerless: true,
-  api: 'Projection',
+  render: () => TheProjection,
 };

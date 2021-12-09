@@ -79,7 +79,7 @@ import type { PropType } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
 
 export default defineComponent({
-  name: 'TheProjectionViewHeader',
+  name: 'TheHeader',
   components: { VToolbar },
   props: {
     nRows: {

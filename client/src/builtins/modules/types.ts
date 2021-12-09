@@ -76,6 +76,12 @@ export interface IModule {
   /** The implementation of algorithm module. */
   run?: (inputs: Record<string, unknown>) => Promise<void | Record<string, unknown>>;
 
-  /** The implementation of interface module. */
-  render?: VueConstructor;
+  /**
+   * The implementation of interface module.
+   *
+   * @note Make render store a component accessor instead of a component itself.
+   * Otherwise vue keeps raising warnings possibly because the module is frequently
+   * copied, and copying the vue component causes errors.
+   */
+  render?: () => VueConstructor;
 }

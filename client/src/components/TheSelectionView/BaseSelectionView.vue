@@ -23,8 +23,6 @@ import type {
   ILabelStorage,
   TaskWindow,
 } from '@/commons/types';
-import TheImageOverview from '@/components/TheImageOverview/TheImageOverview.vue';
-import TheProjectionView from '@/components/TheProjectionView/TheProjectionView.vue';
 import {
   useFilteredDataObjects,
   useFilteredLabels,
@@ -85,9 +83,8 @@ export default defineComponent({
     component(): VueConstructor | null {
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.DataObjectSelection) return null;
-      if (process.api === 'Projection') return TheProjectionView;
-      if (process.api === 'ImageOverview') return TheImageOverview;
-      return null;
+      if (process.render === undefined) return null;
+      return process.render();
     },
     filteredQueryUuids(): string[] {
       const { scopeUuids, queryUuids } = this;

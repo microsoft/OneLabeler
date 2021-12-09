@@ -1,7 +1,7 @@
 <template>
   <div style="border: 0.5px solid #757575; display: flex;">
     <!-- The configure projection attribute dialog button. -->
-    <VConfigurableProjectionHeader
+    <VProjectionHeader
       :feature-names="featureNames"
       :selected-feature-indices="selectedFeatureIndices"
       :projection-method="projectionMethod"
@@ -47,14 +47,14 @@ import { randomShuffle } from '@/plugins/random';
 import type { Axis, Range } from '@/plugins/heatmap/VHeatmap.vue';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
-import VConfigurableProjectionHeader from './VConfigurableProjectionHeader.vue';
+import VProjectionHeader from './VProjectionHeader.vue';
 
 export default defineComponent({
-  name: 'VConfigurableProjection',
+  name: 'VProjection',
   components: {
     VScatterplot,
     VHeatmap,
-    VConfigurableProjectionHeader,
+    VProjectionHeader,
   },
   props: {
     selectedFeatureIndices: {

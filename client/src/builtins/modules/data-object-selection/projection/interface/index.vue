@@ -1,6 +1,6 @@
 <template>
   <v-card style="display: flex; flex-direction: column;">
-    <TheProjectionViewHeader
+    <TheHeader
       :n-rows="nRows"
       :n-columns="nColumns"
       @set:matrix-shape="onSetMatrixShape"
@@ -16,7 +16,7 @@
         'grid-template-columns': `repeat(${nColumns}, ${100/nColumns}%)`,
       }"
     >
-      <VConfigurableProjection
+      <VProjection
         v-for="(view, i) in views"
         :key="view.id"
         :selected-feature-indices="view.featureSpace.selectedFeatureIndices"
@@ -69,8 +69,8 @@ import type {
   ILabelCategory,
 } from '@/commons/types';
 import type { Binning, Subsampling } from './types';
-import TheProjectionViewHeader from './TheProjectionViewHeader.vue';
-import VConfigurableProjection from './VConfigurableProjection.vue';
+import TheHeader from './TheHeader.vue';
+import VProjection from './VProjection.vue';
 
 /** The type of a data object overview facet configuration. */
 type FacetAttribute = {
@@ -101,8 +101,8 @@ const createView = (nFeatures: number): FacetAttribute => ({
 export default defineComponent({
   name: 'TheProjectionView',
   components: {
-    TheProjectionViewHeader,
-    VConfigurableProjection,
+    TheHeader,
+    VProjection,
   },
   props: {
     dataObjects: {

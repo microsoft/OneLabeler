@@ -1,6 +1,6 @@
 <template>
   <v-card style="display: flex; flex-direction: column;">
-    <TheImageOverviewHeader
+    <TheHeader
       @window:minimize="$emit('update:task-window', { isMinimized: true })"
       @window:pin="$emit('update:task-window', { isPinned: true })"
     />
@@ -51,11 +51,11 @@ import type {
   IDataObject,
   ILabel,
 } from '@/commons/types';
-import TheImageOverviewHeader from './TheImageOverviewHeader.vue';
+import TheHeader from './TheHeader.vue';
 
 export default defineComponent({
   name: 'TheImageOverview',
-  components: { TheImageOverviewHeader },
+  components: { TheHeader },
   props: {
     dataObjects: {
       type: Array as PropType<IDataObject[]>,
