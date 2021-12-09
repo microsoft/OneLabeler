@@ -16,7 +16,7 @@
     <div style="overflow-y: scroll;">
       <VMessage
         v-for="(message, i) in consoleMessages"
-        :key="message.message"
+        :key="getMsgId(message)"
         :message="message"
         :style="{ 'margin-top': i === 0 ? 0 : '-1px' }"
         style="border-style: solid; border-width: 1px;"
@@ -42,6 +42,9 @@ const filterNodeIds = (elements: (WorkflowNode | WorkflowEdge)[]) => (
 );
 const filterEdgeIds = (elements: (WorkflowNode | WorkflowEdge)[]) => (
   elements.filter((d) => isElementEdge(d)).map((d) => d.id)
+);
+const getMsgId = (message: LintMessage): string => (
+  `${message.message}-${message.subjects?.map((d) => d.id) ?? ''}`
 );
 
 export default defineComponent({
@@ -79,6 +82,7 @@ export default defineComponent({
       this.$emit('hover:nodes', []);
       this.$emit('hover:edges', []);
     },
+    getMsgId,
   },
 });
 </script>

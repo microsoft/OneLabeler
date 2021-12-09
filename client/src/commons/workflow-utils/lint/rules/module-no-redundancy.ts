@@ -121,6 +121,41 @@ const checkModuleNoRedundancy = (
     });
   });
 
+  // - After module A is visited, at least one of its outputs should be consumed:
+  // For each path from A to the exit node,
+  // at least one of A's output has been used as input(s) to module visited along the path.
+  // Otherwise, there's no need to have module A in the workflow.
+  paths.forEach((path): void => {
+    let unusedOutputs: [string, WorkflowNode][] = [];
+    // const unusedOutputs: Set<string> = new Set([]);
+    path.forEach((node): void => {
+      if (node.value === null || node.value === undefined) return;
+      const { inputs, outputs } = node.value;
+      inputs.forEach((d) => {
+        unusedOutputs = unusedOutputs.filter(([key]) => key !== d);
+      });
+      outputs.forEach((d) => {
+        unusedOutputs = [...unusedOutputs, [d, node]];
+      });
+    });
+    unusedOutputs.forEach(([output, node]) => {
+      messages.push({
+        type: LintMessageType.Error,
+        message: `output ${output} of node with label "${
+          node.label
+        }" not used by its following nodes`,
+        category: ErrorCategory.ImplementationError,
+        subjects: [node],
+        rule: 'Module Outputs Should Be Consumed',
+        fixes: [
+          ...filterNodeTypesByInputs([output]).map((typeName) => (
+            `consider whether to add ${typeName} before this node is visited to modify ${output}.`
+          )),
+        ],
+      });
+    });
+  });
+
   return messages;
 };
 

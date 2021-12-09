@@ -14,7 +14,7 @@
     <div class="py-2 px-4">
       <!-- The data type selection. -->
       <span class="subtitle-2">
-        Decision Criteria
+        Branching Criteria
       </span>
       <span
         class="pl-4 py-2 subtitle-2 grey--text"
@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      viewTitle: 'Decision',
+      viewTitle: 'Conditional Branching',
     };
   },
 };

@@ -10,6 +10,7 @@ export enum ErrorCategory {
   DataStructureError = 'DataStructureError',
   TopologyError = 'TopologyError',
   ImplementationError = 'ImplementationError',
+  AntiPattern = 'AntiPattern',
 }
 
 export interface LintMessage {

@@ -11,7 +11,7 @@
       :show-element-setting="showElementSetting"
       :show-inspector="showInspector"
       class="pa-2 subtitle-2"
-      style="flex: 1 1 auto"
+      style="flex: 1 1 auto; overflow: auto;"
     />
   </v-card>
 </template>

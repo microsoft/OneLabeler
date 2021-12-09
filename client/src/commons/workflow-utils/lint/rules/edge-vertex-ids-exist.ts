@@ -8,6 +8,7 @@ const checkEdgeVertexIdsExist = (
 ): LintMessage[] => {
   const messages: LintMessage[] = [];
 
+  // The set of valid node ids.
   const nodeIds: Set<string> = new Set(nodes.map((d) => d.id));
   edges.forEach((edge) => {
     const { source, target } = edge;

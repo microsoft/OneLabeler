@@ -10,6 +10,7 @@ import checkHasLabeling from './has-labeling';
 import checkModuleInputsInitialized from './module-inputs-initialized';
 import checkModuleNoRedundancy from './module-no-redundancy';
 import checkModuleImplemented from './module-implemented';
+import checkIterativeTraining from './iterative-training';
 
 export default [
   // 1. Basic data structure rules
@@ -44,4 +45,8 @@ export default [
 
   // 4. Modules are not redundant
   checkModuleNoRedundancy,
+
+  // 7. Models are recommended to be iteratively updated
+  // when used in loops.
+  checkIterativeTraining,
 ];
