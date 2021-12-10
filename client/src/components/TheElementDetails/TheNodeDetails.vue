@@ -1,6 +1,5 @@
 <template>
-  <component
-    :is="component"
+  <TheNodeDetailsModule
     :methods="methodsFiltered"
     :models="modelsFiltered"
     :node="node"
@@ -28,6 +27,8 @@ import type {
 } from '@/commons/types';
 import {
   InitializationNode,
+  DecisionNode,
+  ExitNode,
   DataObjectSelectionNode,
   DefaultLabelingNode,
   FeatureExtractionNode,
@@ -36,12 +37,12 @@ import {
   StoppageAnalysisNode,
   CustomNode,
 } from '@/commons/workflow-utils/build-node';
-import TheNodeDetailsDecision from './TheNodeDetailsDecision.vue';
 import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
-import TheNodeDetailsExit from './TheNodeDetailsExit.vue';
 
 const NODE_TYPES = [
   InitializationNode,
+  DecisionNode,
+  ExitNode,
   DataObjectSelectionNode,
   DefaultLabelingNode,
   FeatureExtractionNode,
@@ -53,6 +54,7 @@ const NODE_TYPES = [
 
 export default defineComponent({
   name: 'TheElementDetails',
+  components: { TheNodeDetailsModule },
   props: {
     methods: {
       type: Array as PropType<IModule[]>,
@@ -75,23 +77,19 @@ export default defineComponent({
     'create:model': null,
   },
   computed: {
-    component() {
-      const { node } = this;
-      if (node.type === WorkflowNodeType.Exit) return TheNodeDetailsExit;
-      if (node.type === WorkflowNodeType.Decision) return TheNodeDetailsDecision;
-      return TheNodeDetailsModule;
-    },
     viewTitle(): string {
       const { node } = this;
       const mapper = {
         [WorkflowNodeType.Initialization]: 'Initialization Setting',
+        [WorkflowNodeType.Decision]: 'Conditional Branching',
+        [WorkflowNodeType.Exit]: 'Exit',
+        [WorkflowNodeType.Base]: 'Custom Instantiation',
         [WorkflowNodeType.DataObjectSelection]: 'Data Object Selection Instantiation',
         [WorkflowNodeType.DefaultLabeling]: 'Default Labeling Instantiation',
         [WorkflowNodeType.FeatureExtraction]: 'Feature Extraction Instantiation',
         [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Instantiation',
         [WorkflowNodeType.ModelTraining]: 'Interim Model Training Instantiation',
         [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
-        [WorkflowNodeType.Base]: 'Custom Instantiation',
       } as Partial<Record<WorkflowNodeType, string>>;
       return mapper[node.type] ?? '';
     },
@@ -151,7 +149,6 @@ export default defineComponent({
         id: `custom-${uuidv4()}`,
         isAlgorithmic: true,
         isBuiltIn: false,
-        isModelBased: false,
         isServerless: false,
         api: '',
       } as Partial<IModule>;

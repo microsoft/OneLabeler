@@ -9,7 +9,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: true,
   isServerless: false,
   // 'http://localhost:8005/selection/EntropyDiversityDensity'
   api: `${ALGORITHM_URL}/selection/EntropyDiversityDensity`,

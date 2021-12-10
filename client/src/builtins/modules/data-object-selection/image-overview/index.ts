@@ -9,7 +9,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: false,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   render: () => TheImageOverview,
 };

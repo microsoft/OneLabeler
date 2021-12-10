@@ -65,33 +65,6 @@ const parseNodeLayout = (
   };
 };
 
-export const parseNodeValue = (
-  value: TrimmedNode['value'],
-  node: TrimmedNode,
-): WorkflowNode['value'] => {
-  if (node.type === WorkflowNodeType.Exit) {
-    return {
-      inputs: [],
-      outputs: [],
-      ...value,
-    };
-  }
-
-  if (node.type === WorkflowNodeType.Decision) {
-    return {
-      inputs: ['stop'],
-      outputs: [],
-      ...value,
-    };
-  }
-
-  if (value === null || value === undefined) {
-    throw new Error(`node value empty: node = ${node}`);
-  }
-
-  return parseModule(value as IModuleTrimmed, node);
-};
-
 export const parseNode = (
   node: TrimmedNode,
   idx: number,
@@ -101,5 +74,5 @@ export const parseNode = (
   id: node.id ?? node.label,
   // Create node.layout if layout doesn't exist.
   layout: parseNodeLayout(node.layout, node.type, idx),
-  value: parseNodeValue(node.value, node),
+  value: parseModule(node.value as IModuleTrimmed | undefined, node),
 });

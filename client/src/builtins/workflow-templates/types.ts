@@ -24,10 +24,8 @@ export interface WorkflowNode {
   id: string;
   label: string;
   type: WorkflowNodeType;
-  value: IModule // for node with an instantiation chosen
-    | null // for node with its instantiation not yet chosen
-    | { inputs: ['stop'], outputs: [] } // for decision nodes and exit nodes
-    | { inputs: [], outputs: [] }; // for exit nodes
+  /** The chosen implementation (null when not chosen.) */
+  value: IModule | null;
   layout: {
     x: number;
     y: number;

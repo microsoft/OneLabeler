@@ -10,7 +10,6 @@ export default {
   outputs: ['features'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   run: async (
     inputs: {

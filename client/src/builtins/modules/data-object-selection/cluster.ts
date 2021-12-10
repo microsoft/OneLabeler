@@ -9,7 +9,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   // 'http://localhost:8005/selection/Cluster',
   api: `${ALGORITHM_URL}/selection/Cluster`,

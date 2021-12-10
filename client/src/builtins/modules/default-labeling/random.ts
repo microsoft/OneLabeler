@@ -11,7 +11,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   api: 'Random',
   labelTasks: [LabelTaskType.Classification],

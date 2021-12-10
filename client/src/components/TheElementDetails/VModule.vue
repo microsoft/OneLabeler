@@ -5,15 +5,15 @@
   >
     <!-- The label of the module instance. -->
     <VModuleLabel
-      v-if="!isInit"
+      v-if="!isInit && !isDecision && !isExit"
       :label="method.label"
       :disabled="method.isBuiltIn"
       @edit:label="onUpsertModule({ label: $event })"
     />
 
-    <!-- The input box for module instance input parameters. -->
+    <!-- The module instance input parameters. -->
     <VModuleArgs
-      v-if="!isInit"
+      v-if="!isInit && !isExit"
       :label="'Module Inputs'"
       :module-args="moduleInputs"
       :method-args="method.inputs"
@@ -21,8 +21,9 @@
       @update:module-args="onUpsertModule({ inputs: $event })"
     />
 
-    <!-- The display of module instance output parameters. -->
+    <!-- The module instance output parameters. -->
     <VModuleArgs
+      v-if="!isDecision && !isExit"
       :label="'Module Outputs'"
       :module-args="moduleOutputs"
       :method-args="method.outputs"
@@ -161,6 +162,12 @@ export default defineComponent({
   computed: {
     isInit(): boolean {
       return this.method.type === ModuleType.Initialization;
+    },
+    isDecision(): boolean {
+      return this.method.type === ModuleType.Decision;
+    },
+    isExit(): boolean {
+      return this.method.type === ModuleType.Exit;
     },
     model(): ModelService | undefined {
       return this.method?.model;

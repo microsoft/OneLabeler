@@ -31,7 +31,6 @@
           ],
           "isAlgorithmic": true,
           "isBuiltIn": true,
-          "isModelBased": false,
           "isServerless": true,
           "api": "Random",
           "params": {
@@ -94,7 +93,6 @@
         ],
         "isAlgorithmic": true,
         "isBuiltIn": true,
-        "isModelBased": false,
         "isServerless": true,
         "api": "DirectLabeling"
       },
@@ -120,7 +118,6 @@
           ],
           "isAlgorithmic": false,
           "isBuiltIn": true,
-          "isModelBased": false,
           "isServerless": true,
           "api": "GridMatrix",
           "params": {
@@ -195,7 +192,6 @@
         ],
         "isAlgorithmic": true,
         "isBuiltIn": true,
-        "isModelBased": false,
         "isServerless": true,
         "api": "AllChecked"
       },

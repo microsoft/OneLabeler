@@ -41,7 +41,7 @@ const getComponent = (multiple: boolean) => (
   multiple ? VMenuMultiSelect : VMenuSingleSelect
 );
 const filterOptions = (
-  param: ParamSpecification<unknown>,
+  param: ParamSpecification<unknown, boolean>,
   params: ModuleParams,
 ) => {
   if (param.validate === undefined) return param.options;

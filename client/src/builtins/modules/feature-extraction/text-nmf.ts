@@ -25,7 +25,6 @@ export default {
   outputs: ['features'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   dataTypes: [DataType.Text],
   run: async (

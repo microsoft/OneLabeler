@@ -9,7 +9,6 @@ export default {
   outputs: ['stop'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   api: 'AllChecked',
   run: async (

@@ -9,7 +9,6 @@ export default {
   outputs: ['model'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   // 'http://localhost:8005/modelUpdated/Retrain'
   api: `${ALGORITHM_URL}/modelUpdated/Retrain`,

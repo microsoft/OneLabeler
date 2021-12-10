@@ -34,7 +34,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   dataTypes: [DataType.Image],
   labelTasks: [LabelTaskType.ObjectDetection],

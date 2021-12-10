@@ -9,7 +9,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: false,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   params: {
     nRows: {

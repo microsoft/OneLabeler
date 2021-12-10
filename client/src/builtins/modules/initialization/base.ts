@@ -1,6 +1,7 @@
 import { ModuleType } from '@/commons/types';
 import type {
   DataType,
+  IModule,
   LabelTaskType,
   ParamSpecification,
 } from '@/commons/types';
@@ -22,6 +23,7 @@ export default {
   id: 'BaseInitialization',
   inputs: [],
   outputs: ['dataObjects', 'labels'],
+  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   params: {
@@ -37,7 +39,7 @@ export default {
       multiple: true,
       validate: (
         value: LabelTaskType,
-        params: { dataType: ParamSpecification<DataType | null> },
+        params: { dataType: ParamSpecification<DataType | null, false> },
       ): boolean => {
         const dataType = params.dataType.value;
         if (dataType === null) return true;
@@ -47,4 +49,4 @@ export default {
       },
     },
   },
-};
+} as IModule;

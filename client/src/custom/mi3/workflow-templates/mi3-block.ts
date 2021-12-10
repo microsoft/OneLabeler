@@ -62,7 +62,6 @@ export default parseWorkflow({
         inputs: ['features', 'model'],
         isAlgorithmic: true,
         isBuiltIn: true,
-        isModelBased: true,
         isServerless: false,
         model: {
           type: 'DecisionTree',

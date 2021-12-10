@@ -9,7 +9,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: true,
   isServerless: false,
   model: undefined,
   api: `${ALGORITHM_URL}/defaultLabels/ModelPrediction`,

@@ -22,7 +22,6 @@ export default {
   outputs: ['features'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   dataTypes: [DataType.Image],
   run: async (

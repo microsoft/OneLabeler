@@ -1,12 +1,6 @@
 <template>
   <g>
-    <title>
-      {{
-        `node type: ${node.type}\n${
-          node.value.label !== undefined ? `selected method: ${node.value.label}` : ''
-        }`
-      }}
-    </title>
+    <title>{{ title }}</title>
     <template v-if="isInitialization || isModule">
       <VNodeModule :node="node" />
     </template>
@@ -108,6 +102,12 @@ export default defineComponent({
     },
     isModule(): boolean {
       return isNodeModule(this.node);
+    },
+    title(): string {
+      const { node } = this;
+      return `node type: ${node.type}\n${
+        node.value?.label !== undefined ? `selected method: ${node.value.label}` : ''
+      }`;
     },
   },
 });

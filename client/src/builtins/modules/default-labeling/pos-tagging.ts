@@ -13,7 +13,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   api: `${ALGORITHM_URL}/defaultLabels/POS-tagging`,
   dataTypes: [DataType.Text],

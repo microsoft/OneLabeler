@@ -13,16 +13,27 @@
 
     <v-divider />
 
-    <!-- The label of the process node. -->
+    <!-- The node name label. -->
     <VNodeEditableLabel
       :label="node.label"
       class="py-2 px-4"
       @edit:label="$emit('edit:node', { ...node, label: $event })"
     />
 
+    <!-- The node type label. -->
+    <div
+      class="py-2 px-4"
+      style="display: flex"
+    >
+      Node Type
+      <span class="pl-4 subtitle-2">
+        {{ node.type }}
+      </span>
+    </div>
+
     <!-- The method used to instantiated the process. -->
     <VNodeSelectMethod
-      v-if="!isInit"
+      v-if="!isInit && !isDecision && !isExit"
       :selected-method="method"
       :menu="menuOfMethods"
       append-create-option
@@ -103,6 +114,12 @@ export default defineComponent({
   computed: {
     isInit(): boolean {
       return this.node.type === WorkflowNodeType.Initialization;
+    },
+    isDecision(): boolean {
+      return this.node.type === WorkflowNodeType.Decision;
+    },
+    isExit(): boolean {
+      return this.node.type === WorkflowNodeType.Exit;
     },
     method(): IModule | null {
       return this.node.value as IModule | null;

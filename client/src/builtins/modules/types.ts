@@ -4,6 +4,9 @@ import type { LabelTaskType } from '@/builtins/label-task-types/types';
 
 export enum ModuleType {
   Initialization = 'Initialization',
+  Decision = 'Decision',
+  Exit = 'Exit',
+  Base = 'Base',
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -12,7 +15,6 @@ export enum ModuleType {
   StoppageAnalysis = 'StoppageAnalysis',
   ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
-  Base = 'Base',
 }
 
 /** The interface of a model service. */
@@ -28,9 +30,9 @@ export interface ModelService {
   // isLocal: boolean;
 }
 
-export type ParamSpecification<T, M extends boolean = false> = {
+export type ParamSpecification<T, M extends boolean> = {
   /** The single or multiple selected value(s) of the parameter. */
-  value: M extends true ? T[] : T;
+  value: (M extends true ? T[] : T) | null;
   /** The name of the parameter that appears in the interface. */
   label: string;
   /** The possible options of the parameter. */
@@ -40,26 +42,25 @@ export type ParamSpecification<T, M extends boolean = false> = {
   /** Check if a value option is validate given all the parameter values. */
   validate?: (
     value: T,
-    params: Record<string, ParamSpecification<unknown>>,
+    params: any,
   ) => boolean,
 };
 
-export type ModuleParams = Record<string, ParamSpecification<unknown>>;
+export type ModuleParams = Record<string, ParamSpecification<unknown, boolean>>;
+
+export type StateNames = 'dataObjects' | 'labels' | 'queryUuids' | 'features' | 'model' | 'stop';
 
 /** The data labeling process class. */
 export interface IModule {
-  label: string;
-  id: string;
-  type: ModuleType;
   inputs: string[];
   outputs: string[];
-  // For serverless methods, the api is the method's unique key.
-  api?: string;
+  id: string;
+  label: string;
+  type: ModuleType;
 
   // The properties of the module.
   isAlgorithmic: boolean;
   isBuiltIn: boolean;
-  isModelBased: boolean;
   isServerless: boolean;
   // The restriction on data types that the process can handle.
   // If not given, the process is regarded agnostic of data types.
@@ -68,13 +69,15 @@ export interface IModule {
   // If not given, the process is regarded agnostic of label tasks.
   labelTasks?: LabelTaskType[];
 
+  // For serverless methods, the api is the method's unique key.
+  api?: string;
   model?: ModelService;
   params?: ModuleParams;
 
   // Note: initialization node do not need run or render
 
   /** The implementation of algorithm module. */
-  run?: (inputs: Record<string, unknown>) => Promise<void | Record<string, unknown>>;
+  run?: (inputs: Record<StateNames, unknown>) => Promise<void | Record<string, unknown>> | boolean;
 
   /**
    * The implementation of interface module.

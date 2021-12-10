@@ -13,7 +13,6 @@ export default {
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   api: `${ALGORITHM_URL}/defaultLabels/PointNet-segmentation`,
   dataTypes: [DataType.PointCloud],

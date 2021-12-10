@@ -8,6 +8,7 @@ import {
 import type { WorkflowGraph } from '@/commons/types';
 import { parseWorkflow } from '@/commons/workflow-utils';
 import BaseInitialization from '@/builtins/modules/initialization/base';
+import BaseDecision from '@/builtins/modules/decision/base';
 import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
@@ -70,6 +71,7 @@ export default parseWorkflow({
     {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
+      value: cloneDeep(BaseDecision),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

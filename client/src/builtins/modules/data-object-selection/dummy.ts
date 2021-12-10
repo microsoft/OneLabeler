@@ -8,7 +8,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   api: 'DatasetOrder',
   // TODO: refactor all computation modules into classes

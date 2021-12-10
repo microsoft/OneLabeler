@@ -9,7 +9,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/DenseAreas`,
   params: {

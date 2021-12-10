@@ -31,7 +31,6 @@ export default {
   outputs: ['dataObjects'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   run: async (): Promise<{ dataObjects: ITable[] }> => {
     const fileNames = await d3.json('./assets/catalog.json') as string[];

@@ -10,7 +10,6 @@ export default {
   outputs: ['model'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: false,
   isServerless: true,
   api: 'Static',
 };

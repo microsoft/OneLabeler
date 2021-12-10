@@ -1,12 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { cloneDeep } from 'lodash';
+import { WorkflowNodeType } from '@/commons/types';
 import type {
   ModuleParams,
   IModule,
   ModuleType,
-  WorkflowNodeType,
 } from '@/commons/types';
 import processes from '@/builtins/modules';
+import BaseDecision from '@/builtins/modules/decision/base';
+import BaseExit from '@/builtins/modules/exit/base';
 import type { TrimmedNode } from './parse-node';
 
 type MethodParam = ModuleParams[keyof ModuleParams];
@@ -14,17 +16,23 @@ type JsonModuleParams = Record<string, MethodParam | MethodParam['value']>;
 
 export type IModuleTrimmed = Omit<
   Partial<IModule>
-  & Omit<IModule, 'id' | 'type' | 'api' | 'isAlgorithmic' | 'isBuiltIn' | 'isModelBased' | 'isServerless'>,
+  & Omit<IModule, 'id' | 'type' | 'api' | 'isAlgorithmic' | 'isBuiltIn' | 'isServerless'>,
   'run'
 >;
 
 export const parseModule = (
-  moduleConfig: IModuleTrimmed,
+  moduleConfig: IModuleTrimmed | undefined,
   node: TrimmedNode,
 ): IModule => {
   const nodeTypeToModuleType = (type: WorkflowNodeType) => (
     type as unknown as ModuleType
   );
+
+  if (moduleConfig === undefined) {
+    if (node.type === WorkflowNodeType.Decision) return cloneDeep(BaseDecision);
+    if (node.type === WorkflowNodeType.Exit) return cloneDeep(BaseExit);
+    throw new Error('module config not given');
+  }
 
   // Create moduleConfig.type
   const type: ModuleType = moduleConfig.type ?? nodeTypeToModuleType(node.type);
@@ -67,7 +75,6 @@ export const parseModule = (
 
   const isAlgorithmic = moduleConfig.isAlgorithmic ?? true;
   const isBuiltIn = false;
-  const isModelBased = moduleConfig.model !== undefined;
   const isServerless = moduleConfig.api !== undefined && moduleConfig.api.match(urlRegex) !== null;
 
   let params: ModuleParams | undefined;
@@ -98,7 +105,6 @@ export const parseModule = (
     id,
     isAlgorithmic,
     isBuiltIn,
-    isModelBased,
     isServerless,
     params,
   } as IModule;

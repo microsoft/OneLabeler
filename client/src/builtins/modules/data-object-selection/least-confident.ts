@@ -9,7 +9,6 @@ export default {
   outputs: ['queryUuids'],
   isAlgorithmic: true,
   isBuiltIn: true,
-  isModelBased: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/LeastConfident`,
   model: undefined,

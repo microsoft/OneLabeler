@@ -495,7 +495,7 @@ export const executeModelTraining = showProgressBar(async (
   nodes.filter((d) => isNodeModule(d))
     .forEach(async (d) => {
       const nodeMethod = d.value as IModule;
-      if (!nodeMethod.isModelBased) return;
+      if (!nodeMethod.inputs.includes('model')) return;
       const model = nodeMethod.model as ModelService;
 
       try {
