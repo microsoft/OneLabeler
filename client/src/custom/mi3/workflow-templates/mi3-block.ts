@@ -57,7 +57,7 @@ export default parseWorkflow({
       type: WorkflowNodeType.DefaultLabeling,
       value: {
         type: ModuleType.DefaultLabeling,
-        label: 'ModelPrediction',
+        label: 'Model Prediction',
         id: 'ModelPrediction-29967546',
         inputs: ['features', 'model'],
         isAlgorithmic: true,

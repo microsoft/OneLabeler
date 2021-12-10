@@ -16,7 +16,7 @@
           outlined
           v-on="on"
         >
-          {{ selectedModel === null ? '' : selectedModel.label }}
+          {{ selectedModel === null ? 'please select' : selectedModel.label }}
         </v-btn>
       </template>
       <v-list dense>

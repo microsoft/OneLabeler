@@ -3,14 +3,13 @@ import type { IStatusStorage } from '@/commons/types';
 
 export default {
   type: ModuleType.StoppageAnalysis,
-  label: 'AllChecked',
+  label: 'All Checked',
   id: 'AllChecked-46322013',
   inputs: ['labels'],
   outputs: ['stop'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
-  api: 'AllChecked',
   run: async (
     inputs: {
       statuses: IStatusStorage,

@@ -3,7 +3,7 @@ import { ALGORITHM_URL } from '@/services/http-params';
 
 export default {
   type: ModuleType.DefaultLabeling,
-  label: 'ModelPrediction',
+  label: 'Model Prediction',
   id: 'ModelPrediction-29967546',
   inputs: ['features', 'model', 'queryUuids'],
   outputs: ['labels'],
