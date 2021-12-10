@@ -68,7 +68,7 @@ const checkHasLabeling = (
       category: ErrorCategory.TopologyError,
       subjects: [],
       rule: 'Should Involve Labeling',
-      fixes: ['check decision branches and make sure interactive labeling is visited in all branches'],
+      fixes: ['check branches and make sure interactive labeling is visited in each branch'],
     });
   }
 

@@ -48,7 +48,7 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 
 export default defineComponent({
-  name: 'VMethodArgs',
+  name: 'VModuleArgs',
   props: {
     label: {
       type: String as PropType<string>,
@@ -72,7 +72,7 @@ export default defineComponent({
     },
   },
   emits: {
-    'edit:method-args': null,
+    'update:module-args': null,
   },
   data() {
     return {
@@ -86,7 +86,7 @@ export default defineComponent({
       const sorted = newValues.sort((a, b) => (
         orders.indexOf(a) - orders.indexOf(b)
       ));
-      this.$emit('edit:method-args', sorted);
+      this.$emit('update:module-args', sorted);
     },
   },
 });

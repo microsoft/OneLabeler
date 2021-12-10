@@ -64,7 +64,7 @@ export class DecisionNode extends DataLabelingWorkflowNode {
 
   static type = WorkflowNodeType.Decision;
 
-  label = 'decision';
+  label = 'conditional branching';
 }
 
 export class ExitNode extends DataLabelingWorkflowNode {
@@ -150,7 +150,7 @@ const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
 
 const NODE_TYPES = {
   'initialization node': InitializationNode,
-  'decision node': DecisionNode,
+  'conditional branching node': DecisionNode,
   'exit node': ExitNode,
   'data object selection node': DataObjectSelectionNode,
   'default labeling node': DefaultLabelingNode,

@@ -75,7 +75,7 @@ const menuOptions = [
     value: WorkflowNodeType.Base,
   },
   {
-    label: 'decision',
+    label: 'conditional branching',
     value: WorkflowNodeType.Decision,
   },
   {

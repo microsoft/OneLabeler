@@ -6,8 +6,8 @@
     :node="node"
     :edge="edge"
     @edit:node="$emit('edit:node', $event)"
-    @create:method="$emit('create:method', $event)"
-    @edit:method="$emit('edit:method', $event)"
+    @create:module="$emit('create:module', $event)"
+    @update:module="$emit('update:module', $event)"
     @create:model="$emit('create:model', $event)"
     @edit:model="$emit('edit:model', $event)"
     @edit:edge="$emit('edit:edge', $event)"
@@ -52,8 +52,8 @@ export default defineComponent({
   },
   emits: {
     'edit:node': null,
-    'create:method': null,
-    'edit:method': null,
+    'create:module': null,
+    'update:module': null,
     'create:model': null,
     'edit:model': null,
     'edit:edge': null,

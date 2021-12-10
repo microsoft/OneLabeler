@@ -51,7 +51,7 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 
 export default defineComponent({
-  name: 'VMethodLabel',
+  name: 'VModuleLabel',
   props: {
     label: {
       type: String as PropType<string>,

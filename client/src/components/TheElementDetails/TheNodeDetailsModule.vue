@@ -28,19 +28,19 @@
       append-create-option
       class="py-2 px-4"
       @update:selection="$emit('edit:node', { ...node, value: $event })"
-      @create:option="$emit('create:method')"
+      @create:option="$emit('create:module')"
     />
 
     <v-divider class="py-1" />
 
     <!-- The hyperparameters chosen for the selected module instance. -->
-    <VMethod
+    <VModule
       v-if="method !== null"
       :method="method"
       :models="models"
       :module-inputs="moduleInputs"
       :module-outputs="moduleOutputs"
-      @edit:method="onEditMethod"
+      @update:module="onEditMethod"
       @edit:model="$emit('edit:model', $event)"
       @create:model="$emit('create:model')"
     />
@@ -58,14 +58,14 @@ import type {
 } from '@/commons/types';
 import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeSelectMethod from './VNodeSelectMethod.vue';
-import VMethod from './VMethod.vue';
+import VModule from './VModule.vue';
 
 export default defineComponent({
   name: 'TheNodeDetailsModule',
   components: {
     VNodeEditableLabel,
     VNodeSelectMethod,
-    VMethod,
+    VModule,
   },
   props: {
     methods: {
@@ -95,8 +95,8 @@ export default defineComponent({
   },
   emits: {
     'edit:node': null,
-    'edit:method': null,
-    'create:method': null,
+    'update:module': null,
+    'create:module': null,
     'edit:model': null,
     'create:model': null,
   },
@@ -120,7 +120,7 @@ export default defineComponent({
   methods: {
     onEditMethod(newValue: IModule): void {
       this.$emit('edit:node', { ...this.node, value: newValue });
-      this.$emit('edit:method', newValue);
+      this.$emit('update:module', newValue);
     },
   },
 });

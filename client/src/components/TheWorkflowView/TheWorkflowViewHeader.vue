@@ -36,7 +36,7 @@ const entries = [
   },
   {
     color: nodeTypeToColor(WorkflowNodeType.Decision),
-    text: 'decision',
+    text: 'conditional branching',
   },
   {
     color: nodeTypeToColor(WorkflowNodeType.Exit),

@@ -19,29 +19,29 @@ export type IModuleTrimmed = Omit<
 >;
 
 export const parseModule = (
-  process: IModuleTrimmed,
+  moduleConfig: IModuleTrimmed,
   node: TrimmedNode,
 ): IModule => {
   const nodeTypeToModuleType = (type: WorkflowNodeType) => (
     type as unknown as ModuleType
   );
 
-  // Create process.type
-  const type: ModuleType = process.type ?? nodeTypeToModuleType(node.type);
+  // Create moduleConfig.type
+  const type: ModuleType = moduleConfig.type ?? nodeTypeToModuleType(node.type);
 
-  // The builtin process with the same api as the current process.
-  const builtinMatch = processes.find((d) => d.id === process.id);
+  // The builtin moduleConfig with the same api as the current moduleConfig.
+  const builtinMatch = processes.find((d) => d.id === moduleConfig.id);
 
-  // Create process.id
-  const id: string = process.id ?? builtinMatch?.id ?? uuidv4();
+  // Create moduleConfig.id
+  const id: string = moduleConfig.id ?? builtinMatch?.id ?? uuidv4();
 
   if (builtinMatch !== undefined) {
     let params: ModuleParams | undefined;
     if (builtinMatch.params !== undefined) {
       params = cloneDeep(builtinMatch.params);
-      if (process.params !== undefined) {
+      if (moduleConfig.params !== undefined) {
         Object.keys(builtinMatch.params).forEach((paramName) => {
-          const param = (process.params as JsonModuleParams)[paramName];
+          const param = (moduleConfig.params as JsonModuleParams)[paramName];
           const isObject = typeof param === 'object'
             && param !== null
             && 'value' in param;
@@ -56,7 +56,7 @@ export const parseModule = (
 
     return {
       ...builtinMatch,
-      ...process,
+      ...moduleConfig,
       type,
       id,
       params,
@@ -65,15 +65,15 @@ export const parseModule = (
 
   const urlRegex = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/;
 
-  const isAlgorithmic = process.isAlgorithmic ?? true;
+  const isAlgorithmic = moduleConfig.isAlgorithmic ?? true;
   const isBuiltIn = false;
-  const isModelBased = process.model !== undefined;
-  const isServerless = process.api !== undefined && process.api.match(urlRegex) !== null;
+  const isModelBased = moduleConfig.model !== undefined;
+  const isServerless = moduleConfig.api !== undefined && moduleConfig.api.match(urlRegex) !== null;
 
   let params: ModuleParams | undefined;
-  if (process.params !== undefined) {
+  if (moduleConfig.params !== undefined) {
     params = {};
-    Object.entries(process.params).forEach(([paramName, param]) => {
+    Object.entries(moduleConfig.params).forEach(([paramName, param]) => {
       const isObject = typeof param === 'object'
         && param !== null
         && 'value' in param;
@@ -93,7 +93,7 @@ export const parseModule = (
   }
 
   return {
-    ...process,
+    ...moduleConfig,
     type,
     id,
     isAlgorithmic,

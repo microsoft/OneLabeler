@@ -8,8 +8,8 @@
     :module-inputs="moduleInputs"
     :module-outputs="moduleOutputs"
     @edit:node="$emit('edit:node', $event)"
-    @create:method="onCreateMethod"
-    @edit:method="$emit('edit:method', $event)"
+    @create:module="onCreateModule"
+    @update:module="$emit('update:module', $event)"
     @create:model="onCreateModel"
     @edit:model="$emit('edit:model', $event)"
   />
@@ -69,9 +69,9 @@ export default defineComponent({
   },
   emits: {
     'edit:node': null,
-    'edit:method': null,
+    'update:module': null,
     'edit:model': null,
-    'create:method': null,
+    'create:module': null,
     'create:model': null,
   },
   computed: {
@@ -142,7 +142,7 @@ export default defineComponent({
     },
   },
   methods: {
-    onCreateMethod(): void {
+    onCreateModule(): void {
       const { node } = this;
       if (node === null) return;
       const nodeType = node.type;
@@ -203,7 +203,7 @@ export default defineComponent({
           outputs: [],
         };
       }
-      this.$emit('create:method', method);
+      this.$emit('create:module', method);
     },
     onCreateModel(): void {
       const model: ModelService = {

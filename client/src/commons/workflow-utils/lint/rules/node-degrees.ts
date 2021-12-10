@@ -73,13 +73,13 @@ const checkNodeDegrees = (
       if (indegree === 0) {
         messages.push({
           type: LintMessageType.Error,
-          message: `decision node with label "${
+          message: `conditional branching node with label "${
             node.label
           }" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
           rule: 'Decision Node Indegree Should Not Be Zero',
-          fixes: ['create an inward edge from another node to the decision node'],
+          fixes: ['create an inward edge from another node to the conditional branching node'],
         });
       }
 
@@ -87,14 +87,16 @@ const checkNodeDegrees = (
       if (outdegree !== 2) {
         messages.push({
           type: LintMessageType.Error,
-          message: `decision node with label "${node.label}" has outdegree ${outdegree}`,
+          message: `conditional branching node with label "${
+            node.label
+          }" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
           rule: 'Decision Node Outdegree Should Be Two',
           fixes: [
             outdegree <= 1
-              ? 'create an outward edge from the decision node to another node'
-              : 'remove an outward edge from the decision node',
+              ? 'create an outward edge from the conditional branching node to another node'
+              : 'remove an outward edge from the conditional branching node',
           ],
         });
       } else {
@@ -102,7 +104,7 @@ const checkNodeDegrees = (
           if (edge.condition !== undefined) return;
           messages.push({
             type: LintMessageType.Error,
-            message: `outward edge from decision node with label "${
+            message: `outward edge from conditional branching node with label "${
               node.label
             }" to node with label "${edge.target}" has no condition`,
             category: ErrorCategory.TopologyError,
@@ -115,7 +117,7 @@ const checkNodeDegrees = (
         if (edge1.condition !== !edge2.condition) {
           messages.push({
             type: LintMessageType.Error,
-            message: `conditions of outward edges of decision node with label "${
+            message: `conditions of outward edges of conditional branching node with label "${
               node.label
             }" are all ${edge1.condition}`,
             category: ErrorCategory.TopologyError,

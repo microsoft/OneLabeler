@@ -316,7 +316,7 @@ export default defineComponent({
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
         [WorkflowNodeType.ModelTraining]: 'model training',
         [WorkflowNodeType.Base]: 'custom',
-        [WorkflowNodeType.Decision]: 'decision',
+        [WorkflowNodeType.Decision]: 'conditional branching',
         [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {

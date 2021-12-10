@@ -331,7 +331,7 @@ export default {
     window.addEventListener('keydown', this.onKey);
   },
   beforeDestroy(): void {
-    // Remove listener before distroy,
+    // Remove listener before destroy,
     // otherwise the onKey method will be called multiple times.
     window.removeEventListener('keydown', this.onKey);
   },

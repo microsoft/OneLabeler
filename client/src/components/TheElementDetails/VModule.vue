@@ -4,30 +4,30 @@
     style="display: flex; flex-direction: column; gap: 8px;"
   >
     <!-- The label of the module instance. -->
-    <VMethodLabel
+    <VModuleLabel
       v-if="!isInit"
       :label="method.label"
       :disabled="method.isBuiltIn"
-      @edit:label="onUpsertMethod({ label: $event })"
+      @edit:label="onUpsertModule({ label: $event })"
     />
 
     <!-- The input box for module instance input parameters. -->
-    <VMethodArgs
+    <VModuleArgs
       v-if="!isInit"
       :label="'Module Inputs'"
       :module-args="moduleInputs"
       :method-args="method.inputs"
       :disabled="method.isBuiltIn"
-      @edit:method-args="onUpsertMethod({ inputs: $event })"
+      @update:module-args="onUpsertModule({ inputs: $event })"
     />
 
     <!-- The display of module instance output parameters. -->
-    <VMethodArgs
+    <VModuleArgs
       :label="'Module Outputs'"
       :module-args="moduleOutputs"
       :method-args="method.outputs"
       :disabled="!isInit && (method.isBuiltIn || moduleOutputs.length === 1)"
-      @edit:method-args="onUpsertMethod({ outputs: $event })"
+      @update:module-args="onUpsertModule({ outputs: $event })"
     />
 
     <!-- The url of the module instance service. -->
@@ -49,7 +49,7 @@
         dense
         hide-details
         single-line
-        @input="onUpsertMethod({ api: $event })"
+        @input="onUpsertModule({ api: $event })"
       />
     </div>
 
@@ -60,12 +60,12 @@
       border: thin solid rgba(0,0,0,.12); border-radius: 4px;"
     >
       <!-- The model used as input to the module. -->
-      <VMethodModel
+      <VModuleModel
         :selected-model="model"
         :menu="menuOfModels"
         append-create-option
         class="py-1"
-        @update:selection="onUpsertMethod({ model: $event })"
+        @update:selection="onUpsertModule({ model: $event })"
         @create:option="$emit('create:model')"
       />
 
@@ -122,17 +122,17 @@ import type { PropType } from '@vue/composition-api';
 import { cloneDeep } from 'lodash';
 import { ModuleType } from '@/commons/types';
 import type { ModelService, IModule } from '@/commons/types';
-import VMethodArgs from './VMethodArgs.vue';
-import VMethodLabel from './VMethodLabel.vue';
-import VMethodModel from './VMethodModel.vue';
+import VModuleArgs from './VModuleArgs.vue';
+import VModuleLabel from './VModuleLabel.vue';
+import VModuleModel from './VModuleModel.vue';
 import VModuleParams from './VModuleParams.vue';
 
 export default defineComponent({
-  name: 'VMethod',
+  name: 'VModule',
   components: {
-    VMethodArgs,
-    VMethodLabel,
-    VMethodModel,
+    VModuleArgs,
+    VModuleLabel,
+    VModuleModel,
     VModuleParams,
   },
   props: {
@@ -154,7 +154,7 @@ export default defineComponent({
     },
   },
   emits: {
-    'edit:method': null,
+    'update:module': null,
     'create:model': null,
     'edit:model': null,
   },
@@ -179,9 +179,9 @@ export default defineComponent({
     },
   },
   methods: {
-    onUpsertMethod(partial: Partial<IModule>): void {
+    onUpsertModule(partial: Partial<IModule>): void {
       const newValue: IModule = { ...this.method, ...partial };
-      this.$emit('edit:method', newValue);
+      this.$emit('update:module', newValue);
     },
     onEditMethodParam(paramKey: string, value: unknown): void {
       const { method } = this;
@@ -190,24 +190,21 @@ export default defineComponent({
       const newValue = cloneDeep(method);
       if (newValue.params === undefined) return;
       newValue.params[paramKey].value = value;
-      this.$emit('edit:method', newValue);
+      this.$emit('update:module', newValue);
     },
     onEditModelLabel(label: string): void {
       const { model } = this;
       if (model === undefined) return;
       const newModel: ModelService = { ...model, label };
-      this.onUpsertMethod({ model: newModel });
-      this.onEditModel(newModel);
+      this.onUpsertModule({ model: newModel });
+      this.$emit('edit:model', newModel);
     },
     onEditModelAPI(api: string): void {
       const { model } = this;
       if (model === undefined) return;
       const newModel = { ...model, api };
-      this.onUpsertMethod({ model: newModel });
-      this.onEditModel(newModel);
-    },
-    onEditModel(newValue: ModelService): void {
-      this.$emit('edit:model', newValue);
+      this.onUpsertModule({ model: newModel });
+      this.$emit('edit:model', newModel);
     },
   },
 });

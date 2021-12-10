@@ -77,7 +77,7 @@ interface ModelMenu {
 }
 
 export default defineComponent({
-  name: 'VMethodModel',
+  name: 'VModuleModel',
   props: {
     selectedModel: {
       type: Object as PropType<ModelService>,
