@@ -9,6 +9,17 @@
     hide-details
     @input="$emit('update:value', $event)"
   >
+    <template
+      v-if="value.length === 0"
+      #prepend-inner
+    >
+      <div
+        class="subtitle-2"
+        style="white-space: nowrap"
+      >
+        please select
+      </div>
+    </template>
     <template #selection="data">
       <v-chip
         v-bind="data.attrs"

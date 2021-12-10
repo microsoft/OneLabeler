@@ -19,6 +19,9 @@
       v-for="(input, i) in inputs"
       :key="`input-${i}`"
       :transform="`translate(${cellSize * i},0)`"
+      color="white"
+      class="hover-black"
+      style="pointer-events: bounding-box"
     >
       <!-- The square region where the tooltip can be triggered. -->
       <rect
@@ -32,7 +35,7 @@
       <g transform="translate(2,2)">
         <component
           :is="getIcon(input)"
-          color="white"
+          color="currentColor"
           width="16"
           height="16"
         />
@@ -74,6 +77,9 @@
       v-for="(output, i) in outputs"
       :key="`output-${i}`"
       :transform="`translate(${node.width - cellSize * (i + 1)},0)`"
+      color="white"
+      class="hover-black"
+      style="pointer-events: bounding-box"
     >
       <!-- The square region where the tooltip can be triggered. -->
       <rect
@@ -89,7 +95,7 @@
           :is="getIcon(output)"
           :width="cellSize - 4"
           :height="cellSize - 4"
-          color="white"
+          color="currentColor"
         />
       </g>
     </g>
@@ -219,3 +225,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.hover-black:hover {
+  color: #000;
+}
+</style>

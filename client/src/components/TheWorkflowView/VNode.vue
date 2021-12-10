@@ -1,5 +1,12 @@
 <template>
   <g>
+    <title>
+      {{
+        `node type: ${node.type}\n${
+          node.value.label !== undefined ? `selected method: ${node.value.label}` : ''
+        }`
+      }}
+    </title>
     <template v-if="isInitialization || isModule">
       <VNodeModule :node="node" />
     </template>

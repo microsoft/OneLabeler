@@ -16,7 +16,7 @@
           :disabled="disabled"
           v-on="on"
         >
-          {{ selectedMethod !== null ? selectedMethod.label : '' }}
+          {{ selectedMethod !== null ? selectedMethod.label : 'please select' }}
         </v-btn>
       </template>
       <v-list dense>

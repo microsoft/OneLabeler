@@ -48,7 +48,7 @@ export default defineComponent({
   computed: {
     selectedOptionLabel(): string {
       const option = this.items.find((d) => d.value === this.value);
-      return option === undefined ? '' : option.label;
+      return option === undefined ? 'please select' : option.label;
     },
   },
 });
