@@ -23,6 +23,7 @@
         <v-list-item
           v-for="(option, i) in menu.options"
           :key="i"
+          class="subtitle-2"
           @click="$emit('update:selection', option.value)"
         >
           <v-list-item-title class="subtitle-2">
@@ -30,14 +31,14 @@
           </v-list-item-title>
           <p
             v-if="option.value.isServerless"
-            class="subtitle-2 text-right ma-1 grey--text"
+            class="text-right ma-1 grey--text"
             style="width: 5em"
           >
             serverless
           </p>
           <p
             v-if="option.value.isBuiltIn"
-            class="subtitle-2 text-right ma-1 grey--text"
+            class="text-right ma-1 grey--text"
             style="width: 7em"
           >
             built-in

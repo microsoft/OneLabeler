@@ -74,6 +74,7 @@ html {
   display: flex;
   align-items: center;
   user-select: none;
+  border-radius: inherit;
 }
 
 /* for the v-divider component in the view headers (typically dividing buttons) */

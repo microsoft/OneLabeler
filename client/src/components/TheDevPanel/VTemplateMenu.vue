@@ -22,16 +22,11 @@
       <v-list-item
         v-for="(template, i) in templates"
         :key="i"
+        class="subtitle-2"
         style="min-height: 30px"
         @click="$emit('set:workflow', template)"
       >
-        <v-list-item-title
-          height="20"
-          class="subtitle-2 pa-0 ma-0"
-          style="height: 20px"
-        >
-          {{ template.label }}
-        </v-list-item-title>
+        {{ template.label }}
       </v-list-item>
     </v-list>
   </v-menu>

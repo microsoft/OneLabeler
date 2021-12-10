@@ -1,5 +1,31 @@
 import Vue from 'vue';
 import Vuetify, { VuetifyPreset } from 'vuetify';
+import {
+  VApp,
+  VAutocomplete,
+  VBtn,
+  VBtnToggle,
+  VCard,
+  VCheckbox,
+  VChip,
+  VColorPicker,
+  VDialog,
+  VDivider,
+  VForm,
+  VIcon,
+  VMenu,
+  VList,
+  VListItem,
+  VListItemContent,
+  VListItemTitle,
+  VPagination,
+  VSpacer,
+  VSwitch,
+  VSnackbar,
+  VSimpleTable,
+  VTextarea,
+  VTextField,
+} from 'vuetify/lib';
 import 'vuetify/dist/vuetify.min.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import IconDotCircle from '@/plugins/icons/IconDotCircle.vue';
@@ -11,7 +37,34 @@ import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
 import IconSamples from '@/plugins/icons/IconSamples.vue';
 import IconStop from '@/plugins/icons/IconStop.vue';
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, {
+  components: {
+    VApp,
+    VAutocomplete,
+    VBtn,
+    VBtnToggle,
+    VCard,
+    VCheckbox,
+    VChip,
+    VColorPicker,
+    VDialog,
+    VDivider,
+    VForm,
+    VIcon,
+    VMenu,
+    VList,
+    VListItem,
+    VListItemContent,
+    VListItemTitle,
+    VPagination,
+    VSpacer,
+    VSwitch,
+    VSnackbar,
+    VSimpleTable,
+    VTextarea,
+    VTextField,
+  },
+});
 
 const icons = {
   hammer: 'fas fa-hammer',

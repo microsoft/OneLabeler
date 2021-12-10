@@ -23,6 +23,7 @@
         <v-list-item
           v-for="(option, i) in menu.options"
           :key="i"
+          class="subtitle-2"
           @click="$emit('update:selection', option.value)"
         >
           <v-list-item-title class="subtitle-2">
@@ -30,14 +31,14 @@
           </v-list-item-title>
           <p
             v-if="option.value.isServerless"
-            class="subtitle-2 text-right ma-1 grey--text"
+            class="text-right ma-1 grey--text"
             style="width: 5em"
           >
             serverless
           </p>
           <p
             v-if="option.value.isBuiltIn"
-            class="subtitle-2 text-right ma-1 grey--text"
+            class="text-right ma-1 grey--text"
             style="width: 6em"
           >
             built-in
@@ -45,18 +46,17 @@
         </v-list-item>
         <v-list-item
           v-if="appendCreateOption"
+          class="subtitle-2"
           @click.stop="$emit('create:option')"
         >
-          <v-list-item-title class="subtitle-2">
-            <v-icon
-              aria-hidden="true"
-              class="pr-2"
-              x-small
-            >
-              $vuetify.icons.values.add
-            </v-icon>
-            Customize
-          </v-list-item-title>
+          <v-icon
+            aria-hidden="true"
+            class="pr-2"
+            x-small
+          >
+            $vuetify.icons.values.add
+          </v-icon>
+          Customize
         </v-list-item>
       </v-list>
     </v-menu>

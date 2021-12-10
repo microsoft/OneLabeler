@@ -3,7 +3,7 @@
     flat
     outlined
   >
-    <v-card-title class="view-header px-2">
+    <div class="view-header px-2">
       <template v-if="!isLabelEditable">
         <span
           class="subtitle-2"
@@ -42,7 +42,7 @@
           $vuetify.icons.values.edit
         </v-icon>
       </v-btn>
-    </v-card-title>
+    </div>
   </v-card>
 </template>
 
