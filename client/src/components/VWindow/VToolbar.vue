@@ -1,5 +1,5 @@
 <template>
-  <div class="card-header">
+  <div :style="styleCardHeader">
     <slot name="title">
       Window
     </slot>
@@ -46,11 +46,15 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
+import { cardHeader as styleCardHeader } from '@/style';
 
 export default defineComponent({
   name: 'VToolbar',
   emits: {
     'window:minimize': null,
+  },
+  data() {
+    return { styleCardHeader };
   },
 });
 </script>

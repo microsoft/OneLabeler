@@ -2,7 +2,7 @@
   <div
     ref="container"
     v-click-outside="onClickOutside"
-    class="card-elevated"
+    :style="styleCardElevated"
     style="overflow-y: scroll"
   >
     <div
@@ -94,6 +94,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
 import { LabelTaskType } from '@/commons/types';
 import type { Category, ILabelTimeSpan } from '@/commons/types';
+import { cardElevated as styleCardElevated } from '@/style';
 
 interface Point {
   x: number;
@@ -162,6 +163,7 @@ export default defineComponent({
   },
   data() {
     return {
+      styleCardElevated,
       draggedSpanHandle: null as SpanHandle | null,
       dragLastPoint: null as Point | null,
       newSpan: null as ILabelTimeSpan | null,
@@ -348,16 +350,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

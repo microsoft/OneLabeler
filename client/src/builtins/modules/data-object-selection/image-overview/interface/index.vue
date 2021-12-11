@@ -1,6 +1,6 @@
 <template>
   <div
-    class="class-elevated"
+    :style="styleCardElevated"
     style="display: flex; flex-direction: column;"
   >
     <TheHeader
@@ -54,6 +54,7 @@ import type {
   IDataObject,
   ILabel,
 } from '@/commons/types';
+import { cardElevated as styleCardElevated } from '@/style';
 import TheHeader from './TheHeader.vue';
 
 export default defineComponent({
@@ -81,7 +82,10 @@ export default defineComponent({
     'update:task-window': null,
   },
   data() {
-    return { transform: '' };
+    return {
+      styleCardElevated,
+      transform: '',
+    };
   },
   computed: {
     src(): string | null {
@@ -124,16 +128,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

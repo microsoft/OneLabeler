@@ -1,6 +1,6 @@
 <template>
-  <div class="card-elevated">
-    <div class="card-header">
+  <div :style="style.cardElevated">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -44,11 +44,15 @@ import {
   SourceType,
   StorageType,
 } from '@/commons/types';
+import { cardElevated, cardHeader } from '@/style';
 import VEditableService from './VEditableService.vue';
 
 export default {
   name: 'TheDataManagementView',
   components: { VEditableService },
+  data() {
+    return { style: { cardElevated, cardHeader } };
+  },
   computed: {
     ...mapState([
       'dataObjects',
@@ -93,16 +97,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

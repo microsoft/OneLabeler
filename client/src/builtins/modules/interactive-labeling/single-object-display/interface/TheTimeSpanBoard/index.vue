@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card-elevated"
+    :style="styleCardElevated"
     style="display: flex; flex-direction: column"
   >
     <TheHeader
@@ -83,6 +83,7 @@ import type {
   ILabelTaskTypeSetup,
 } from '@/commons/types';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
+import { cardElevated as styleCardElevated } from '@/style';
 import TheHeader from './TheHeader.vue';
 import TheBody from './TheBody.vue';
 
@@ -126,6 +127,7 @@ export default defineComponent({
   },
   data() {
     return {
+      styleCardElevated,
       selectedSlot: null as Category | null,
       selectedSpan: null as ILabelTimeSpan | null,
       page: 1 as number,
@@ -238,16 +240,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

@@ -21,8 +21,11 @@
         </v-icon>
       </v-btn>
     </template>
-    <div class="card-elevated">
-      <div class="card-header px-2">
+    <div :style="style.cardElevated">
+      <div
+        :style="style.cardHeader"
+        class="px-2"
+      >
         Subsampling Configuration
       </div>
       <v-divider />
@@ -71,6 +74,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { cardElevated, cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'TheBodyToolsSubsamplingMenu',
@@ -89,6 +93,7 @@ export default defineComponent({
   },
   data() {
     return {
+      style: { cardElevated, cardHeader },
       subsamplingNSamplesRange: [50, 500] as [number, number],
     };
   },
@@ -115,16 +120,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

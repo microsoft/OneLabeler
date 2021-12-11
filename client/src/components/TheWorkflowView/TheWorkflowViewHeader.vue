@@ -1,5 +1,5 @@
 <template>
-  <div class="card-header">
+  <div :style="styleCardHeader">
     <v-icon
       class="px-2"
       aria-hidden="true"
@@ -28,6 +28,7 @@
 <script lang="ts">
 import { nodeTypeToColor } from '@/commons/utils';
 import { WorkflowNodeType } from '@/commons/types';
+import { cardHeader as styleCardHeader } from '@/style';
 
 const entries = [
   {
@@ -51,7 +52,10 @@ const entries = [
 export default {
   name: 'TheWorkflowViewHeader',
   data() {
-    return { entries };
+    return {
+      styleCardHeader,
+      entries,
+    };
   },
 };
 </script>

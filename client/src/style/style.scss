@@ -64,19 +64,6 @@ html {
   @extend .app-header-divider;
 }
 
-.card-header {
-  @extend .subtitle-1;
-  @extend .grey;
-  @extend .lighten-4;
-  @extend .grey--text;
-  @extend .text--darken-1;
-  display: flex;
-  align-items: center;
-  user-select: none;
-  border-top-left-radius: inherit;
-  border-top-right-radius: inherit;
-}
-
 /* for the v-divider component in the view headers (typically dividing buttons) */
 .card-header-divider {
   /* override the inset of vuetify (which is too large) */

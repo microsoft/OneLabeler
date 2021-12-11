@@ -1,9 +1,9 @@
 <template>
   <div
-    class="card-elevated"
+    :style="style.cardElevated"
     style="display: flex; flex-direction: column"
   >
-    <div class="card-header">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -34,6 +34,7 @@ import type { PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import type { WorkflowEdge, WorkflowGraph, WorkflowNode } from '@/commons/types';
+import { cardElevated, cardHeader } from '@/style';
 import VMessage from './VMessage.vue';
 
 const isElementEdge = (element: WorkflowNode | WorkflowEdge) => 'source' in element;
@@ -62,6 +63,9 @@ export default defineComponent({
     'hover:nodes': null,
     'hover:edges': null,
   },
+  data() {
+    return { style: { cardElevated, cardHeader } };
+  },
   computed: {
     ...mapGetters('workflow', ['consoleMessages']),
   },
@@ -88,34 +92,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-
 .shadow:hover {
   -moz-box-shadow: inset 0px 0px 5px #aaa;
   -webkit-box-shadow: inset 0px 0px 5px #aaa;
   box-shadow: inset 0px 0px 5px #aaa;
 }
-
 .tree-node-arrow {
   color: #6e6e6e;
   display: inline-block;
   font-size: 12px;
   margin-right: 3px;
 }
-
 .tree-node-arrow-expanded {
   transform: rotate(90deg);
 }
-
 .tree-node-arrow-collapsed {
   transform: rotate(0deg);
 }

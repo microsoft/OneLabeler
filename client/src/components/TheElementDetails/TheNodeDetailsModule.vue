@@ -1,6 +1,6 @@
 <template>
-  <div class="card-elevated">
-    <div class="card-header">
+  <div :style="style.cardElevated">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -67,6 +67,7 @@ import type {
   IModule,
   WorkflowNode,
 } from '@/commons/types';
+import { cardElevated, cardHeader } from '@/style';
 import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeSelectMethod from './VNodeSelectMethod.vue';
 import VModule from './VModule.vue';
@@ -111,6 +112,9 @@ export default defineComponent({
     'edit:model': null,
     'create:model': null,
   },
+  data() {
+    return { style: { cardElevated, cardHeader } };
+  },
   computed: {
     isInit(): boolean {
       return this.node.type === WorkflowNodeType.Initialization;
@@ -142,16 +146,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

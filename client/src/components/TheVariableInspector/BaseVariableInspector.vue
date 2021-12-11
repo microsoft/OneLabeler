@@ -1,9 +1,9 @@
 <template>
   <div
-    class="card-elevated"
+    :style="style.cardElevated"
     style="display: flex; flex-direction: column; overflow-wrap: break-word; min-width: 0;"
   >
-    <div class="card-header">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -16,7 +16,7 @@
     <v-divider />
     <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -41,7 +41,7 @@
       </div>
 
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -66,7 +66,7 @@
       </div>
 
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -106,7 +106,7 @@
       </div>
 
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -125,7 +125,7 @@
       </div>
 
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -145,7 +145,7 @@
       </div>
 
       <div>
-        <div class="card-header">
+        <div :style="style.cardHeader">
           <v-icon
             class="mx-2"
             aria-hidden="true"
@@ -185,6 +185,7 @@ import {
   useFilteredDataObjects,
   useFilteredLabels,
 } from '@/components/composables/useFilteredStorage';
+import { cardElevated, cardHeader } from '@/style';
 
 /**
  * @reference
@@ -247,6 +248,9 @@ export default defineComponent({
       showEditedLabels,
     };
   },
+  data() {
+    return { style: { cardElevated, cardHeader } };
+  },
   computed: {
     maxVisible(): number {
       const { scopeUuids } = this;
@@ -264,16 +268,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card-elevated"
+    :style="styleCardElevated"
     style="display: flex; flex-direction: column;"
   >
     <TheHeader
@@ -54,6 +54,7 @@ import type {
   TaskWindow,
   Category,
 } from '@/commons/types';
+import { cardElevated as styleCardElevated } from '@/style';
 import TheBody from './TheBody.vue';
 import TheHeader from './TheHeader.vue';
 
@@ -109,6 +110,7 @@ export default defineComponent({
   },
   data() {
     return {
+      styleCardElevated,
       selectedUuids: [] as string[],
     };
   },
@@ -147,16 +149,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

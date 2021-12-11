@@ -1,6 +1,7 @@
 <template>
   <div
-    class="card pa-1"
+    class="pa-1"
+    :style="styleCard"
     style="display: flex; flex-direction: row; font-size: 10px;"
   >
     <!-- The source span on the left. -->
@@ -59,6 +60,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { ILabelRelation, ILabelTextSpan } from '@/commons/types';
+import { card as styleCard } from '@/style';
 import VLabelSpan from './VLabelSpan.vue';
 
 export default defineComponent({
@@ -90,15 +92,13 @@ export default defineComponent({
     'select:span': null,
     'remove:relation': null,
   },
+  data() {
+    return { styleCard };
+  },
 });
 </script>
 
 <style scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
 .label-span {
   border: 1px solid;
   flex: 1 1 50%;

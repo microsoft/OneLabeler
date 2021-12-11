@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div :style="styleCard">
     <v-btn
       class="card-header-button subtitle-2 mr-1 elevation-0 text-none"
       style="border-color: #bbb"
@@ -25,6 +25,7 @@
 <script lang="ts">
 import type { PropType } from 'vue';
 import type { ILabelTextSpan } from '@/commons/types';
+import { card as styleCard } from '@/style';
 
 export default {
   name: 'VLabelSpan',
@@ -38,13 +39,8 @@ export default {
       default: '#bbb',
     },
   },
+  data() {
+    return { styleCard };
+  },
 };
 </script>
-
-<style scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-</style>

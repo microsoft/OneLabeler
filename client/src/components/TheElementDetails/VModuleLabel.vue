@@ -1,6 +1,9 @@
 <template>
-  <div class="card">
-    <div class="card-header px-2">
+  <div :style="style.card">
+    <div
+      :style="style.cardHeader"
+      class="px-2"
+    >
       <template v-if="!isLabelEditable">
         <span
           class="subtitle-2"
@@ -46,6 +49,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { card, cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'VModuleLabel',
@@ -64,6 +68,7 @@ export default defineComponent({
   },
   data() {
     return {
+      style: { card, cardHeader },
       isLabelEditable: false,
     };
   },
@@ -77,11 +82,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-</style>

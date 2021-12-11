@@ -1,7 +1,7 @@
 <template>
   <div
-    :class="outlined ? 'card' : ''"
     class="px-2 py-1"
+    :style="outlined ? styleCard : ''"
     style="display: flex; flex-direction: column; gap: 4px;"
   >
     <!-- The parameters of the method. -->
@@ -34,6 +34,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { ParamSpecification, ModuleParams } from '@/commons/types';
+import { card as styleCard } from '@/style';
 import VMenuSingleSelect from './VMenuSingleSelect.vue';
 import VMenuMultiSelect from './VMenuMultiSelect.vue';
 
@@ -64,17 +65,12 @@ export default defineComponent({
   emits: {
     'click:param-option': null,
   },
+  data() {
+    return { styleCard };
+  },
   methods: {
     getComponent,
     filterOptions,
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-</style>

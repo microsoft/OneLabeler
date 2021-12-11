@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card-elevated"
+    :style="styleCardElevated"
     style="display: flex; flex-direction: column;"
   >
     <TheWorkflowViewHeader />
@@ -35,6 +35,7 @@ import { mapActions, mapState } from 'vuex';
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
+import { cardElevated as styleCardElevated } from '@/style';
 import TheWorkflowViewHeader from './TheWorkflowViewHeader.vue';
 import TheWorkflowViewBody from './TheWorkflowViewBody.vue';
 
@@ -68,6 +69,9 @@ export default defineComponent({
     'update:hoveredNodeIds': null,
     'update:hoveredEdgeIds': null,
   },
+  data() {
+    return { styleCardElevated };
+  },
   computed: {
     ...mapState('workflow', [
       'currentNode',
@@ -100,16 +104,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

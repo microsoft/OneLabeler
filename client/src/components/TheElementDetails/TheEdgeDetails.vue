@@ -1,6 +1,6 @@
 <template>
-  <div class="card">
-    <div class="card-header">
+  <div :style="style.card">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -16,8 +16,11 @@
       style="display: flex; flex-direction: column; gap: 8px;"
     >
       <!-- The source node. -->
-      <div class="card mx-2">
-        <div class="card card-header px-2">
+      <div :style="style.card">
+        <div
+          :style="{ ...style.card, ...style.cardHeader }"
+          class="px-2"
+        >
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -28,7 +31,8 @@
       </div>
 
       <div
-        class="card mx-2"
+        :style="style.card"
+        class="mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -47,8 +51,14 @@
       </div>
 
       <!-- The target node. -->
-      <div class="card mx-2">
-        <div class="card card-header px-2">
+      <div
+        :style="style.card"
+        class="mx-2"
+      >
+        <div
+          :style="{ ...style.card, ...style.cardHeader }"
+          class="px-2"
+        >
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -59,7 +69,8 @@
       </div>
 
       <div
-        class="card mx-2"
+        :style="style.card"
+        class="mx-2"
         style="display: flex"
       >
         <span class="pl-2 py-2 subtitle-2">
@@ -81,7 +92,8 @@
       <template v-if="'condition' in edge">
         <v-divider />
         <div
-          class="card mx-2 px-2"
+          :style="style.card"
+          class="mx-2 px-2"
           style="display: flex"
         >
           <span class="py-2 subtitle-2">
@@ -122,6 +134,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { WorkflowEdge } from '@/commons/types';
+import { card, cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'TheEdgeDetails',
@@ -136,6 +149,7 @@ export default defineComponent({
   },
   data() {
     return {
+      style: { card, cardHeader },
       viewTitle: 'Edge',
     };
   },
@@ -146,11 +160,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12) !important;
-  border-radius: 4px;
-}
-</style>

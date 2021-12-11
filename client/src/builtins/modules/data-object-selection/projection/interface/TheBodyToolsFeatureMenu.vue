@@ -21,8 +21,11 @@
         </v-icon>
       </v-btn>
     </template>
-    <div class="card-elevated">
-      <div class="card-header px-2">
+    <div :style="style.cardElevated">
+      <div
+        :style="style.cardHeader"
+        class="px-2"
+      >
         Feature Space Configuration
       </div>
       <v-divider />
@@ -116,6 +119,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { ProjectionMethodType } from '@/commons/types';
+import { cardElevated, cardHeader } from '@/style';
 
 const projectionMethodMenu = [
   { value: ProjectionMethodType.PCA, text: ProjectionMethodType.PCA },
@@ -144,7 +148,10 @@ export default defineComponent({
     'update:projection-method': null,
   },
   data() {
-    return { projectionMethodMenu };
+    return {
+      style: { cardElevated, cardHeader },
+      projectionMethodMenu,
+    };
   },
   computed: {
     disableProjectionMethodMenu(): boolean {
@@ -178,16 +185,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

@@ -37,7 +37,10 @@
             </v-icon>
           </v-btn>
         </template>
-        <div class="card-elevated pa-3">
+        <div
+          :style="styleCardElevated"
+          class="pa-3"
+        >
           <div class="subtitle-1 grey--text text--darken-1">
             {{ `${nRows} x ${nColumns} layout` }}
           </div>
@@ -77,6 +80,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
+import { cardElevated as styleCardElevated } from '@/style';
 
 export default defineComponent({
   name: 'TheHeader',
@@ -98,22 +102,10 @@ export default defineComponent({
   },
   data() {
     return {
+      styleCardElevated,
       maxRows: 3,
       maxColumns: 3,
     };
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>

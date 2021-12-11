@@ -1,7 +1,8 @@
 <template>
   <div
+    :style="styleCard"
     :class="{ 'selected-span': isSelected !== null && isSelected(span) }"
-    class="card pa-1"
+    class="pa-1"
     @click="$emit('select:span', span)"
   >
     <div style="display: flex">
@@ -66,6 +67,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { ILabelTextSpan } from '@/commons/types';
+import { card as styleCard } from '@/style';
 
 export default defineComponent({
   name: 'VLabelSpan',
@@ -96,15 +98,13 @@ export default defineComponent({
     'remove:span': null,
     'link:span': null,
   },
+  data() {
+    return { styleCard };
+  },
 });
 </script>
 
 <style lang="scss" scoped>
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
 .selected-span {
   border-color: gray !important;
 }

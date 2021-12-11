@@ -1,6 +1,6 @@
 <template>
-  <div class="card-elevated">
-    <div class="card-header">
+  <div :style="style.cardElevated">
+    <div :style="style.cardHeader">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -54,11 +54,13 @@
 import { mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
+import { cardElevated, cardHeader } from '@/style';
 
 export default {
   name: 'TheDashboardProgressView',
   data() {
     return {
+      style: { cardElevated, cardHeader },
       nLabeled: 0,
       nSkipped: 0,
       nTotal: 0,
@@ -159,16 +161,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-.card {
-  background-color: white;
-  border: thin solid rgba(0,0,0,.12);
-  border-radius: 4px;
-}
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
-</style>
