@@ -66,6 +66,10 @@ const checkModuleImplemented = (
         (instance.run !== undefined && instance.run !== null)
         || (instance.render !== undefined && instance.render !== null)
         || (instance.api !== undefined && instance.api !== null && instance.api !== '')
+      )
+      && (
+        !instance.inputs.includes('model')
+        || (instance.model !== undefined && instance.model !== null)
       );
     if (!isModuleImplemented) {
       messages.push({
