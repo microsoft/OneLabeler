@@ -2,7 +2,7 @@
   <v-btn-toggle
     :value="objectShapeIndex"
     :mandatory="objectShapeIndex !== null"
-    class="view-header-button-toggle"
+    class="card-header-button-toggle"
   >
     <v-btn
       v-for="btn in objectShapeButtons"

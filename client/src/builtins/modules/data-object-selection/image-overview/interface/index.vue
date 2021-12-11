@@ -1,5 +1,8 @@
 <template>
-  <v-card style="display: flex; flex-direction: column;">
+  <div
+    class="class-elevated"
+    style="display: flex; flex-direction: column;"
+  >
     <TheHeader
       @window:minimize="$emit('update:task-window', { isMinimized: true })"
       @window:pin="$emit('update:task-window', { isPinned: true })"
@@ -38,7 +41,7 @@
         No Data Objects Loaded
       </p>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -121,3 +124,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

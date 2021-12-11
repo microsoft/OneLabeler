@@ -122,7 +122,7 @@
 
     <v-btn-toggle
       :value="showElementSetting"
-      class="view-header-button-toggle elevation-0"
+      class="card-header-button-toggle elevation-0"
     >
       <v-btn
         :value="true"
@@ -145,7 +145,7 @@
 
     <v-btn-toggle
       :value="showInspector"
-      class="view-header-button-toggle elevation-0"
+      class="card-header-button-toggle elevation-0"
     >
       <v-btn
         :value="true"

@@ -1,171 +1,169 @@
 <template>
-  <v-card
-    class="rounded-0"
-    style="display: flex; flex-direction: row;"
+  <div
+    class="card-elevated"
+    style="display: flex; flex-direction: column; overflow-wrap: break-word; min-width: 0;"
   >
-    <div style="flex: 1 1 100%; display: flex; flex-direction: column; width: 0;">
-      <div class="view-header">
-        <v-icon
-          class="px-2"
-          aria-hidden="true"
-          small
+    <div class="card-header">
+      <v-icon
+        class="px-2"
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.info
+      </v-icon>
+      Variable Inspector
+    </div>
+    <v-divider />
+    <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
+          >
+            $vuetify.icons.values.data
+          </v-icon>
+          Data Objects
+        </div>
+        <div
+          v-if="maxVisible < nTotal"
+          style="padding: 4px; padding-bottom: 0px;"
         >
-          $vuetify.icons.values.info
-        </v-icon>
-        Variable Inspector
+          {{ nTotal }} data objects exist, only load first {{ maxVisible }}
+        </div>
+        <ObjectInspector
+          :data="filteredDataObjects"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
       </div>
-      <v-divider />
-      <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.data
-            </v-icon>
-            Data Objects
-          </div>
-          <div
-            v-if="maxVisible < nTotal"
-            style="padding: 4px; padding-bottom: 0px;"
+
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
           >
-            {{ nTotal }} data objects exist, only load first {{ maxVisible }}
-          </div>
-          <ObjectInspector
-            :data="filteredDataObjects"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
+            $vuetify.icons.values.features
+          </v-icon>
+          Features
         </div>
+        <div
+          v-if="maxVisible < nTotal"
+          style="padding: 4px; padding-bottom: 0px;"
+        >
+          {{ nTotal }} data objects exist, only load the features of first {{ maxVisible }}
+        </div>
+        <ObjectInspector
+          :data="filteredFeatures"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
+      </div>
 
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.features
-            </v-icon>
-            Features
-          </div>
-          <div
-            v-if="maxVisible < nTotal"
-            style="padding: 4px; padding-bottom: 0px;"
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
           >
-            {{ nTotal }} data objects exist, only load the features of first {{ maxVisible }}
-          </div>
-          <ObjectInspector
-            :data="filteredFeatures"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
-        </div>
-
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.labels
-            </v-icon>
-            Labels
-            <v-spacer />
-            <div
-              class="px-2"
-              style="display: flex; flex-direction: row; align-items: center;"
-            >
-              all
-              <v-switch
-                v-model="showEditedLabels"
-                class="pa-0 pl-2 ma-0"
-                :ripple="false"
-                dense
-                hide-details=""
-              />
-              edited
-            </div>
-          </div>
+            $vuetify.icons.values.labels
+          </v-icon>
+          Labels
+          <v-spacer />
           <div
-            v-if="maxVisible < nTotal"
-            style="padding: 4px; padding-bottom: 0px;"
+            class="px-2"
+            style="display: flex; flex-direction: row; align-items: center;"
           >
-            {{ nTotal }} labels exist, only load first {{ maxVisible }}
+            all
+            <v-switch
+              v-model="showEditedLabels"
+              class="pa-0 pl-2 ma-0"
+              :ripple="false"
+              dense
+              hide-details=""
+            />
+            edited
           </div>
-          <ObjectInspector
-            :data="filteredLabels"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
         </div>
+        <div
+          v-if="maxVisible < nTotal"
+          style="padding: 4px; padding-bottom: 0px;"
+        >
+          {{ nTotal }} labels exist, only load first {{ maxVisible }}
+        </div>
+        <ObjectInspector
+          :data="filteredLabels"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
+      </div>
 
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.samples
-            </v-icon>
-            Samples
-          </div>
-          <ObjectInspector
-            :data="queryUuids"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
+          >
+            $vuetify.icons.values.samples
+          </v-icon>
+          Samples
         </div>
+        <ObjectInspector
+          :data="queryUuids"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
+      </div>
 
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-              width="18px"
-            >
-              $vuetify.icons.values.categories
-            </v-icon>
-            Categories
-          </div>
-          <ObjectInspector
-            :data="categories"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
+            width="18px"
+          >
+            $vuetify.icons.values.categories
+          </v-icon>
+          Categories
         </div>
+        <ObjectInspector
+          :data="categories"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
+      </div>
 
-        <div>
-          <div class="view-header">
-            <v-icon
-              class="mx-2"
-              aria-hidden="true"
-              small
-            >
-              $vuetify.icons.values.stoppage
-            </v-icon>
-            Stop
-          </div>
-          <ObjectInspector
-            :data="stop"
-            :array-max-properties="5"
-            theme="chromeLight"
-            style="padding: 4px;"
-          />
+      <div>
+        <div class="card-header">
+          <v-icon
+            class="mx-2"
+            aria-hidden="true"
+            small
+          >
+            $vuetify.icons.values.stoppage
+          </v-icon>
+          Stop
         </div>
+        <ObjectInspector
+          :data="stop"
+          :array-max-properties="5"
+          theme="chromeLight"
+          style="padding: 4px;"
+        />
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -266,3 +264,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

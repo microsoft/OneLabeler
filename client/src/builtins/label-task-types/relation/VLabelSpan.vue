@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-btn
-      class="view-header-button subtitle-2 mr-1 elevation-0 text-none"
+      class="card-header-button subtitle-2 mr-1 elevation-0 text-none"
       style="border-color: #bbb"
       x-small
       outlined

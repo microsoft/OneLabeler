@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    class="rounded-0"
-    style="display: flex; flex-direction: column;"
-  >
+  <div style="background-color: white; max-width: 100%; display: flex; flex-direction: column;">
     <TheDevPanelHeader
       :show-element-setting.sync="showElementSetting"
       :show-inspector.sync="showInspector"
@@ -13,7 +10,7 @@
       class="pa-2 subtitle-2"
       style="flex: 1 1 auto; overflow: auto;"
     />
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

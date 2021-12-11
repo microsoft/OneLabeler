@@ -37,7 +37,7 @@
         />
         <v-btn
           x-small
-          class="view-header-button subtitle-2"
+          class="card-header-button subtitle-2"
           type="submit"
           @click="onClickAddClassOption(className)"
         >

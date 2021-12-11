@@ -1,7 +1,7 @@
 <template>
   <div style="border: 0.5px solid #757575; display: flex;">
     <!-- The configure projection attribute dialog button. -->
-    <VProjectionHeader
+    <TheBodyTools
       :feature-names="featureNames"
       :selected-feature-indices="selectedFeatureIndices"
       :projection-method="projectionMethod"
@@ -11,7 +11,7 @@
       :enable-subsampling="enableSubsampling"
       :subsampling-n-samples="subsamplingNSamples"
       @update:feature-indices="$emit('update:feature-indices', $event)"
-      @click:projection-method="$emit('click:projection-method', $event)"
+      @update:projection-method="$emit('update:projection-method', $event)"
       @update:binning="$emit('update:binning', $event)"
       @update:subsampling="$emit('update:subsampling', $event)"
     />
@@ -47,14 +47,14 @@ import { randomShuffle } from '@/plugins/random';
 import type { Axis, Range } from '@/plugins/heatmap/VHeatmap.vue';
 import VScatterplot from './VScatterplot.vue';
 import VHeatmap from './VHeatmap.vue';
-import VProjectionHeader from './VProjectionHeader.vue';
+import TheBodyTools from './TheBodyTools.vue';
 
 export default defineComponent({
-  name: 'VProjection',
+  name: 'TheBody',
   components: {
     VScatterplot,
     VHeatmap,
-    VProjectionHeader,
+    TheBodyTools,
   },
   props: {
     selectedFeatureIndices: {
@@ -116,7 +116,7 @@ export default defineComponent({
   },
   emits: {
     'update:feature-indices': null,
-    'click:projection-method': null,
+    'update:projection-method': null,
     'update:binning': null,
     'update:subsampling': null,
     'select:uuids': null,

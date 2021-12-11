@@ -73,6 +73,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .card {
+  background-color: white;
   border: thin solid rgba(0,0,0,.12);
   border-radius: 4px;
 }

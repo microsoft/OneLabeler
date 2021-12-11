@@ -1,6 +1,9 @@
 <template>
-  <v-card style="display: flex; flex-direction: column;">
-    <div class="view-header">
+  <div
+    class="card-elevated"
+    style="display: flex; flex-direction: column;"
+  >
+    <div class="card-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -22,14 +25,14 @@
       />
       <v-btn
         x-small
-        class="view-header-button subtitle-2"
+        class="card-header-button subtitle-2"
         type="submit"
         @click="onSetLabelText"
       >
         submit
       </v-btn>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -78,3 +81,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

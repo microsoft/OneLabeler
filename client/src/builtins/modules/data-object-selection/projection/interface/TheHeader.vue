@@ -22,7 +22,7 @@
         <template #activator="{ on }">
           <v-btn
             title="Set Scatterplot Matrix Layout"
-            class="view-header-button ml-2"
+            class="card-header-button ml-2"
             x-small
             icon
             v-on="on"
@@ -37,7 +37,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <v-card class="pa-3">
+        <div class="card-elevated pa-3">
           <div class="subtitle-1 grey--text text--darken-1">
             {{ `${nRows} x ${nColumns} layout` }}
           </div>
@@ -67,7 +67,7 @@
               </template>
             </template>
           </div>
-        </v-card>
+        </div>
       </v-menu>
     </template>
   </VToolbar>
@@ -104,3 +104,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

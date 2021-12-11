@@ -177,7 +177,7 @@ export default defineComponent({
   name: 'VNodeModule',
   props: {
     node: {
-      type: Object as PropType<WorkflowNode & FlowchartNode>,
+      type: Object as PropType<WorkflowNode & FlowchartNode | null>,
       default: null,
     },
   },
@@ -186,18 +186,18 @@ export default defineComponent({
   },
   computed: {
     isInteractive(): boolean {
+      if (this.node === null) return false;
       return isNodeInteractive(this.node);
     },
     isServerless(): boolean {
+      if (this.node === null) return false;
       return isNodeServerless(this.node);
     },
     inputs(): string[] {
-      const { node } = this;
-      return node === null ? [] : node.value?.inputs;
+      return this.node?.value?.inputs ?? [];
     },
     outputs(): string[] {
-      const { node } = this;
-      return node === null ? [] : node.value?.outputs;
+      return this.node?.value?.outputs ?? [];
     },
     propertyIcons(): VueConstructor[] {
       return [

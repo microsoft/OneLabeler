@@ -1,8 +1,9 @@
 <template>
-  <v-card
+  <div
     ref="container"
     v-click-outside="onClickOutside"
-    style="overflow-y: scroll; border-radius: 0;"
+    class="card-elevated"
+    style="overflow-y: scroll"
   >
     <div
       v-for="(category, i) in categoriesFiltered"
@@ -83,7 +84,7 @@
         />
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -347,3 +348,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

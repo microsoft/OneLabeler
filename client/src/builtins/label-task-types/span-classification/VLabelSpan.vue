@@ -1,9 +1,7 @@
 <template>
-  <v-card
+  <div
     :class="{ 'selected-span': isSelected !== null && isSelected(span) }"
-    :ripple="false"
-    class="rounded-0 elevation-0 pa-1"
-    outlined
+    class="card-elevated pa-1"
     @click="$emit('select:span', span)"
   >
     <div style="display: flex">
@@ -23,7 +21,7 @@
       <!-- The remove button. -->
       <v-btn
         title="remove"
-        class="view-header-button elevation-0"
+        class="card-header-button elevation-0"
         style="border-color: #bbb"
         x-small
         icon
@@ -43,7 +41,7 @@
         v-if="enableLink"
         :class="{ 'linking-span-button': isLinking !== null && isLinking(span) }"
         title="link"
-        class="view-header-button elevation-0"
+        class="card-header-button elevation-0"
         style="border-color: #bbb"
         x-small
         icon
@@ -61,7 +59,7 @@
     <div class="mx-1">
       {{ span.text }}
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -102,14 +100,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
 .selected-span {
   border-color: gray;
 }
-
 .linking-span-button {
   background-color: #bbb;
 }
-
 .category-legend {
   $padding: 4px;
   padding-left: $padding;

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-0">
+  <div style="background-color: white; display: flex; flex-direction: column;">
     <div
       class="app-header"
       style="display: flex; align-items: center; height: 35px;"
@@ -29,15 +29,16 @@
     </div>
     <div
       class="pa-1 subtitle-2"
-      style="display: flex; flex-direction: row;"
+      style="flex: 1 1 auto; display: flex; flex-direction: row;"
     >
-      <TheDashboardProgressView />
+      <TheDashboardProgressView style="width: 300px; height: 400px;" />
       <TheDashboardLabelDistributionView
         v-if="containsClassification"
         class="ml-1"
+        style="width: 300px; height: 400px;"
       />
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

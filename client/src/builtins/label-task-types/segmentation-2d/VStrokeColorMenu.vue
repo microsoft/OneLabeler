@@ -7,7 +7,7 @@
       <v-btn
         :disabled="disabled"
         width="85"
-        class="view-header-button subtitle-2 pl-1 text-none"
+        class="card-header-button subtitle-2 pl-1 text-none"
         title="Set Stroke Color"
         x-small
         v-on="on"
@@ -47,7 +47,7 @@
   </v-menu>
   <v-btn
     v-else
-    class="view-header-button subtitle-2"
+    class="card-header-button subtitle-2"
     width="85"
     title="Set Stroke Color"
     x-small

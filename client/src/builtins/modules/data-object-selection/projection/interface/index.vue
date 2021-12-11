@@ -1,5 +1,8 @@
 <template>
-  <v-card style="display: flex; flex-direction: column;">
+  <div
+    class="card-elevated"
+    style="display: flex; flex-direction: column;"
+  >
     <TheHeader
       :n-rows="nRows"
       :n-columns="nColumns"
@@ -16,7 +19,7 @@
         'grid-template-columns': `repeat(${nColumns}, ${100/nColumns}%)`,
       }"
     >
-      <VProjection
+      <TheBody
         v-for="(view, i) in views"
         :key="view.id"
         :selected-feature-indices="view.featureSpace.selectedFeatureIndices"
@@ -35,7 +38,7 @@
         :label2color="label2color"
         style="margin: 1px"
         @update:feature-indices="onUpdateSelectedFeatureIndices($event, i)"
-        @click:projection-method="onClickProjectionMethod($event, i)"
+        @update:projection-method="onClickProjectionMethod($event, i)"
         @update:binning="onUpdateBinning($event, i)"
         @update:subsampling="onUpdateSubsampling($event, i)"
         @select:uuids="$emit('set:query-uuids', $event)"
@@ -55,7 +58,7 @@
     >
       Feature Values not Computed
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -70,7 +73,7 @@ import type {
 } from '@/commons/types';
 import type { Binning, Subsampling } from './types';
 import TheHeader from './TheHeader.vue';
-import VProjection from './VProjection.vue';
+import TheBody from './TheBody.vue';
 
 /** The type of a data object overview facet configuration. */
 type FacetAttribute = {
@@ -102,7 +105,7 @@ export default defineComponent({
   name: 'TheProjectionView',
   components: {
     TheHeader,
-    VProjection,
+    TheBody,
   },
   props: {
     dataObjects: {
@@ -219,3 +222,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

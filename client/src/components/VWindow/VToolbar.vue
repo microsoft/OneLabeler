@@ -1,5 +1,5 @@
 <template>
-  <div class="view-header">
+  <div class="card-header">
     <slot name="title">
       Window
     </slot>

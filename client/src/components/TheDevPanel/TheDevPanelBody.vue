@@ -14,7 +14,7 @@
       <!-- The graph grammar checking console. -->
       <TheConsoleView
         :graph="{ nodes, edges }"
-        style="margin: 4px; grid-area: 3 / 1 / 4 / 2;"
+        style="margin: 4px; grid-area: 3 / 1 / 4 / 2; min-height: 0px;"
         @select:nodes="selectedNodeIds = $event"
         @select:edges="selectedEdgeIds = $event"
         @hover:nodes="hoveredNodeIds = $event"

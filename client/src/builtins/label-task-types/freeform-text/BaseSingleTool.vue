@@ -12,7 +12,7 @@
         <v-btn
           :title="buttonTitle"
           :disabled="disabled"
-          class="view-header-button subtitle-2"
+          class="card-header-button subtitle-2"
           x-small
           v-on="on"
         >
@@ -27,9 +27,9 @@
         </v-btn>
       </slot>
     </template>
-    <v-card
+    <div
       class="px-6 py-4"
-      style="border-radius: 2px"
+      style="background-color: white"
     >
       <div style="display: flex; flex-direction: row;">
         <slot name="dialog-header">
@@ -68,13 +68,13 @@
 
       <v-btn
         x-small
-        class="view-header-button subtitle-2"
+        class="card-header-button subtitle-2"
         type="submit"
         @click="onSetLabelText"
       >
         submit
       </v-btn>
-    </v-card>
+    </div>
   </v-dialog>
 </template>
 

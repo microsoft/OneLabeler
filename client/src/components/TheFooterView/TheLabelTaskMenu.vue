@@ -3,7 +3,7 @@
     <template #activator="{ on }">
       <v-btn
         :disabled="disabled"
-        class="view-header-button subtitle-2 text-none"
+        class="card-header-button subtitle-2 text-none"
         x-small
         v-on="on"
       >

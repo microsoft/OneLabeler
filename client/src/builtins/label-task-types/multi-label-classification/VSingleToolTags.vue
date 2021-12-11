@@ -3,7 +3,7 @@
     <v-btn
       v-for="category in categories"
       :key="category"
-      class="view-header-button subtitle-2 elevation-0 text-none"
+      class="card-header-button subtitle-2 elevation-0 text-none"
       :class="{ 'white--text': isCategorySelected(category) }"
       :style="{
         'border-color': '#bbb',

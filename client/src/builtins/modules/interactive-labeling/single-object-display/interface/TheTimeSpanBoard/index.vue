@@ -1,5 +1,8 @@
 <template>
-  <v-card style="display: flex; flex-direction: column">
+  <div
+    class="card-elevated"
+    style="display: flex; flex-direction: column"
+  >
     <TheHeader
       :data-type="dataType"
       :label-tasks="labelTasks"
@@ -63,7 +66,7 @@
     >
       No Data Objects Queried
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -235,3 +238,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

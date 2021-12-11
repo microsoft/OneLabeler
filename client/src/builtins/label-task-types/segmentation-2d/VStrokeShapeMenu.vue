@@ -3,7 +3,7 @@
     <template #activator="{ on }">
       <v-btn
         :disabled="disabled"
-        class="view-header-button subtitle-2"
+        class="card-header-button subtitle-2"
         title="Set Stroke Shape"
         x-small
         v-on="on"

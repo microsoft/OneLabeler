@@ -1,9 +1,9 @@
 <template>
-  <v-card
-    class="rounded-0"
+  <div
+    class="card-elevated"
     style="display: flex; flex-direction: column"
   >
-    <div class="view-header">
+    <div class="card-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -25,7 +25,7 @@
         @mouseleave.native="onMouseleaveMessage"
       />
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -87,7 +87,18 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+
 .shadow:hover {
   -moz-box-shadow: inset 0px 0px 5px #aaa;
   -webkit-box-shadow: inset 0px 0px 5px #aaa;

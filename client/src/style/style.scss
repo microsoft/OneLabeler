@@ -64,21 +64,21 @@ html {
   @extend .app-header-divider;
 }
 
-.view-header {
+.card-header {
   @extend .subtitle-1;
   @extend .grey;
   @extend .lighten-4;
   @extend .grey--text;
   @extend .text--darken-1;
-  @extend .pa-0;
   display: flex;
   align-items: center;
   user-select: none;
-  border-radius: inherit;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 /* for the v-divider component in the view headers (typically dividing buttons) */
-.view-header-divider {
+.card-header-divider {
   /* override the inset of vuetify (which is too large) */
   $margin: 2px;
   margin-top: $margin;
@@ -88,14 +88,14 @@ html {
 }
 
 /* for v-btn-toggle in view headers */
-.view-header-button-toggle {
+.card-header-button-toggle {
   @extend .elevation-1;
   @extend .transparent;
   border-radius: 2px;
 }
 
 /* for v-btn in view headers */
-.view-header-button {
+.card-header-button {
   @extend .elevation-1;
   @extend .px-1;
   border-radius: 2px;

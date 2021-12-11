@@ -1,6 +1,6 @@
 <template>
-  <v-card tile>
-    <div class="view-header">
+  <div class="card">
+    <div class="card-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -17,7 +17,7 @@
     >
       <!-- The source node. -->
       <div class="card mx-2">
-        <div class="card view-header px-2">
+        <div class="card card-header px-2">
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -48,7 +48,7 @@
 
       <!-- The target node. -->
       <div class="card mx-2">
-        <div class="card view-header px-2">
+        <div class="card card-header px-2">
           <span
             class="subtitle-2"
             style="padding-bottom: 7.4px; padding-top: 7px"
@@ -115,7 +115,7 @@
         </div>
       </template>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -149,6 +149,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .card {
+  background-color: white;
   border: thin solid rgba(0,0,0,.12) !important;
   border-radius: 4px;
 }

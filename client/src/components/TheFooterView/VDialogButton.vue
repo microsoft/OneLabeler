@@ -28,9 +28,9 @@
         </v-btn>
       </slot>
     </template>
-    <v-card
+    <div
       class="px-6 py-4"
-      style="border-radius: 2px"
+      style="background-color: white"
     >
       <div style="display: flex; flex-direction: row;">
         <slot name="dialog-header">
@@ -62,7 +62,7 @@
       </div>
 
       <slot name="dialog-body" />
-    </v-card>
+    </div>
   </v-dialog>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="view-header">
+  <div class="card-header">
     <v-icon
       class="px-2"
       aria-hidden="true"

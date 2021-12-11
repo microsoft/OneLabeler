@@ -1,7 +1,7 @@
 <template>
-  <v-card
+  <div
+    class="card-elevated"
     style="display: flex; flex-direction: column;"
-    tile
   >
     <TheWorkflowViewHeader />
     <v-divider />
@@ -27,7 +27,7 @@
       @update:hoveredNodeIds="$emit('update:hoveredNodeIds', $event)"
       @update:hoveredEdgeIds="$emit('update:hoveredEdgeIds', $event)"
     />
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -100,3 +100,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

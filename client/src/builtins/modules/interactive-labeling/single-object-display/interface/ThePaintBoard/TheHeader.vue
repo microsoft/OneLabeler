@@ -11,7 +11,7 @@
       <!-- reset image size button -->
       <v-btn
         title="reset image size"
-        class="view-header-button ml-2"
+        class="card-header-button ml-2"
         x-small
         icon
         @click="$emit('reset:image-size')"
@@ -33,7 +33,7 @@
       <v-btn-toggle
         :value="mouseOperationIndex"
         :mandatory="mouseOperationIndex !== null"
-        class="view-header-button-toggle"
+        class="card-header-button-toggle"
       >
         <v-btn
           v-for="btn in (includesSegmentation

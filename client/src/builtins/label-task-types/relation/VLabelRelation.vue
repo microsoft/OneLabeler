@@ -1,9 +1,8 @@
 <template>
-  <v-card
+  <div
     :ripple="false"
-    class="rounded-0 elevation-0 pa-1"
-    style="display: flex; flex-direction: row; font-size: 10px;"
-    outlined
+    class="pa-1"
+    style="border: thin solid rgba(0,0,0,.12); display: flex; flex-direction: row; font-size: 10px;"
   >
     <!-- The source span on the left. -->
     <VLabelSpan
@@ -40,7 +39,7 @@
     <!-- Delete relation button. -->
     <v-btn
       title="remove"
-      class="view-header-button elevation-0 ml-1"
+      class="card-header-button elevation-0 ml-1"
       style="border-color: #bbb"
       x-small
       icon
@@ -54,7 +53,7 @@
         $vuetify.icons.values.reset
       </v-icon>
     </v-btn>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

@@ -33,7 +33,7 @@
       <template #activator="{ on }">
         <v-btn
           title="set color"
-          class="view-header-button elevation-0 ml-1"
+          class="card-header-button elevation-0 ml-1"
           style="border-color: #bbb"
           x-small
           icon
@@ -60,7 +60,7 @@
     <v-btn
       :disabled="category === unlabeledMark"
       title="remove"
-      class="view-header-button elevation-0 ml-1"
+      class="card-header-button elevation-0 ml-1"
       style="border-color: #bbb"
       x-small
       icon

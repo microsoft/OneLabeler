@@ -1,9 +1,6 @@
 <template>
-  <v-card
-    flat
-    outlined
-  >
-    <div class="view-header px-2">
+  <div class="card">
+    <div class="card-header px-2">
       <template v-if="!isLabelEditable">
         <span
           class="subtitle-2"
@@ -43,7 +40,7 @@
         </v-icon>
       </v-btn>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -80,3 +77,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
-  <v-card width="300">
-    <div class="view-header">
+  <div class="card-elevated">
+    <div class="card-header">
       <v-icon
         class="px-2"
         aria-hidden="true"
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -159,3 +159,16 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import '~vuetify/src/styles/main.sass';
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+.card-elevated {
+  @extend .elevation-2;
+  @extend .card;
+}
+</style>

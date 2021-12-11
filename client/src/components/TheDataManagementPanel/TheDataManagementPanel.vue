@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-0">
+  <div style="background-color: white">
     <div
       class="app-header"
       style="display: flex; align-items: center; height: 35px;"
@@ -33,7 +33,7 @@
     >
       <TheDataManagementView style="flex: 1 1 auto" />
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
