@@ -35,16 +35,16 @@ const entries = [
     text: 'initialization',
   },
   {
+    color: nodeTypeToColor(WorkflowNodeType.InteractiveLabeling),
+    text: 'module',
+  },
+  {
     color: nodeTypeToColor(WorkflowNodeType.Decision),
     text: 'conditional branching',
   },
   {
     color: nodeTypeToColor(WorkflowNodeType.Exit),
     text: 'exit',
-  },
-  {
-    color: nodeTypeToColor(WorkflowNodeType.InteractiveLabeling),
-    text: 'module',
   },
 ];
 

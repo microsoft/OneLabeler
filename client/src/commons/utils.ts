@@ -1,5 +1,4 @@
 import { WorkflowNodeType } from '@/commons/types';
-import type { IModule, WorkflowNode } from '@/commons/types';
 
 export const getImgSize = (
   content: string,
@@ -10,22 +9,28 @@ export const getImgSize = (
   img.src = content;
 });
 
-export const isNodeModule = (node: WorkflowNode): boolean => (
+export const isNodeModule = (node: { type: WorkflowNodeType }): boolean => (
   node.type !== WorkflowNodeType.Initialization
     && node.type !== WorkflowNodeType.Decision
     && node.type !== WorkflowNodeType.Exit
 );
 
-export const isNodeInteractive = (node: WorkflowNode): boolean => {
+export const isNodeInteractive = (node: {
+  type: WorkflowNodeType,
+  value: { isAlgorithmic: boolean } | null,
+}): boolean => {
   if (!isNodeModule(node)) return false;
   if (node.value === null) return false;
-  return !(node.value as IModule).isAlgorithmic;
+  return !node.value.isAlgorithmic;
 };
 
-export const isNodeServerless = (node: WorkflowNode): boolean => {
+export const isNodeServerless = (node: {
+  type: WorkflowNodeType,
+  value: { isServerless: boolean } | null,
+}): boolean => {
   if (!isNodeModule(node)) return true;
   if (node.value === null) return true;
-  return (node.value as IModule).isServerless;
+  return node.value.isServerless;
 };
 
 export const nodeTypeToColor = (type: WorkflowNodeType): string => {

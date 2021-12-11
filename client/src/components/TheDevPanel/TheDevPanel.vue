@@ -7,7 +7,7 @@
     <TheDevPanelBody
       :show-element-setting="showElementSetting"
       :show-inspector="showInspector"
-      class="pa-2 subtitle-2"
+      class="pa-1"
       style="flex: 1 1 auto; overflow: auto;"
     />
   </div>

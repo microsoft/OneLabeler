@@ -101,7 +101,7 @@ export default parseWorkflow({
       label: 'exit',
       type: WorkflowNodeType.Exit,
       layout: {
-        x: MARGIN_LEFT + 20 + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + 2 * (NODE_HEIGHT + NODE_PADDING_Y),
       },
     },

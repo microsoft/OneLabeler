@@ -13,7 +13,7 @@
       }[message.type],
       cursor: !isSubjectEmpty ? 'pointer' : undefined,
     }"
-    class="px-2 shadow"
+    class="px-2 shadow subtitle-2"
   >
     <v-icon
       aria-hidden="true"

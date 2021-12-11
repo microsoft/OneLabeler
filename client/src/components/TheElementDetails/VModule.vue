@@ -72,7 +72,10 @@
 
       <template v-if="model !== undefined">
         <!-- The label of the model. -->
-        <div style="display: flex; flex-direction: row; align-items: center;">
+        <div
+          class="subtitle-2"
+          style="display: flex; flex-direction: row; align-items: center;"
+        >
           Model Label
           <v-text-field
             :value="model.label"
@@ -88,7 +91,10 @@
         </div>
 
         <!-- The url of the model. -->
-        <div style="display: flex; flex-direction: row; align-items: center;">
+        <div
+          class="subtitle-2"
+          style="display: flex; flex-direction: row; align-items: center;"
+        >
           Model Key
           <v-text-field
             :value="model.isServerless ? 'serverless' : model.objectId"

@@ -48,7 +48,7 @@ export type ParamSpecification<T, M extends boolean> = {
 
 export type ModuleParams = Record<string, ParamSpecification<unknown, boolean>>;
 
-export type StateNames = 'dataObjects' | 'labels' | 'queryUuids' | 'features' | 'model' | 'stop';
+export type StateNames = 'dataObjects' | 'labels' | 'queryUuids' | 'features' | 'model' | 'categories' | 'stop';
 
 /** The data labeling process class. */
 export interface IModule {

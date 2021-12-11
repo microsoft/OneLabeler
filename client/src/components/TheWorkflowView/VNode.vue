@@ -1,54 +1,115 @@
 <template>
   <g>
+    <!-- The tooltip. -->
     <title>{{ title }}</title>
-    <template v-if="isInitialization || isModule">
-      <VNodeModule :node="node" />
-    </template>
-    <template v-else>
-      <template v-if="isDecision">
-        <polygon
-          :points="`
-            ${node.width / 2},0
-            ${node.width},${node.height / 2}
-            ${node.width / 2},${node.height}
-            0,${node.height / 2}`"
-          stroke="currentColor"
-          fill="white"
-          stroke-width="1"
-        />
-      </template>
-      <template v-else-if="isExit">
-        <circle
-          :r="node.height / 2"
-          :cx="node.width / 2"
-          :cy="node.height / 2"
-          stroke="currentColor"
-          fill="white"
-          stroke-width="1"
-        />
-      </template>
 
-      <!-- The text label of the node. -->
-      <text
-        :y="node.height / 2"
-        font-size="14px"
-        dominant-baseline="middle"
-        text-anchor="middle"
-        style="user-select: none; pointer-events: none;"
-      >
-        <tspan
-          v-for="(d, i) in node.label.split(' ')"
-          :key="i"
-          :x="node.width / 2"
-          :dy="i === 0
-            ? `${-(node.label.split(' ').length - 1) * 0.6}em`
-            : '1.2em'
-          "
+    <!-- The background of the node. -->
+    <rect
+      :width="node.width"
+      :height="node.height"
+      fill="#F0F0F0"
+    />
+
+    <!-- The node header. -->
+    <rect
+      :width="node.width"
+      :height="cellSize"
+      :fill="nodeTypeToColor(node.type)"
+    />
+
+    <!-- The body of the node denoting node type with different shapes. -->
+    <g :transform="`translate(0,${cellSize})`">
+      <VNodeBody
+        color="#bbb"
+        :type="node.type"
+        :width="node.width"
+        :height="node.height - cellSize"
+      />
+    </g>
+
+    <!-- The icons denoting module inputs. -->
+    <VNodeArgIcons
+      :args="inputs"
+      :icon-size="cellSize"
+    />
+
+    <!-- The arrow pointing to outputs. -->
+    <g
+      v-if="inputs !== undefined && outputs !== undefined"
+      color="white"
+    >
+      <defs>
+        <marker
+          id="arrow"
+          viewBox="0 -5 10 10"
+          refX="8"
+          refY="0"
+          markerWidth="5"
+          markerHeight="10"
+          orient="auto"
         >
-          {{ d }}
-        </tspan>
-      </text>
-    </template>
+          <path
+            d="M0,-5L10,0L0,5"
+            fill="currentColor"
+          />
+        </marker>
+      </defs>
+      <line
+        :x1="(inputs.length * cellSize + node.width - outputs.length * cellSize) / 2 - cellSize / 2"
+        :x2="(inputs.length * cellSize + node.width - outputs.length * cellSize) / 2 + cellSize / 2"
+        :y1="cellSize / 2"
+        :y2="cellSize / 2"
+        stroke="currentColor"
+        stroke-width="1"
+        marker-end="url(#arrow)"
+      />
+    </g>
+
+    <!-- The icon denoting module output. -->
+    <g :transform="`translate(${node.width - cellSize * outputs.length},0)`">
+      <VNodeArgIcons
+        :args="outputs"
+        :icon-size="cellSize"
+      />
+    </g>
+
+    <!-- The icons denoting module properties. -->
+    <g :transform="`translate(${node.width - cellSize},${node.height - cellSize})`">
+      <VNodePropertyIcons
+        :node="node"
+        :icons-size="cellSize"
+      />
+    </g>
+
+    <!-- The node label. -->
+    <text
+      :y="(node.height - cellSize) / 2 + cellSize"
+      font-size="14px"
+      dominant-baseline="middle"
+      text-anchor="middle"
+      style="user-select: none; pointer-events: none;"
+    >
+      <tspan
+        v-for="(d, i) in node.label.split(' ')"
+        :key="i"
+        :x="node.width / 2"
+        :dy="i === 0
+          ? `${-(node.label.split(' ').length - 1) * 0.6}em`
+          : '1.2em'
+        "
+      >
+        {{ d }}
+      </tspan>
+    </text>
+
+    <!-- The border of the node. -->
+    <rect
+      :width="node.width"
+      :height="node.height"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1"
+    />
 
     <!-- A spinner denoting the module is currently executing. -->
     <g
@@ -69,19 +130,26 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
-import { isNodeModule } from '@/commons/utils';
+import { WorkflowNodeType } from '@/commons/types';
+import { nodeTypeToColor } from '@/commons/utils';
 import IconAnimatedSpinner from '@/plugins/icons/IconAnimatedSpinner.vue';
 import type { FlowchartNode } from '../VFlowchart/types';
-import VNodeModule from './VNodeModule.vue';
+import VNodeArgIcons from './VNodeArgIcons.vue';
+import VNodePropertyIcons from './VNodePropertyIcons.vue';
+import VNodeBody from './VNodeBody.vue';
 
 export default defineComponent({
   name: 'VNode',
-  components: { VNodeModule, IconAnimatedSpinner },
+  components: {
+    VNodeArgIcons,
+    VNodePropertyIcons,
+    VNodeBody,
+    IconAnimatedSpinner,
+  },
   props: {
     node: {
-      type: Object as PropType<WorkflowNode & FlowchartNode>,
+      type: Object as PropType<WorkflowNode & FlowchartNode | null>,
       default: null,
     },
     /** Whether the node is currently executed. */
@@ -90,25 +158,30 @@ export default defineComponent({
       default: false,
     },
   },
+  data() {
+    return { cellSize: 20 };
+  },
   computed: {
-    isDecision(): boolean {
-      return this.node.type === WorkflowNodeType.Decision;
-    },
-    isExit(): boolean {
-      return this.node.type === WorkflowNodeType.Exit;
-    },
-    isInitialization(): boolean {
-      return this.node.type === WorkflowNodeType.Initialization;
-    },
-    isModule(): boolean {
-      return isNodeModule(this.node);
-    },
     title(): string {
       const { node } = this;
+      if (node === null) return '';
       return `node type: ${node.type}\n${
         node.value?.label !== undefined ? `selected method: ${node.value.label}` : ''
       }`;
     },
+    isDecision(): boolean {
+      return this.node?.type === WorkflowNodeType.Decision;
+    },
+    isExit(): boolean {
+      return this.node?.type === WorkflowNodeType.Exit;
+    },
+    inputs(): string[] {
+      return this.node?.value?.inputs ?? [];
+    },
+    outputs(): string[] {
+      return this.node?.value?.outputs ?? [];
+    },
   },
+  methods: { nodeTypeToColor },
 });
 </script>

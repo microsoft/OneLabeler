@@ -1,5 +1,8 @@
 <template>
-  <div style="display: flex;">
+  <div
+    class="subtitle-2"
+    style="display: flex"
+  >
     Node Label
     <template v-if="!isLabelEditable">
       <span class="pl-4 subtitle-2">

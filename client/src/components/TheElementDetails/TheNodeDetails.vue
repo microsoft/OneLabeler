@@ -53,7 +53,7 @@ const NODE_TYPES = [
 ];
 
 export default defineComponent({
-  name: 'TheElementDetails',
+  name: 'TheNodeDetails',
   components: { TheNodeDetailsModule },
   props: {
     methods: {

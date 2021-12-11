@@ -22,7 +22,7 @@
 
     <!-- The node type label. -->
     <div
-      class="py-2 px-4"
+      class="py-2 px-4 subtitle-2"
       style="display: flex"
     >
       Node Type
