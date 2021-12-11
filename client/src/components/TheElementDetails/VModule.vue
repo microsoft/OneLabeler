@@ -33,7 +33,7 @@
 
     <!-- The url of the module instance service. -->
     <div
-      v-if="!method.isServerless"
+      v-if="!method.isServerless && method.api !== undefined"
       style="display: flex; align-items: center;
       padding-left: 8px; padding-right: 8px; gap: 8px;
       border: thin solid rgba(0,0,0,.12); border-radius: 4px;"
