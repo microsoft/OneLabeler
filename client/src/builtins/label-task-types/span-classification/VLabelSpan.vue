@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{ 'selected-span': isSelected !== null && isSelected(span) }"
-    class="card-elevated pa-1"
+    class="card pa-1"
     @click="$emit('select:span', span)"
   >
     <div style="display: flex">
@@ -100,18 +100,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
 .card {
   background-color: white;
   border: thin solid rgba(0,0,0,.12);
   border-radius: 4px;
 }
-.card-elevated {
-  @extend .elevation-2;
-  @extend .card;
-}
 .selected-span {
-  border-color: gray;
+  border-color: gray !important;
 }
 .linking-span-button {
   background-color: #bbb;

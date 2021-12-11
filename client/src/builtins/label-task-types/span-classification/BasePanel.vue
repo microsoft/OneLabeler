@@ -13,6 +13,7 @@
       </v-icon>
       Spans
     </div>
+    <v-divider />
     <!-- A list of created spans. -->
     <div class="cards-container">
       <VLabelSpan

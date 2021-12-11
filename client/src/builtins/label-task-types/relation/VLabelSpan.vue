@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="card">
     <v-btn
       class="card-header-button subtitle-2 mr-1 elevation-0 text-none"
       style="border-color: #bbb"
@@ -40,3 +40,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
+</style>

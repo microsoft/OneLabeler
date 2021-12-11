@@ -1,8 +1,7 @@
 <template>
   <div
-    :ripple="false"
-    class="pa-1"
-    style="border: thin solid rgba(0,0,0,.12); display: flex; flex-direction: row; font-size: 10px;"
+    class="card pa-1"
+    style="display: flex; flex-direction: row; font-size: 10px;"
   >
     <!-- The source span on the left. -->
     <VLabelSpan
@@ -95,6 +94,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.card {
+  background-color: white;
+  border: thin solid rgba(0,0,0,.12);
+  border-radius: 4px;
+}
 .label-span {
   border: 1px solid;
   flex: 1 1 50%;

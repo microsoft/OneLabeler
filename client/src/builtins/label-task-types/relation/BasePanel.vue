@@ -13,6 +13,7 @@
       </v-icon>
       Relations
     </div>
+    <v-divider />
     <div class="cards-container">
       <VLabelRelation
         v-for="relation in labelRelations"
