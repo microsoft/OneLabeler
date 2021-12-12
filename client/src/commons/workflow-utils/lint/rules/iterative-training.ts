@@ -1,38 +1,8 @@
-import cytoscape from 'cytoscape';
-import { WorkflowEdge, WorkflowNode, WorkflowNodeType } from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
+import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';
-
-const getLoops = (
-  node: WorkflowNode,
-  { nodes, edges }: { nodes: WorkflowNode[], edges: WorkflowEdge[] },
-) => {
-  const cy = cytoscape({
-    elements: {
-      nodes: nodes.map((d) => ({ data: { ...d } })),
-      edges: edges.map((d) => ({ data: { ...d } })),
-    },
-    headless: true,
-  });
-  const outwardEdges = edges.filter((d) => d.source === node.id);
-  const nextNodeIds = outwardEdges.map((d) => d.target);
-  const idToNode: Record<string, WorkflowNode> = Object
-    .fromEntries(nodes.map((d) => [d.id, d]));
-
-  const loops: WorkflowNode[][] = [];
-  nextNodeIds.forEach((nodeId) => {
-    const { found, path } = cy.elements().aStar({
-      root: cy.getElementById(nodeId),
-      goal: cy.getElementById(node.id),
-      directed: true,
-    });
-    if (found) {
-      const visitedNodes = path.nodes().map((d) => idToNode[d.id()]);
-      loops.push(visitedNodes);
-    }
-  });
-  return loops;
-};
+import getLoops from '../utils/loops';
 
 const containsModelTraining = (nodes: WorkflowNode[]): boolean => (
   nodes.find((d) => d.type === WorkflowNodeType.ModelTraining) !== undefined

@@ -10,6 +10,7 @@ import checkHasLabeling from './has-labeling';
 import checkModuleInputsInitialized from './module-inputs-initialized';
 import checkModuleNoRedundancy from './module-no-redundancy';
 import checkModuleImplemented from './module-implemented';
+import checkIterativeSampling from './iterative-sampling';
 import checkIterativeTraining from './iterative-training';
 
 export default [
@@ -46,7 +47,11 @@ export default [
   // 4. Modules are not redundant
   checkModuleNoRedundancy,
 
-  // 7. Models are recommended to be iteratively updated
+  // 7. It is recommended to have a data object selection module
+  // in a loop.
+  checkIterativeSampling,
+
+  // 8. Models are recommended to be iteratively updated
   // when used in loops.
   checkIterativeTraining,
 ];
