@@ -13,7 +13,8 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "plop": "plop"
   },
   "main": "background.js",
   "dependencies": {
@@ -92,6 +93,7 @@
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-vue": "^8.0.3",
     "mongoose": "^6.0.13",
+    "plop": "^3.0.4",
     "sass": "^1.32.13",
     "sass-loader": "^10.2.0",
     "tslib": "^2.3.1",
