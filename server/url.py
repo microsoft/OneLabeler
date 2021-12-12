@@ -3,7 +3,7 @@ from handlers import (CompileHandler,
                       FeatureExtractionHandler,
                       DataObjectSelectionHandler,
                       DefaultLabelingHandler,
-                      InterimModelTrainingHandler,
+                      ModelTrainingHandler,
                       ImageProcessingHandler,
                       ProjectionHandler)
 
@@ -25,7 +25,7 @@ url = [
     # request for default labels computed with default labeling algorithms
     (r'/defaultLabels/(.*)', DefaultLabelingHandler),
     # request for updated model computed with interim model training algorithms
-    (r'/modelUpdated/(.*)', InterimModelTrainingHandler),
+    (r'/modelUpdated/(.*)', ModelTrainingHandler),
     # request for roundtrip testing
     (r'/roundtrip', RoundtripHandler),
 ]

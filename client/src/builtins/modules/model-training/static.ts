@@ -1,6 +1,5 @@
-import {
-  ModuleType,
-} from '@/commons/types';
+import { ModuleType } from '@/commons/types';
+import type { ModelService } from '@/commons/types';
 
 export default {
   type: ModuleType.ModelTraining,
@@ -11,5 +10,5 @@ export default {
   isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
-  api: 'Static',
+  run: (inputs: { model: ModelService }) => inputs.model,
 };

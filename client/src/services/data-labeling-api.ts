@@ -15,8 +15,6 @@ import type {
   IStatus,
   IStatusStorage,
   ILabel,
-  ILabelStorage,
-  ILabelCategory,
   ModelService,
   IModule,
 } from '@/commons/types';
@@ -201,67 +199,4 @@ export const dataObjectSelection = async (
   }
   const queryUuids = queryIndices.map((d) => uuids[d]);
   return queryUuids;
-};
-
-/**
- * Workflow Components - Default Label Model Update & Sampling Model Update
- * Update the default labeling and active sampling model
- * with the partially user-labeled data object set.
- * @param dataObjects The data objects to be assigned default labels.
- * @param labels The labels of the data objects.
- * @param statuses The label statuses of the data objects.
- * @param model The model to be updated.
- * @returns modelUpdated - the updated model.
- */
-export const modelTraining = async (
-  method: IModule,
-  model: ModelService,
-  unlabeledMark: Category,
-  dataObjectStorage: IDataObjectStorage | null = null,
-  LabelStorage: ILabelStorage | null = null,
-  statusStorage: IStatusStorage | null = null,
-): Promise<ModelService> => {
-  if (method.isBuiltIn && (method.api === 'Static')) {
-    return model;
-  }
-  if (dataObjectStorage === null
-    || LabelStorage === null
-    || statusStorage === null) {
-    return model;
-  }
-  const dataObjects: IDataObject[] = await dataObjectStorage.getAll();
-  const uuids: string[] = await dataObjectStorage.uuids();
-  const labels: ILabelCategory[] = (await LabelStorage.getBulk(uuids))
-    .map((d) => (d === undefined ? unlabeledMark : d.category as string));
-  const statuses: StatusType[] = (await statusStorage.getBulk(uuids))
-    .map((d) => (d === undefined ? StatusType.New : d.value));
-
-  let modelUpdated: ModelService;
-
-  try {
-    const data = (
-      await axios.post(
-        method.api as string,
-        JSON.stringify({
-          model,
-          dataObjects,
-          labels,
-          statuses,
-        }),
-      )
-    ).data as { model: ModelService };
-    modelUpdated = data.model;
-  } catch (e) {
-    if (
-      (e as AxiosError).request !== undefined
-      && (e as AxiosError).response === undefined
-    ) {
-      // The service cannot be connected.
-      throw new TypeError('Cannot Connect to Interim Model Training Server');
-    } else {
-      throw e;
-    }
-  }
-
-  return modelUpdated;
 };

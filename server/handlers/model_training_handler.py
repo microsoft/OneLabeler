@@ -161,7 +161,7 @@ class EstimatorWithLabelDecoder(BaseEstimator):
         return proba
 
 
-class InterimModelTrainingHandler(tornado.web.RequestHandler):
+class ModelTrainingHandler(tornado.web.RequestHandler):
     """
     The handler for default labeling.
     """

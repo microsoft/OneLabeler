@@ -213,7 +213,6 @@ export const executeModule = showProgressBar(async (
     queryUuids,
     categoryTasks,
     unlabeledMark,
-    // model,
     stop,
   } = rootState;
 
@@ -224,10 +223,16 @@ export const executeModule = showProgressBar(async (
 
   const payload = {
     ...(inputs.includes('dataObjects') && { dataObjects }),
-    ...(inputs.includes('labels') && { labels, statuses, nDataObjects }),
+    ...(inputs.includes('labels') && {
+      labels,
+      statuses,
+      nDataObjects,
+      unlabeledMark,
+    }),
     ...(inputs.includes('queryUuids') && { queryUuids }),
-    ...(inputs.includes('categories') && { categories, unlabeledMark }),
+    ...(inputs.includes('features') && { dataObjects }),
     ...(inputs.includes('model') && { model: method.model }),
+    ...(inputs.includes('categories') && { categories, unlabeledMark }),
     ...(inputs.includes('stop') && { stop }),
   };
 
@@ -492,21 +497,19 @@ export const executeModelTraining = showProgressBar(async (
   if (labels === null || statuses === null) return;
 
   const { nodes } = state;
-  nodes.filter((d) => isNodeModule(d))
+  nodes.filter((d) => d.value?.inputs.includes('model') === true)
     .forEach(async (d) => {
-      const nodeMethod = d.value as IModule;
-      if (!nodeMethod.inputs.includes('model')) return;
-      const model = nodeMethod.model as ModelService;
-
+      const model = d.value?.model;
+      if (model === undefined) return;
       try {
-        (await API.modelTraining(
-          method,
-          model,
-          unlabeledMark,
+        if (method.run === undefined) return;
+        await method.run({
           dataObjects,
           labels,
           statuses,
-        ));
+          unlabeledMark,
+          model,
+        });
       } catch (e) {
         handleAlgorithmServiceError(e, commit);
       }

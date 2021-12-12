@@ -15,177 +15,57 @@
     </div>
     <v-divider />
     <div style="flex: 1 1 auto; overflow-y: scroll; height: 0;">
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.data
-          </v-icon>
-          Data Objects
-        </div>
-        <div
-          v-if="maxVisible < nTotal"
-          style="padding: 4px; padding-bottom: 0px;"
-        >
-          {{ nTotal }} data objects exist, only load first {{ maxVisible }}
-        </div>
-        <ObjectInspector
-          :data="filteredDataObjects"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- data objects -->
+      <VInspectDataObjects
+        :data-objects="dataObjects"
+        :scoped-uuids="scopeUuids"
+      />
 
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.features
-          </v-icon>
-          Features
-        </div>
-        <div
-          v-if="maxVisible < nTotal"
-          style="padding: 4px; padding-bottom: 0px;"
-        >
-          {{ nTotal }} data objects exist, only load the features of first {{ maxVisible }}
-        </div>
-        <ObjectInspector
-          :data="filteredFeatures"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- features -->
+      <VInspectFeatures
+        :data-objects="dataObjects"
+        :scoped-uuids="scopeUuids"
+      />
 
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.labels
-          </v-icon>
-          Labels
-          <v-spacer />
-          <div
-            class="px-2"
-            style="display: flex; flex-direction: row; align-items: center;"
-          >
-            all
-            <v-switch
-              v-model="showEditedLabels"
-              class="pa-0 pl-2 ma-0"
-              :ripple="false"
-              dense
-              hide-details=""
-            />
-            edited
-          </div>
-        </div>
-        <div
-          v-if="maxVisible < nTotal"
-          style="padding: 4px; padding-bottom: 0px;"
-        >
-          {{ nTotal }} labels exist, only load first {{ maxVisible }}
-        </div>
-        <ObjectInspector
-          :data="filteredLabels"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- labels -->
+      <VInspectLabels
+        :data-objects="dataObjects"
+        :labels="labels"
+        :scoped-uuids="scopeUuids"
+      />
 
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.samples
-          </v-icon>
-          Samples
-        </div>
-        <ObjectInspector
-          :data="queryUuids"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- samples -->
+      <VInspectSamples :query-uuids="queryUuids" />
 
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-            width="18px"
-          >
-            $vuetify.icons.values.categories
-          </v-icon>
-          Categories
-        </div>
-        <ObjectInspector
-          :data="categories"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- label categories -->
+      <VInspectCategories :categories="categories" />
 
-      <div>
-        <div :style="style.cardHeader">
-          <v-icon
-            class="mx-2"
-            aria-hidden="true"
-            small
-          >
-            $vuetify.icons.values.stoppage
-          </v-icon>
-          Stop
-        </div>
-        <ObjectInspector
-          :data="stop"
-          :array-max-properties="5"
-          theme="chromeLight"
-          style="padding: 4px;"
-        />
-      </div>
+      <!-- stop -->
+      <VInspectStop :stop="stop" />
+
+      <!-- model -->
+      <VInspectModel :models="models" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  onMounted,
-  ref,
-  toRefs,
-  watch,
-} from '@vue/composition-api';
-import type { PropType, Ref } from '@vue/composition-api';
-import ObjectInspector from 'vue-object-inspector';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   Category,
   IDataObjectStorage,
   ILabelStorage,
+  ModelService,
 } from '@/commons/types';
-import {
-  useFilteredDataObjects,
-  useFilteredLabels,
-} from '@/components/composables/useFilteredStorage';
 import { cardElevated, cardHeader } from '@/style';
+import VInspectDataObjects from './VInspectDataObjects.vue';
+import VInspectFeatures from './VInspectFeatures.vue';
+import VInspectLabels from './VInspectLabels.vue';
+import VInspectSamples from './VInspectSamples.vue';
+import VInspectCategories from './VInspectCategories.vue';
+import VInspectStop from './VInspectStop.vue';
+import VInspectModel from './VInspectModel.vue';
 
 /**
  * @reference
@@ -193,20 +73,17 @@ import { cardElevated, cardHeader } from '@/style';
  * 2. https://github.com/vikyd/vue-object-inspector
  */
 
-const useNTotal = (dataObjects: Ref<IDataObjectStorage | null>) => {
-  const nTotal: Ref<number> = ref(0);
-  const updateNLabeled = async (): Promise<void> => {
-    if (dataObjects.value === null) nTotal.value = 0;
-    else nTotal.value = await dataObjects.value.count();
-  };
-  onMounted(updateNLabeled);
-  watch(dataObjects, updateNLabeled);
-  return { nTotal };
-};
-
 export default defineComponent({
   name: 'BaseVariableInspector',
-  components: { ObjectInspector },
+  components: {
+    VInspectDataObjects,
+    VInspectFeatures,
+    VInspectLabels,
+    VInspectSamples,
+    VInspectCategories,
+    VInspectStop,
+    VInspectModel,
+  },
   props: {
     dataObjects: {
       type: Object as PropType<IDataObjectStorage | null>,
@@ -228,43 +105,17 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       required: true,
     },
+    models: {
+      type: Array as PropType<ModelService[]>,
+      required: true,
+    },
     scopeUuids: {
       type: Array as PropType<string[] | null>,
       default: null,
     },
   },
-  setup(props) {
-    const {
-      dataObjects,
-      labels,
-      scopeUuids,
-    } = toRefs(props);
-
-    const showEditedLabels = ref(true);
-    return {
-      ...useFilteredDataObjects(dataObjects, scopeUuids),
-      ...useFilteredLabels(dataObjects, labels, scopeUuids, showEditedLabels),
-      ...useNTotal(dataObjects),
-      showEditedLabels,
-    };
-  },
   data() {
     return { style: { cardElevated, cardHeader } };
-  },
-  computed: {
-    maxVisible(): number {
-      const { scopeUuids } = this;
-      return scopeUuids === null ? Infinity : scopeUuids.length;
-    },
-    filteredFeatures(): number[][] | null {
-      const { filteredDataObjects } = this;
-      const featuresComputed = filteredDataObjects.length >= 1
-        && filteredDataObjects[0].features !== undefined
-        && filteredDataObjects[0].features !== null;
-      return featuresComputed
-        ? filteredDataObjects.map((d) => d.features as number[])
-        : null;
-    },
   },
 });
 </script>

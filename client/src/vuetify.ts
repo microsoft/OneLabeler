@@ -36,6 +36,7 @@ import IconLabels from '@/plugins/icons/IconLabels.vue';
 import IconLabelSpace from '@/plugins/icons/IconLabelSpace.vue';
 import IconSamples from '@/plugins/icons/IconSamples.vue';
 import IconStop from '@/plugins/icons/IconStop.vue';
+import IconModel from '@/plugins/icons/IconModel.vue';
 
 Vue.use(Vuetify, {
   components: {
@@ -158,6 +159,10 @@ const icons = {
   stoppage: {
     name: 'stoppage',
     component: IconStop,
+  },
+  model: {
+    name: 'model',
+    component: IconModel,
   },
 };
 

@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { DataType, ModuleType } from '@/commons/types';
 import type {
   IDataObject,
@@ -9,18 +9,7 @@ import type {
   IStatusStorage,
 } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
-
-const bindErrorHandler = (response: Promise<AxiosResponse>) => {
-  response.catch((e: AxiosError) => {
-    if (e.request !== undefined && e.response === undefined) {
-      // The service cannot be connected.
-      throw new TypeError('Cannot Connect to Feature Extraction Server');
-    } else {
-      throw e;
-    }
-  });
-  return response;
-};
+import bindErrorHandler from './utils/handle-error';
 
 type RunReturn = { features: number[][], featureNames: string[] };
 

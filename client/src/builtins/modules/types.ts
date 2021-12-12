@@ -48,7 +48,11 @@ export type ParamSpecification<T, M extends boolean> = {
 
 export type ModuleParams = Record<string, ParamSpecification<unknown, boolean>>;
 
-export type StateNames = 'dataObjects' | 'labels' | 'queryUuids' | 'features' | 'model' | 'categories' | 'stop';
+export type StateNames = 'dataObjects'
+  | 'labels' | 'queryUuids' | 'features'
+  | 'model' | 'categories' | 'stop'
+
+export type ModuleInputNames = StateNames | 'statuses' | 'unlabeledMark';
 
 /** The data labeling process class. */
 export interface IModule {
@@ -77,7 +81,9 @@ export interface IModule {
   // Note: initialization node do not need run or render
 
   /** The implementation of algorithm module. */
-  run?: (inputs: Record<StateNames, unknown>) => Promise<void | Record<string, unknown>> | boolean;
+  run?: (
+    inputs: Record<ModuleInputNames, unknown>,
+  ) => Promise<void | Record<string, unknown>> | boolean;
 
   /**
    * The implementation of interface module.

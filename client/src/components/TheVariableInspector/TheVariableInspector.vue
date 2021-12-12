@@ -5,13 +5,20 @@
     :query-uuids="queryUuids"
     :categories="categories"
     :stop="stop"
+    :models="models"
     :scope-uuids="scopeUuids"
   />
 </template>
 
 <script lang="ts">
 import { mapGetters, mapState } from 'vuex';
-import type { Category, LabelTaskType } from '@/commons/types';
+import modelServices from '@/builtins/model-services';
+import type {
+  Category,
+  LabelTaskType,
+  ModelService,
+  WorkflowNode,
+} from '@/commons/types';
 import BaseVariableInspector from './BaseVariableInspector.vue';
 
 const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
@@ -31,6 +38,7 @@ export default {
       'categoryTasks',
       'scopeUuids',
     ]),
+    ...mapState('workflow', ['nodes']),
     ...mapGetters('workflow', ['labelTasks']),
     categories(): Category[] {
       const categoryTasks = this.categoryTasks as Record<Category, LabelTaskType[]>;
@@ -39,6 +47,14 @@ export default {
         .filter(([, usedInTasks]) => (
           usedInTasks === null || isOverlapping(new Set(usedInTasks), new Set(labelTasks))
         )).map((d) => d[0]);
+    },
+    models(): ModelService[] {
+      const nodes = this.nodes as WorkflowNode[];
+      if (nodes === undefined) return [];
+      const usedModels = modelServices.filter((d) => (
+        nodes.map((n) => n.value?.model?.objectId).includes(d.objectId)
+      ));
+      return usedModels;
     },
   },
 };
