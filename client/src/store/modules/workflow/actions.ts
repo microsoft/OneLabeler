@@ -2,6 +2,7 @@ import type { ActionContext } from 'vuex';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import * as API from '@/services/data-labeling-api';
 import createStorage from '@/services/storage';
+import dataTypeSetups from '@/builtins/data-types/index';
 import {
   MessageType,
   SourceType,
@@ -20,12 +21,10 @@ import type {
   ModelService,
   IModule,
   IDataObject,
-  IDataObjectStorage,
   StorageService,
   IStorageStore,
   SourceService,
 } from '@/commons/types';
-import { isNodeModule } from '@/commons/utils';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import type { IState } from './state';
@@ -231,7 +230,7 @@ export const executeModule = showProgressBar(async (
     }),
     ...(inputs.includes('queryUuids') && { queryUuids }),
     ...(inputs.includes('features') && { dataObjects }),
-    ...(inputs.includes('model') && { model: method.model }),
+    ...(inputs.includes('model') && { model: method.model, categories, unlabeledMark }),
     ...(inputs.includes('categories') && { categories, unlabeledMark }),
     ...(inputs.includes('stop') && { stop }),
   };
@@ -247,7 +246,10 @@ export const executeModule = showProgressBar(async (
     if (outputs.includes('labels')) {
       if (labels === null) throw Error('Label storage not initialized');
       const { labels: newValue } = response as { labels: ILabel[] };
-      labels.upsertBulk(newValue);
+      await Promise.all(newValue.map(async (newLabel) => {
+        await labels.upsert({ ...await labels.get(newLabel.uuid), ...newLabel });
+      }));
+      // labels.upsertBulk(newValue);
       commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
     }
     if (outputs.includes('queryUuids')) {
@@ -259,9 +261,9 @@ export const executeModule = showProgressBar(async (
     }
     if (outputs.includes('features')) {
       if (dataObjects === null) throw Error('Data object storage not initialized');
-      const features = response?.features as number[][];
-      const featureNames = response?.featureNames
-        ?? [...features[0].keys()].map((d) => String(d)) as string[];
+      const { features } = response as { features: number[][] };
+      let { featureNames } = response as { featureNames?: string[] };
+      featureNames = featureNames ?? [...features[0].keys()].map((d) => String(d)) as string[];
 
       const uuids = await dataObjects.uuids();
       await Promise.all(uuids.map(async (uuid, i) => {
@@ -326,13 +328,12 @@ export const executeDataObjectExtraction = showProgressBar(async (
   const { dataObjects } = rootState;
   if (type === null || dataObjects === null) return;
 
-  // Extract data objects.
-  const updatedDataObjects: IDataObjectStorage = await API.dataObjectExtraction(
-    input,
-    type,
-    dataObjects,
-  );
-  commit(rootTypes.SET_DATA_OBJECTS, updatedDataObjects, { root: true });
+  // Extract data objects from the data source.
+  const dataTypeSetup = dataTypeSetups.find((d) => d.type === type);
+  if (dataTypeSetup === undefined) throw new Error(`Invalid Data Type: ${type}`);
+  await dataTypeSetup.handleImport(input, dataObjects);
+
+  commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
 });
 
 export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
@@ -434,88 +435,6 @@ export const executeDataObjectSelectionManual = showProgressBar(async (
   commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
 });
 
-export const executeDefaultLabeling = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  method: IModule,
-): Promise<void> => {
-  if (method.run !== undefined && method.run !== null) {
-    await executeModule(
-      { commit, rootState } as ActionContext<IState, IRootState>,
-      method,
-    );
-    return;
-  }
-
-  const {
-    labels,
-    dataObjects,
-    queryUuids,
-    categoryTasks,
-    unlabeledMark,
-  } = rootState;
-  if (labels === null) return;
-
-  // TODO: should only access categories visible to the current label task.
-  const classes: Category[] = Object.keys(categoryTasks);
-
-  const queriedDataObjects = (await (dataObjects as IDataObjectStorage)
-    .getBulk(queryUuids)) as IDataObject[];
-  const model = method.model as ModelService;
-
-  let defaultLabels: Partial<ILabel>[];
-  try {
-    defaultLabels = (await API.defaultLabeling(
-      method,
-      queriedDataObjects,
-      model,
-      classes,
-      unlabeledMark,
-    ));
-  } catch (e) {
-    handleAlgorithmServiceError(e, commit);
-    return;
-  }
-
-  await Promise.all(queryUuids.map(async (uuid, i) => {
-    const label: ILabel | undefined = await labels.get(uuid);
-    const labelUpdated: ILabel = { uuid, ...label, ...defaultLabels[i] };
-    await labels.upsert(labelUpdated);
-  }));
-  commit(rootTypes.SET_LABELS, labels.shallowCopy(), { root: true });
-});
-
-export const executeModelTraining = showProgressBar(async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
-  method: IModule,
-): Promise<void> => {
-  const {
-    dataObjects,
-    labels,
-    statuses,
-    unlabeledMark,
-  } = rootState;
-  if (labels === null || statuses === null) return;
-
-  const { nodes } = state;
-  nodes.filter((d) => d.value?.inputs.includes('model') === true)
-    .forEach(async (d) => {
-      const model = d.value?.model;
-      if (model === undefined) return;
-      try {
-        if (method.run === undefined) return;
-        await method.run({
-          dataObjects,
-          labels,
-          statuses,
-          unlabeledMark,
-          model,
-        });
-      } catch (e) {
-        handleAlgorithmServiceError(e, commit);
-      }
-    });
-});
-
 const getOutputNodes = (
   node: WorkflowNode,
   nodes: WorkflowNode[],
@@ -572,7 +491,7 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.DefaultLabeling) {
     const method = node.value as IModule;
-    await executeDefaultLabeling(store, method);
+    await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
@@ -588,7 +507,7 @@ export const executeWorkflow = async (
 
   if (node.type === WorkflowNodeType.ModelTraining) {
     const method = node.value as IModule;
-    await executeModelTraining(store, method);
+    await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 

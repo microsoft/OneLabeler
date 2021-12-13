@@ -11,7 +11,7 @@ from modAL.uncertainty import (classifier_uncertainty,
                                classifier_margin,
                                classifier_entropy)
 
-from .types import Status
+from .types import StatusType
 
 ListLike = Union[List[Any], np.ndarray]
 
@@ -181,7 +181,7 @@ def random_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
 
@@ -193,10 +193,10 @@ def random_sampling(data_objects: ListLike,
 
     del data_objects  # unused argument
 
-    new_indices = np.where(statuses == Status.New)[0]
+    new_indices = np.where(statuses == StatusType.New)[0]
     if len(new_indices) < n_batch:
         query_indices = new_indices
-        skipped_indices = np.where(statuses == Status.Skipped)[0]
+        skipped_indices = np.where(statuses == StatusType.Skipped)[0]
         n_residue = n_batch - len(query_indices)
         query_indices_skipped = skipped_indices if len(skipped_indices) <= n_residue\
             else np.random.choice(skipped_indices, size=n_residue, replace=False)
@@ -224,7 +224,7 @@ def cluster_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
 
@@ -234,7 +234,7 @@ def cluster_sampling(data_objects: ListLike,
         The indices of the sampled data objects in the whole list.
     """
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -252,7 +252,7 @@ def cluster_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:
@@ -290,7 +290,7 @@ def cluster_centroid_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
 
@@ -300,7 +300,7 @@ def cluster_centroid_sampling(data_objects: ListLike,
         The indices of the sampled data objects in the whole list.
     """
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -315,7 +315,7 @@ def cluster_centroid_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:
@@ -353,7 +353,7 @@ def density_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
 
@@ -366,7 +366,7 @@ def density_sampling(data_objects: ListLike,
     def scotts_factor(n_samples: int, n_features: int) -> float:
         return n_samples**(-1.0 / (n_features + 4))
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -380,7 +380,7 @@ def density_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:
@@ -419,7 +419,7 @@ def entropy_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
     estimator: BaseEstimator
@@ -431,7 +431,7 @@ def entropy_sampling(data_objects: ListLike,
         The indices of the sampled data objects in the whole list.
     """
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -442,7 +442,7 @@ def entropy_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:
@@ -481,7 +481,7 @@ def confidence_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
     estimator: BaseEstimator
@@ -493,7 +493,7 @@ def confidence_sampling(data_objects: ListLike,
         The indices of the sampled data objects in the whole list.
     """
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -504,7 +504,7 @@ def confidence_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:
@@ -543,7 +543,7 @@ def margin_sampling(data_objects: ListLike,
     statuses : np.ndarray of any values, dtype = objects, shape = (n_pool,)
         The label statuses of the data objects.
         Each entry takes value in
-        [Status.New, Status.Viewed, Status.Skipped, Status.Labeled].
+        [StatusType.New, StatusType.Viewed, StatusType.Skipped, StatusType.Labeled].
     n_batch : int
         The number of data objects to sample.
     estimator: BaseEstimator
@@ -555,7 +555,7 @@ def margin_sampling(data_objects: ListLike,
         The indices of the sampled data objects in the whole list.
     """
 
-    mask_new = statuses == Status.New
+    mask_new = statuses == StatusType.New
     new_indices = np.where(mask_new)[0]
     X = np.array([data_object['features'] for data_object in data_objects])
 
@@ -566,7 +566,7 @@ def margin_sampling(data_objects: ListLike,
 
     if len(new_indices) <= n_batch:
         query_indices = new_indices
-        mask_skipped = statuses == Status.Skipped
+        mask_skipped = statuses == StatusType.Skipped
         skipped_indices = np.where(mask_skipped)[0]
         n_residue = n_batch - len(query_indices)
         if len(skipped_indices) <= n_residue:

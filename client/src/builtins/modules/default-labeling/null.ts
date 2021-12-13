@@ -1,17 +1,27 @@
-import {
-  LabelTaskType,
-  ModuleType,
-} from '@/commons/types';
+import { LabelTaskType, ModuleType } from '@/commons/types';
+import type { ILabel } from '@/commons/types';
 
 export default {
   type: ModuleType.DefaultLabeling,
   label: 'Null (Dummy)',
-  id: 'Null-35514905',
-  inputs: ['queryUuids'],
+  id: 'Null',
+  inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],
   isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
-  api: 'Null',
   labelTasks: [LabelTaskType.Classification],
+  run: async (
+    inputs: {
+      queryUuids: string[],
+      unlabeledMark: string,
+    },
+  ): Promise<{ labels: ILabel[] }> => {
+    const { queryUuids, unlabeledMark } = inputs;
+    const labels = queryUuids.map((d) => ({
+      uuid: d,
+      category: unlabeledMark,
+    }));
+    return { labels };
+  },
 };

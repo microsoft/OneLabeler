@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 /**
  * api for communicating with img labeling functions at server
  * @namespace
@@ -8,101 +9,13 @@ import { xor4096 } from 'seedrandom';
 import { randomChoice } from '@/plugins/random';
 import { StatusType } from '@/commons/types';
 import type {
-  Category,
-  DataType,
   IDataObject,
   IDataObjectStorage,
   IStatus,
   IStatusStorage,
-  ILabel,
   ModelService,
   IModule,
 } from '@/commons/types';
-import dataTypeSetups from '@/builtins/data-types/index';
-
-/**
- * Workflow Component - Data Object Extraction
- * Extract data objects from the data source.
- * @param input the uploaded file(s).
- * @returns queryIndices - the indices of sampled data objects.
- * @Note The extraction implementation is dependent
- * on the data source type and data object type.
- */
-export const dataObjectExtraction = async (
-  input: File | FileList,
-  dataType: DataType,
-  storage: IDataObjectStorage,
-): Promise<IDataObjectStorage> => {
-  const dataTypeSetup = dataTypeSetups.find((d) => d.type === dataType);
-  if (dataTypeSetup === undefined) {
-    console.warn(`Invalid Data Type: ${dataType}`);
-    return storage;
-  }
-  await dataTypeSetup.handleImport(input, storage);
-  return storage.shallowCopy();
-};
-
-/**
- * Workflow Component - Default Labeling
- * Assign default labels to a batch of data objects (for the user to verify).
- * @param dataObjects The data objects to be assigned default labels.
- * @param model The default labeling model.
- * @returns defaultLabels - the default labels of the selected data objects.
- */
-export const defaultLabeling = async (
-  method: IModule,
-  dataObjects: IDataObject[],
-  model: ModelService,
-  classes: Category[] | null = null,
-  unlabeledMark: Category | null = null,
-): Promise<Partial<ILabel>[]> => {
-  if (method.isServerless && (method.api === 'Null')) {
-    if (unlabeledMark === null) throw new TypeError('unlabeled mark not given');
-
-    const nDataObjects = dataObjects.length;
-    const labelCategories = Array(nDataObjects).fill(null).map(() => unlabeledMark);
-    const labels = labelCategories.map((d) => ({ category: d }));
-    return labels;
-  }
-  if (method.isServerless && (method.api === 'Random')) {
-    if (classes === null) throw new TypeError('classes not given');
-
-    const SEED = '20';
-    const random = xor4096(SEED);
-    const nClasses = classes.length;
-    const labelCategories = dataObjects.map(() => classes[Math.floor(random() * nClasses)]);
-    const labels = labelCategories.map((d) => ({ category: d }));
-    return labels;
-  }
-
-  let labels: Partial<ILabel>[];
-
-  try {
-    if (method.api === undefined) throw new Error('Method API undefined.');
-    const data = (await axios.post(
-      method.api,
-      JSON.stringify({
-        dataObjects,
-        model,
-        classes,
-        unlabeledMark,
-      }),
-    )).data as { labels: Partial<ILabel>[] };
-    labels = data.labels;
-  } catch (e) {
-    if (
-      (e as AxiosError).request !== undefined
-      && (e as AxiosError).response === undefined
-    ) {
-      // The service cannot be connected.
-      throw new TypeError('Cannot Connect to Default Labeling Server');
-    } else {
-      throw e;
-    }
-  }
-
-  return labels;
-};
 
 /**
  * Workflow Component - Data Object Selection (Algorithmic)
@@ -168,8 +81,7 @@ export const dataObjectSelection = async (
   }
 
   // Note: remove the raw content to save storage.
-  const dataObjects: IDataObject[] = (await (dataObjectStorage as IDataObjectStorage)
-    .getAll())
+  const dataObjects: IDataObject[] = (await dataObjectStorage.getAll())
     .map((d) => ({ ...d, content: undefined }));
 
   let queryIndices: number[];
@@ -178,7 +90,7 @@ export const dataObjectSelection = async (
       await axios.post(
         method.api as string,
         JSON.stringify({
-          statuses: statuses.map((d) => d.value),
+          statuses,
           nBatch,
           dataObjects,
           model,

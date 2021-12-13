@@ -1,13 +1,8 @@
 import json
+from typing import List, Union
 
-from bson.objectid import ObjectId
 import numpy as np
-from sklearn.base import BaseEstimator
 from sklearn.exceptions import NotFittedError
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.semi_supervised import LabelSpreading
 import tornado.web
 
 from .utils.data_labeling.sampling import (
@@ -19,32 +14,13 @@ from .utils.data_labeling.sampling import (
     confidence_sampling,
     margin_sampling,
 )
-from .utils.data_labeling.types import BuiltInSamplingStrategyType
-from .utils.data_persistence import is_saved, load, save
-
-
-def load_estimator(model) -> BaseEstimator:
-    estimator_type = model['type']
-    estimator_id = model['objectId']
-
-    assert estimator_type in [
-        'LogisticRegression',
-        'LabelSpreading',
-    ]
-
-    if is_saved(inserted_id=ObjectId(estimator_id)):
-        estimator = load(inserted_id=ObjectId(estimator_id))
-    else:
-        if estimator_type == 'LogisticRegression':
-            estimator = make_pipeline(
-                StandardScaler(),
-                LogisticRegression(C=1, penalty='l2',
-                                   tol=0.01, solver='saga'),
-            )
-        if estimator_type == 'LabelSpreading':
-            estimator = LabelSpreading(gamma=0.25, max_iter=20)
-        save(data=estimator, inserted_id=ObjectId(estimator_id))
-    return estimator
+from .utils.data_labeling.types import (
+    BuiltInSamplingStrategyType,
+    DataObject,
+    Model,
+    Status,
+)
+from .utils.load_estimator import load_estimator
 
 
 class DataObjectSelectionHandler(tornado.web.RequestHandler):
@@ -66,14 +42,14 @@ class DataObjectSelectionHandler(tornado.web.RequestHandler):
             return
 
         # process input: (labels, features?, model?, dataObjects?)
-        statuses = json_data['statuses']
-        data_objects = json_data['dataObjects']
-        n_batch = json_data['nBatch']
-        model = json_data['model']\
+        data_objects: List[DataObject] = json_data['dataObjects']
+        statuses: List[Status] = json_data['statuses']
+        n_batch: int = json_data['nBatch']
+        model: Union[Model, None] = json_data['model']\
             if 'model' in json_data else None
 
         # data structure transformation
-        statuses = np.array(statuses, dtype=str)
+        statuses = np.array([d['value'] for d in statuses], dtype=str)
 
         assert len(data_objects) == len(statuses),\
             'len(data_objects) != len(statuses)'
@@ -90,6 +66,8 @@ class DataObjectSelectionHandler(tornado.web.RequestHandler):
         elif model is None:
             query_indices = random_sampling(data_objects, statuses, n_batch)
         else:
+            assert model['type'] in ['LogisticRegression', 'LabelSpreading'],\
+                'provided model cannot be used for sampling'
             sampler = load_estimator(model)
             try:
                 if key == BuiltInSamplingStrategyType.Entropy:
@@ -102,7 +80,8 @@ class DataObjectSelectionHandler(tornado.web.RequestHandler):
                     query_indices = margin_sampling(
                         data_objects, statuses, n_batch, sampler)
             except NotFittedError:
-                query_indices = random_sampling(data_objects, statuses, n_batch)
+                query_indices = random_sampling(
+                    data_objects, statuses, n_batch)
 
         query_indices = query_indices.tolist()
 

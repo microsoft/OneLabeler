@@ -17,6 +17,11 @@ from .utils.data_labeling.feature_extraction import (
     edge_direction_descriptors,
     texture_descriptors
 )
+from .utils.data_labeling.types import (
+    DataObject,
+    Label,
+    Status,
+)
 
 ListLike = Union[List[Any], np.ndarray]
 
@@ -99,17 +104,17 @@ class FeatureExtractionHandler(tornado.web.RequestHandler):
             return
 
         # process input: (dataObjects, labels?, statuses?)
-        data_objects = json_data['dataObjects']
-        labels = json_data['labels'] if 'labels' in json_data else None
-        statuses = json_data['statuses'] if 'statuses' in json_data else None
+        data_objects: List[DataObject] = json_data['dataObjects']
+        labels: List[Label] = json_data['labels'] if 'labels' in json_data else None
+        statuses: List[Status] = json_data['statuses'] if 'statuses' in json_data else None
 
         if key == 'image/SVD':
             features, feature_names = extract_features_img_SVD(data_objects)
         if key == 'image/BoW':
             features, feature_names = extract_features_img_BoW(data_objects)
         if key == 'image/LDA':
-            labels = np.array(labels, dtype=str)
-            statuses = np.array(statuses, dtype=str)
+            labels = np.array([d['category'] for d in labels], dtype=str)
+            statuses = np.array([d['value'] for d in statuses], dtype=str)
             features, feature_names = extract_features_img_LDA(
                 data_objects, labels, statuses)
         if key == 'text/NMF':

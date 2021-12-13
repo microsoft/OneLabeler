@@ -82,7 +82,7 @@ export interface IModule {
 
   /** The implementation of algorithm module. */
   run?: (
-    inputs: Record<ModuleInputNames, unknown>,
+    inputs: Partial<Record<ModuleInputNames, unknown>>,
   ) => Promise<void | Record<string, unknown>> | boolean;
 
   /**

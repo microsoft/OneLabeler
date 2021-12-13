@@ -17,7 +17,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.random_projection import GaussianRandomProjection
 # from tensorflow.keras.applications.vgg16 import preprocess_input, VGG16
 
-from .types import Status
+from .types import StatusType
 
 
 def raw_flatten(imgs: np.ndarray) -> Tuple[np.ndarray, List[str]]:
@@ -156,13 +156,13 @@ def resize_LDA(imgs: np.ndarray,
 
     n_components = 5
 
-    mask_labeled = np.array([status == Status.Labeled
+    mask_labeled = np.array([status == StatusType.Labeled
                             for status in statuses])
     X_labeled = X_flatten[mask_labeled]
     labels_labeled = labels[mask_labeled]
 
-    classes = np.array([d for d in np.unique(labels_labeled)])
-    labels_labeled = LabelEncoder().fit(classes).transform(labels_labeled)
+    categories = np.array([d for d in np.unique(labels_labeled)])
+    labels_labeled = LabelEncoder().fit(categories).transform(labels_labeled)
 
     if len(labels_labeled) <= 1:
         n_components_actual = n_components
@@ -170,9 +170,9 @@ def resize_LDA(imgs: np.ndarray,
         X = reducer.fit_transform(X_flatten)
     else:
         n_samples, n_features = X_flatten.shape
-        n_classes = len(np.unique(labels_labeled))
+        n_categories = len(np.unique(labels_labeled))
         n_components_actual = min(n_samples, n_features,
-                                n_classes - 1, n_components)
+                                n_categories - 1, n_components)
         reducer = LinearDiscriminantAnalysis(n_components=n_components_actual)
 
         reducer.fit(X_labeled, labels_labeled)

@@ -9,17 +9,17 @@ export const getImgSize = (
   img.src = content;
 });
 
-export const isNodeModule = (node: { type: WorkflowNodeType }): boolean => (
-  node.type !== WorkflowNodeType.Initialization
-    && node.type !== WorkflowNodeType.Decision
-    && node.type !== WorkflowNodeType.Exit
+export const isNodeControl = (node: { type: WorkflowNodeType }): boolean => (
+  node.type === WorkflowNodeType.Initialization
+    || node.type === WorkflowNodeType.Decision
+    || node.type === WorkflowNodeType.Exit
 );
 
 export const isNodeInteractive = (node: {
   type: WorkflowNodeType,
   value: { isAlgorithmic: boolean } | null,
 }): boolean => {
-  if (!isNodeModule(node)) return false;
+  if (isNodeControl(node)) return false;
   if (node.value === null) return false;
   return !node.value.isAlgorithmic;
 };
@@ -28,7 +28,7 @@ export const isNodeServerless = (node: {
   type: WorkflowNodeType,
   value: { isServerless: boolean } | null,
 }): boolean => {
-  if (!isNodeModule(node)) return true;
+  if (isNodeControl(node)) return true;
   if (node.value === null) return true;
   return node.value.isServerless;
 };

@@ -69,32 +69,22 @@ export default parseWorkflow({
       },
     },
     {
-      id: 'decision tree prelabel - 1',
-      label: 'decision tree prelabel',
-      type: WorkflowNodeType.DefaultLabeling,
-      value: cloneDeep({ ...DLModelPrediction, model }),
+      label: 'projection',
+      type: WorkflowNodeType.DataObjectSelection,
+      value: DOSProjection,
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
       },
     },
     {
-      label: 'projection',
-      type: WorkflowNodeType.DataObjectSelection,
-      value: DOSProjection,
-      layout: {
-        x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
-        y: MARGIN_TOP,
-      },
-    },
-    {
-      id: 'decision tree prelabel - 2',
+      id: 'decision tree prelabel',
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
       value: cloneDeep({ ...DLModelPrediction, model }),
       layout: {
         x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
-        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+        y: MARGIN_TOP,
       },
     },
     {
@@ -107,7 +97,7 @@ export default parseWorkflow({
         },
       }),
       layout: {
-        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
       },
     },
@@ -116,13 +106,22 @@ export default parseWorkflow({
       type: WorkflowNodeType.StoppageAnalysis,
       value: SAAllChecked,
       layout: {
-        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
       },
     },
     {
       label: 'stop?',
       type: WorkflowNodeType.Decision,
+      layout: {
+        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
+        y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
+      },
+    },
+    {
+      label: 'model training',
+      type: WorkflowNodeType.ModelTraining,
+      value: cloneDeep({ ...MTRetrain, model }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
@@ -132,15 +131,6 @@ export default parseWorkflow({
       label: 'exit',
       type: WorkflowNodeType.Exit,
       layout: {
-        x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
-        y: MARGIN_TOP + 2 * (NODE_HEIGHT + NODE_PADDING_Y),
-      },
-    },
-    {
-      label: 'model training',
-      type: WorkflowNodeType.ModelTraining,
-      value: cloneDeep({ ...MTRetrain, model }),
-      layout: {
         x: MARGIN_LEFT,
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
       },
@@ -149,14 +139,25 @@ export default parseWorkflow({
   edges: [
     { source: 'initialization', target: 'SVD features' },
     { source: 'SVD features', target: 'clustering' },
-    { source: 'clustering', target: 'decision tree prelabel - 1' },
-    { source: 'decision tree prelabel - 1', target: 'projection' },
-    { source: 'projection', target: 'decision tree prelabel - 2' },
-    { source: 'decision tree prelabel - 2', target: 'grid matrix' },
+    { source: 'clustering', target: 'projection' },
+    { source: 'projection', target: 'decision tree prelabel' },
+    { source: 'decision tree prelabel', target: 'grid matrix' },
     { source: 'grid matrix', target: 'check all labeled' },
     { source: 'check all labeled', target: 'stop?' },
-    { source: 'stop?', target: 'exit', condition: true },
-    { source: 'stop?', target: 'model training', condition: false },
+    {
+      source: 'stop?',
+      target: 'exit',
+      condition: true,
+      layout: {
+        source: { direction: PortDirection.Bottom },
+        target: { direction: PortDirection.Bottom },
+      },
+    },
+    {
+      source: 'stop?',
+      target: 'model training',
+      condition: false,
+    },
     {
       source: 'model training',
       target: 'clustering',
