@@ -32,6 +32,8 @@ class CompileHandler(tornado.web.RequestHandler):
         dotenv.set_key(env_file, 'VUE_APP_DEFAULT_WORKFLOW', json.dumps(workflow))
         dotenv.set_key(env_file, 'VUE_APP_USER_TYPE', 'ANNOTATOR')
 
+        failed = False
+
         if key == 'exe':
             try:
                 subprocess.check_call('npm run electron:build',
@@ -40,7 +42,7 @@ class CompileHandler(tornado.web.RequestHandler):
                 with open(path, 'rb') as f:
                     self.write(f.read())
             except:
-                print('compile failed')
+                failed = True
             
         
         if key == 'zip/bundle':
@@ -52,7 +54,7 @@ class CompileHandler(tornado.web.RequestHandler):
                 with open('bundle.zip', 'rb') as f:
                     self.write(f.read())
             except:
-                print('compile failed')
+                failed = True
 
         if key == 'zip/source':
             filename = 'source'
@@ -64,8 +66,11 @@ class CompileHandler(tornado.web.RequestHandler):
                 with open(path, 'rb') as f:
                     self.write(f.read())
             except:
-                print('compile failed')
+                failed = True
 
         dotenv.set_key(env_file, 'VUE_APP_TITLE', old_title)
         dotenv.set_key(env_file, 'VUE_APP_DEFAULT_WORKFLOW', old_default_workflow)
         dotenv.set_key(env_file, 'VUE_APP_USER_TYPE', old_user_type)
+
+        if failed:
+            self.send_error(500)

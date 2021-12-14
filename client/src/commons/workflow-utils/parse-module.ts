@@ -38,7 +38,9 @@ export const parseModule = (
   const type: ModuleType = moduleConfig.type ?? nodeTypeToModuleType(node.type);
 
   // The builtin moduleConfig with the same api as the current moduleConfig.
-  const builtinMatch = processes.find((d) => d.id === moduleConfig.id);
+  const builtinMatch = processes.find((d) => (
+    (d.id === moduleConfig.id) && (d.type === moduleConfig.type)
+  ));
 
   // Create moduleConfig.id
   const id: string = moduleConfig.id ?? builtinMatch?.id ?? uuidv4();

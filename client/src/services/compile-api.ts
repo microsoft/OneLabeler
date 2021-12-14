@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { AxiosError } from 'axios';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import type { WorkflowGraph } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
@@ -30,7 +31,15 @@ const compile = showProgressBar(async (
     // instead of the default as a string
     // (alternatively parse as arraybuffer also works).
     { responseType: 'blob' },
-  );
+  ).catch((e: AxiosError) => {
+    if (e.request !== undefined && e.response === undefined) {
+      // The service cannot be connected.
+      throw new TypeError('Cannot Connect to Compilation Server');
+    } else {
+      throw new TypeError('Compilation Failed');
+    }
+  });
+
   const blob = new Blob([response.data]);
   const objectUrl = window.URL.createObjectURL(blob);
   download(objectUrl, filename);

@@ -1,6 +1,6 @@
 <template>
   <div>
-    Replace this div with your implementation
+    Replace this sentence with your custom implementation
   </div>
 </template>
 

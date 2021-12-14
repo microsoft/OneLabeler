@@ -236,7 +236,7 @@ export default defineComponent({
         await compileBundleZip(this.workflow);
       } catch (e) {
         this.setMessage({
-          content: 'Compilation failed.',
+          content: (e as Error).message,
           type: MessageType.Error,
         });
       }
@@ -246,7 +246,7 @@ export default defineComponent({
         await compileInstaller(this.workflow);
       } catch (e) {
         this.setMessage({
-          content: 'Compilation failed.',
+          content: (e as Error).message,
           type: MessageType.Error,
         });
       }
@@ -256,7 +256,7 @@ export default defineComponent({
         await compileSourceZip(this.workflow);
       } catch (e) {
         this.setMessage({
-          content: 'Compilation failed.',
+          content: (e as Error).message,
           type: MessageType.Error,
         });
       }
