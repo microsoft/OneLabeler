@@ -1,5 +1,7 @@
 export default (plop) => {
-  plop.setGenerator('data type', {
+  plop.load('plop-pack-remove');
+  plop.setWelcomeMessage('what customization do you want?');
+  plop.setGenerator('new data type', {
     description: 'customize data type',
     prompts: [{
       type: 'input',
@@ -51,8 +53,8 @@ export default (plop) => {
       },
     ],
   });
-  plop.setGenerator('label task type', {
-    description: 'label task type',
+  plop.setGenerator('new label task type', {
+    description: 'customize label task type',
     prompts: [{
       type: 'input',
       name: 'name',
@@ -82,7 +84,7 @@ export default (plop) => {
       },
     ],
   });
-  plop.setGenerator('workflow template', {
+  plop.setGenerator('new workflow template', {
     description: 'customize workflow template',
     prompts: [{
       type: 'input',
@@ -109,6 +111,48 @@ export default (plop) => {
         path: 'src/builtins/workflow-templates/index.ts',
         pattern: /];/gi,
         template: '  {{camelCase name}},\n];',
+      },
+    ],
+  });
+  plop.setGenerator('remove data type', {
+    description: 'delete existing data type',
+    prompts: [{
+      type: 'input',
+      name: 'name',
+      message: 'data type name',
+    }],
+    actions: [
+      {
+        type: 'remove',
+        path: 'src/builtins/data-types/{{kebabCase name}}',
+      },
+    ],
+  });
+  plop.setGenerator('remove label task type', {
+    description: 'delete existing label task type',
+    prompts: [{
+      type: 'input',
+      name: 'name',
+      message: 'label task type name',
+    }],
+    actions: [
+      {
+        type: 'remove',
+        path: 'src/builtins/label-task-types/{{kebabCase name}}',
+      },
+    ],
+  });
+  plop.setGenerator('remove workflow template', {
+    description: 'delete existing workflow template',
+    prompts: [{
+      type: 'input',
+      name: 'name',
+      message: 'template name',
+    }],
+    actions: [
+      {
+        type: 'remove',
+        path: 'src/builtins/workflow-templates/templates/{{name}}.ts',
       },
     ],
   });
