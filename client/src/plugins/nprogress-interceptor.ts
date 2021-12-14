@@ -7,8 +7,14 @@ export default function showProgressBar<T, K extends unknown[]>(
 ) {
   return async (...args: K): Promise<T> => {
     NProgress.start();
-    const response = await func(...args);
-    NProgress.done();
+    let response;
+    try {
+      response = await func(...args);
+      NProgress.done();
+    } catch (e) {
+      NProgress.done();
+      throw e;
+    }
     return response;
   };
 }

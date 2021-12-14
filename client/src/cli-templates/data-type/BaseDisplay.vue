@@ -1,5 +1,7 @@
 <template>
-  <iframe :src="dataObject.content" />
+  <div>
+    Replace this div with your implementation
+  </div>
 </template>
 
 <script lang="ts">

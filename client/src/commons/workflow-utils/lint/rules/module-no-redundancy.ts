@@ -65,7 +65,7 @@ const checkModuleNoRedundancy = (
             ...outputs.map((output): string[] => {
               const nodeTypes = filterNodeTypesByInputs([output]);
               return nodeTypes.map((typeName) => (
-                `consider whether to add ${typeName} before this node is visited to consume ${output}.`
+                `consider whether to add ${typeName} after this node is visited to consume ${output}.`
               ));
             }).flat(),
           ],

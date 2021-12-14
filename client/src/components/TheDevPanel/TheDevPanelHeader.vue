@@ -42,7 +42,7 @@
       icon
       tile
       small
-      @click="compileInstaller(workflow)"
+      @click="tryCompileInstaller"
     >
       <v-icon
         aria-hidden="true"
@@ -59,7 +59,7 @@
       icon
       tile
       small
-      @click="compileBundleZip(workflow)"
+      @click="tryCompileBundleZip"
     >
       <v-icon
         aria-hidden="true"
@@ -76,7 +76,7 @@
       icon
       tile
       small
-      @click="compileSourceZip(workflow)"
+      @click="tryCompileSourceZip"
     >
       <v-icon
         aria-hidden="true"
@@ -182,6 +182,7 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
+import { MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
 import {
@@ -224,15 +225,42 @@ export default defineComponent({
     },
   },
   methods: {
-    compileBundleZip,
-    compileInstaller,
-    compileSourceZip,
     saveJsonFile,
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
       'resetGraph',
     ]),
+    async tryCompileBundleZip(): Promise<void> {
+      try {
+        await compileBundleZip(this.workflow);
+      } catch (e) {
+        this.setMessage({
+          content: 'Compilation failed.',
+          type: MessageType.Error,
+        });
+      }
+    },
+    async tryCompileInstaller(): Promise<void> {
+      try {
+        await compileInstaller(this.workflow);
+      } catch (e) {
+        this.setMessage({
+          content: 'Compilation failed.',
+          type: MessageType.Error,
+        });
+      }
+    },
+    async tryCompileSourceZip(): Promise<void> {
+      try {
+        await compileSourceZip(this.workflow);
+      } catch (e) {
+        this.setMessage({
+          content: 'Compilation failed.',
+          type: MessageType.Error,
+        });
+      }
+    },
   },
 });
 </script>
