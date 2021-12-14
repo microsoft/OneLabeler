@@ -1,7 +1,7 @@
 import Retrain from './retrain';
-import Static from './static';
+// import Static from './static';
 
 export default [
   Retrain,
-  Static,
+  // Static,
 ];

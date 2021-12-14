@@ -1,5 +1,5 @@
 import ModelPrediction from './model-prediction';
-import Null from './null';
+// import Null from './null';
 import PointnetSegmentation from './pointnet-segmentation';
 import PosTagging from './pos-tagging';
 // import CNN from './cnn';
@@ -10,7 +10,7 @@ import Random from './random';
 
 export default [
   ModelPrediction,
-  Null,
+  // Null,
   PointnetSegmentation,
   PosTagging,
   MobileNet,

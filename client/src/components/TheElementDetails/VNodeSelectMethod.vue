@@ -37,11 +37,11 @@
             serverless
           </p>
           <p
-            v-if="option.value.isBuiltIn"
+            v-if="!option.value.isBuiltIn"
             class="text-right ma-1 grey--text"
             style="width: 7em"
           >
-            built-in
+            custom
           </p>
         </v-list-item>
         <v-list-item

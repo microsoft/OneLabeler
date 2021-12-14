@@ -7,6 +7,9 @@ import type {
 
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
+  Decision = 'Decision',
+  Exit = 'Exit',
+  Base = 'Base',
   LabelIdeation = 'LabelIdeation',
   FeatureExtraction = 'FeatureExtraction',
   DataObjectSelection = 'DataObjectSelection',
@@ -15,9 +18,6 @@ export enum WorkflowNodeType {
   StoppageAnalysis = 'StoppageAnalysis',
   ModelTraining = 'ModelTraining',
   QualityAssurance = 'QualityAssurance',
-  Base = 'Base',
-  Decision = 'Decision',
-  Exit = 'Exit',
 }
 
 export interface WorkflowNode {

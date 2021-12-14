@@ -476,7 +476,13 @@ export const executeWorkflow = async (
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
-  if (node.type === WorkflowNodeType.FeatureExtraction) {
+  if (
+    node.type === WorkflowNodeType.FeatureExtraction
+    || node.type === WorkflowNodeType.DefaultLabeling
+    || node.type === WorkflowNodeType.StoppageAnalysis
+    || node.type === WorkflowNodeType.ModelTraining
+    || node.type === WorkflowNodeType.Base
+  ) {
     const method = node.value as IModule;
     await executeModule(store, method);
     [outputNode] = getOutputNodes(node, nodes, edges);
@@ -490,36 +496,12 @@ export const executeWorkflow = async (
     [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
-  if (node.type === WorkflowNodeType.DefaultLabeling) {
-    const method = node.value as IModule;
-    await executeModule(store, method);
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
   if (node.type === WorkflowNodeType.InteractiveLabeling) {
     return;
   }
 
-  if (node.type === WorkflowNodeType.StoppageAnalysis) {
-    const method = node.value as IModule;
-    await executeModule(store, method);
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
-  if (node.type === WorkflowNodeType.ModelTraining) {
-    const method = node.value as IModule;
-    await executeModule(store, method);
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
   if (node.type === WorkflowNodeType.QualityAssurance) {
     // TODO
-  }
-
-  if (node.type === WorkflowNodeType.Base) {
-    const method = node.value as IModule;
-    await executeModule(store, method);
-    [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   commit(types.SET_CURRENT_NODE, outputNode);
