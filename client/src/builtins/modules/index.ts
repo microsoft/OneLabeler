@@ -1,97 +1,31 @@
 import type { IModule } from '@/commons/types';
+
 // custom modules
 import CustomExport from '@/custom/table-qa/modules/custom/export';
 import CustomLoad from '@/custom/table-qa/modules/custom/load';
-// initialization module
+
 import Initialization from './initialization/base';
-// data object selection modules
-import DOSCluster from './data-object-selection/cluster';
-import DOSClusterCentroids from './data-object-selection/cluster-centroids';
-import DOSDenseAreas from './data-object-selection/dense-areas';
-import DOSDummy from './data-object-selection/dummy';
-import DOSEntropy from './data-object-selection/entropy';
-import DOSEntropyDiversity from './data-object-selection/entropy-diversity';
-import DOSEntropyDiversityDensity from './data-object-selection/entropy-diversity-density';
-import DOSImageOverview from './data-object-selection/image-overview';
-import DOSLeastConfident from './data-object-selection/least-confident';
-import DOSProjection from './data-object-selection/projection';
-import DOSRandom from './data-object-selection/random';
-import DOSSmallestMargin from './data-object-selection/smallest-margin';
-// default labeling modules
-import DLModelPrediction from './default-labeling/model-prediction';
-import DLNull from './default-labeling/null';
-import DLPointnetSegmentation from './default-labeling/pointnet-segmentation';
-import DLPosTagging from './default-labeling/pos-tagging';
-// import DLCNN from './default-labeling/cnn';
-import DLMobileNet from './default-labeling/mobilenet';
-// import DLDeepLab from './default-labeling/deeplab';
-import DLCocoSsd from './default-labeling/coco-ssd';
-import DLRandom from './default-labeling/random';
-// feature extraction modules
-import FEImageBow from './feature-extraction/image-bow';
-import FEImageLda from './feature-extraction/image-lda';
-import FEImageSvd from './feature-extraction/image-svd';
-import FERandom3d from './feature-extraction/random3d';
-import FETextNmf from './feature-extraction/text-nmf';
-import FEMobilenet from './feature-extraction/mobilenet';
-// interactive labeling modules
-import ILGridMatrix from './interactive-labeling/grid-matrix';
-import ILSingleObjectDisplay from './interactive-labeling/single-object-display';
-// model training modules
-import MTRetrain from './model-training/retrain';
-import MTStatic from './model-training/static';
-// stoppage analysis modules
-import SAAllChecked from './stoppage-analysis/all-checked';
+import dataObjectSelection from './data-object-selection';
+import defaultLabeling from './default-labeling';
+import featureExtraction from './feature-extraction';
+import interactiveLabeling from './interactive-labeling';
+import modelTraining from './model-training';
+import stoppageAnalysis from './stoppage-analysis';
 
 /**
  * TODO: [refactor] may store the valid processes at the data type declarations
  * so that given a customized data type, the existing processes can still be reused.
  */
 
-const processes = [
-  // the initialization module:
+export default [
   Initialization,
-  // data object selection modules:
-  DOSCluster,
-  DOSClusterCentroids,
-  DOSDenseAreas,
-  DOSDummy,
-  DOSEntropy,
-  DOSEntropyDiversity,
-  DOSEntropyDiversityDensity,
-  DOSImageOverview,
-  DOSLeastConfident,
-  DOSProjection,
-  DOSRandom,
-  DOSSmallestMargin,
-  // default labeling modules:
-  DLModelPrediction,
-  DLPosTagging,
-  DLPointnetSegmentation,
-  // DLCNN,
-  DLMobileNet,
-  // DLDeepLab,
-  DLCocoSsd,
-  DLNull,
-  DLRandom,
-  // feature extraction modules:
-  FEImageSvd,
-  FEImageBow,
-  FEImageLda,
-  FERandom3d,
-  FETextNmf,
-  FEMobilenet,
-  // interactive labeling modules:
-  ILGridMatrix,
-  ILSingleObjectDisplay,
-  // model training modules:
-  MTRetrain,
-  MTStatic,
-  // stoppage analysis modules:
-  SAAllChecked,
+  ...dataObjectSelection,
+  ...defaultLabeling,
+  ...featureExtraction,
+  ...interactiveLabeling,
+  ...modelTraining,
+  ...stoppageAnalysis,
   // custom modules:
   CustomExport,
   CustomLoad,
 ] as IModule[];
-
-export default processes;
