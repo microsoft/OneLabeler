@@ -6,7 +6,6 @@ export default {
   id: 'DatasetOrder',
   inputs: ['labels'],
   outputs: ['queryUuids'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   api: 'DatasetOrder',

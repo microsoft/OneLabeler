@@ -147,7 +147,6 @@ export default defineComponent({
       let method = {
         label: 'custom',
         id: `custom-${uuidv4()}`,
-        isAlgorithmic: true,
         isBuiltIn: false,
         isServerless: false,
         api: '',

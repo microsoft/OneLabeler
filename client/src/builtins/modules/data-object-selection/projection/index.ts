@@ -7,7 +7,6 @@ export default {
   id: 'Projection',
   inputs: ['features', 'labels', 'queryUuids'],
   outputs: ['queryUuids'],
-  isAlgorithmic: false,
   isBuiltIn: true,
   isServerless: true,
   render: () => TheProjection,

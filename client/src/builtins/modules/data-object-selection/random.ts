@@ -6,7 +6,6 @@ export default {
   id: 'Random-73417867',
   inputs: ['labels'],
   outputs: ['queryUuids'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   api: 'Random',

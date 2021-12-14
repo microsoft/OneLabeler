@@ -11,7 +11,6 @@ export default {
   id: 'PointNet-segmentation-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/defaultLabels/PointNet-segmentation`,

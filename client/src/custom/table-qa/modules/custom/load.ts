@@ -26,10 +26,9 @@ type Table = Record<string, string | number>[];
 export default {
   type: ModuleType.Base,
   label: 'Load Data Objects',
-  id: 'Custom-19914055',
+  id: 'LoadDataObjects',
   inputs: [],
   outputs: ['dataObjects'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   run: async (): Promise<{ dataObjects: ITable[] }> => {

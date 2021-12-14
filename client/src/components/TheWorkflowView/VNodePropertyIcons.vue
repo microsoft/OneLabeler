@@ -36,10 +36,7 @@ import IconUser from '@/plugins/icons/IconUser.vue';
 
 type TrimmedNode = {
   type: WorkflowNodeType;
-  value: {
-    isAlgorithmic: boolean;
-    isServerless: boolean;
-  } | null;
+  value: { isServerless: boolean } | null;
 } | null;
 
 const getPropertyIcons = (node: TrimmedNode): VueConstructor[] => {

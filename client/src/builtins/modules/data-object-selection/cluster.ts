@@ -7,7 +7,6 @@ export default {
   id: 'Cluster-13466955',
   inputs: ['features', 'labels'],
   outputs: ['queryUuids'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   // 'http://localhost:8005/selection/Cluster',

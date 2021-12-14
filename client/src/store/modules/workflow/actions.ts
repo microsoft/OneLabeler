@@ -483,7 +483,8 @@ export const executeWorkflow = async (
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
-    if ((node.value as IModule).isAlgorithmic) {
+    const method = node.value as IModule;
+    if (method.render === undefined) {
       await executeDataObjectSelectionAlgorithmic(store, node.value as IModule);
     }
     [outputNode] = getOutputNodes(node, nodes, edges);

@@ -7,7 +7,6 @@ export default {
   id: 'GridMatrix-89670576',
   inputs: ['dataObjects', 'labels', 'queryUuids'],
   outputs: ['labels'],
-  isAlgorithmic: false,
   isBuiltIn: true,
   isServerless: true,
   params: {

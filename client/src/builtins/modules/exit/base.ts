@@ -7,7 +7,6 @@ export default {
   id: 'BaseExit',
   inputs: [],
   outputs: [],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
 } as IModule;

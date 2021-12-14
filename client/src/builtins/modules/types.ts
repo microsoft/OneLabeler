@@ -63,7 +63,6 @@ export interface IModule {
   type: ModuleType;
 
   // The properties of the module.
-  isAlgorithmic: boolean;
   isBuiltIn: boolean;
   isServerless: boolean;
   // The restriction on data types that the process can handle.

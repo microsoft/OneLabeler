@@ -8,7 +8,6 @@ export default {
   id: 'Random-87333124',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['features'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   run: async (

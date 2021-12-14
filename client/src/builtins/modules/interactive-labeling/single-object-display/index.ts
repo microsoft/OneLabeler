@@ -7,7 +7,6 @@ export default {
   id: 'SingleObjectDisplay-48263667',
   inputs: ['dataObjects', 'labels', 'queryUuids'],
   outputs: ['labels'],
-  isAlgorithmic: false,
   isBuiltIn: true,
   isServerless: true,
   render: () => TheSingleObjectDisplay,

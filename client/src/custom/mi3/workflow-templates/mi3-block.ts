@@ -60,7 +60,6 @@ export default parseWorkflow({
         label: 'Model Prediction',
         id: 'ModelPrediction-29967546',
         inputs: ['features', 'model'],
-        isAlgorithmic: true,
         isBuiltIn: true,
         isServerless: false,
         model: {

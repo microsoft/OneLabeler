@@ -16,7 +16,7 @@ type JsonModuleParams = Record<string, MethodParam | MethodParam['value']>;
 
 export type IModuleTrimmed = Omit<
   Partial<IModule>
-  & Omit<IModule, 'id' | 'type' | 'api' | 'isAlgorithmic' | 'isBuiltIn' | 'isServerless'>,
+  & Omit<IModule, 'id' | 'type' | 'api' | 'isBuiltIn' | 'isServerless'>,
   'run'
 >;
 
@@ -73,7 +73,6 @@ export const parseModule = (
 
   const urlRegex = /^http:\/\/\w+(\.\w+)*(:[0-9]+)?\/?(\/[.\w]*)*$/;
 
-  const isAlgorithmic = moduleConfig.isAlgorithmic ?? true;
   const isBuiltIn = false;
   const isServerless = moduleConfig.api !== undefined && moduleConfig.api.match(urlRegex) !== null;
 
@@ -103,7 +102,6 @@ export const parseModule = (
     ...moduleConfig,
     type,
     id,
-    isAlgorithmic,
     isBuiltIn,
     isServerless,
     params,

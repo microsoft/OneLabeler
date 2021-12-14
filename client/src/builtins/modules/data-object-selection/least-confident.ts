@@ -7,7 +7,6 @@ export default {
   id: 'LeastConfident-12520162',
   inputs: ['features', 'labels', 'model'],
   outputs: ['queryUuids'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/LeastConfident`,

@@ -32,7 +32,6 @@ export default {
   id: 'DeepLab-segmentation-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   dataTypes: [DataType.Image],

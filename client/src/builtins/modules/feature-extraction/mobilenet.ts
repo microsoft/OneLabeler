@@ -20,7 +20,6 @@ export default {
   id: 'MobileNet-embedding-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['features'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   dataTypes: [DataType.Image],

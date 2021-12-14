@@ -29,7 +29,6 @@
           "inputs": [
             "labels"
           ],
-          "isAlgorithmic": true,
           "isBuiltIn": true,
           "isServerless": true,
           "api": "Random",
@@ -91,7 +90,6 @@
           "labelTask",
           "labelSpace"
         ],
-        "isAlgorithmic": true,
         "isBuiltIn": true,
         "isServerless": true,
         "api": "DirectLabeling"
@@ -116,7 +114,6 @@
             "dataObjects",
             "samples"
           ],
-          "isAlgorithmic": false,
           "isBuiltIn": true,
           "isServerless": true,
           "api": "GridMatrix",
@@ -190,7 +187,6 @@
         "inputs": [
           "labels"
         ],
-        "isAlgorithmic": true,
         "isBuiltIn": true,
         "isServerless": true,
         "api": "AllChecked"

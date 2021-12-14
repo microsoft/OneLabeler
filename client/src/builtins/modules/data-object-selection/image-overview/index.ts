@@ -7,7 +7,6 @@ export default {
   id: 'ImageOverview',
   inputs: ['dataObjects', 'labels'],
   outputs: ['queryUuids'],
-  isAlgorithmic: false,
   isBuiltIn: true,
   isServerless: true,
   render: () => TheImageOverview,

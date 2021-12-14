@@ -19,7 +19,6 @@ export default {
   id: 'Retrain',
   inputs: ['features', 'labels', 'model'],
   outputs: ['model'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   run: async (

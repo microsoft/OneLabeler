@@ -1,3 +1,4 @@
+import type { VueConstructor } from 'vue';
 import { WorkflowNodeType } from '@/commons/types';
 
 export const getImgSize = (
@@ -17,11 +18,11 @@ export const isNodeControl = (node: { type: WorkflowNodeType }): boolean => (
 
 export const isNodeInteractive = (node: {
   type: WorkflowNodeType,
-  value: { isAlgorithmic: boolean } | null,
+  value: { render?: () => VueConstructor } | null,
 }): boolean => {
   if (isNodeControl(node)) return false;
   if (node.value === null) return false;
-  return !node.value.isAlgorithmic;
+  return node.value.render !== undefined;
 };
 
 export const isNodeServerless = (node: {

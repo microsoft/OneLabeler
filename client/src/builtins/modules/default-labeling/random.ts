@@ -11,7 +11,6 @@ export default {
   id: 'Random',
   inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: true,
   labelTasks: [LabelTaskType.Classification],

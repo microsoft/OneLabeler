@@ -12,7 +12,6 @@ export default {
   id: 'image-SVD-25940167',
   inputs: ['dataObjects'],
   outputs: ['features'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   dataTypes: [DataType.Image],

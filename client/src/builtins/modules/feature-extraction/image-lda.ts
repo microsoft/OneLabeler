@@ -19,7 +19,6 @@ export default {
   id: 'image-LDA-45100847',
   inputs: ['dataObjects', 'labels'],
   outputs: ['features'],
-  isAlgorithmic: true,
   isBuiltIn: true,
   isServerless: false,
   dataTypes: [DataType.Image],
