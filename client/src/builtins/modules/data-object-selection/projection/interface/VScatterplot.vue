@@ -33,9 +33,9 @@ import {
   Ref,
 } from '@vue/composition-api';
 import { polygonContains } from 'd3';
+import { useElementSize } from '@vueuse/core';
 import VLasso from '@/plugins/lasso/VLasso.vue';
 import VScatterplot, { Axis } from '@/plugins/scatterplot/VScatterplot.vue';
-import { useElementSize } from '@/components/composables/useResize';
 
 type Point = [number, number];
 type Polygon = Point[];

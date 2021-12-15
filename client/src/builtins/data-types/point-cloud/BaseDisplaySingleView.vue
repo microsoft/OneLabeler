@@ -33,12 +33,12 @@ import {
   Ref,
 } from '@vue/composition-api';
 import * as BABYLON from 'babylonjs';
+import { useResizeObserver } from '@vueuse/core';
 import type {
   ILabel,
   IPointCloud,
   Vector3d,
 } from '@/commons/types';
-import { useResizeObserver } from '@/components/composables/useResize';
 import usePointColors from './usePointColors';
 import useGetPoints2d from './useGetPoints2d';
 import createPointCloudSystem from './createPointCloudSystem';

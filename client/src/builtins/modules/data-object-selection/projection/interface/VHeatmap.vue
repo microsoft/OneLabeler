@@ -48,8 +48,8 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { useElementSize } from '@vueuse/core';
 import VHeatmap, { Axis, BinDatum } from '@/plugins/heatmap/VHeatmap.vue';
-import { useElementSize } from '@/components/composables/useResize';
 
 type Point = [number, number];
 

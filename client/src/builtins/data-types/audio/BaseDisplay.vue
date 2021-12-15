@@ -50,8 +50,8 @@ import {
 } from '@vue/composition-api';
 import WaveSurfer from 'wavesurfer.js';
 import SpectrogramPlugin from 'wavesurfer.js/src/plugin/spectrogram';
+import { useResizeObserver } from '@vueuse/core';
 import type { IAudio } from '@/commons/types';
-import { useResizeObserver } from '@/components/composables/useResize';
 import VMedia from '../video/VMedia.vue';
 
 const fitSpectrogramToContainer = (

@@ -44,8 +44,8 @@ import {
   Ref,
 } from '@vue/composition-api';
 import WaveSurfer from 'wavesurfer.js';
+import { useResizeObserver } from '@vueuse/core';
 import type { IAudio } from '@/commons/types';
-import { useResizeObserver } from '@/components/composables/useResize';
 import VMedia from '../video/VMedia.vue';
 
 const useWaveform = (

@@ -27,9 +27,9 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { useElementSize } from '@vueuse/core';
 import { calFittingTransform } from '@/commons/geometry';
 import type { IImage } from '@/commons/types';
-import { useElementSize } from '@/components/composables/useResize';
 
 /**
  * Implementation note:

@@ -4,13 +4,12 @@ import type { Box } from './types';
 
 type UseBoxesReturn = () => Box[];
 
+/** Compute the boxes to render for the span annotations. */
 const useBoxes = (
   labelSpans: Ref<ILabelTextSpan[] | null>,
   getTextNode: Ref<() => Text>,
   container: Ref<HTMLElement | null>,
 ): UseBoxesReturn => {
-  // Compute the boxes to render for the span annotations.
-
   // Implementation note: boxes depend on the rendering result of the text.
   // Thus it should not be a computed property,
   // as the HTML may not be updated when computed properties are computed.

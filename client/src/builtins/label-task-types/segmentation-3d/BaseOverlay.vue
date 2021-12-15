@@ -21,10 +21,10 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { useElementSize } from '@vueuse/core';
 import { polygonContains } from 'd3';
 import type { Category, ILabel, ILabelPoints } from '@/commons/types';
 import VLasso from '@/plugins/lasso/VLasso.vue';
-import { useElementSize } from '@/components/composables/useResize';
 import { MouseOperationType } from './types';
 import type { ToolbarState } from './types';
 

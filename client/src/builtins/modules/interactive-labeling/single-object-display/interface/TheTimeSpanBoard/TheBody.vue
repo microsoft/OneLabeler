@@ -43,6 +43,7 @@ import type {
   Ref,
 } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 import { LabelTaskType } from '@/commons/types';
 import type {
   Category,
@@ -52,7 +53,6 @@ import type {
   ILabelTimeSpan,
 } from '@/commons/types';
 import dataTypeSetups from '@/builtins/data-types/index';
-import { useResizeObserver } from '@/components/composables/useResize';
 import TheTimeSpanAnnotation from './TheTimeSpanAnnotation.vue';
 
 type XRange = { left: number, width: number };

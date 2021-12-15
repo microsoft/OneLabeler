@@ -20,8 +20,8 @@ import {
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { useResizeObserver } from '@vueuse/core';
 import { resample2d } from '@/plugins/sampling';
-import { useResizeObserver } from '@/components/composables/useResize';
 
 const getFFT = async (
   url: string,

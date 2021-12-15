@@ -29,38 +29,19 @@ import {
   ref,
   toRefs,
   nextTick,
-  onBeforeUnmount,
   onMounted,
   watch,
   PropType,
   Ref,
 } from '@vue/composition-api';
+import { onKeyDown, useResizeObserver } from '@vueuse/core';
 import type {
   ILabel,
   ILabelTextSpan,
   IText,
 } from '@/commons/types';
-import { useResizeObserver } from '@/components/composables/useResize';
 import type { Box, ToolbarState } from './types';
 import useBoxes from './useBoxes';
-
-const useKey = (onDelete: () => void): void => {
-  const onKey = (e: KeyboardEvent): void => {
-    const { key } = e;
-
-    if (key === 'Delete') onDelete();
-  };
-
-  onMounted(() => {
-    // Bind keyboard events.
-    window.addEventListener('keydown', onKey);
-  });
-  onBeforeUnmount(() => {
-    // Remove listener before destroy,
-    // otherwise the onKey method will be called multiple times.
-    window.removeEventListener('keydown', onKey);
-  });
-};
 
 export default defineComponent({
   name: 'BaseOverlay',
@@ -139,7 +120,7 @@ export default defineComponent({
       emit('upsert:labels', { relations, spans } as Partial<ILabel>);
     };
 
-    useKey(() => {
+    onKeyDown('Delete', () => {
       if (selectedSpan.value !== null) removeLabelSpan(selectedSpan.value);
     });
 

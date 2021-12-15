@@ -14,7 +14,7 @@
         icon
         tile
         small
-        @click="onClickPlayPause"
+        @click="$emit('set:paused', !paused)"
       >
         <v-icon
           aria-hidden="true"
@@ -110,8 +110,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, ref, toRefs } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { onKeyDown } from '@vueuse/core';
 
 export default defineComponent({
   name: 'VMediaControl',
@@ -159,33 +160,18 @@ export default defineComponent({
     'set:paused': null,
     'set:current-time': null,
   },
-  created(): void {
-    // Bind keyboard events.
-    window.addEventListener('keydown', this.onKey);
-  },
-  beforeDestroy(): void {
-    // Remove listener before destroy,
-    // otherwise the onKey method will be called multiple times.
-    window.removeEventListener('keydown', this.onKey);
+  setup(props, { emit }) {
+    // shortcut for play/pause: space
+    const { paused } = toRefs(props);
+    const container = ref(null);
+    onKeyDown(' ', () => {
+      // if (document.activeElement !== container.value) return;
+      emit('set:paused', !paused.value);
+    });
+
+    return { container };
   },
   methods: {
-    onKey(e: KeyboardEvent): void {
-      const { key } = e;
-      // shortcut for play/pause: space
-      if (key === ' ') {
-        /*
-        const selection = document.activeElement;
-        const container = this.$refs.container as HTMLElement;
-        if (selection === container) {
-          this.onClickPlayPause();
-        }
-        */
-        this.onClickPlayPause();
-      }
-    },
-    onClickPlayPause(): void {
-      this.$emit('set:paused', !this.paused);
-    },
     onClickProgress(e: MouseEvent): void {
       const progress = this.getProgress();
       const rect = progress.getBoundingClientRect();
