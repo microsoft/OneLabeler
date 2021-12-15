@@ -35,15 +35,15 @@ class DefaultLabelingHandler(tornado.web.RequestHandler):
             if 'unlabeledMark' in json_data else None
 
         uuids = [(d['uuid'] if 'uuid' in d else None) for d in data_objects]
-        features = np.array([(d['features'] if 'features' in d else None)
-                             for d in data_objects])
-        n_samples = len(features)
+        n_samples = len(uuids)
 
         if key == 'Null':
             labels = default_label_null(uuids, unlabeled_mark, n_samples)
         if key == 'Random':
             labels = default_label_random(uuids, categories, n_samples)
         if key == 'ModelPrediction':
+            features = np.array([(d['features'] if 'features' in d else None)
+                             for d in data_objects])
             labels = default_label_model_prediction(
                 model, features, uuids, categories, unlabeled_mark)
         if key == 'POS-tagging':

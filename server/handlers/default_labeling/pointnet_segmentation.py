@@ -32,9 +32,11 @@ def pointnet_segmentation(batch: List) -> List[List[str]]:
     # need to figure out why this restriction exists
 
     pred = pointnet(torch.tensor(batch).transpose(1, 2))
+
+    # shape: (n_data_objects, n_points)
     pred_np = np.array(torch.argmax(pred[0], 1))
     pred_list = pred_np.tolist()
-    pred_list_str = [labelmap[label] for labels in pred_list for label in labels]
+    pred_list_str = [[labelmap[label] for label in point_labels] for point_labels in pred_list]
     return pred_list_str
 
 

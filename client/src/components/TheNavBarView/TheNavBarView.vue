@@ -57,7 +57,7 @@
       tile
       small
       :disabled="disableResetButton"
-      @click="onClickReset"
+      @click="resetState"
     >
       <v-icon
         aria-hidden="true"
@@ -414,10 +414,6 @@ export default {
           ? undefined : featureNames,
       };
       saveJsonFile(projectData, 'project.json');
-    },
-    onClickReset(): void {
-      // reset root store
-      this.resetState();
     },
     async onClickExecution(): Promise<void> {
       if (this.nextNodes === null) {
