@@ -7,7 +7,7 @@
     <rect
       :width="node.width"
       :height="node.height"
-      fill="#F0F0F0"
+      fill="#F4F4F4"
     />
 
     <!-- The node header. -->

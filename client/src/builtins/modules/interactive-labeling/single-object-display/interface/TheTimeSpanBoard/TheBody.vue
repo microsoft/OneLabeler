@@ -73,7 +73,7 @@ const useSlotClientXRange = (
     const progress = getProgress();
     if (progress === null) return null;
     const rect = progress.getBoundingClientRect();
-    return { left: rect.left, width: rect.width };
+    return { left: rect.x, width: rect.width };
   };
   useResizeObserver(container, () => {
     slotClientXRange.value = getSlotClientXRange();

@@ -35,14 +35,8 @@ export const isNodeServerless = (node: {
 };
 
 export const nodeTypeToColor = (type: WorkflowNodeType): string => {
-  if (type === WorkflowNodeType.Initialization) return '#eecfa3';
-  if (type === WorkflowNodeType.Decision) return '#ede4a9';
-  if (type === WorkflowNodeType.Exit) return '#bccbdd';
-  return '#c8e0d9';
-  /*
-  if (type === WorkflowNodeType.Initialization) return '#ff7f0e';
-  if (type === WorkflowNodeType.Decision) return '#17becf';
-  if (type === WorkflowNodeType.Exit) return '#1f77b4';
-  return '#8c564b';
-  */
+  if (type === WorkflowNodeType.Initialization) return '#e7a241';
+  if (type === WorkflowNodeType.Decision) return '#f6e54c';
+  if (type === WorkflowNodeType.Exit) return '#2c9b7c';
+  return '#2b579a';
 };

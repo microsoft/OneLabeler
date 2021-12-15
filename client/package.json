@@ -25,6 +25,7 @@
     "@tensorflow/tfjs-backend-cpu": "^3.11.0",
     "@tensorflow/tfjs-backend-webgl": "^3.11.0",
     "@vue/composition-api": "^1.4.0",
+    "@vueuse/core": "^7.3.0",
     "ajv": "^8.6.3",
     "axios": "^0.24.0",
     "babylonjs": "^5.0.0-alpha.60",

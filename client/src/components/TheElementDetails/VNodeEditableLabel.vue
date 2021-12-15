@@ -4,7 +4,7 @@
     style="display: flex"
   >
     Node Label
-    <template v-if="!isLabelEditable">
+    <template v-if="!editable">
       <span class="pl-4 subtitle-2">
         {{ label }}
       </span>
@@ -12,10 +12,10 @@
     </template>
     <v-text-field
       v-else
-      v-click-outside="onClickOutsideEditField"
+      ref="textField"
       :value="label"
       :disabled="false"
-      class="ma-0 pl-4 pt-1 subtitle-2"
+      class="ma-0 pl-4 subtitle-2"
       style="padding-bottom: 6px !important; letter-spacing: 0.01em !important;"
       type="text"
       dense
@@ -28,7 +28,7 @@
       x-small
       icon
       tile
-      @click="onClickEditButton"
+      @click="editable = true"
     >
       <v-icon
         aria-hidden="true"
@@ -42,8 +42,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { onClickOutside } from '@vueuse/core';
 
 export default defineComponent({
   name: 'VNodeEditableLabel',
@@ -56,18 +57,11 @@ export default defineComponent({
   emits: {
     'edit:label': null,
   },
-  data() {
-    return {
-      isLabelEditable: false,
-    };
-  },
-  methods: {
-    onClickEditButton(): void {
-      this.isLabelEditable = true;
-    },
-    onClickOutsideEditField(): void {
-      this.isLabelEditable = false;
-    },
+  setup() {
+    const textField = ref(null);
+    const editable = ref(false);
+    onClickOutside(textField, () => { editable.value = false; });
+    return { textField, editable };
   },
 });
 </script>

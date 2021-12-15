@@ -1,12 +1,13 @@
 <template>
+  <!-- Note: need position relative to ensure the
+    descendent elements with position: absolute will not overflow -->
   <div
     ref="container"
-    v-click-outside="onClickOutside"
     :style="styleCardElevated"
-    style="overflow-y: scroll"
+    style="overflow-y: scroll; position: relative;"
   >
     <div
-      v-for="(category, i) in categoriesFiltered"
+      v-for="(category, i) in categories"
       :key="`slot-${i}`"
       class="my-1"
       style="height: 40px; display: flex; align-items: center;"
@@ -24,8 +25,8 @@
           border: `${label2color(category)} 1px solid`,
           'background-color': selectedSlot === category ? '#ddd' : undefined,
         }"
-        @click="onSelectSlot(category)"
-        @mousedown="onMouseDownSlot"
+        @click="$emit('select:slot', category)"
+        @mousedown="dragLastPoint = { x: $event.clientX, y: $event.clientY }"
         @mousemove="onMouseMoveSlot"
         @mouseup="onMouseUpSlot"
         @mouseleave="onMouseLeaveSlot"
@@ -45,9 +46,9 @@
                   left: `${100 * span.start / duration}%`,
                   top: `${margin}px`,
                   'background-color': getSpanColor(category),
-                  'border': isSpanSelected(span) ? 'gray 3px solid' : undefined,
+                  border: isSpanSelected(span) ? 'gray 3px solid' : undefined,
                 }"
-                @click="onSelectSpan(span)"
+                @click="$emit('select:span', span)"
               />
               <!-- The handles for duration editing. -->
               <template v-if="isSpanSelected(span)">
@@ -62,7 +63,7 @@
                       : `calc(${100 * span.end / duration}% - 7.5px)`,
                     top: `${margin}px`,
                   }"
-                  @mousedown="onMouseDownHandle(handle, $event)"
+                  @mousedown="draggedSpanHandle = handle"
                 />
               </template>
             </div>
@@ -79,7 +80,7 @@
             left: `${100 * newSpan.start / duration}%`,
             top: `${margin}px`,
             'background-color': getSpanColor(category),
-            'border': 'red 3px solid',
+            border: 'red 3px solid',
           }"
         />
       </div>
@@ -88,10 +89,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
-import type { ComponentInstance, PropType } from '@vue/composition-api';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  toRefs,
+  watch,
+} from '@vue/composition-api';
+import type {
+  PropType,
+  Ref,
+  SetupContext,
+} from '@vue/composition-api';
 import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
+import {
+  onClickOutside,
+  onKeyDown,
+  useResizeObserver,
+} from '@vueuse/core';
 import { LabelTaskType } from '@/commons/types';
 import type { Category, ILabelTimeSpan } from '@/commons/types';
 import { cardElevated as styleCardElevated } from '@/style';
@@ -118,6 +135,103 @@ interface SpanHandle {
   /** The direction of the handle in the span. */
   direction: HandleDirection;
 }
+
+const getHandles = (span: ILabelTimeSpan): SpanHandle[] => [
+  { spanUuid: span.uuid, direction: HandleDirection.Left },
+  { spanUuid: span.uuid, direction: HandleDirection.Right },
+];
+
+// Get the relevant label categories.
+const useCategories = (
+  categoryTasks: Ref<Record<Category, LabelTaskType[] | null>>,
+) => {
+  const labelTask = LabelTaskType.SpanClassification;
+  const categories = computed(() => (
+    Object.entries(categoryTasks.value)
+      .filter(([, usedInTasks]) => (
+        usedInTasks === null || usedInTasks.includes(labelTask)
+      )).map((d) => d[0])
+  ));
+  return categories;
+};
+
+// Get the currently created label span.
+const useCreateSpan = (
+  currentTime: Ref<number>,
+  selectedSlot: Ref<string | null>,
+  categories: Ref<string[]>,
+  emit: SetupContext['emit'],
+) => {
+  const newSpan: Ref<ILabelTimeSpan | null> = ref(null);
+  const endCreateSpan = (): void => {
+    if (newSpan.value === null) return;
+    if (currentTime.value >= newSpan.value.start) newSpan.value.end = currentTime.value;
+    if (newSpan.value.start === newSpan.value.end) return;
+    emit('create:span', newSpan.value);
+    newSpan.value = null;
+  };
+  const startCreateSpan = (): void => {
+    if (newSpan.value !== null) {
+      endCreateSpan();
+    }
+    const category: Category | null = selectedSlot.value;
+    if (category === null) return;
+    const start: number = currentTime.value;
+    const end: number = start;
+    const span: ILabelTimeSpan = {
+      start,
+      end,
+      category,
+      uuid: uuidv4(),
+    };
+    newSpan.value = span;
+  };
+
+  // Press 'a' to start creating span.
+  onKeyDown('a', startCreateSpan);
+  // Press 'd' to end creating span.
+  onKeyDown('d', endCreateSpan);
+
+  watch(currentTime, () => {
+    if (newSpan.value !== null) {
+      newSpan.value.end = Math.max(newSpan.value.start, currentTime.value);
+    }
+  });
+  watch(categories, () => {
+    // If the category the new span belongs to has been deleted,
+    // remove the new span.
+    const isDeleted = newSpan.value !== null
+      && !categories.value.includes(newSpan.value.category);
+    if (isDeleted) newSpan.value = null;
+  });
+
+  return newSpan;
+};
+
+// Get the allocated position for the slots.
+const useSlotXRange = (
+  container: Ref<HTMLElement | null>,
+  slotClientXRange: Ref<{ left: number, width: number } | null>,
+) => {
+  const containerClientX: Ref<number | null> = ref(null);
+  onMounted(() => {
+    containerClientX.value = container
+      .value?.getBoundingClientRect().x ?? null;
+  });
+  useResizeObserver(container, () => {
+    containerClientX.value = container
+      .value?.getBoundingClientRect().x ?? null;
+  });
+  const slotXRange = computed(() => {
+    if (slotClientXRange.value === null) return { left: 0, width: 0 };
+    if (containerClientX.value === null) return slotClientXRange.value;
+    return {
+      left: slotClientXRange.value.left - containerClientX.value,
+      width: slotClientXRange.value.width,
+    };
+  });
+  return slotXRange;
+};
 
 export default defineComponent({
   name: 'TheTimeSpanAnnotation',
@@ -161,72 +275,49 @@ export default defineComponent({
     'select:span': null,
     'select:slot': null,
   },
+  setup(props, { emit }) {
+    const { categoryTasks } = toRefs(props);
+    const categories = useCategories(categoryTasks);
+
+    const { currentTime, selectedSlot } = toRefs(props);
+    const newSpan = useCreateSpan(
+      currentTime,
+      selectedSlot,
+      categories,
+      emit,
+    );
+
+    const { slotClientXRange } = toRefs(props);
+    const container: Ref<HTMLElement | null> = ref(null);
+    const slotXRange = useSlotXRange(
+      container,
+      slotClientXRange,
+    );
+
+    onClickOutside(container, () => {
+      // Unselect slot.
+      emit('select:slot', null);
+      // Unselect label span.
+      emit('select:span', null);
+    });
+
+    return {
+      newSpan,
+      categories,
+      container,
+      slotXRange,
+    };
+  },
   data() {
     return {
       styleCardElevated,
       draggedSpanHandle: null as SpanHandle | null,
       dragLastPoint: null as Point | null,
-      newSpan: null as ILabelTimeSpan | null,
-      resizeObserver: null as ResizeObserver | null,
       margin: 5,
-      containerClientX: null as number | null,
       HandleDirection,
-      LabelTaskType,
     };
   },
-  computed: {
-    slotXRange(): { left: number, width: number } {
-      if (this.slotClientXRange === null) return { left: 0, width: 0 };
-      if (this.containerClientX === null) return this.slotClientXRange;
-      return {
-        left: this.slotClientXRange.left - this.containerClientX,
-        width: this.slotClientXRange.width,
-      };
-    },
-    categoriesFiltered(): Category[] {
-      return this.filterCategoriesByLabelTask(LabelTaskType.SpanClassification);
-    },
-  },
-  watch: {
-    currentTime() {
-      const { currentTime } = this;
-      if (this.newSpan !== null) {
-        this.newSpan.end = Math.max(this.newSpan.start, currentTime);
-      }
-    },
-    categoriesFiltered() {
-      // If the category the new span belongs to has been deleted,
-      // remove the new span.
-      if (this.newSpan !== null
-        && !this.categoriesFiltered.includes(this.newSpan.category)) {
-        this.newSpan = null;
-      }
-    },
-  },
-  created(): void {
-    // Bind keyboard events.
-    window.addEventListener('keydown', this.onKey);
-  },
-  beforeDestroy(): void {
-    // Remove listener before destroy,
-    // otherwise the onKey method will be called multiple times.
-    window.removeEventListener('keydown', this.onKey);
-  },
-  mounted() {
-    this.containerClientX = this.getContainerClientX();
-    const container = this.getContainer();
-    if (container !== null) {
-      this.resizeObserver = new ResizeObserver(this.onResize);
-      this.resizeObserver.observe(container);
-    }
-  },
   methods: {
-    onMouseDownHandle(handle: SpanHandle): void {
-      this.draggedSpanHandle = handle;
-    },
-    onMouseDownSlot(e: MouseEvent): void {
-      this.dragLastPoint = { x: e.clientX, y: e.clientY };
-    },
     onMouseMoveSlot(e: MouseEvent): void {
       const {
         dragLastPoint,
@@ -262,90 +353,18 @@ export default defineComponent({
       this.dragLastPoint = null;
       this.draggedSpanHandle = null;
     },
-    onKey(e: KeyboardEvent): void {
-      const { key } = e;
-      // shortcut for start creating span: a
-      if (key === 'a') {
-        this.onStartCreateSpan();
-      }
-      // shortcut for end creating span: d
-      if (key === 'd') {
-        this.onEndCreateSpan();
-      }
-    },
-    onClickOutside(): void {
-      // Unselect slot.
-      this.onSelectSlot(null);
-      // Unselect label span.
-      this.onSelectSpan(null);
-    },
-    onStartCreateSpan(): void {
-      if (this.newSpan !== null) {
-        this.onEndCreateSpan();
-      }
-      const category: Category | null = this.selectedSlot;
-      if (category === null) return;
-      const start: number = this.currentTime;
-      const end: number = start;
-      const span: ILabelTimeSpan = {
-        start,
-        end,
-        category,
-        uuid: uuidv4(),
-      };
-      this.newSpan = span;
-    },
-    onEndCreateSpan(): void {
-      const span = this.newSpan;
-      if (span === null) return;
-      if (this.currentTime >= span.start) span.end = this.currentTime;
-      if (span.start === span.end) return;
-      this.$emit('create:span', span);
-      this.newSpan = null;
-    },
-    onSelectSpan(span: ILabelTimeSpan | null): void {
-      this.$emit('select:span', span);
-    },
-    onSelectSlot(category: Category | null): void {
-      this.$emit('select:slot', category);
-    },
-    onResize(): void {
-      this.containerClientX = this.getContainerClientX();
-    },
     isSpanSelected(span: ILabelTimeSpan): boolean {
       const { selectedSpan } = this;
       return (selectedSpan !== null)
         && (selectedSpan.uuid === span.uuid);
     },
-    getHandles(span: ILabelTimeSpan): SpanHandle[] {
-      return [
-        { spanUuid: span.uuid, direction: HandleDirection.Left },
-        { spanUuid: span.uuid, direction: HandleDirection.Right },
-      ];
-    },
-    getContainer(): HTMLElement | null {
-      const container = this.$refs.container as ComponentInstance | undefined;
-      if (container === undefined) return null;
-      return container.$el as HTMLElement;
-    },
-    getContainerClientX(): number | null {
-      const container = this.getContainer();
-      if (container === null) return null;
-      const rect = container.getBoundingClientRect();
-      return rect.x;
-    },
+    getHandles,
     getSpanColor(category: Category): string {
       const { label2color } = this;
       const color = d3color(label2color(category));
       if (color === null) return 'black';
       const { r, g, b } = color.rgb();
       return `rgba(${r}, ${g}, ${b}, 0.5)`;
-    },
-    filterCategoriesByLabelTask(labelTask: LabelTaskType): Category[] {
-      return Object.entries(this.categoryTasks)
-        .filter(([, usedInTasks]) => (
-          usedInTasks === null || usedInTasks.includes(labelTask)
-        )).map((d) => d[0]);
     },
   },
 });

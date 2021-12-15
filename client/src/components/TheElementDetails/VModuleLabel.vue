@@ -4,7 +4,7 @@
       :style="style.cardHeader"
       class="px-2"
     >
-      <template v-if="!isLabelEditable">
+      <template v-if="!editable">
         <span
           class="subtitle-2"
           style="padding-bottom: 7.4px; padding-top: 7px"
@@ -15,7 +15,7 @@
       </template>
       <v-text-field
         v-else
-        v-click-outside="onClickOutsideEditField"
+        ref="textField"
         :value="label"
         :disabled="false"
         class="ma-0 py-1 subtitle-2"
@@ -32,7 +32,7 @@
         x-small
         icon
         tile
-        @click="onClickEditButton"
+        @click="editable = true"
       >
         <v-icon
           aria-hidden="true"
@@ -47,8 +47,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, ref } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { onClickOutside } from '@vueuse/core';
 import { card, cardHeader } from '@/style';
 
 export default defineComponent({
@@ -66,19 +67,14 @@ export default defineComponent({
   emits: {
     'edit:label': null,
   },
-  data() {
-    return {
-      style: { card, cardHeader },
-      isLabelEditable: false,
-    };
+  setup() {
+    const textField = ref(null);
+    const editable = ref(false);
+    onClickOutside(textField, () => { editable.value = false; });
+    return { textField, editable };
   },
-  methods: {
-    onClickEditButton(): void {
-      this.isLabelEditable = true;
-    },
-    onClickOutsideEditField(): void {
-      this.isLabelEditable = false;
-    },
+  data() {
+    return { style: { card, cardHeader } };
   },
 });
 </script>
