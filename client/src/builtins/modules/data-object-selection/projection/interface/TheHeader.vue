@@ -37,40 +37,11 @@
             </v-icon>
           </v-btn>
         </template>
-        <div
-          :style="styleCardElevated"
-          class="pa-3"
-        >
-          <div class="subtitle-1 grey--text text--darken-1">
-            {{ `${nRows} x ${nColumns} layout` }}
-          </div>
-          <div
-            style="display: grid"
-            :style="{
-              'grid-template-rows': `repeat(${maxRows}, ${100/maxRows}%)`,
-              'grid-template-columns': `repeat(${maxColumns}, ${100/maxColumns}%)`,
-            }"
-          >
-            <template v-for="row in maxRows">
-              <template v-for="column in maxColumns">
-                <div
-                  :key="`row-${row}-col-${column}`"
-                  :style="{
-                    'border-width': '1px',
-                    'border-style': 'solid',
-                    'border-color': (
-                      (column <= nColumns) && (row <= nRows)
-                    ) ? 'orange' : '#757575',
-                    'width': '40px',
-                    'height': '40px',
-                    'margin': '0.5px',
-                  }"
-                  @click="$emit('set:matrix-shape', row, column)"
-                />
-              </template>
-            </template>
-          </div>
-        </div>
+        <TheHeaderLayoutPanel
+          :n-rows="nRows"
+          :n-columns="nColumns"
+          @set:matrix-shape="$emit('set:matrix-shape', $event)"
+        />
       </v-menu>
     </template>
   </VToolbar>
@@ -80,11 +51,11 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import VToolbar from '@/components/VWindow/VToolbar.vue';
-import { cardElevated as styleCardElevated } from '@/style';
+import TheHeaderLayoutPanel from './TheHeaderLayoutPanel.vue';
 
 export default defineComponent({
   name: 'TheHeader',
-  components: { VToolbar },
+  components: { VToolbar, TheHeaderLayoutPanel },
   props: {
     nRows: {
       type: Number as PropType<number>,
@@ -99,13 +70,6 @@ export default defineComponent({
     'window:minimize': null,
     'window:pin': null,
     'set:matrix-shape': null,
-  },
-  data() {
-    return {
-      styleCardElevated,
-      maxRows: 3,
-      maxColumns: 3,
-    };
   },
 });
 </script>

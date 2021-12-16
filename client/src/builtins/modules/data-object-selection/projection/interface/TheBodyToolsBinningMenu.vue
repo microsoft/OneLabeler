@@ -5,8 +5,8 @@
   >
     <template #activator="{ on }">
       <v-btn
-        title="Binning Configuration"
         :elevation="0"
+        title="Binning Configuration"
         x-small
         icon
         tile
@@ -28,6 +28,7 @@
       >
         Binning Configuration
       </div>
+      <v-divider />
       <div
         class="pa-2"
         style="display: flex; flex-direction: column; gap: 8px;"
@@ -37,6 +38,7 @@
             Enable Binning
           </div>
           <v-switch
+            class="ma-0"
             :value="enableBinning"
             :ripple="false"
             hide-details

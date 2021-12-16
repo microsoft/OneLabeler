@@ -7,7 +7,7 @@ const random = xor4096(SEED);
 
 export default {
   type: ModuleType.DefaultLabeling,
-  label: 'Random (Dummy)',
+  label: 'Random (Debug)',
   id: 'Random',
   inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],

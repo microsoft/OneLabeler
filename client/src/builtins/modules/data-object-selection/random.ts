@@ -2,7 +2,7 @@ import { ModuleType } from '@/commons/types';
 
 export default {
   type: ModuleType.DataObjectSelection,
-  label: 'Random (Dummy)',
+  label: 'Random',
   id: 'Random-73417867',
   inputs: ['labels'],
   outputs: ['queryUuids'],

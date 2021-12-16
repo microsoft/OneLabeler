@@ -38,6 +38,7 @@
             Enable Subsampling
           </div>
           <v-switch
+            class="ma-0"
             :value="enableSubsampling"
             :ripple="false"
             hide-details

@@ -15,7 +15,7 @@
       "type": "DataObjectSelection",
       "value": [
         {
-          "label": "Random (Dummy)",
+          "label": "Random",
           "inputs": [
             "labels"
           ],

@@ -22,7 +22,7 @@
     </div>
 
     <!-- The play controls. -->
-    <VMediaControl
+    <VMediaControls
       ref="control"
       :current-time="currentTime"
       :duration="duration"
@@ -42,7 +42,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
-import VMediaControl from './VMediaControl.vue';
+import VMediaControls from './VMediaControls.vue';
 
 /**
  * Implementation note:
@@ -56,7 +56,7 @@ import VMediaControl from './VMediaControl.vue';
 
 export default defineComponent({
   name: 'VMedia',
-  components: { VMediaControl },
+  components: { VMediaControls },
   props: {
     // The html element of the media.
     component: {

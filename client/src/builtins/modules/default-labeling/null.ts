@@ -3,7 +3,7 @@ import type { ILabel } from '@/commons/types';
 
 export default {
   type: ModuleType.DefaultLabeling,
-  label: 'Null (Dummy)',
+  label: 'Null (Debug)',
   id: 'Null',
   inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],

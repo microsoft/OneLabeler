@@ -107,10 +107,10 @@
 import {
   defineComponent,
   onMounted,
-  onUnmounted,
   ref,
   watch,
 } from '@vue/composition-api';
+import { useIntervalFn } from '@vueuse/core';
 import {
   getAlgorithmServerLatency,
   getDatabaseServerLatency,
@@ -125,26 +125,18 @@ export default defineComponent({
     const algorithmServerLatency = ref(Infinity);
     const databaseServerLatency = ref(Infinity);
     const pythonApiServerLatency = ref(Infinity);
-    let interval: ReturnType<typeof setInterval> | null = null;
 
+    const { pause, resume } = useIntervalFn(async () => {
+      algorithmServerLatency.value = await getAlgorithmServerLatency();
+      databaseServerLatency.value = await getDatabaseServerLatency();
+      pythonApiServerLatency.value = await getPythonApiServerLatency();
+    }, 1000);
     const updateInterval = () => {
-      if (show.value === false && interval !== null) {
-        clearInterval(interval);
-        interval = null;
-      } else if (show.value === true && interval === null) {
-        interval = setInterval(async () => {
-          algorithmServerLatency.value = await getAlgorithmServerLatency();
-          databaseServerLatency.value = await getDatabaseServerLatency();
-          pythonApiServerLatency.value = await getPythonApiServerLatency();
-        }, 1000);
-      }
+      if (show.value === false) pause();
+      else if (show.value === true) resume();
     };
-
     watch(show, updateInterval);
     onMounted(updateInterval);
-    onUnmounted(() => {
-      if (interval !== null) clearInterval(interval);
-    });
 
     return {
       show,

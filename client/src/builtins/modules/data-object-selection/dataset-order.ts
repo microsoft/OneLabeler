@@ -2,7 +2,7 @@ import { ModuleType } from '@/commons/types';
 
 export default {
   type: ModuleType.DataObjectSelection,
-  label: 'DatasetOrder (Dummy)',
+  label: 'DatasetOrder',
   id: 'DatasetOrder',
   inputs: ['labels'],
   outputs: ['queryUuids'],

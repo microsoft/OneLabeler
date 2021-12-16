@@ -115,7 +115,7 @@ import type { PropType } from '@vue/composition-api';
 import { onKeyDown } from '@vueuse/core';
 
 export default defineComponent({
-  name: 'VMediaControl',
+  name: 'VMediaControls',
   props: {
     // The currentTime of the media.
     currentTime: {

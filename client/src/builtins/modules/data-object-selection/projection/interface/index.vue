@@ -186,7 +186,7 @@ export default defineComponent({
     this.views = [createView(featureNames.length)];
   },
   methods: {
-    onSetMatrixShape(nRows: number, nColumns: number): void {
+    onSetMatrixShape({ nRows, nColumns }: { nRows: number, nColumns: number}): void {
       this.nRows = nRows;
       this.nColumns = nColumns;
       if (this.views.length > nRows * nColumns) {

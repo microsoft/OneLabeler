@@ -4,7 +4,7 @@ import type { IDataObjectStorage } from '@/commons/types';
 
 export default {
   type: ModuleType.FeatureExtraction,
-  label: 'Random3D (Dummy)',
+  label: 'Random3D (Debug)',
   id: 'Random-87333124',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['features'],

@@ -1,6 +1,6 @@
 <template>
   <!-- set position absolute to allow
-    the header buttons to overlap with projection points. -->
+    the header buttons to overlap with the chart. -->
   <div style="position: absolute">
     <!-- The feature space configuration menu. -->
     <TheBodyToolsFeatureMenu
