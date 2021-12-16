@@ -136,10 +136,17 @@ export default defineComponent({
       return labels.map((d) => d?.category ?? unlabeledMark);
     },
   },
+  watch: {
+    featureNames() {
+      const { featureNames } = this;
+      const nFeatures = featureNames.length;
+      this.selectedFeatureIndices = [...new Array(nFeatures).keys()];
+    },
+  },
   mounted() {
     const { featureNames } = this;
     const nFeatures = featureNames.length;
-    this.selectedFeatureIndices = new Array(nFeatures).fill(null).map((d, i) => i);
+    this.selectedFeatureIndices = [...new Array(nFeatures).keys()];
   },
 });
 </script>

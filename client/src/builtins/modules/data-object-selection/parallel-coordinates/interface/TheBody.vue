@@ -22,12 +22,13 @@
         :data="featureValuesSampled"
         :width="width"
         :height="height"
-        :margin="{ top: 50, right: 50, bottom: 50, left: 50 }"
+        :margin="{ top: 40, right: 40, bottom: 10, left: 40 }"
       >
         <template #line="props">
           <path
             :d="props.d"
             :stroke="colormap(props.i)"
+            :opacity="opacityMap(props.i)"
           />
         </template>
       </VParallelCoordinates>
@@ -126,6 +127,11 @@ export default defineComponent({
       if (subsampleIndices === null) return featureValues;
       return subsampleIndices.map((d: number) => featureValues[d]);
     },
+    uuidsSampled(): string[] {
+      const { uuids, subsampleIndices } = this;
+      if (subsampleIndices === null) return uuids;
+      return subsampleIndices.map((d: number) => uuids[d]);
+    },
     colormap(): ((i: number) => string) {
       const {
         labels,
@@ -140,6 +146,17 @@ export default defineComponent({
       const labelsSampled = subsampleIndices
         .map((d: number) => labels[d]);
       return (i) => label2color(labelsSampled[i]);
+    },
+    opacityMap(): ((i: number) => number) {
+      const {
+        labels,
+        queryUuids,
+        uuidsSampled,
+      } = this;
+      if (labels === null || queryUuids.length === 0) return () => 1;
+      const highlightIndices = uuidsSampled.map((d, i) => i)
+        .filter((i) => queryUuids.includes(uuidsSampled[i]));
+      return (i) => (highlightIndices.includes(i) ? 1 : 0.2);
     },
   },
 });
