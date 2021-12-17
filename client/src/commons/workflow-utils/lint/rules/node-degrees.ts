@@ -78,7 +78,7 @@ const checkNodeDegrees = (
           }" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
-          rule: 'Decision Node Indegree Should Not Be Zero',
+          rule: 'Conditional Branching Node Indegree Should Not Be Zero',
           fixes: ['create an inward edge from another node to the conditional branching node'],
         });
       }
@@ -92,7 +92,7 @@ const checkNodeDegrees = (
           }" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Decision Node Outdegree Should Be Two',
+          rule: 'Conditional Branching Node Outdegree Should Be Two',
           fixes: [
             outdegree <= 1
               ? 'create an outward edge from the conditional branching node to another node'
@@ -109,7 +109,7 @@ const checkNodeDegrees = (
             }" to node with label "${edge.target}" has no condition`,
             category: ErrorCategory.TopologyError,
             subjects: [edge],
-            rule: 'Decision Node Outward Edge Should Have Condition',
+            rule: 'Conditional Branching Node Outward Edge Should Have Condition',
             fixes: ['remove this edge'],
           });
         });
@@ -122,7 +122,7 @@ const checkNodeDegrees = (
             }" are all ${edge1.condition}`,
             category: ErrorCategory.TopologyError,
             subjects: [edge1, edge2],
-            rule: 'Decision Node Outward Edge Conditions Should Be Exclusive',
+            rule: 'Conditional Branching Node Outward Edge Conditions Should Be Exclusive',
             fixes: ['remove one of the two edges'],
           });
         }

@@ -121,7 +121,7 @@
     <v-spacer />
 
     <v-btn-toggle
-      :value="showElementSetting"
+      :value="showElementSettings"
       class="card-header-button-toggle elevation-0"
     >
       <v-btn
@@ -131,7 +131,7 @@
         icon
         tile
         small
-        @click="$emit('update:showElementSetting', !showElementSetting)"
+        @click="$emit('update:showElementSettings', !showElementSettings)"
       >
         <v-icon
           aria-hidden="true"
@@ -205,7 +205,7 @@ export default defineComponent({
     VUploadWorkflowButton,
   },
   props: {
-    showElementSetting: {
+    showElementSettings: {
       type: Boolean as PropType<boolean>,
       required: true,
     },

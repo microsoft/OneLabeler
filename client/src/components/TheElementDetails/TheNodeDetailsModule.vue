@@ -130,7 +130,7 @@ export default defineComponent({
     },
     menuOfMethods(): { label: string, options: { value: IModule, label: string }[] } {
       return {
-        label: 'Selected Method',
+        label: 'Selected Module',
         options: this.methods.map((d) => ({
           value: d,
           label: d.label,

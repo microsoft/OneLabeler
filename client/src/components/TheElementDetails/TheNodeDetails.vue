@@ -80,16 +80,16 @@ export default defineComponent({
     viewTitle(): string {
       const { node } = this;
       const mapper = {
-        [WorkflowNodeType.Initialization]: 'Initialization Setting',
+        [WorkflowNodeType.Initialization]: 'Initialization Settings',
         [WorkflowNodeType.Decision]: 'Conditional Branching',
         [WorkflowNodeType.Exit]: 'Exit',
-        [WorkflowNodeType.Base]: 'Custom Instantiation',
-        [WorkflowNodeType.DataObjectSelection]: 'Data Object Selection Instantiation',
-        [WorkflowNodeType.DefaultLabeling]: 'Default Labeling Instantiation',
-        [WorkflowNodeType.FeatureExtraction]: 'Feature Extraction Instantiation',
-        [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Instantiation',
-        [WorkflowNodeType.ModelTraining]: 'Interim Model Training Instantiation',
-        [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Instantiation',
+        [WorkflowNodeType.Base]: 'Custom Node Settings',
+        [WorkflowNodeType.DataObjectSelection]: 'Data Object Selection Node Settings',
+        [WorkflowNodeType.DefaultLabeling]: 'Default Labeling Node Settings',
+        [WorkflowNodeType.FeatureExtraction]: 'Feature Extraction Node Settings',
+        [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Node Settings',
+        [WorkflowNodeType.ModelTraining]: 'Interim Model Training Node Settings',
+        [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Node Settings',
       } as Partial<Record<WorkflowNodeType, string>>;
       return mapper[node.type] ?? '';
     },

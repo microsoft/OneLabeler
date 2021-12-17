@@ -16,7 +16,10 @@
       style="display: flex; flex-direction: column; gap: 8px;"
     >
       <!-- The source node. -->
-      <div :style="style.card">
+      <div
+        :style="style.card"
+        class="mx-2"
+      >
         <div
           :style="{ ...style.card, ...style.cardHeader }"
           class="px-2"
@@ -32,8 +35,8 @@
 
       <div
         :style="style.card"
-        class="mx-2"
         style="display: flex"
+        class="mx-2"
       >
         <span class="pl-2 py-2 subtitle-2">
           ID
@@ -70,8 +73,8 @@
 
       <div
         :style="style.card"
-        class="mx-2"
         style="display: flex"
+        class="mx-2"
       >
         <span class="pl-2 py-2 subtitle-2">
           ID
@@ -150,7 +153,7 @@ export default defineComponent({
   data() {
     return {
       style: { card, cardHeader },
-      viewTitle: 'Edge',
+      viewTitle: 'Edge Settings',
     };
   },
   methods: {

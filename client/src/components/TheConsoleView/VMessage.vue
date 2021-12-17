@@ -52,18 +52,21 @@
       v-if="expanded"
       style="margin: 0 !important"
     >
-      <b>Recommendation</b>:
       <template v-if="message.fixes.length === 1">
+        <b>Recommended fix</b>:
         {{ message.fixes[0] }}
       </template>
-      <ul v-else-if="message.fixes.length >= 2">
-        <li
-          v-for="(fix, i) in message.fixes"
-          :key="i"
-        >
-          {{ fix }}
-        </li>
-      </ul>
+      <template v-else-if="message.fixes.length >= 2">
+        <b>Recommended fix options</b>:
+        <ul>
+          <li
+            v-for="(fix, i) in message.fixes"
+            :key="i"
+          >
+            {{ fix }}
+          </li>
+        </ul>
+      </template>
     </p>
   </div>
 </template>

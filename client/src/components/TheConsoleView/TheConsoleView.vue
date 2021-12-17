@@ -13,7 +13,7 @@
       </v-icon>
       Console
     </div>
-    <div style="overflow-y: scroll;">
+    <div style="overflow-y: auto;">
       <VMessage
         v-for="(message, i) in consoleMessages"
         :key="getMsgId(message)"

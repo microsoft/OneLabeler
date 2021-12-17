@@ -24,7 +24,7 @@
 
     <!-- The workflow element setting panel. -->
     <TheElementDetails
-      v-if="showElementSetting"
+      v-if="showElementSettings"
       :methods="validModules"
       :models="modelServices"
       :selection="selection"
@@ -63,7 +63,7 @@ export default {
     TheVariableInspector,
   },
   props: {
-    showElementSetting: {
+    showElementSettings: {
       type: Boolean as PropType<boolean>,
       required: true,
     },

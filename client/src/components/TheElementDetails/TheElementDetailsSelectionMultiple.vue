@@ -11,12 +11,12 @@
       >
         $vuetify.icons.values.parameter
       </v-icon>
-      Module Setting
+      Node/Edge Settings
     </div>
     <v-divider />
     <div style="flex: 1 1 auto; display: flex; align-items: center">
       <p class="mx-auto subtitle-1">
-        Multiple Elements Selected
+        Multiple Nodes/Edges Selected
       </p>
     </div>
   </div>

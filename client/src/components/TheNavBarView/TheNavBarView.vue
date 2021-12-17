@@ -161,7 +161,7 @@
       >
         $vuetify.icons.values.config
       </v-icon>
-      Workflow
+      Development
     </v-btn>
   </div>
 </template>
