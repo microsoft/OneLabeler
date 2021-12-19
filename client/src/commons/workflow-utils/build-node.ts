@@ -13,11 +13,11 @@ export class WorkflowNode {
 
   static possibleOutputs: string[];
 
+  static type: WorkflowNodeType;
+
   id: string;
 
   label: string;
-
-  type: WorkflowNodeType;
 
   value: IModule;
 
@@ -137,7 +137,7 @@ export class StoppageAnalysisNode extends DataLabelingWorkflowNode {
   label = 'stoppage analysis';
 }
 
-export class CustomNode extends DataObjectSelectionNode {
+export class CustomNode extends DataLabelingWorkflowNode {
   static type = WorkflowNodeType.Base;
 
   label = 'custom';
@@ -148,26 +148,30 @@ const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
   return delta !== 0;
 };
 
-const NODE_TYPES = {
-  'initialization node': InitializationNode,
-  'conditional branching node': DecisionNode,
-  'exit node': ExitNode,
-  'data object selection node': DataObjectSelectionNode,
-  'default labeling node': DefaultLabelingNode,
-  'feature extraction node': FeatureExtractionNode,
-  'interactive labeling node': InteractiveLabelingNode,
-  'model training node': ModelTrainingNode,
-  'stoppage analysis node': StoppageAnalysisNode,
-};
+const NODE_TYPES: { name: string, value: typeof DataLabelingWorkflowNode }[] = [
+  { name: 'initialization node', value: InitializationNode },
+  { name: 'conditional branching node', value: DecisionNode },
+  { name: 'exit node', value: ExitNode },
+  { name: 'data object selection node', value: DataObjectSelectionNode },
+  { name: 'default labeling node', value: DefaultLabelingNode },
+  { name: 'feature extraction node', value: FeatureExtractionNode },
+  { name: 'interactive labeling node', value: InteractiveLabelingNode },
+  { name: 'model training node', value: ModelTrainingNode },
+  { name: 'stoppage analysis node', value: StoppageAnalysisNode },
+];
 
-export const filterNodeTypesByInputs = (inputs: string[]): string[] => (
-  Object.entries(NODE_TYPES).filter(([, type]) => (
-    isOverlapping(new Set(inputs), new Set(type.possibleInputs))
-  )).map((d) => d[0])
+export const filterNodeTypesByInputs = (
+  inputs: string[],
+): { name: string, value: typeof DataLabelingWorkflowNode }[] => (
+  NODE_TYPES.filter(({ value }) => (
+    isOverlapping(new Set(inputs), new Set(value.possibleInputs))
+  ))
 );
 
-export const filterNodeTypesByOutputs = (outputs: string[]): string[] => (
-  Object.entries(NODE_TYPES).filter(([, type]) => (
-    isOverlapping(new Set(outputs), new Set(type.possibleOutputs))
-  )).map((d) => d[0])
+export const filterNodeTypesByOutputs = (
+  outputs: string[],
+): { name: string, value: typeof DataLabelingWorkflowNode }[] => (
+  NODE_TYPES.filter(({ value }) => (
+    isOverlapping(new Set(outputs), new Set(value.possibleOutputs))
+  ))
 );

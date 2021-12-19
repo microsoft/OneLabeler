@@ -18,7 +18,7 @@ const checkNoSelfLoops = (
       message: `node with label "${node.label}" has self loop`,
       category: ErrorCategory.TopologyError,
       subjects: [node],
-      rule: 'Disallow Self Loops',
+      rule: 'no-self-loops',
       fixes: [`remove the self loop on the node with label "${node.label}"`],
     });
   });

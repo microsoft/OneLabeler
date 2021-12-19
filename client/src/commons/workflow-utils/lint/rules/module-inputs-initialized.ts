@@ -57,16 +57,20 @@ const checkModuleInputsInitialized = (
           type: LintMessageType.Error,
           message: `node with label "${
             node.label
-          }" has uninitialized inputs ${
+          }" has uninitialized input${
+            notInitializedInputs.length === 1 ? '' : 's'
+          } ${
             notInitializedInputs.map((d) => `"${d}"`).join(', ')
           }`,
           category: ErrorCategory.ImplementationError,
           subjects: [node],
-          rule: 'States Should Be Initialized Before Used',
+          rule: 'initialize-states-before-used',
           fixes: notInitializedInputs.map((input): string[] => {
             const nodeTypes = filterNodeTypesByOutputs([input]);
-            return nodeTypes.map((typeName) => (
-              `May consider to add ${typeName} before this node is visited to initialize ${input}.`
+            return nodeTypes.map((type) => (
+              type.value.type === WorkflowNodeType.Initialization
+                ? `add ${input} to the output of the initialization node to make ${input} initialized`
+                : `add ${type.name} before this node is visited to initialize ${input}`
             ));
           }).flat(),
         });

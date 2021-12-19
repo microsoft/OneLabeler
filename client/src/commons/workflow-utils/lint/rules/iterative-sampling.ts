@@ -19,7 +19,7 @@ const checkIterativeSampling = (
       message: 'no data object selection node (i.e., the samples will never be updated)',
       category: ErrorCategory.TopologyError,
       subjects: [],
-      rule: 'Need Data Object Selection Node',
+      rule: 'should-involve-selection',
       fixes: ['consider whether to create a data object selection node'],
     }];
   }
@@ -32,7 +32,7 @@ const checkIterativeSampling = (
       message: 'no data object selection node in loops (i.e., the samples will never be updated)',
       category: ErrorCategory.AntiPattern,
       subjects: dataObjectSelectionNodes,
-      rule: 'Need Data Object Selection LOOP',
+      rule: 'prefer-selection-in-loop',
       fixes: ['consider whether to put a data object selection node in a loop'],
     });
   }

@@ -54,18 +54,20 @@ const checkModuleNoRedundancy = (
           type: LintMessageType.Error,
           message: `node with label "${
             node.label
-          }" output overwrites unused state(s) ${
+          }" output overwrites unused state${
+            unmodifiableOutputs.length === 1 ? '' : 's'
+          } ${
             unmodifiableOutputs.map((d) => `"${d}"`).join(', ')
           }`,
           category: ErrorCategory.ImplementationError,
           subjects: [node],
-          rule: 'States Should Be Used Before Overwritten',
+          rule: 'use-states-before-overwritten',
           fixes: [
-            `consider whether the node with label "${node.label}" should be removed`,
+            `remove the node with label "${node.label}"`,
             ...outputs.map((output): string[] => {
               const nodeTypes = filterNodeTypesByInputs([output]);
-              return nodeTypes.map((typeName) => (
-                `consider whether to add ${typeName} after this node is visited to consume ${output}.`
+              return nodeTypes.map((type) => (
+                `add ${type.name} after this node is visited to consume ${output}`
               ));
             }).flat(),
           ],
@@ -90,15 +92,21 @@ const checkModuleNoRedundancy = (
       if (unvisitableNodes.has(node.id)) {
         messages.push({
           type: LintMessageType.Error,
-          message: `node with label "${node.label}" revisited before its input(s) is edited`,
+          message: `node with label "${
+            node.label
+          }" revisited before its input${
+            inputs.length === 1 ? ' is' : 's are'
+          } edited`,
           category: ErrorCategory.ImplementationError,
           subjects: [node],
-          rule: 'Module Inputs Should Be Edited Before Revisit',
+          rule: 'edit-module-inputs-before-revisit',
           fixes: [
+            'remove some of the inward edges to the node to avoid revisiting it',
             ...inputs.map((input): string[] => {
-              const nodeTypes = filterNodeTypesByOutputs([input]);
-              return nodeTypes.map((typeName) => (
-                `consider whether to add ${typeName} before this node is visited to modify ${input}.`
+              const nodeTypes = filterNodeTypesByOutputs([input])
+                .filter((type) => type.value.type !== WorkflowNodeType.Initialization);
+              return nodeTypes.map((type) => (
+                `add ${type.name} before this node is visited to modify ${input}`
               ));
             }).flat(),
           ],
@@ -146,10 +154,10 @@ const checkModuleNoRedundancy = (
         }" not used by its following nodes`,
         category: ErrorCategory.ImplementationError,
         subjects: [node],
-        rule: 'Module Outputs Should Be Consumed',
+        rule: 'consume-module-outputs',
         fixes: [
-          ...filterNodeTypesByInputs([output]).map((typeName) => (
-            `consider whether to add ${typeName} before this node is visited to modify ${output}.`
+          ...filterNodeTypesByInputs([output]).map((type) => (
+            `add ${type.name} after this node is visited to consume ${output}`
           )),
         ],
       });

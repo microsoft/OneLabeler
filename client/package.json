@@ -14,7 +14,8 @@
     "postuninstall": "electron-builder install-app-deps",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "plop": "plop"
+    "plop": "plop",
+    "customize": "plop"
   },
   "main": "background.js",
   "dependencies": {

@@ -63,7 +63,7 @@
             v-for="(fix, i) in message.fixes"
             :key="i"
           >
-            {{ fix }}
+            {{ fix }}{{ i !== message.fixes.length - 1 ? ', or' : '' }}
           </li>
         </ul>
       </template>

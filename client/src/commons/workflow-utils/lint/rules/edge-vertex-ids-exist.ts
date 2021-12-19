@@ -20,7 +20,7 @@ const checkEdgeVertexIdsExist = (
         }" does not exist`,
         category: ErrorCategory.DataStructureError,
         subjects: [edge],
-        rule: 'Disallow Invalid Edge Source',
+        rule: 'no-invalid-edge',
         fixes: ['remove this edge'],
       });
     }
@@ -32,7 +32,7 @@ const checkEdgeVertexIdsExist = (
         }" does not exist`,
         category: ErrorCategory.DataStructureError,
         subjects: [edge],
-        rule: 'Disallow Invalid Edge Target',
+        rule: 'no-invalid-edge',
         fixes: ['remove this edge'],
       });
     }

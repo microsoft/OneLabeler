@@ -5,7 +5,7 @@ export default {
   type: ModuleType.Exit,
   label: 'Base Exit',
   id: 'BaseExit',
-  inputs: [],
+  inputs: ['labels'],
   outputs: [],
   isBuiltIn: true,
   isServerless: true,

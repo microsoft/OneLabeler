@@ -27,8 +27,8 @@ const checkNodeIdsUnique = (
       message: `${indices.length} nodes with labels ${nodeNames} have the same id "${id}"`,
       category: ErrorCategory.DataStructureError,
       subjects,
-      rule: 'Node ID Not Unique',
-      fixes: [`Consider removing the nodes with labels ${nodeNames}`],
+      rule: 'no-repeated-node-id',
+      fixes: [`consider removing the nodes with labels ${nodeNames}`],
     });
   });
 

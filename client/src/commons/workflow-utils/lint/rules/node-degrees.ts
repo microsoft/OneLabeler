@@ -46,8 +46,8 @@ const checkNodeDegrees = (
           }" has indegree ${indegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...inwardEdges],
-          rule: 'Initialize Node Indegree Should Be Zero',
-          fixes: ['remove all the inward edges to the initialization node'],
+          rule: 'flowchart-node-indegree-range',
+          fixes: ['remove all the inward edges to the initialization node to make its indegree zero'],
         });
       }
       if (outdegree !== 1) {
@@ -59,11 +59,10 @@ const checkNodeDegrees = (
           }" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Initialize Node Outdegree Should Be One',
+          rule: 'flowchart-node-outdegree-range',
           fixes: [
-            outdegree === 0
-              ? 'create an outward edge from the initialization node to another node'
-              : 'remove an outward edge from the initialization node',
+            `${outdegree === 0 ? 'create an outward edge' : 'remove outward edges'}
+            from the initialization node to make its outdegree one`,
           ],
         });
       }
@@ -78,8 +77,8 @@ const checkNodeDegrees = (
           }" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
-          rule: 'Conditional Branching Node Indegree Should Not Be Zero',
-          fixes: ['create an inward edge from another node to the conditional branching node'],
+          rule: 'flowchart-node-indegree-range',
+          fixes: ['create an inward edge to the conditional branching node to make its indegree nonzero'],
         });
       }
 
@@ -92,11 +91,10 @@ const checkNodeDegrees = (
           }" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Conditional Branching Node Outdegree Should Be Two',
+          rule: 'flowchart-node-outdegree-range',
           fixes: [
-            outdegree <= 1
-              ? 'create an outward edge from the conditional branching node to another node'
-              : 'remove an outward edge from the conditional branching node',
+            `${outdegree <= 1 ? 'create an outward edge' : 'remove outward edges'}
+            from the conditional branching node to make its outdegree two`,
           ],
         });
       } else {
@@ -109,8 +107,8 @@ const checkNodeDegrees = (
             }" to node with label "${edge.target}" has no condition`,
             category: ErrorCategory.TopologyError,
             subjects: [edge],
-            rule: 'Conditional Branching Node Outward Edge Should Have Condition',
-            fixes: ['remove this edge'],
+            rule: 'should-choose-branching-condition',
+            fixes: ['choose a branching condition for this edge'],
           });
         });
         const [edge1, edge2] = outwardEdges;
@@ -122,8 +120,8 @@ const checkNodeDegrees = (
             }" are all ${edge1.condition}`,
             category: ErrorCategory.TopologyError,
             subjects: [edge1, edge2],
-            rule: 'Conditional Branching Node Outward Edge Conditions Should Be Exclusive',
-            fixes: ['remove one of the two edges'],
+            rule: 'no-repeated-branching-condition',
+            fixes: ['flip the branching condition of one of the two edges'],
           });
         }
       }
@@ -136,8 +134,8 @@ const checkNodeDegrees = (
           message: `exit node with label "${node.label}" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
-          rule: 'Exit Node Indegree Should Not Be Zero',
-          fixes: ['create an inward edge from another node to the exit node'],
+          rule: 'flowchart-node-indegree-range',
+          fixes: ['create an inward edge to the exit node to make its indegree nonzero'],
         });
       }
       if (outdegree !== 0) {
@@ -147,8 +145,8 @@ const checkNodeDegrees = (
           message: `exit node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Exit Node Outdegree Should Be Zero',
-          fixes: ['remove outward edges from the exit node'],
+          rule: 'flowchart-node-outdegree-range',
+          fixes: ['remove outward edges from the exit node to make its outdegree zero'],
         });
       }
     } else {
@@ -157,25 +155,24 @@ const checkNodeDegrees = (
       if (indegree === 0) {
         messages.push({
           type: LintMessageType.Error,
-          message: `process node with label "${node.label}" has indegree 0`,
+          message: `computation node with label "${node.label}" has indegree 0`,
           category: ErrorCategory.TopologyError,
           subjects: [node],
-          rule: 'Module Node Indegree Should Not Be Zero',
-          fixes: [`create an inward edge from another node to the node with label "${node.label}"`],
+          rule: 'flowchart-node-indegree-range',
+          fixes: [`create an inward edge to the node with label "${node.label}" to make its indegree nonzero`],
         });
       }
       if (outdegree !== 1) {
         const outwardEdges = edges.filter((d) => d.source === id);
         messages.push({
           type: LintMessageType.Error,
-          message: `process node with label "${node.label}" has outdegree ${outdegree}`,
+          message: `computation node with label "${node.label}" has outdegree ${outdegree}`,
           category: ErrorCategory.TopologyError,
           subjects: [node, ...outwardEdges],
-          rule: 'Module Node Outdegree Should Be One',
+          rule: 'flowchart-node-outdegree-range',
           fixes: [
-            outdegree === 0
-              ? `create an outward edge from the node with label "${node.label}" to another node`
-              : `remove an outward edge from the node with label "${node.label}"`,
+            `${outdegree === 0 ? 'create an outward edge' : 'remove outward edges'}
+            from the node with label "${node.label}" to make its outdegree one`,
           ],
         });
       }

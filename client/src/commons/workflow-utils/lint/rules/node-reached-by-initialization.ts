@@ -29,7 +29,7 @@ const checkNodeReachedByInitialization = (
         }" unreachable from the initialization node ()`,
         category: ErrorCategory.TopologyError,
         subjects: [node],
-        rule: 'ALL The Nodes Should Be Reachable',
+        rule: 'no-isolated-node',
         fixes: [`create an inward edge from another node to the node with label "${node.label}"`],
       });
     });

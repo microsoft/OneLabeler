@@ -1,5 +1,5 @@
 <template>
-  <div :style="style.card">
+  <div :style="style.cardElevated">
     <div :style="style.cardHeader">
       <v-icon
         class="px-2"
@@ -137,7 +137,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { WorkflowEdge } from '@/commons/types';
-import { card, cardHeader } from '@/style';
+import { card, cardElevated, cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'TheEdgeDetails',
@@ -152,7 +152,7 @@ export default defineComponent({
   },
   data() {
     return {
-      style: { card, cardHeader },
+      style: { card, cardElevated, cardHeader },
       viewTitle: 'Edge Settings',
     };
   },

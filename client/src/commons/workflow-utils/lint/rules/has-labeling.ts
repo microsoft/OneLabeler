@@ -19,7 +19,7 @@ const checkHasLabeling = (
       message: 'no interactive labeling node exists',
       subjects: [],
       category: ErrorCategory.TopologyError,
-      rule: 'Should Involve Labeling',
+      rule: 'should-involve-labeling',
       fixes: ['create an interactive labeling node'],
     }];
   }
@@ -67,7 +67,7 @@ const checkHasLabeling = (
       message: 'exist an execution of the workflow that does not involve labeling',
       category: ErrorCategory.TopologyError,
       subjects: [],
-      rule: 'Should Involve Labeling',
+      rule: 'should-involve-labeling',
       fixes: ['check branches and make sure interactive labeling is visited in each branch'],
     });
   }

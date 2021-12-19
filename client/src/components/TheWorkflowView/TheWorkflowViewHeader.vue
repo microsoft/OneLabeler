@@ -37,7 +37,7 @@ const entries = [
   },
   {
     color: nodeTypeToColor(WorkflowNodeType.InteractiveLabeling),
-    text: 'module',
+    text: 'computation',
   },
   {
     color: nodeTypeToColor(WorkflowNodeType.Decision),

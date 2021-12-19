@@ -31,7 +31,7 @@ const checkModuleImplemented = (
       message: 'data type not selected',
       category: ErrorCategory.ImplementationError,
       subjects: [initializationNode],
-      rule: 'Implementation Must Be Chosen',
+      rule: 'should-choose-implementation',
       fixes: ['choose the data type in the initialization node'],
     });
   }
@@ -47,7 +47,7 @@ const checkModuleImplemented = (
       message: 'label task(s) not selected',
       category: ErrorCategory.ImplementationError,
       subjects: [initializationNode],
-      rule: 'Implementation Must Be Chosen',
+      rule: 'should-choose-implementation',
       fixes: ['choose the label task type(s) in the initialization node'],
     });
   }
@@ -79,7 +79,7 @@ const checkModuleImplemented = (
         }"`,
         category: ErrorCategory.ImplementationError,
         subjects: [node],
-        rule: 'Implementation Must Be Chosen',
+        rule: 'should-choose-implementation',
         fixes: [`configure the implementation for the node with label "${
           node.label
         }"`],

@@ -28,11 +28,11 @@ const checkIterativeTraining = (
         type: LintMessageType.Warning,
         message: `node with label "${
           node.label
-        }" requires model but the model is not iteratively updated in the loop`,
+        }" requires model but the model is not iteratively updated in a loop`,
         category: ErrorCategory.AntiPattern,
         subjects: [node],
-        rule: 'Models Are Recommended To Be Incrementally Updated',
-        fixes: ['consider whether to add model training in the loop that contains this node'],
+        rule: 'prefer-incrementally-update-models',
+        fixes: ['consider whether to add model training in a loop that contains this node'],
       });
     });
   });

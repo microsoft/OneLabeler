@@ -16,8 +16,12 @@ const checkOneInitializationNode = (
       message: `found ${initializationNodes.length} initialization nodes`,
       category: ErrorCategory.TopologyError,
       subjects: initializationNodes,
-      rule: 'Need One Initialization Node',
-      fixes: ['create an initialization node'],
+      rule: 'should-have-one-initialization-node',
+      fixes: [
+        initializationNodes.length === 0
+          ? 'create an initialization node'
+          : 'remove an initialization node',
+      ],
     }];
   }
 

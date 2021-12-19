@@ -16,8 +16,12 @@ const checkOneExitNode = (
       message: `found ${exitNodes.length} exit nodes`,
       category: ErrorCategory.TopologyError,
       subjects: exitNodes,
-      rule: 'Need One Exit Node',
-      fixes: ['create an exit node'],
+      rule: 'should-have-one-exit-node',
+      fixes: [
+        exitNodes.length === 0
+          ? 'create an exit node'
+          : 'remove an exit node',
+      ],
     }];
   }
 
