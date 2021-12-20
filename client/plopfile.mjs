@@ -48,7 +48,7 @@ export default (plop) => {
       {
         type: 'modify',
         path: 'src/builtins/data-types/index.ts',
-        pattern: /] as/gi,
+        pattern: /] as/,
         template: '  {{camelCase name}},\n] as',
       },
     ],
@@ -79,7 +79,7 @@ export default (plop) => {
       {
         type: 'modify',
         path: 'src/builtins/label-task-types/index.ts',
-        pattern: /] as/gi,
+        pattern: /] as/,
         template: '  {{camelCase name}},\n] as',
       },
     ],
@@ -95,7 +95,7 @@ export default (plop) => {
       // Copy base template.
       {
         type: 'add',
-        path: 'src/builtins/workflow-templates/templates/{{name}}.ts',
+        path: 'src/builtins/workflow-templates/templates/{{kebabCase name}}.ts',
         templateFile: 'src/cli-templates/workflow-template/base.ts',
       },
       // Import the template.
@@ -103,14 +103,50 @@ export default (plop) => {
         type: 'modify',
         path: 'src/builtins/workflow-templates/index.ts',
         pattern: 'export default [',
-        template: "import {{camelCase name}} from './templates/{{name}}';\n\nexport default [",
+        template: "import {{camelCase name}} from './templates/{{kebabCase name}}';\n\nexport default [",
       },
       // Export the template.
       {
         type: 'modify',
         path: 'src/builtins/workflow-templates/index.ts',
-        pattern: /];/gi,
+        pattern: /];/,
         template: '  {{camelCase name}},\n];',
+      },
+    ],
+  });
+  plop.setGenerator('new module', {
+    description: 'customize module',
+    prompts: [{
+      type: 'input',
+      name: 'name',
+      message: 'module name',
+    }, {
+      type: 'list',
+      name: 'type',
+      message: 'module type',
+      choices: ['interface', 'algorithm'],
+    }],
+    actions: [
+      // Copy base module.
+      {
+        type: 'addMany',
+        destination: 'src/builtins/modules/{{kebabCase name}}',
+        base: 'src/cli-templates/module-{{type}}/',
+        templateFiles: 'src/cli-templates/module-{{type}}/**',
+      },
+      // Import the module.
+      {
+        type: 'modify',
+        path: 'src/builtins/modules/index.ts',
+        pattern: 'export default [',
+        template: "import {{camelCase name}} from './{{kebabCase name}}';\n\nexport default [",
+      },
+      // Export the template.
+      {
+        type: 'modify',
+        path: 'src/builtins/modules/index.ts',
+        pattern: /] as/,
+        template: '  {{camelCase name}},\n] as',
       },
     ],
   });
@@ -121,12 +157,32 @@ export default (plop) => {
       name: 'name',
       message: 'data type name',
     }],
-    actions: [
-      {
-        type: 'remove',
-        path: 'src/builtins/data-types/{{kebabCase name}}',
-      },
-    ],
+    actions: (data) => {
+      const camelCaseName = plop.getHelper('camelCase')(data.name);
+      const kebabCaseName = plop.getHelper('kebabCase')(data.name);
+
+      return [
+        // Remove the folder.
+        {
+          type: 'remove',
+          path: 'src/builtins/data-types/{{kebabCase name}}',
+        },
+        // Remove the import.
+        {
+          type: 'modify',
+          path: 'src/builtins/data-types/index.ts',
+          pattern: `import ${camelCaseName} from './${kebabCaseName}';`,
+          template: '',
+        },
+        // Remove the export.
+        {
+          type: 'modify',
+          path: 'src/builtins/data-types/index.ts',
+          pattern: `  ${camelCaseName},`,
+          template: '',
+        },
+      ];
+    },
   });
   plop.setGenerator('remove label task type', {
     description: 'delete existing label task type',
@@ -135,12 +191,32 @@ export default (plop) => {
       name: 'name',
       message: 'label task type name',
     }],
-    actions: [
-      {
-        type: 'remove',
-        path: 'src/builtins/label-task-types/{{kebabCase name}}',
-      },
-    ],
+    actions: (data) => {
+      const camelCaseName = plop.getHelper('camelCase')(data.name);
+      const kebabCaseName = plop.getHelper('kebabCase')(data.name);
+
+      return [
+        // Remove the folder.
+        {
+          type: 'remove',
+          path: 'src/builtins/label-task-types/{{kebabCase name}}',
+        },
+        // Remove the import.
+        {
+          type: 'modify',
+          path: 'src/builtins/label-task-types/index.ts',
+          pattern: `import ${camelCaseName} from './${kebabCaseName}';`,
+          template: '',
+        },
+        // Remove the export.
+        {
+          type: 'modify',
+          path: 'src/builtins/label-task-types/index.ts',
+          pattern: `  ${camelCaseName},`,
+          template: '',
+        },
+      ];
+    },
   });
   plop.setGenerator('remove workflow template', {
     description: 'delete existing workflow template',
@@ -149,11 +225,32 @@ export default (plop) => {
       name: 'name',
       message: 'template name',
     }],
-    actions: [
-      {
-        type: 'remove',
-        path: 'src/builtins/workflow-templates/templates/{{name}}.ts',
-      },
-    ],
+    actions: (data) => {
+      const { name } = data;
+      const camelCaseName = plop.getHelper('camelCase')(name);
+      const kebabCaseName = plop.getHelper('kebabCase')(name);
+
+      return [
+        // Remove the file.
+        {
+          type: 'remove',
+          path: 'src/builtins/workflow-templates/templates/{{kebabCase name}}.ts',
+        },
+        // Remove the import.
+        {
+          type: 'modify',
+          path: 'src/builtins/workflow-templates/index.ts',
+          pattern: `import ${camelCaseName} from './templates/${kebabCaseName}';`,
+          template: '',
+        },
+        // Remove the export.
+        {
+          type: 'modify',
+          path: 'src/builtins/workflow-templates/index.ts',
+          pattern: `  ${camelCaseName},`,
+          template: '',
+        },
+      ];
+    },
   });
 };
