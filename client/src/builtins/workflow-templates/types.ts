@@ -21,14 +21,22 @@ export enum WorkflowNodeType {
 }
 
 export interface WorkflowNode {
+  /** The id of the node. */
   id: string;
+  /** The name of the node as appear in the interface. */
   label: string;
   type: WorkflowNodeType;
-  /** The chosen implementation (null when not chosen.) */
+  /** The chosen implementation (null when not chosen). */
   value: IModule | null;
+  /**
+   * The layout specifying where the node should
+   * be rendered and the size of the node.
+   */
   layout: {
+    /** The position of the top left corner of the node. */
     x: number;
     y: number;
+    /** The size of the node. */
     width: number;
     height: number;
   };
@@ -43,6 +51,10 @@ export interface IInitializationNode extends WorkflowNode {
   })
 }
 
+/**
+ * The type of relative position (as discrete state) of the port
+ * in the node containing the port.
+ */
 export enum PortDirection {
   Top = 'Top',
   Left = 'Left',
@@ -51,15 +63,26 @@ export enum PortDirection {
 }
 
 export type WorkflowEdge = {
-  // The id of the source node.
+  /** The id of the source node. */
   source: string;
-  // The id of the target node.
+  /** The id of the target node. */
   target: string;
+  /** The id of the edge itself. */
   id: string;
+  /** The condition bound to the edge for outward edges of conditional branching. */
   condition?: boolean;
+  /** The layout specifying where the edge should be rendered in the interface. */
   layout: {
     source: {
+      /**
+       * The relative position (as discrete state) of the port
+       * in the node containing the port.
+       */
       direction: PortDirection,
+      /**
+       * The relative position (in pixels) of the port
+       * to the top left corner of the node containing the port.
+       */
       dx: number;
       dy: number;
     },

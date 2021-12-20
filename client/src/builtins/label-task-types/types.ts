@@ -122,6 +122,7 @@ export interface ILabel {
   spans?: ILabelTextSpan[];
   relations?: ILabelRelation[];
   pointLabels?: ILabelPoints;
+  [content: string]: unknown;
 }
 
 /** The query data structure for updating the label with the partial value. */

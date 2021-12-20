@@ -52,25 +52,24 @@ const checkModuleInputsInitialized = (
 
       // The states not initialized but used as inputs.
       const notInitializedInputs = inputs.filter((d) => !initializedStates.has(d));
-      if (notInitializedInputs.length !== 0) {
+      const nStates = notInitializedInputs.length;
+      if (nStates !== 0) {
         messages.push({
           type: LintMessageType.Error,
-          message: `node with label "${
-            node.label
-          }" has uninitialized input${
-            notInitializedInputs.length === 1 ? '' : 's'
-          } ${
+          message: `state${nStates === 1 ? '' : 's'} ${
             notInitializedInputs.map((d) => `"${d}"`).join(', ')
-          }`,
+          } ${nStates === 1 ? 'is' : 'are'} used as input${
+            nStates === 1 ? '' : 's'
+          } to the node with label "${node.label}" before initialized`,
           category: ErrorCategory.ImplementationError,
           subjects: [node],
-          rule: 'initialize-states-before-used',
+          rule: 'no-uninitialized-inputs',
           fixes: notInitializedInputs.map((input): string[] => {
             const nodeTypes = filterNodeTypesByOutputs([input]);
             return nodeTypes.map((type) => (
               type.value.type === WorkflowNodeType.Initialization
                 ? `add ${input} to the output of the initialization node to make ${input} initialized`
-                : `add ${type.name} before this node is visited to initialize ${input}`
+                : `add/move ${type.name} before this node is visited to initialize ${input}`
             ));
           }).flat(),
         });

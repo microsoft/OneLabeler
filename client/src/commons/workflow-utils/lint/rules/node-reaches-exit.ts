@@ -34,8 +34,10 @@ const checkNodeReachesExit = (
         message: `node with label "${node.label}" cannot reach the exit node`,
         category: ErrorCategory.TopologyError,
         subjects: [node],
-        rule: 'all-the-nodes-should-reach-exit-node',
-        fixes: [`create an outward edge from the node with label "${node.label}" to another node`],
+        rule: 'no-dead-end-node',
+        fixes: [`create an outward edge from the node with label "${
+          node.label
+        }" to another node that can reach the exit node`],
       });
     });
   }

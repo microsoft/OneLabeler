@@ -31,7 +31,7 @@ const checkIterativeTraining = (
         }" requires model but the model is not iteratively updated in a loop`,
         category: ErrorCategory.AntiPattern,
         subjects: [node],
-        rule: 'prefer-incrementally-update-models',
+        rule: 'prefer-model-update-in-the-loop',
         fixes: ['consider whether to add model training in a loop that contains this node'],
       });
     });
