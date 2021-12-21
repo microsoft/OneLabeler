@@ -377,7 +377,7 @@ export default {
         type: MessageType.Success,
       });
       if (this.startNode === null) return;
-      await this.executeWorkflow(this.startNode);
+      await this.executeWorkflow({ node: this.startNode });
     },
     async onLoadProject(file: File): Promise<void> {
       const data = await parseJsonFile(file);
@@ -422,11 +422,11 @@ export default {
           content: 'Project Data Uploaded.',
           type: MessageType.Success,
         });
-        await this.executeWorkflow(this.startNode);
+        await this.executeWorkflow({ node: this.startNode });
         return;
       }
       if (this.nextNodes.length !== 1) return;
-      await this.executeWorkflow(this.nextNodes[0]);
+      await this.executeWorkflow({ node: this.nextNodes[0] });
     },
     onClickUndo(): void {
       if (this.lastCommand !== null) {

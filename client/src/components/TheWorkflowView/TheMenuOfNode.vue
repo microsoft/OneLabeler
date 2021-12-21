@@ -30,6 +30,21 @@
       <v-list-item
         class="py-0 pl-0 pr-1"
         style="min-height:24px"
+        @click="$emit('execute-1-step-from:node')"
+      >
+        <v-icon
+          class="px-2"
+          aria-hidden="true"
+          style="font-size:12px; width: 1.5rem;"
+          small
+        >
+          $vuetify.icons.values.flowChart
+        </v-icon>
+        Goto & Execute 1 Step
+      </v-list-item>
+      <v-list-item
+        class="py-0 pl-0 pr-1"
+        style="min-height:24px"
         @click="$emit('goto:node')"
       >
         <v-icon
@@ -84,6 +99,7 @@ export default defineComponent({
   emits: {
     'update:show': null,
     'execute-from:node': null,
+    'execute-1-step-from:node': null,
     'goto:node': null,
     'remove:selected': null,
   },

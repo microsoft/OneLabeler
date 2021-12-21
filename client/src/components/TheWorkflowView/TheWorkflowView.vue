@@ -19,6 +19,7 @@
       @remove:node="onRemoveNode"
       @goto:node="setCurrentNode($event)"
       @execute-from:node="onExecuteFromNode"
+      @execute-1-step-from:node="onExecuteOneStepFromNode"
       @create:edge="pushEdges($event)"
       @edit:edge="editEdge($event)"
       @remove:edge="removeEdge($event)"
@@ -99,7 +100,11 @@ export default defineComponent({
     },
     onExecuteFromNode(node: WorkflowNode): void {
       this.setCurrentNode(node);
-      this.executeWorkflow(node);
+      this.executeWorkflow({ node });
+    },
+    onExecuteOneStepFromNode(node: WorkflowNode): void {
+      this.setCurrentNode(node);
+      this.executeWorkflow({ node, recursive: false });
     },
   },
 });

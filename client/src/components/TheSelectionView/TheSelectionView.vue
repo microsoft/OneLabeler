@@ -52,8 +52,8 @@ export default {
       await this.executeDataObjectSelectionManual(uuids);
       if (this.nextNodes === null || this.nextNodes.length !== 1) return;
 
-      // await this.executeWorkflow(this.nextNodes[0]);
-      await this.executeWorkflow(taskWindow.node);
+      // await this.executeWorkflow({ node: this.nextNodes[0] });
+      await this.executeWorkflow({ node: taskWindow.node });
     },
   },
 };

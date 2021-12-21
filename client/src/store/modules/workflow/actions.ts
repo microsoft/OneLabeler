@@ -199,9 +199,9 @@ const handleAlgorithmServiceError = (
 
 export const executeModule = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: IModule,
+  moduleInstance: IModule,
 ): Promise<void> => {
-  if (method.run === undefined || method.run === null) {
+  if (moduleInstance.run === undefined || moduleInstance.run === null) {
     throw Error('Method not implemented');
   }
 
@@ -217,7 +217,7 @@ export const executeModule = showProgressBar(async (
 
   // TODO: should only access categories visible to the current label task.
   const categories: Category[] = Object.keys(categoryTasks);
-  const { inputs, outputs } = method;
+  const { inputs, outputs } = moduleInstance;
   const nDataObjects = await dataObjects?.count() ?? null;
 
   const payload = {
@@ -230,13 +230,13 @@ export const executeModule = showProgressBar(async (
     }),
     ...(inputs.includes('queryUuids') && { queryUuids }),
     ...(inputs.includes('features') && { dataObjects }),
-    ...(inputs.includes('model') && { model: method.model, categories, unlabeledMark }),
+    ...(inputs.includes('model') && { model: moduleInstance.model, categories, unlabeledMark }),
     ...(inputs.includes('categories') && { categories, unlabeledMark }),
     ...(inputs.includes('stop') && { stop }),
   };
 
   try {
-    const response = await method.run(payload);
+    const response = await moduleInstance.run(payload);
     if (outputs.includes('dataObjects')) {
       if (dataObjects === null) throw Error('Data object storage not initialized');
       const { dataObjects: newValue } = response as { dataObjects: IDataObject[] };
@@ -338,7 +338,7 @@ export const executeDataObjectExtraction = showProgressBar(async (
 
 export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  method: IModule,
+  moduleInstance: IModule,
 ): Promise<void> => {
   const {
     labels,
@@ -365,13 +365,13 @@ export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
   // Sample data objects.
   const { dataObjects } = rootState;
   if (dataObjects === null) throw Error('Data object storage not initialized.');
-  const model = method.model as ModelService;
-  const nBatch = (method.params as ModuleParams).nBatch.value as number;
+  const model = moduleInstance.model as ModelService;
+  const nBatch = (moduleInstance.params as ModuleParams).nBatch.value as number;
 
   let newQueryUuids: string[] = [];
   try {
     newQueryUuids = (await API.dataObjectSelection(
-      method,
+      moduleInstance,
       dataObjects,
       statuses,
       nBatch,
@@ -451,30 +451,12 @@ const getOutputNodes = (
 
 export const executeWorkflow = async (
   store: ActionContext<IState, IRootState>,
-  node: WorkflowNode,
+  { node, recursive = true }: { node: WorkflowNode, recursive: boolean },
 ): Promise<void> => {
   const { commit, state, rootState } = store;
   const { nodes, edges } = state;
-  let outputNode = null;
 
-  if (node.type === WorkflowNodeType.Initialization) {
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
-
-  if (node.type === WorkflowNodeType.Exit) {
-    return;
-  }
-
-  if (node.type === WorkflowNodeType.Decision) {
-    const { stop } = rootState;
-    [outputNode] = getOutputNodes(
-      node, nodes, edges.filter((d) => d.condition === stop),
-    );
-  }
-
-  if (node.type === WorkflowNodeType.LabelIdeation) {
-    [outputNode] = getOutputNodes(node, nodes, edges);
-  }
+  if (node.type === WorkflowNodeType.Exit) return;
 
   if (
     node.type === WorkflowNodeType.FeatureExtraction
@@ -483,27 +465,32 @@ export const executeWorkflow = async (
     || node.type === WorkflowNodeType.ModelTraining
     || node.type === WorkflowNodeType.Base
   ) {
-    const method = node.value as IModule;
-    await executeModule(store, method);
-    [outputNode] = getOutputNodes(node, nodes, edges);
+    await executeModule(store, node.value as IModule);
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
-    const method = node.value as IModule;
-    if (method.render === undefined) {
-      await executeDataObjectSelectionAlgorithmic(store, node.value as IModule);
+    const moduleInstance = node.value as IModule;
+    if (moduleInstance.render === undefined) {
+      await executeDataObjectSelectionAlgorithmic(store, moduleInstance);
     }
-    [outputNode] = getOutputNodes(node, nodes, edges);
   }
 
   if (node.type === WorkflowNodeType.InteractiveLabeling) {
     return;
   }
 
-  if (node.type === WorkflowNodeType.QualityAssurance) {
-    // TODO
-  }
-
+  const { stop } = rootState;
+  const outputNodes = getOutputNodes(
+    node,
+    nodes,
+    node.type === WorkflowNodeType.Decision
+      ? edges.filter((d) => d.condition === stop)
+      : edges,
+  );
+  const outputNode = outputNodes.length === 0 ? null : outputNodes[0];
   commit(types.SET_CURRENT_NODE, outputNode);
-  await executeWorkflow(store, outputNode as WorkflowNode);
+
+  if (recursive && outputNode !== null) {
+    await executeWorkflow(store, { node: outputNode, recursive });
+  }
 };

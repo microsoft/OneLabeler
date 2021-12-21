@@ -71,6 +71,7 @@
       :position-x="rightClickClientX"
       :position-y="rightClickClientY"
       @execute-from:node="onExecuteFromSelectedNode"
+      @execute-1-step-from:node="onExecuteOneStepFromSelectedNode"
       @goto:node="onGotoSelectedNode"
       @remove:selected="onRemoveSelected"
       @update:show="showMenuOfNode = $event"
@@ -192,6 +193,7 @@ export default defineComponent({
     'remove:edge': null,
     'goto:node': null,
     'execute-from:node': null,
+    'execute-1-step-from:node': null,
   },
   data() {
     return {
@@ -438,6 +440,12 @@ export default defineComponent({
       if (this.selectedNodes.length !== 1) return;
       const [node] = this.selectedNodes;
       this.$emit('execute-from:node', node);
+      this.focusToCanvas();
+    },
+    onExecuteOneStepFromSelectedNode(): void {
+      if (this.selectedNodes.length !== 1) return;
+      const [node] = this.selectedNodes;
+      this.$emit('execute-1-step-from:node', node);
       this.focusToCanvas();
     },
     onKey(e: KeyboardEvent): void {
