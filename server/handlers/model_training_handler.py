@@ -24,10 +24,11 @@ from .utils.data_labeling.types import (
     Status,
 )
 
+
 def update_estimator(estimator_type: str,
                      estimator: BaseEstimator,
                      features: np.ndarray,
-                     labels: np.ndarray,
+                     labels: List[Union[Label, None]],
                      statuses: np.ndarray) -> BaseEstimator:
     assert len(features) == len(labels),\
         f'number of data objects and labels mismatch: {len(features)} != {len(labels)}'
@@ -43,26 +44,34 @@ def update_estimator(estimator_type: str,
         BuiltInModelType.RestrictedBoltzmannMachine,
     ], f'Invalid model type: {estimator_type}'
 
+    # Note: when a data object is labeled for label tasks other than classification,
+    # its status will be Labeled, but the label will be None.
     mask_labeled = np.array([status == StatusType.Labeled
-                             for status in statuses])
+                             and labels[i] != None
+                             and 'category' in labels[i]
+                             for i, status in enumerate(statuses)])
     if np.sum(mask_labeled) == 0:
         return estimator
+
+    classification_labels = np.array([
+        (d['category'] if (d is not None and 'category' in d) else None)
+        for d in labels], dtype=str)
 
     X = features
 
     unlabeled_indices = np.where(~mask_labeled)[0]
     if len(unlabeled_indices) != 0:
-        unlabeled_mark = labels[unlabeled_indices[0]]
-        categories = np.array([d for d in np.unique(labels)
+        unlabeled_mark = classification_labels[unlabeled_indices[0]]
+        categories = np.array([d for d in np.unique(classification_labels)
                                if d != unlabeled_mark])
         encoder = LabelEncoder().fit(categories)
-        y = np.zeros(len(labels), dtype=int)
-        y[mask_labeled] = encoder.transform(labels[mask_labeled])
+        y = np.zeros(len(classification_labels), dtype=int)
+        y[mask_labeled] = encoder.transform(classification_labels[mask_labeled])
         y[~mask_labeled] = -1
     else:
-        categories = np.unique(labels)
+        categories = np.unique(classification_labels)
         encoder = LabelEncoder().fit(categories)
-        y = encoder.transform(labels)
+        y = encoder.transform(classification_labels)
 
     X_train = X[mask_labeled]
     y_train = y[mask_labeled]
@@ -155,7 +164,6 @@ class ModelTrainingHandler(tornado.web.RequestHandler):
         # data structure transformation
         features = np.array([data_object['features']
                              for data_object in data_objects])
-        labels = np.array([(d['category'] if d is not None else None) for d in labels], dtype=str)
         statuses = np.array([d['value'] for d in statuses], dtype=str)
         estimator = load_estimator(model)
 
