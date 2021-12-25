@@ -13,6 +13,7 @@
       </v-icon>
       Console
     </div>
+    <v-divider />
     <div style="overflow-y: auto;">
       <VMessage
         v-for="(message, i) in consoleMessages"

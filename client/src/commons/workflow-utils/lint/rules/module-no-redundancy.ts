@@ -108,6 +108,7 @@ const checkModuleNoRedundancy = (
         // rule: 'consume-module-outputs',
         rule: 'no-unused-function-return',
         fixes: [
+          `remove ${output} from the outputs of this node if the outputs of this node is customizable`,
           ...filterNodeTypesByInputs([output]).map((type) => (
             `add ${type.name} after this node is visited to consume ${output}`
           )),
