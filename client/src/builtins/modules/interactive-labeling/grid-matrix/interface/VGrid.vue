@@ -15,6 +15,7 @@
     <VGridHeader
       class="px-1 py-0 white--text"
       pointer-events="none"
+      :data-type="dataType"
       :label-tasks="labelTasks"
       :label="label"
       :status="status"

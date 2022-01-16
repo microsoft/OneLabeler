@@ -7,5 +7,5 @@ export default {
   type: LabelTaskType.FreeformText,
   label: 'freeform text',
   singleTool: BaseSingleTool,
-  panel: BasePanel,
+  // panel: BasePanel,
 } as ILabelTaskTypeSetup;

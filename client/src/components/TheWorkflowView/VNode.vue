@@ -166,7 +166,7 @@ export default defineComponent({
       const { node } = this;
       if (node === null) return '';
       return `node type: ${node.type}\n${
-        node.value?.label !== undefined ? `selected module: ${node.value.label}` : ''
+        node.value?.label !== undefined ? `implementation: ${node.value.label}` : ''
       }`;
     },
     isDecision(): boolean {

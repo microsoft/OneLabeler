@@ -29,6 +29,8 @@
       />
       <component
         :is="setup.singleTool"
+        :data-type="dataType"
+        :label-tasks="labelTasks"
         :label="label"
         :categories="filterCategoriesByLabelTask(setup.type)"
         :label2color="label2color"
@@ -42,9 +44,11 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { LabelTaskType, StatusType } from '@/commons/types';
+import { StatusType } from '@/commons/types';
 import type {
   Category,
+  DataType,
+  LabelTaskType,
   ILabel,
   ILabelTaskTypeSetup,
 } from '@/commons/types';
@@ -53,6 +57,10 @@ import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 export default defineComponent({
   name: 'VGridHeader',
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     labelTasks: {
       type: Array as PropType<LabelTaskType[]>,
       required: true,
@@ -81,9 +89,6 @@ export default defineComponent({
   },
   emits: {
     'upsert:labels': null,
-  },
-  data() {
-    return { LabelTaskType };
   },
   computed: {
     taskSetups(): ILabelTaskTypeSetup[] {

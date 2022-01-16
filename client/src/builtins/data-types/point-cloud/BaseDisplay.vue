@@ -45,7 +45,7 @@ export default defineComponent({
     },
     multiView: {
       type: Boolean as PropType<boolean>,
-      default: true,
+      default: false,
     },
   },
   computed: {

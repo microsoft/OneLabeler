@@ -1,5 +1,8 @@
 <template>
-  <div style="display: flex; gap: 4px;">
+  <div
+    v-if="!isMedia"
+    style="display: flex; gap: 4px;"
+  >
     <v-btn
       v-for="category in categories"
       :key="category"
@@ -31,12 +34,17 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { DataType } from '@/commons/types';
 import type { Category } from '@/commons/types';
 import type { ToolbarState } from './types';
 
 export default defineComponent({
   name: 'BaseSingleTool',
   props: {
+    dataType: {
+      type: String as PropType<DataType>,
+      required: true,
+    },
     categories: {
       type: Array as PropType<Category[]>,
       required: true,
@@ -54,6 +62,10 @@ export default defineComponent({
     'upsert:toolbar-state': null,
   },
   computed: {
+    isMedia(): boolean {
+      const { dataType } = this;
+      return [DataType.Video, DataType.YoutubeVideo, DataType.Audio].includes(dataType);
+    },
     strokeCategory(): Category | string | null {
       return this.toolbarState?.strokeCategory ?? null;
     },

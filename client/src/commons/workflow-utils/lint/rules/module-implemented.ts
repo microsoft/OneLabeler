@@ -80,9 +80,7 @@ const checkModuleImplemented = (
         category: ErrorCategory.ImplementationError,
         subjects: [node],
         rule: 'should-choose-implementation',
-        fixes: [`configure the implementation for the node with label "${
-          node.label
-        }"`],
+        fixes: ['configure the implementation for this node in the panel on the right'],
       });
     }
   });

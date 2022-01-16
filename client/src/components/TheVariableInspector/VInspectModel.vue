@@ -11,7 +11,7 @@
       Model
     </div>
     <ObjectInspector
-      :data="models"
+      :data="models.length === 0 ? null : models"
       :array-max-properties="5"
       theme="chromeLight"
       style="padding: 4px;"

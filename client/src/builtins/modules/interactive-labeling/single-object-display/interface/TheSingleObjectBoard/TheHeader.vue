@@ -32,6 +32,8 @@
         <component
           :is="setup.singleTool"
           :key="`${i}-tool`"
+          :data-type="dataType"
+          :label-tasks="labelTasks"
           :label="label"
           :categories="filterCategoriesByLabelTask(setup.type)"
           :label2color="label2color"

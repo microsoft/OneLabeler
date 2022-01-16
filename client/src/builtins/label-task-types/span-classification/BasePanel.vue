@@ -21,9 +21,9 @@
         :key="labelSpan.uuid"
         :span="labelSpan"
         :color="label2color(labelSpan.category)"
-        :enable-link="enableLink"
         :is-selected="isSelected"
         :is-linking="isLinking"
+        :label-tasks="labelTasks"
         @select:span="onSelectSpan($event)"
         @remove:span="onRemoveSpan($event)"
         @link:span="onLinkSpan($event)"
@@ -83,9 +83,6 @@ export default defineComponent({
     },
     labelRelations(): ILabelRelation[] | null {
       return this.label?.relations ?? null;
-    },
-    enableLink(): boolean {
-      return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
     },
     selectedSpan(): ILabelTextSpan | null {
       return this.toolbarState?.selectedSpan ?? null;

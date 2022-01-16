@@ -19,6 +19,10 @@
       </div>
       <v-spacer />
 
+      <div class="category-legend">
+        range: [{{ toThreeDecimalPlaces(span.start) }}, {{ toThreeDecimalPlaces(span.end) }})
+      </div>
+
       <!-- The remove button. -->
       <v-btn
         title="remove"
@@ -66,6 +70,7 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
+import { LabelTaskType } from '@/commons/types';
 import type { ILabelTextSpan } from '@/commons/types';
 import { card as styleCard } from '@/style';
 
@@ -80,10 +85,6 @@ export default defineComponent({
       type: String as PropType<string>,
       default: '#bbb',
     },
-    enableLink: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
     isSelected: {
       type: Function as PropType<((span: ILabelTextSpan) => boolean) | null>,
       default: null,
@@ -91,6 +92,10 @@ export default defineComponent({
     isLinking: {
       type: Function as PropType<((span: ILabelTextSpan) => boolean) | null>,
       default: null,
+    },
+    labelTasks: {
+      type: Array as PropType<LabelTaskType[]>,
+      required: true,
     },
   },
   emits: {
@@ -100,6 +105,17 @@ export default defineComponent({
   },
   data() {
     return { styleCard };
+  },
+  computed: {
+    enableLink(): boolean {
+      return this.labelTasks.includes(LabelTaskType.AnnotationRelation);
+    },
+  },
+  methods: {
+    toThreeDecimalPlaces(num: number): string {
+      const parts = num.toString().split('.');
+      return parts.length === 1 ? num.toString() : num.toFixed(3);
+    },
   },
 });
 </script>

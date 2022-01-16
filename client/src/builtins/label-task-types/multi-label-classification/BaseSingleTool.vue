@@ -3,8 +3,9 @@
     :is="element"
     :label-multi-category="labelMultiCategory"
     :categories="categories"
+    :label2color="label2color"
     :disabled="disabled"
-    @set:label-multi-category="$emit('upsert:label', { multiCategory: $event })"
+    @upsert:labels="$emit('upsert:labels', $event)"
   />
 </template>
 
@@ -32,6 +33,10 @@ export default defineComponent({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -42,15 +47,13 @@ export default defineComponent({
     },
   },
   emits: {
-    'upsert:label': null,
+    'upsert:labels': null,
   },
   computed: {
     element(): VueConstructor {
-      const mapper: Record<Component, VueConstructor> = {
-        [Component.Menu]: VSingleToolMenu,
-        [Component.Tags]: VSingleToolTags,
-      };
-      return mapper[this.component];
+      if (this.component === Component.Menu) return VSingleToolMenu;
+      if (this.component === Component.Tags) return VSingleToolTags;
+      throw new TypeError(`Invalid component type ${this.component}`);
     },
     labelMultiCategory(): ILabelMultiCategory | null {
       const { label } = this;

@@ -27,6 +27,14 @@
           hide-details
         />
         {{ category }}
+        <div style="flex-grow: 1" />
+        <v-icon
+          aria-hidden="true"
+          small
+          :style="{ color: label2color(category) }"
+        >
+          $vuetify.icons.values.square
+        </v-icon>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -48,26 +56,30 @@ export default defineComponent({
       type: Array as PropType<Category[]>,
       required: true,
     },
+    label2color: {
+      type: Function as PropType<((label: string) => string) | null>,
+      default: null,
+    },
     disabled: {
       type: Boolean,
       default: false,
     },
   },
   emits: {
-    'set:label-multi-category': null,
+    'upsert:labels': null,
   },
   methods: {
     onClickCategory(category: Category): void {
       const { labelMultiCategory } = this;
       if (labelMultiCategory === null) {
-        this.$emit('set:label-multi-category', [category]);
+        this.$emit('upsert:labels', { multiCategory: [category] });
         return;
       }
       const idx = labelMultiCategory.findIndex((d) => d === category);
       const newValue: ILabelMultiCategory = idx >= 0
         ? [...labelMultiCategory.slice(0, idx), ...labelMultiCategory.slice(idx + 1)]
         : [...labelMultiCategory, category];
-      this.$emit('set:label-multi-category', newValue);
+      this.$emit('upsert:labels', { multiCategory: newValue });
     },
     isCategorySelected(category: Category): boolean {
       return this.labelMultiCategory?.includes(category) ?? false;

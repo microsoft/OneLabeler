@@ -2,6 +2,7 @@ import type { IDataTypeSetup, UploadTarget } from '@/commons/types';
 // import customMI3Block from '@/custom/mi3/data-types/discrete-bar-chart-block';
 // import customMI3Block from '@/custom/mi3/data-types/discrete-bar-chart-block/index-minimal';
 // import customTable from '@/custom/table-qa/data-types/table';
+// import customTextWithUuid from '@/custom/data-insight/data-types/text-with-uuid';
 // import customTextWithSpans from '@/custom/data-insight/data-types/text-with-spans';
 // import customTextWithTable from '@/custom/data-insight/data-types/text-with-table';
 // import customTextWithVideo from '@/custom/youtube-data-story/data-types/text-with-video';
@@ -30,6 +31,7 @@ export default [
   customVectorImage,
   // customMI3Block,
   // customTable,
+  // customTextWithUuid,
   // customTextWithSpans,
   // customTextWithTable,
   // customTextWithVideo,
