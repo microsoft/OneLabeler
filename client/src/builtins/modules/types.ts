@@ -42,7 +42,7 @@ export type ParamSpecification<T, M extends boolean> = {
   /** Check if a value option is validate given all the parameter values. */
   validate?: (
     value: T,
-    params: any,
+    params: unknown,
   ) => boolean,
 };
 

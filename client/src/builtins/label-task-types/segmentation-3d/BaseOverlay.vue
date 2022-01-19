@@ -84,9 +84,9 @@ export default defineComponent({
   methods: {
     onSegment3d(polygon: Polygon): void {
       const points2d = this.getPoints2d();
-      const { pointLabels } = this;
-      if (points2d === null || pointLabels === null) return;
-
+      if (points2d === null) return;
+      const pointLabels: string[] = this.pointLabels
+        ?? Array(points2d.length).fill(this.unlabeledMark);
       const {
         mouseOperation,
         strokeCategory,
