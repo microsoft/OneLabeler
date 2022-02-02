@@ -7,6 +7,8 @@ export default {
   id: 'GridMatrix-89670576',
   inputs: ['dataObjects', 'labels', 'queryUuids'],
   outputs: ['labels'],
+  blocking: true,
+  persistent: true,
   isBuiltIn: true,
   isServerless: true,
   params: {

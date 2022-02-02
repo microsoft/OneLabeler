@@ -58,9 +58,12 @@ export type ModuleInputNames = StateNames | 'statuses' | 'unlabeledMark';
 export interface IModule {
   inputs: string[];
   outputs: string[];
-  id: string;
-  label: string;
   type: ModuleType;
+  label: string;
+  blocking: boolean;
+  persistent?: boolean;
+
+  id: string;
 
   // The properties of the module.
   isBuiltIn: boolean;

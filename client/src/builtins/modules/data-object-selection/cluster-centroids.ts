@@ -7,6 +7,7 @@ export default {
   id: 'ClusterCentroids-60587176',
   inputs: ['features', 'labels'],
   outputs: ['queryUuids'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/ClusterCentroids`,

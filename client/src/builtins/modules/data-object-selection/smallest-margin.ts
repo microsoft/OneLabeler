@@ -7,6 +7,7 @@ export default {
   id: 'SmallestMargin-74021796',
   inputs: ['features', 'labels', 'model'],
   outputs: ['queryUuids'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/SmallestMargin`,

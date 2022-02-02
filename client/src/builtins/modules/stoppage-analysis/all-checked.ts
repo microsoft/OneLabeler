@@ -7,6 +7,7 @@ export default {
   id: 'AllChecked-46322013',
   inputs: ['labels'],
   outputs: ['stop'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   run: async (

@@ -12,6 +12,7 @@ export default {
   id: 'text-NMF-78139065',
   inputs: ['dataObjects'],
   outputs: ['features'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   dataTypes: [DataType.Text],

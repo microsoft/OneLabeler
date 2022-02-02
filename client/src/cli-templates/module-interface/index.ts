@@ -10,6 +10,7 @@ export default {
   id: uuid,
   inputs: [],
   outputs: [],
+  persistent: true,
   isBuiltIn: false,
   isServerless: true,
   render: () => TheInterface,

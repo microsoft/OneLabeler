@@ -15,6 +15,7 @@ export default {
   id: 'ModelPrediction-29967546',
   inputs: ['features', 'model', 'queryUuids'],
   outputs: ['labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   model: undefined,

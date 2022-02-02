@@ -64,6 +64,7 @@ import type { VueConstructor } from 'vue';
 import { mapActions, mapState } from 'vuex';
 import {
   TaskWindow,
+  WorkflowNode,
   WorkflowNodeType,
   DockSideType,
 } from '@/commons/types';
@@ -87,13 +88,17 @@ export default {
   },
   computed: {
     ...mapState(['taskWindows', 'dockSide']),
-    ...mapState('workflow', ['nodes']),
+    ...mapState('workflow', ['nodes', 'currentNode']),
     nWindows(): number {
       return this.taskWindowsDisplayed.length;
     },
     taskWindowsDisplayed(): TaskWindow[] {
       const taskWindows = this.taskWindows as TaskWindow[];
-      return taskWindows.filter((d) => !d.isMinimized);
+      const currentNode = this.currentNode as WorkflowNode | null;
+      return taskWindows
+        .filter((d) => !d.isMinimized)
+        .filter((d) => d.node.value?.persistent === true
+          || (currentNode !== null && d.node.id === currentNode.id));
     },
   },
   mounted() {

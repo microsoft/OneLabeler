@@ -7,6 +7,7 @@ export default {
   id: 'BaseConditionalBranching',
   label: 'Base Conditional Branching',
   type: ModuleType.Decision,
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   params: {

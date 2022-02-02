@@ -7,6 +7,7 @@ export default {
   id: 'Null',
   inputs: ['queryUuids', 'categories'],
   outputs: ['labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   labelTasks: [LabelTaskType.Classification],

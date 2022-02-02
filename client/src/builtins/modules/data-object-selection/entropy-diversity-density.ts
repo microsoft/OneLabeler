@@ -7,6 +7,7 @@ export default {
   id: 'EntropyDiversityDensity-60957928',
   inputs: ['features', 'labels', 'model'],
   outputs: ['queryUuids'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   // 'http://localhost:8005/selection/EntropyDiversityDensity'

@@ -12,6 +12,7 @@ export default {
   id: 'image-BoW-6989392',
   inputs: ['dataObjects'],
   outputs: ['features'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   dataTypes: [DataType.Image],

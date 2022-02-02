@@ -15,6 +15,7 @@ export default {
   id: 'POS-tagging-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   dataTypes: [DataType.Text],

@@ -138,6 +138,7 @@ export default {
   id: 'CNN-classification-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   dataTypes: [DataType.Image],

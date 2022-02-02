@@ -7,6 +7,8 @@ export default {
   id: 'ImageOverview',
   inputs: ['dataObjects', 'labels'],
   outputs: ['queryUuids'],
+  blocking: false,
+  persistent: true,
   isBuiltIn: true,
   isServerless: true,
   render: () => TheImageOverview,

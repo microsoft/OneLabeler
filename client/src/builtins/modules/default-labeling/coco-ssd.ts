@@ -32,6 +32,7 @@ export default {
   id: 'COCO-SSD-object-detection-438546',
   inputs: ['dataObjects', 'queryUuids'],
   outputs: ['labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   dataTypes: [DataType.Image],

@@ -7,6 +7,7 @@ export default {
   id: 'DenseAreas-67390401',
   inputs: ['features', 'labels'],
   outputs: ['queryUuids'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   api: `${ALGORITHM_URL}/selection/DenseAreas`,

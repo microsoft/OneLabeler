@@ -23,6 +23,7 @@ export default {
   id: 'BaseInitialization',
   inputs: [],
   outputs: ['dataObjects', 'labels'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   params: {

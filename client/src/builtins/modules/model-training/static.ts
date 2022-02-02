@@ -7,6 +7,7 @@ export default {
   id: 'Static-72885436',
   inputs: ['model'],
   outputs: ['model'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: true,
   run: (inputs: { model: ModelService }) => inputs.model,

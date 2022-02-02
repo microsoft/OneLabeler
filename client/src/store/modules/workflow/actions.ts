@@ -465,13 +465,21 @@ export const executeWorkflow = async (
     || node.type === WorkflowNodeType.ModelTraining
     || node.type === WorkflowNodeType.Base
   ) {
-    await executeModule(store, node.value as IModule);
+    if (node.value?.blocking === true) {
+      await executeModule(store, node.value as IModule);
+    } else {
+      executeModule(store, node.value as IModule);
+    }
   }
 
   if (node.type === WorkflowNodeType.DataObjectSelection) {
     const moduleInstance = node.value as IModule;
     if (moduleInstance.render === undefined) {
-      await executeDataObjectSelectionAlgorithmic(store, moduleInstance);
+      if (node.value?.blocking === true) {
+        await executeDataObjectSelectionAlgorithmic(store, moduleInstance);
+      } else {
+        executeDataObjectSelectionAlgorithmic(store, moduleInstance);
+      }
     }
   }
 

@@ -7,6 +7,8 @@ export default {
   id: 'Parallel Coordinate',
   inputs: ['features', 'labels', 'queryUuids'],
   outputs: ['queryUuids'],
+  blocking: false,
+  persistent: true,
   isBuiltIn: true,
   isServerless: true,
   render: () => TheInterface,

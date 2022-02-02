@@ -12,6 +12,7 @@ export default {
   id: 'label-ideation-constant',
   inputs: [],
   outputs: ['categories'],
+  blocking: true,
   isBuiltIn: true,
   isServerless: false,
   /*
