@@ -19,6 +19,8 @@ export class WorkflowNode {
 
   label: string;
 
+  type: WorkflowNodeType;
+
   value: IModule;
 
   layout?: {
@@ -135,6 +137,26 @@ export class StoppageAnalysisNode extends DataLabelingWorkflowNode {
   static type = WorkflowNodeType.StoppageAnalysis;
 
   label = 'stoppage analysis';
+}
+
+export class LabelIdeationNode extends DataLabelingWorkflowNode {
+  static possibleInputs: string[] = ['dataObjects', ' model', 'features', 'categories'];
+
+  static possibleOutputs: string[] = ['categories'];
+
+  static type = WorkflowNodeType.LabelIdeation;
+
+  label = 'label ideation';
+}
+
+export class QualityAssuranceNode extends DataLabelingWorkflowNode {
+  static possibleInputs: string[] = ['dataObjects', 'labels', 'features'];
+
+  static possibleOutputs: string[] = ['labels'];
+
+  static type = WorkflowNodeType.QualityAssurance;
+
+  label = 'quality assurance';
 }
 
 export class CustomNode extends DataLabelingWorkflowNode {

@@ -71,6 +71,14 @@ const menuOptions = [
     value: WorkflowNodeType.ModelTraining,
   },
   {
+    label: 'quality assurance',
+    value: WorkflowNodeType.QualityAssurance,
+  },
+  {
+    label: 'label ideation',
+    value: WorkflowNodeType.LabelIdeation,
+  },
+  {
     label: 'custom',
     value: WorkflowNodeType.Base,
   },

@@ -319,6 +319,8 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: 'interactive labeling',
         [WorkflowNodeType.StoppageAnalysis]: 'stoppage analysis',
         [WorkflowNodeType.ModelTraining]: 'model training',
+        [WorkflowNodeType.QualityAssurance]: 'quality assurance',
+        [WorkflowNodeType.LabelIdeation]: 'label ideation',
         [WorkflowNodeType.Base]: 'custom',
         [WorkflowNodeType.Decision]: 'conditional branching',
         [WorkflowNodeType.Exit]: 'exit',
@@ -333,6 +335,8 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: null,
         [WorkflowNodeType.StoppageAnalysis]: null,
         [WorkflowNodeType.ModelTraining]: null,
+        [WorkflowNodeType.QualityAssurance]: null,
+        [WorkflowNodeType.LabelIdeation]: null,
         [WorkflowNodeType.Base]: null,
       } as Record<WorkflowNodeType, IModule | null>;
       const node: WorkflowNode = {

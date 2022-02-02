@@ -16,6 +16,8 @@ import {
   sourceServices,
 } from '@/builtins/data-services';
 
+const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
+
 export interface IState {
   /** The data labeling project record attributes. */
   /** The data objects to be labeled */
@@ -72,7 +74,7 @@ export const createInitialState = (): IState => ({
   commandHistory: [],
   message: null,
   taskWindows: [],
-  dockSide: DockSideType.Window,
+  dockSide: isDeveloperMode ? DockSideType.Window : DockSideType.Hide,
   colorMapper: {},
   sourceService: sourceServices[0],
   sourceServices,

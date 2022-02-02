@@ -35,6 +35,8 @@ import {
   InteractiveLabelingNode,
   ModelTrainingNode,
   StoppageAnalysisNode,
+  LabelIdeationNode,
+  QualityAssuranceNode,
   CustomNode,
 } from '@/commons/workflow-utils/build-node';
 import TheNodeDetailsModule from './TheNodeDetailsModule.vue';
@@ -49,6 +51,8 @@ const NODE_TYPES = [
   InteractiveLabelingNode,
   ModelTrainingNode,
   StoppageAnalysisNode,
+  LabelIdeationNode,
+  QualityAssuranceNode,
   CustomNode,
 ];
 
@@ -90,6 +94,8 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: 'Interactive Labeling Node Settings',
         [WorkflowNodeType.ModelTraining]: 'Interim Model Training Node Settings',
         [WorkflowNodeType.StoppageAnalysis]: 'Stoppage Analysis Node Settings',
+        [WorkflowNodeType.QualityAssurance]: 'Quality Assurance Node Settings',
+        [WorkflowNodeType.LabelIdeation]: 'Label Ideation Node Settings',
       } as Partial<Record<WorkflowNodeType, string>>;
       return mapper[node.type] ?? '';
     },
@@ -119,6 +125,8 @@ export default defineComponent({
         [WorkflowNodeType.InteractiveLabeling]: ModuleType.InteractiveLabeling,
         [WorkflowNodeType.ModelTraining]: ModuleType.ModelTraining,
         [WorkflowNodeType.StoppageAnalysis]: ModuleType.StoppageAnalysis,
+        [WorkflowNodeType.LabelIdeation]: ModuleType.LabelIdeation,
+        [WorkflowNodeType.QualityAssurance]: ModuleType.QualityAssurance,
         [WorkflowNodeType.Base]: ModuleType.Base,
       } as Record<WorkflowNodeType, ModuleType>;
       if (!(node.type in mapper)) return [];
@@ -189,6 +197,22 @@ export default defineComponent({
           type: ModuleType.StoppageAnalysis,
           inputs: ['labels'],
           outputs: ['stop'],
+        };
+      }
+      if (nodeType === WorkflowNodeType.QualityAssurance) {
+        method = {
+          ...method,
+          type: ModuleType.QualityAssurance,
+          inputs: ['labels'],
+          outputs: ['labels'],
+        };
+      }
+      if (nodeType === WorkflowNodeType.LabelIdeation) {
+        method = {
+          ...method,
+          type: ModuleType.LabelIdeation,
+          inputs: [],
+          outputs: ['categories'],
         };
       }
       if (nodeType === WorkflowNodeType.Base) {

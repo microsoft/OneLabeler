@@ -11,6 +11,7 @@ import featureExtraction from './feature-extraction';
 import interactiveLabeling from './interactive-labeling';
 import modelTraining from './model-training';
 import stoppageAnalysis from './stoppage-analysis';
+import labelIdeation from './label-ideation';
 
 /**
  * TODO: [refactor] may store the valid processes at the data type declarations
@@ -25,6 +26,7 @@ export default [
   ...interactiveLabeling,
   ...modelTraining,
   ...stoppageAnalysis,
+  ...labelIdeation,
   // custom modules:
   CustomExport,
   CustomLoad,

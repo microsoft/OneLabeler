@@ -35,6 +35,8 @@ export interface IImage extends IDataObject {
   width?: number | null;
   /** The height of the image. */
   height?: number | null;
+  /** The filename of the image. */
+  filename?: string | null;
 }
 
 /** The interface of a vector image data object. */
