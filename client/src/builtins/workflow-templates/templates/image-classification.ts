@@ -38,7 +38,7 @@ export default parseWorkflow({
       label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
       value: merge(cloneDeep(DOSRandom), {
-        params: { nBatch: { value: 16 } },
+        params: { nBatch: { value: 32 } },
       }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
@@ -51,7 +51,7 @@ export default parseWorkflow({
       value: merge(cloneDeep(ILGridMatrix), {
         params: {
           nRows: { value: 4 },
-          nColumns: { value: 4 },
+          nColumns: { value: 8 },
         },
       }),
       layout: {

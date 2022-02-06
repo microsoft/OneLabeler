@@ -25,7 +25,7 @@
       :icon="$vuetify.icons.values.open"
       :keyboard-trigger="keyboardTriggerLoadProject"
       title="Load Label Project (Ctrl + O)"
-      type="file"
+      type="File"
       color="white"
       small
       @upload:file="onLoadProject"

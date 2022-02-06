@@ -1,10 +1,10 @@
 <template>
   <VUploadButton
+    :icon="$vuetify.icons.values.open"
     title="Open Workflow File"
-    type="file"
+    type="File"
     color="white"
     small
-    :icon="$vuetify.icons.values.open"
     @upload:file="onUploadFile"
   />
 </template>
