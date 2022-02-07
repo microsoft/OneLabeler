@@ -253,4 +253,22 @@ export default (plop) => {
       ];
     },
   });
+  plop.setGenerator('clean', {
+    description: 'delete all the built-ins',
+    prompts: [],
+    actions: () => [
+      // Remove the folder.
+      {
+        type: 'remove',
+        path: 'src/builtins/',
+      },
+      // Copy cleaned folder.
+      {
+        type: 'addMany',
+        destination: 'src/builtins/',
+        base: 'src/cli-templates/builtins/',
+        templateFiles: 'src/cli-templates/builtins/**',
+      },
+    ],
+  });
 };
