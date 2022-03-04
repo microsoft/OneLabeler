@@ -71,10 +71,6 @@ const schema: JSONSchemaType<ProjectData> = {
         value: { type: 'string' },
       },
     },
-    categoryTasks: {
-      type: 'object',
-      // TODO: complete the specification for categoryTasks
-    },
   },
   type: 'object',
   required: [
@@ -125,6 +121,14 @@ const schema: JSONSchemaType<ProjectData> = {
     categories: {
       type: 'array',
       items: { type: 'string' },
+    },
+    categoryTasks: {
+      type: 'object',
+      additionalProperties: {
+        type: 'array',
+        nullable: true,
+        items: { type: 'string' },
+      },
     },
     unlabeledMark: { type: 'string' },
     featureNames: {
