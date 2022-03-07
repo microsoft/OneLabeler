@@ -1,0 +1,89 @@
+/* Global Style */
+
+@import '~vuetify/src/styles/main.sass';
+
+html {
+  overflow-y: auto;
+}
+
+/* for the header v-toolbar component */
+.app-header {
+  @extend .elevation-1;
+  @extend .darken-1;
+  @extend .px-0;
+  background-color: #2b579a;
+
+  /* remove the default padding */
+  .v-toolbar__content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* for the v-toolbar-title component showing logo */
+.app-header-logo {
+  @extend .grey--text;
+  @extend .text--lighten-2;
+  font-size: 1.2rem;
+  font-weight: 400;
+  user-select: none;
+  /* set the i (icon element) (if exists) to be aligned with text at bottom */
+  i {
+    vertical-align: baseline !important;
+  }
+}
+
+/* for the v-divider component in the header (typically dividing buttons) */
+.app-header-divider {
+  /* override the inset of vuetify (which is too large) */
+  $margin: 2px;
+  margin-top: $margin;
+  min-height: 0;
+  max-height: calc(100% - #{$margin + $margin});
+}
+
+/* for the v-btn component in the app header */
+.app-header-button {
+  @extend .subtitle-2;
+  @extend .elevation-1;
+  @extend .px-2;
+  /* set height between vuetify's x-small (too small) and small (too large) */
+  height: 24px !important;
+  /* do not force border-radius, s.t. button in button toggles will not be rounded */
+  border-radius: 2px;
+}
+
+/* for the footer v-toolbar component */
+.app-footer {
+  @extend .app-header;
+  background-color: grey;
+}
+
+/* for the v-divider component in the header (typically dividing buttons) */
+.app-footer-divider {
+  @extend .app-header-divider;
+}
+
+/* for the v-divider component in the view headers (typically dividing buttons) */
+.card-header-divider {
+  /* override the inset of vuetify (which is too large) */
+  $margin: 2px;
+  margin-top: $margin;
+  margin-bottom: $margin;
+  min-height: 0;
+  max-height: calc(100% - #{$margin + $margin});
+}
+
+/* for v-btn-toggle in view headers */
+.card-header-button-toggle {
+  @extend .elevation-1;
+  @extend .transparent;
+  border-radius: 2px;
+}
+
+/* for v-btn in view headers */
+.card-header-button {
+  @extend .elevation-1;
+  @extend .px-1;
+  border-radius: 2px;
+}

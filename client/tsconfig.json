@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": [
+      "webpack-env",
+      "mocha",
+      "node",
+      "chai",
+      "vuetify"
+    ],
+    "paths": {
+      "@/*": ["src/*"],
+      "jsfive": ["./src/types/jsfive"]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ]
+  },
+  "_include": [
+    "src/**/vuetify.ts",
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "plugins/**/*.ts",
+    "plugins/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/types/**"
+  ]
+}

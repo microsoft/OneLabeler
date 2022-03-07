@@ -1,0 +1,112 @@
+{
+  "nodes": [
+    {
+      "label": "initialization",
+      "type": "Initialization",
+      "value": {
+        "dataType": "Image",
+        "labelTasks": [
+          "Classification"
+        ]
+      }
+    },
+    {
+      "label": "random sampling",
+      "type": "DataObjectSelection",
+      "value": [
+        {
+          "label": "Random",
+          "inputs": [
+            "labels"
+          ],
+          "api": "Random",
+          "params": {
+            "nBatch": 16
+          }
+        }
+      ]
+    },
+    {
+      "label": "direct labeling",
+      "type": "TaskTransformation",
+      "value": {
+        "label": "Direct Labeling",
+        "inputs": [
+          "dataObjects",
+          "labelTask",
+          "labelSpace"
+        ],
+        "api": "DirectLabeling"
+      }
+    },
+    {
+      "label": "grid matrix",
+      "type": "InteractiveLabeling",
+      "value": [
+        {
+          "label": "Grid Matrix",
+          "inputs": [
+            "dataObjects",
+            "samples"
+          ],
+          "api": "GridMatrix",
+          "params": {
+            "nRows": 4,
+            "nColumns": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "check all labeled",
+      "type": "StoppageAnalysis",
+      "value": {
+        "label": "All Checked",
+        "inputs": [
+          "labels"
+        ],
+        "api": "AllChecked"
+      }
+    },
+    {
+      "label": "stop?",
+      "type": "Decision"
+    },
+    {
+      "label": "exit",
+      "type": "Terminal"
+    }
+  ],
+  "edges": [
+    {
+      "source": "initialization",
+      "target": "random sampling"
+    },
+    {
+      "source": "random sampling",
+      "target": "direct labeling"
+    },
+    {
+      "source": "direct labeling",
+      "target": "grid matrix"
+    },
+    {
+      "source": "grid matrix",
+      "target": "check all labeled"
+    },
+    {
+      "source": "check all labeled",
+      "target": "stop?"
+    },
+    {
+      "source": "stop?",
+      "target": "exit",
+      "condition": true
+    },
+    {
+      "source": "stop?",
+      "target": "random sampling",
+      "condition": false
+    }
+  ]
+}
