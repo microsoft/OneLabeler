@@ -35,12 +35,14 @@ const handleFile = async (
   file: File,
   storage: IDataObjectStorage,
 ): Promise<void> => {
+  const filename = file.name;
   const content = await getBase64(file);
   const { duration } = await getAudioSize(content);
   const dataObject: IAudio = {
     uuid: uuidv4(),
     content,
     duration,
+    filename,
   };
   storage.upsert(dataObject);
 };

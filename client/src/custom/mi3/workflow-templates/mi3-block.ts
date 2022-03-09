@@ -3,7 +3,6 @@ import ObjectId from 'bson-objectid';
 import {
   LabelTaskType,
   PortDirection,
-  ModuleType,
   WorkflowNodeType,
 } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
@@ -14,6 +13,7 @@ import DOSImageOverview from '@/builtins/modules/data-object-selection/image-ove
 import ILGridMatrix from '@/builtins/modules/interactive-labeling/grid-matrix';
 import MTRetrain from '@/builtins/modules/model-training/retrain';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
+import DLModelPrediction from '@/builtins/modules/default-labeling/model-prediction';
 
 const MARGIN_LEFT = 20;
 const MARGIN_TOP = 20;
@@ -21,6 +21,27 @@ const NODE_WIDTH = 120;
 const NODE_HEIGHT = 80;
 const NODE_PADDING_X = 40;
 const NODE_PADDING_Y = 20;
+
+const decisionTreeModel = {
+  type: 'DecisionTree',
+  label: 'DecisionTree (Supervised)',
+  objectId: (new ObjectId('DecisionTree')).toHexString(),
+  isBuiltIn: true,
+  isServerless: false,
+  isValidSampler: false,
+};
+
+const labelSpreadingModel = {
+  type: 'LabelSpreading',
+  label: 'LabelSpreading (Semi-Supervised)',
+  objectId: (new ObjectId('LabelSpreadi')).toHexString(),
+  isBuiltIn: true,
+  isServerless: false,
+  isValidSampler: true,
+};
+
+// TODO: the current model training module only trains decision tree
+// but not the label spreading model.
 
 export default parseWorkflow({
   label: 'MI3 Block',
@@ -33,6 +54,7 @@ export default parseWorkflow({
           dataType: { value: 'MI3-block' },
           labelTasks: { value: [LabelTaskType.Classification] },
         },
+        outputs: ['dataObjects', 'labels', 'features', 'model'],
       }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
@@ -46,6 +68,7 @@ export default parseWorkflow({
             options: [{ value: 16, label: '16' }],
           },
         },
+        model: cloneDeep(labelSpreadingModel),
       }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
@@ -55,23 +78,7 @@ export default parseWorkflow({
     {
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
-      value: {
-        type: ModuleType.DefaultLabeling,
-        label: 'Model Prediction',
-        id: 'ModelPrediction-29967546',
-        inputs: ['features', 'model'],
-        isBuiltIn: true,
-        isServerless: false,
-        model: {
-          type: 'DecisionTree',
-          label: 'DecisionTree (Supervised)',
-          objectId: (new ObjectId('DecisionTree')).toHexString(),
-          isBuiltIn: true,
-          isServerless: false,
-          isValidSampler: false,
-        },
-        api: 'http://localhost:8005/defaultLabels/ModelPrediction',
-      },
+      value: cloneDeep({ ...DLModelPrediction, model: decisionTreeModel }),
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -134,7 +141,7 @@ export default parseWorkflow({
     {
       label: 'model training',
       type: WorkflowNodeType.ModelTraining,
-      value: MTRetrain,
+      value: cloneDeep({ ...MTRetrain, model: decisionTreeModel }),
       layout: {
         x: MARGIN_LEFT,
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

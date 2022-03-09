@@ -26,7 +26,7 @@ const checkNodeReachedByInitialization = (
         type: LintMessageType.Error,
         message: `node with label "${
           node.label
-        }" unreachable from the initialization node ()`,
+        }" unreachable from the initialization node`,
         category: ErrorCategory.TopologyError,
         subjects: [node],
         rule: 'no-isolated-node',

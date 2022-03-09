@@ -40,6 +40,7 @@ const handleFile = async (
   file: File,
   storage: IDataObjectStorage,
 ): Promise<void> => {
+  const filename = file.name;
   const content = await getBase64(file);
   const {
     width,
@@ -52,6 +53,7 @@ const handleFile = async (
     width,
     height,
     duration,
+    filename,
   };
   storage.upsert(dataObject);
 };
@@ -63,6 +65,7 @@ export default {
     LabelTaskType.MultiLabelClassification,
     LabelTaskType.FreeformText,
     LabelTaskType.SpanClassification,
+    LabelTaskType.AnnotationRelation,
   ],
   label: 'video',
   importType: UploadTarget.Folder,

@@ -5,7 +5,7 @@ export default {
   type: ModuleType.DataObjectSelection,
   label: 'Overview (User Sampling)',
   id: 'ImageOverview',
-  inputs: ['dataObjects', 'labels'],
+  inputs: ['dataObjects', 'labels', 'queryUuids'],
   outputs: ['queryUuids'],
   blocking: false,
   persistent: true,

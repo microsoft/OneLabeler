@@ -29,16 +29,26 @@
     />
 
     <!-- The text label of the edge. -->
-    <text
-      :x="path[0][0]"
-      :y="path[0][1]"
-      fill="currentcolor"
-      :dy="dy >= 0 ? 15 : -15"
-      :dx="dx <= 0 ? -5 : 5"
-      :text-anchor="textAnchor"
+    <g
+      :transform="`translate(
+      ${path[0][0] + (dx <= 0 ? -textBoxWidth : 0)},
+      ${path[0][1] + (dy <= 0 ? -textBoxHeight : 0)})`"
     >
-      {{ label }}
-    </text>
+      <svg
+        :width="textBoxWidth"
+        :height="textBoxHeight"
+      >
+        <text
+          fill="currentcolor"
+          x="50%"
+          y="50%"
+          text-anchor="middle"
+          dominant-baseline="central"
+        >
+          {{ label }}
+        </text>
+      </svg>
+    </g>
 
     <!-- The invisible widened edge to make the edge easier to select. -->
     <path
@@ -77,6 +87,8 @@ export default defineComponent({
     return {
       markerId: `arrow-${Math.round(Math.random() * 100000000)}`,
       pathId: `path-${Math.round(Math.random() * 100000000)}`,
+      textBoxWidth: 40,
+      textBoxHeight: 20,
     };
   },
   computed: {
@@ -93,11 +105,6 @@ export default defineComponent({
     dy(): number {
       if (this.firstPoint === null || this.secondPoint === null) return 0;
       return this.secondPoint[1] - this.firstPoint[1];
-    },
-    textAnchor(): string {
-      if (this.dx <= 0) return 'end';
-      if (this.dx > 0) return 'start';
-      return 'middle';
     },
   },
 });

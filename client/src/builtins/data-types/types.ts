@@ -57,6 +57,8 @@ export interface IMedia extends IDataObject {
   content: string | null;
   /** The duration of the media. */
   duration?: number;
+  /** The filename of the image. */
+  filename?: string | null;
 }
 
 /** The interface of an audio data object. */
