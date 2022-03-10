@@ -5,6 +5,8 @@ It provides visual programming interface where the developer can compose modules
 
 Its documentation can be found at <https://zhangyu94.github.io/OneLabeler.github.io/>.
 
+⚠️OneLabeler is currently under active development and may not be bug-free.
+
 ## Resources
 
 - [Introduction](https://zhangyu94.github.io/OneLabeler.github.io/#what-is-onelabeler)

@@ -1,5 +1,4 @@
 import * as tf from '@tensorflow/tfjs';
-import MnistData from './mnist';
 import {
   DataType,
   LabelTaskType,
@@ -10,6 +9,7 @@ import type {
   ILabel,
   IDataObjectStorage,
 } from '@/commons/types';
+import MnistData from './mnist';
 
 // Reference: https://www.tensorflow.org/js/tutorials/training/handwritten_digit_cnn
 
