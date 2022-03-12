@@ -36,7 +36,7 @@
     ]
   },
   "_include": [
-    "src/**/vuetify.ts"
+    "src/background.ts"
   ],
   "include": [
     "src/**/*.ts",
