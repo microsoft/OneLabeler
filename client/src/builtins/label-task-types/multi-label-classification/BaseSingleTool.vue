@@ -17,7 +17,7 @@ import type { Category, ILabel, ILabelMultiCategory } from '@/commons/types';
 import VSingleToolMenu from './VSingleToolMenu.vue';
 import VSingleToolTags from './VSingleToolTags.vue';
 
-enum Component {
+enum SelectorUI {
   Menu = 'Menu',
   Tags = 'Tags',
 }
@@ -42,8 +42,8 @@ export default defineComponent({
       default: false,
     },
     component: {
-      type: String as PropType<Component>,
-      default: Component.Tags,
+      type: String as PropType<SelectorUI>,
+      default: SelectorUI.Tags,
     },
   },
   emits: {
@@ -51,8 +51,8 @@ export default defineComponent({
   },
   computed: {
     element(): VueConstructor {
-      if (this.component === Component.Menu) return VSingleToolMenu;
-      if (this.component === Component.Tags) return VSingleToolTags;
+      if (this.component === SelectorUI.Menu) return VSingleToolMenu;
+      if (this.component === SelectorUI.Tags) return VSingleToolTags;
       throw new TypeError(`Invalid component type ${this.component}`);
     },
     labelMultiCategory(): ILabelMultiCategory | null {

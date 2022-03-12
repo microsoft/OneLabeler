@@ -3,9 +3,9 @@ import ModelPrediction from './model-prediction';
 import PointnetSegmentation from './pointnet-segmentation';
 import PosTagging from './pos-tagging';
 // import CNN from './cnn';
-import MobileNet from './mobilenet';
+// import MobileNet from './mobilenet';
 // import DeepLab from './deeplab';
-import CocoSsd from './coco-ssd';
+// import CocoSsd from './coco-ssd';
 import Random from './random';
 
 export default [
@@ -13,7 +13,7 @@ export default [
   // Null,
   PointnetSegmentation,
   PosTagging,
-  MobileNet,
-  CocoSsd,
+  // MobileNet,
+  // CocoSsd,
   Random,
 ];

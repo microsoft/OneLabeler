@@ -36,16 +36,14 @@
     ]
   },
   "_include": [
-    "src/**/vuetify.ts",
+    "src/**/vuetify.ts"
   ],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "plugins/**/*.ts",
-    "plugins/**/*.tsx"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

@@ -1,9 +1,11 @@
 import { ModuleType } from '@/commons/types';
 
+/*
 enum ParamType {
   StringList = 'StringList',
   Number = 'Number',
 }
+*/
 type RunReturn = { categories: string[] };
 
 export default {

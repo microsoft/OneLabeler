@@ -3,7 +3,7 @@ import ImageLda from './image-lda';
 import ImageSvd from './image-svd';
 import Random3d from './random3d';
 import TextNmf from './text-nmf';
-import Mobilenet from './mobilenet';
+// import Mobilenet from './mobilenet';
 
 export default [
   ImageBow,
@@ -11,5 +11,5 @@ export default [
   ImageSvd,
   Random3d,
   TextNmf,
-  Mobilenet,
+  // Mobilenet,
 ];
