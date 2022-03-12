@@ -1,6 +1,4 @@
 import type { ILabelTaskTypeSetup } from '@/commons/types';
-import customClassification from '@/custom/table-qa/label-task-types/multi-label-classification';
-import customFreeformText from '@/custom/table-qa/label-task-types/freeform-text';
 import classification from './classification';
 import freeformText from './freeform-text';
 import multiLabelClassification from './multi-label-classification';
@@ -19,6 +17,4 @@ export default [
   segmentation3d,
   spanClassification,
   relation,
-  customClassification,
-  customFreeformText,
 ] as ILabelTaskTypeSetup[];

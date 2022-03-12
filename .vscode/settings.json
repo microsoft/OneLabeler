@@ -1,7 +1,4 @@
 {
-    "code-eol.newlineCharacter": "¬",
-    "code-eol.returnCharacter" : "¤",
-    "code-eol.crlfCharacter"   : "¤¬",
     "git.ignoreLimitWarning": true,
     "eslint.validate": [
         "javascript",
@@ -10,6 +7,7 @@
     ],
     "eslint.workingDirectories": [
         "./client",
+        "./db"
     ],
     "cSpell.words": [
         "agafonkin",
@@ -74,6 +72,7 @@
         "jsfive",
         "keras",
         "kiwisolver",
+        "kmeans",
         "konva",
         "lanczoz",
         "LibriSpeech",
@@ -99,6 +98,7 @@
         "packagename",
         "paintable",
         "pbar",
+        "pearsonr",
         "peucker",
         "pipenv",
         "Pipfile",
@@ -116,6 +116,7 @@
         "pymongo",
         "pyparsing",
         "pypi",
+        "pyplot",
         "pytest",
         "pytz",
         "pywavelets",
@@ -161,6 +162,7 @@
         "uuidv",
         "vectorizer",
         "vetur",
+        "vstack",
         "vuejs",
         "vuetify",
         "vuetify's",
@@ -173,10 +175,8 @@
         "Zhang",
         "Zhang's"
     ],
-    "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "python.linting.enabled": true,
     "python.linting.pylintArgs": [
         "--generate-members"
     ],
-    "restructuredtext.syntaxHighlighting.disabled": true
 }

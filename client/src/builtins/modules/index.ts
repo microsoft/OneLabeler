@@ -1,9 +1,4 @@
 import type { IModule } from '@/commons/types';
-
-// custom modules
-import CustomExport from '@/custom/table-qa/modules/custom/export';
-import CustomLoad from '@/custom/table-qa/modules/custom/load';
-
 import Initialization from './initialization/base';
 import dataObjectSelection from './data-object-selection';
 import defaultLabeling from './default-labeling';
@@ -27,7 +22,4 @@ export default [
   ...modelTraining,
   ...stoppageAnalysis,
   ...labelIdeation,
-  // custom modules:
-  CustomExport,
-  CustomLoad,
 ] as IModule[];
