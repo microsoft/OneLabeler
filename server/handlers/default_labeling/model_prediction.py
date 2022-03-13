@@ -1,9 +1,11 @@
+import json
 from typing import List
 
 import numpy as np
 from sklearn.exceptions import NotFittedError
+from tornado.web import RequestHandler
 
-from ..utils.data_labeling.types import Label, Model
+from ..types import DataObject, Label, Model
 from ..utils.load_estimator import load_estimator
 
 from .null import get_default_label as default_label_null
@@ -24,10 +26,33 @@ def get_default_label(model: Model,
         return labels
     except NotFittedError:
         print('model not fitted')
-        n_samples = len(features)
         if categories is not None and len(categories) != 0:
-            return default_label_random(uuids, categories, n_samples)
+            return default_label_random(uuids, categories)
         elif unlabeled_mark is not None:
-            return default_label_null(uuids, unlabeled_mark, n_samples)
+            return default_label_null(uuids, unlabeled_mark)
         raise ValueError(
             'Model not fitted, categories and unlabeled mark not provided')
+
+class Handler(RequestHandler):
+    """
+    The handler for default labeling - model prediction.
+    """
+
+    def post(self):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        json_data = json.loads(self.request.body)
+
+        # input: (dataObjects, features, model, categories, unlabeledMark)
+        data_objects: List[DataObject] = json_data['dataObjects']
+        uuids = [(d['uuid'] if 'uuid' in d else None) for d in data_objects]
+        features = np.array([(d['features'] if 'features' in d else None)
+                             for d in data_objects])
+        model: Model = json_data['model']
+        categories: List[str] = json_data['categories']
+        unlabeled_mark: str = json_data['unlabeledMark']
+        
+        labels = get_default_label(
+            model, features, uuids, categories, unlabeled_mark)
+
+        self.write({'labels': labels})
+

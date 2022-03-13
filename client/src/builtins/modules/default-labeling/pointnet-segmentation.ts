@@ -29,7 +29,7 @@ export default {
     const queriedDataObjects = await inputs.dataObjects
       .getBulk(inputs.queryUuids);
     const response = await bindErrorHandler(axios.post(
-      `${ALGORITHM_URL}/defaultLabels/PointNet-segmentation`,
+      `${ALGORITHM_URL}/defaultLabels/PointnetSegmentation`,
       JSON.stringify({ dataObjects: queriedDataObjects }),
     ));
     return response.data as { labels: ILabel[] };

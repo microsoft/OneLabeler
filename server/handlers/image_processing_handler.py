@@ -1,10 +1,13 @@
+"""
+TODO: implement the image processing algorithms for image labeling tasks.
+"""
+
 import json
 
 import cv2 as cv
-import numpy as np
-import tornado.web
+from tornado.web import RequestHandler
 
-class ImageProcessingHandler(tornado.web.RequestHandler):
+class ImageProcessingHandler(RequestHandler):
     """
     The handler for image labeling.
     """

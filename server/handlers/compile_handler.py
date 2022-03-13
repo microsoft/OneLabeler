@@ -36,7 +36,7 @@ class CompileHandler(tornado.web.RequestHandler):
 
         if key == 'exe':
             try:
-                subprocess.check_call('npm run electron:build',
+                subprocess.check_call('npm run build:electron',
                                       shell=True, cwd=CLIENT_CODEBASE_PATH)
                 path = f'{CLIENT_CODEBASE_PATH}/dist_electron/one-labeler Setup 0.1.0.exe'
                 with open(path, 'rb') as f:

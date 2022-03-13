@@ -1,10 +1,12 @@
+import json
 from typing import List, TypedDict, Tuple
 
 import numpy as np
 import torch
-from ..utils.pointnet import PointNetSeg
+from tornado.web import RequestHandler
 
-from ..utils.data_labeling.types import Label
+from .pointnet import PointNetSeg
+from ..types import Label
 
 
 class DataObject(TypedDict):
@@ -18,7 +20,7 @@ pointnet = PointNetSeg()
 
 # Note: the pretrained model is for airplane segmentation with 4 categories
 # 0: wing, 1: body, 2: tail, 3: engine
-path = './handlers/utils/pointnet/seg_model'
+path = './handlers/default_labeling/pointnet/seg_model'
 pointnet.load_state_dict(torch.load(path, map_location=device))
 labelmap = ['wing', 'body', 'tail', 'engine']
 
@@ -48,3 +50,19 @@ def get_default_label(data_objects: List[DataObject]) -> List[Label]:
         for i, d in enumerate(labels)
     ]
     return labels
+
+class Handler(RequestHandler):
+    """
+    The handler for default labeling - pointnet segmentation.
+    """
+
+    def post(self):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        json_data = json.loads(self.request.body)
+
+        # input: (dataObjects)
+        data_objects: List[DataObject] = json_data['dataObjects']
+        
+        labels = get_default_label(data_objects)
+
+        self.write({'labels': labels})

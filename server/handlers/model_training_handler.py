@@ -15,9 +15,9 @@ from sklearn.tree import DecisionTreeClassifier
 import tornado.web
 
 from .utils.data_persistence import save
-from .utils.data_labeling.types import BuiltInModelType, StatusType
 from .utils.load_estimator import load_estimator
-from .utils.data_labeling.types import (
+from .types import BuiltInModelType, StatusType
+from .types import (
     DataObject,
     Label,
     Model,

@@ -50,7 +50,7 @@ Run desktop dev:
 cd .\client\
 
 # Launch the dev server
-npm run electron:serve
+npm run serve:electron
 ```
 
 ### Compiles and minifies for production
@@ -68,7 +68,7 @@ Build desktop distribution:
 ```bash
 cd .\client\
 
-npm run electron:build
+npm run build:electron
 ```
 
 ### Run unit tests

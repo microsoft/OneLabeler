@@ -29,7 +29,7 @@ export default {
     const queriedDataObjects = await inputs.dataObjects
       .getBulk(inputs.queryUuids);
     const response = await bindErrorHandler(axios.post(
-      `${ALGORITHM_URL}/defaultLabels/POS-tagging`,
+      `${ALGORITHM_URL}/defaultLabels/PosTagging`,
       JSON.stringify({ dataObjects: queriedDataObjects }),
     ));
     return response.data as { labels: ILabel[] };

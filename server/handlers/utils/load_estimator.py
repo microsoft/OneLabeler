@@ -9,7 +9,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 from .data_persistence import is_saved, load, save
-from .data_labeling.types import Model
+from ..types import Model
 
 def load_estimator(model: Model) -> BaseEstimator:
     estimator_type = model['type']

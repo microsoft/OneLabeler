@@ -1,9 +1,11 @@
+import json
 from typing import List, TypedDict
 import uuid
 
 import nltk
+from tornado.web import RequestHandler
 
-from ..utils.data_labeling.types import Label, LabelSpan
+from ..types import Label, LabelSpan
 
 
 class DataObject(TypedDict):
@@ -40,3 +42,20 @@ def get_default_label(data_objects: List[DataObject]) -> List[Label]:
         for i, d in enumerate(labels)
     ]
     return labels
+
+
+class Handler(RequestHandler):
+    """
+    The handler for default labeling - pos tagging.
+    """
+
+    def post(self):
+        self.set_header('Access-Control-Allow-Origin', '*')
+        json_data = json.loads(self.request.body)
+
+        # input: (dataObjects)
+        data_objects: List[DataObject] = json_data['dataObjects']
+        
+        labels = get_default_label(data_objects)
+
+        self.write({'labels': labels})
