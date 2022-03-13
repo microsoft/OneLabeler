@@ -3,7 +3,7 @@
 OneLabeler is a system for building data labeling tools.
 It provides visual programming interface where the developer can compose modules into a data labeling tool.
 
-Its documentation can be found at <https://zhangyu94.github.io/OneLabeler.github.io/>.
+Its documentation can be found at <https://microsoft.github.io/OneLabeler-doc>.
 
 ⚠️OneLabeler is currently under active development and may not be bug-free.
 
@@ -34,5 +34,5 @@ This will generate the interface as an installer named `one-labeler Setup ${vers
 
 ## Resources
 
-- [Introduction](https://zhangyu94.github.io/OneLabeler.github.io/#what-is-onelabeler)
-- [Examples](https://zhangyu94.github.io/OneLabeler.github.io/gallery.html)
+- [Introduction](https://microsoft.github.io/OneLabeler-doc/#what-is-onelabeler)
+- [Examples](https://microsoft.github.io/OneLabeler-doc/gallery.html)
