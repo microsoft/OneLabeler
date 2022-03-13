@@ -14,7 +14,6 @@ from handlers.data_object_selection.smallest_margin import Handler as DOSSmalles
 # Default labeling handlers:
 from handlers.default_labeling.model_prediction import Handler as DLModelPrediction
 from handlers.default_labeling.null import Handler as DLNull
-from handlers.default_labeling.pointnet_segmentation import Handler as DLPointnetSegmentation
 from handlers.default_labeling.pos_tagging import Handler as DLPosTagging
 from handlers.default_labeling.random import Handler as DLRandom
 # Feature extraction handlers:
@@ -58,7 +57,6 @@ url = [
     # request for default labels computed with default labeling algorithms
     (r'/defaultLabels/ModelPrediction', DLModelPrediction),
     (r'/defaultLabels/Null', DLNull),
-    (r'/defaultLabels/PointnetSegmentation', DLPointnetSegmentation),
     (r'/defaultLabels/PosTagging', DLPosTagging),
     (r'/defaultLabels/Random', DLRandom),
 

@@ -10,7 +10,6 @@ import { parseWorkflow } from '@/commons/workflow-utils';
 import BaseInitialization from '@/builtins/modules/initialization/base';
 import DOSRandom from '@/builtins/modules/data-object-selection/random';
 import ILSingleObjectDisplay from '@/builtins/modules/interactive-labeling/single-object-display';
-import DLPointnetSegmentation from '@/builtins/modules/default-labeling/pointnet-segmentation';
 import SAAllChecked from '@/builtins/modules/stoppage-analysis/all-checked';
 
 const MARGIN_LEFT = 20;
@@ -46,21 +45,11 @@ export default parseWorkflow({
       },
     },
     {
-      id: 'pointnet prelabel',
-      label: 'pointnet prelabel',
-      type: WorkflowNodeType.DefaultLabeling,
-      value: DLPointnetSegmentation,
-      layout: {
-        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
-        y: MARGIN_TOP,
-      },
-    },
-    {
       label: 'single object display',
       type: WorkflowNodeType.InteractiveLabeling,
       value: ILSingleObjectDisplay,
       layout: {
-        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
       },
     },
@@ -69,7 +58,7 @@ export default parseWorkflow({
       type: WorkflowNodeType.StoppageAnalysis,
       value: SAAllChecked,
       layout: {
-        x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
       },
     },
@@ -77,7 +66,7 @@ export default parseWorkflow({
       label: 'stop?',
       type: WorkflowNodeType.Decision,
       layout: {
-        x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
       },
     },
@@ -85,15 +74,14 @@ export default parseWorkflow({
       label: 'exit',
       type: WorkflowNodeType.Exit,
       layout: {
-        x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
+        x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + 2 * (NODE_HEIGHT + NODE_PADDING_Y),
       },
     },
   ],
   edges: [
     { source: 'initialization', target: 'random sampling' },
-    { source: 'random sampling', target: 'pointnet prelabel' },
-    { source: 'pointnet prelabel', target: 'single object display' },
+    { source: 'random sampling', target: 'single object display' },
     { source: 'single object display', target: 'check all labeled' },
     { source: 'check all labeled', target: 'stop?' },
     {
