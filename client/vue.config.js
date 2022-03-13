@@ -3,7 +3,5 @@ module.exports = {
   transpileDependencies: [
     'pdfjs-dist',
   ],
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/OneLabeler/'
-    : '/',
+  publicPath: '/',
 };
