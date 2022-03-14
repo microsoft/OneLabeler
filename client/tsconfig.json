@@ -35,10 +35,10 @@
       "src/types"
     ]
   },
-  "_include": [
+  "include": [
     "src/background.ts"
   ],
-  "include": [
+  "_include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
