@@ -6,7 +6,6 @@ import DatasetOrder from './dataset-order';
 import Entropy from './entropy';
 import EntropyDiversity from './entropy-diversity';
 import EntropyDiversityDensity from './entropy-diversity-density';
-import ImageOverview from './image-overview';
 import LeastConfident from './least-confident';
 import ParallelCoordinates from './parallel-coordinates';
 import Projection from './projection';
@@ -21,7 +20,6 @@ export default [
   Entropy,
   EntropyDiversity,
   EntropyDiversityDensity,
-  ImageOverview,
   LeastConfident,
   ParallelCoordinates,
   Projection,
