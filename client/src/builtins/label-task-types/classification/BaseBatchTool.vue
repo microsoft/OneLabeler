@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <!-- The data object label category menu. -->
   <v-menu offset-y>

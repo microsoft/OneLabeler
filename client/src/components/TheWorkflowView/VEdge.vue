@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <g cursor="pointer">
     <!-- The arrow. -->

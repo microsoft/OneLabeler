@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import ImageBow from './image-bow';
 import ImageLda from './image-lda';
 import ImageSvd from './image-svd';

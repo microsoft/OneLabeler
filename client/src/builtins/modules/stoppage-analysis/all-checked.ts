@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { ModuleType, StatusType } from '@/commons/types';
 import type { IStatusStorage } from '@/commons/types';
 

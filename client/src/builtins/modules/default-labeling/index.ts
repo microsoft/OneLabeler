@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import ModelPrediction from './model-prediction';
 // import Null from './null';
 import PosTagging from './pos-tagging';

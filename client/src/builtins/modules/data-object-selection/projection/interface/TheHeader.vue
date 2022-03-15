@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <VToolbar
     @window:minimize="$emit('window:minimize')"

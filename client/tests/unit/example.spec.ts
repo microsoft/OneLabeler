@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { expect } from 'chai';
 import { shallowMount } from '@vue/test-utils';
 import TheNavBarView from '@/components/TheNavBarView/TheNavBarView.vue';

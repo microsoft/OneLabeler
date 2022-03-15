@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { ActionContext } from 'vuex';
 import showProgressBar from '@/plugins/nprogress-interceptor';
 import * as API from '@/services/data-labeling-api';

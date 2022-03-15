@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <v-icon
     class="px-2"

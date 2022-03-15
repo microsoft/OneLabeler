@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <div style="background-color: white; display: flex; flex-direction: column;">
     <div

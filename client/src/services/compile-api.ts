@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import axios from 'axios';
 import type { AxiosError } from 'axios';
 import showProgressBar from '@/plugins/nprogress-interceptor';

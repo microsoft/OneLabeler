@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { addCollection } from '@iconify/vue2';
 
 const init = (): void => {

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { FilterQuery } from 'mongoose';
 
 /** The interface of a data object to be labeled. */

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /*
  (c) 2017, Vladimir Agafonkin
  Simplify.js, a high-performance JS polyline simplification library

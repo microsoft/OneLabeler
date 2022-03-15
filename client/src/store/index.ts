@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 import socket from '@/services/jupyter-api-plugin';

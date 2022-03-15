@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { DockSideType } from '@/commons/types';
 import type {
   Category,

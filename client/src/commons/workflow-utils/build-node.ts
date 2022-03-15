@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /* eslint-disable max-classes-per-file */
 import { IModule, WorkflowNodeType } from '@/commons/types';
 

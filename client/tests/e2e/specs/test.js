@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 // https://docs.cypress.io/api/introduction/api.html
 
 describe('My First Test', () => {

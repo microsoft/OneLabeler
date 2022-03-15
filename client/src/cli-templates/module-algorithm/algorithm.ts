@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import axios from 'axios';
 import type { StateNames } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';

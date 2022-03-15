@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { WorkflowNode, WorkflowEdge } from '@/commons/types';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';

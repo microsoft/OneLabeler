@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import Konva from 'konva';
 
 export const createCircle15x15 = (): Konva.Shape => new Konva.Shape({

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { polygonContains } from 'd3';
 import { Story } from '@storybook/vue';
 import VScatterplot from './VScatterplot.vue';

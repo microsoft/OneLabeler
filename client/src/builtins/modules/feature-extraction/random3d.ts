@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { xor4096 } from 'seedrandom';
 import { ModuleType } from '@/commons/types';
 import type { IDataObjectStorage } from '@/commons/types';

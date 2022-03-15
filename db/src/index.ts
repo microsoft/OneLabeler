@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import express from 'express';
 import cors from 'cors';
 import StorageStore from './database';

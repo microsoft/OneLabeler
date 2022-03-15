@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <div style="display: flex; gap: 4px; padding: 4px;">
     <!-- The content of the data object. -->

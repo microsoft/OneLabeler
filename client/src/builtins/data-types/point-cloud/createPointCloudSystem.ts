@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import * as BABYLON from 'babylonjs';
 import type { Category, Vector3d } from '@/commons/types';
 

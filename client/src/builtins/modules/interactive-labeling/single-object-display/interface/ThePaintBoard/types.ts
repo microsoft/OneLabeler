@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import Konva from 'konva';
 import type { ComponentInstance } from '@vue/composition-api';
 

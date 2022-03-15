@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <div style="border: 0.5px solid #757575; display: flex;">
     <!-- The configure projection attribute dialog button. -->

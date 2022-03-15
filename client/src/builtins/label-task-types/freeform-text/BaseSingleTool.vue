@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <!-- The create/edit freeform text annotation button. -->
   <v-dialog

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { SourceService, StorageService } from '@/commons/types';
 import sourceDatabase from './source-database';
 import sourceFileUpload from './source-file-upload';

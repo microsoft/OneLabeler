@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /**
  * Reference: https://github.com/joyceworks/flowchart-vue
  */

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import Ajv, { JSONSchemaType } from 'ajv';
 import type { TrimmedWorkflow } from './parse-workflow';
 

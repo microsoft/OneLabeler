@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { Story } from '@storybook/vue';
 import { scaleOrdinal, schemeCategory10 } from 'd3';
 import VParallelCoordinates from './VParallelCoordinates.vue';

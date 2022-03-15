@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import axios from 'axios';
 import { DataType, ModuleType } from '@/commons/types';
 import type {

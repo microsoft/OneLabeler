@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { FilterQuery } from 'mongoose';
 import sift from 'sift';
 import type {

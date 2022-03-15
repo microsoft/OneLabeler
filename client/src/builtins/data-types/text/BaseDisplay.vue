@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <div style="display: grid">
     <!-- Expose getTextNode and getEventNode to label task overlay. -->

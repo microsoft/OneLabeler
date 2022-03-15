@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export const SET_DATA_OBJECTS = 'SET_DATA_OBJECTS';
 export const SET_CATEGORY_TASKS = 'SET_CATEGORY_TASKS';
 export const SET_STOP = 'SET_STOP';

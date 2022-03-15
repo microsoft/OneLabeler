@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { ModuleType } from '@/commons/types';
 import TheInterface from './interface/index.vue';
 

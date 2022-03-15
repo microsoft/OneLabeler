@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { StorageType } from '@/commons/types';
 import type { IStorageStore, StorageService } from '@/commons/types';
 import StorageStoreMemory from './storage-memory';

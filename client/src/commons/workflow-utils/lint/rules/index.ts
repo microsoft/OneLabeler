@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import checkNodeIdsUnique from './node-ids-unique';
 import checkEdgeVertexIdsExist from './edge-vertex-ids-exist';
 import checkOneInitializationNode from './one-initialization-node';

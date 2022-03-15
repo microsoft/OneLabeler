@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { VueConstructor } from 'vue';
 import type { DataType } from '@/builtins/data-types/types';
 import type { LabelTaskType } from '@/builtins/label-task-types/types';

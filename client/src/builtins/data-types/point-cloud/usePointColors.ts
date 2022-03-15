@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { Ref, watch } from '@vue/composition-api';
 import { PointsCloudSystem } from 'babylonjs';
 import type { Category } from '@/commons/types';

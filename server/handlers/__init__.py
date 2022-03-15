@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 from .compile_handler import CompileHandler
 from .model_training_handler import ModelTrainingHandler
 from .image_processing_handler import ImageProcessingHandler

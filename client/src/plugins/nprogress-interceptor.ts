@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 

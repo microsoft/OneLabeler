@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { SourceType } from '@/commons/types';
 import { DATABASE_URL } from '@/services/http-params';
 

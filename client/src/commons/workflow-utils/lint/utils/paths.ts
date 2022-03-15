@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import cytoscape from 'cytoscape';
 import type { WorkflowNode, WorkflowEdge } from '@/commons/types';
 

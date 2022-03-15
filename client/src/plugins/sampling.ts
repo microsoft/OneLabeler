@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 const getType = (arr: Array<unknown> | Uint8Array) => {
   if (arr instanceof Array) return Array;
   if (arr instanceof Uint8Array) return Uint8Array;

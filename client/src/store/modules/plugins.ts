@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { Store } from 'vuex';
 import type { WorkflowNode } from '@/commons/types';
 import { updatedTaskWindowsByNodes } from './actions';

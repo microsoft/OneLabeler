@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { Ref } from '@vue/composition-api';
 import type { ILabelTextSpan } from '@/commons/types';
 import type { Box } from './types';

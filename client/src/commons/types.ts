@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { FilterQuery } from 'mongoose';
 import type { WorkflowNode } from '@/builtins/workflow-templates/types';
 import type { IDataObject } from '@/builtins/data-types/types';

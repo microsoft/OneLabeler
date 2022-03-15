@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 from bson.objectid import ObjectId
 from sklearn.base import BaseEstimator
 from sklearn.linear_model import LogisticRegression

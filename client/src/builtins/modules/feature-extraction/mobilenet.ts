@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import '@tensorflow/tfjs-backend-webgl';
 import * as MobileNet from '@tensorflow-models/mobilenet';
 import { DataType, ModuleType } from '@/commons/types';

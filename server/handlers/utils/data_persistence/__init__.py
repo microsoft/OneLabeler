@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 # pylint: disable=missing-docstring
 from .data_persistence import (save,
                                load,

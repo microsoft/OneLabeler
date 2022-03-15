@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /** The type of binning configuration. */
 export type Binning = {
   enabled: boolean,

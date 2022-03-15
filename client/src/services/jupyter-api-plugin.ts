@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { io, Socket } from 'socket.io-client';
 import type { Store } from 'vuex';
 import type { IState } from '@/store/modules/state';

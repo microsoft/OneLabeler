@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 """
 TODO: implement the image processing algorithms for image labeling tasks.
 """

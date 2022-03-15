@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { ActionContext } from 'vuex';
 import createStorage from '@/services/storage';
 import { StatusType } from '@/commons/types';

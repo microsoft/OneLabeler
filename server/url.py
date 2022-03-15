@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 from tornado.web import RequestHandler
 from handlers import (CompileHandler,
                       ModelTrainingHandler,

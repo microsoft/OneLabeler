@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import * as BABYLON from 'babylonjs';
 import type { Ref } from '@vue/composition-api';
 import type { Vector3d } from '@/commons/types';

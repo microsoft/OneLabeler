@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /**
  * @license
  * Copyright 2018 Google LLC. All Rights Reserved.

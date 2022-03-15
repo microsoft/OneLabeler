@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { VueConstructor } from 'vue';
 import { WorkflowNodeType } from '@/commons/types';
 

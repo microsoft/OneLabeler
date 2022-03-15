@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { VueConstructor } from 'vue';
 import type { ILabel, LabelTaskType } from '@/builtins/label-task-types/types';
 import type { IDataObjectStorage } from '@/commons/types';

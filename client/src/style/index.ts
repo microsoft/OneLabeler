@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export const card = {
   'background-color': 'white',
   border: 'thin solid rgba(0,0,0,.12)',

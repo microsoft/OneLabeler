@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export const SET_CURRENT_NODE = 'SET_CURRENT_NODE';
 export const SET_NODES = 'SET_NODES';
 export const SET_EDGES = 'SET_EDGES';

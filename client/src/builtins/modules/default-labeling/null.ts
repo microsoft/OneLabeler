@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { LabelTaskType, ModuleType } from '@/commons/types';
 import type { ILabel } from '@/commons/types';
 

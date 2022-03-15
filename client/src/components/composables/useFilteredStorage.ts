@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { ref, watchEffect } from '@vue/composition-api';
 import type { Ref } from '@vue/composition-api';
 import { StatusType } from '@/commons/types';

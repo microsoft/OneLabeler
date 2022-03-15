@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /* eslint-disable import/prefer-default-export */
 /**
  * api for communicating with img labeling functions at server

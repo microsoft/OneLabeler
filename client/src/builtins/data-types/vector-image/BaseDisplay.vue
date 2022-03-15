@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <!-- eslint-disable-next-line vue/no-v-html -->
   <div v-html="dataObject.html" />

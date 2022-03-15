@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { Story } from '@storybook/vue';
 import vuetify from '@/vuetify';
 import BaseDisplay from './BaseDisplay.vue';

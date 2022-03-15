@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 /**
  * Randomly shuffle array.
  * Time complexity: O(array.length)

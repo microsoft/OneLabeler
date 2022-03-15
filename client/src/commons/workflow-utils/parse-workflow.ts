@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { WorkflowGraph } from '@/commons/types';
 import type { TrimmedNode } from './parse-node';
 import { parseNode } from './parse-node';

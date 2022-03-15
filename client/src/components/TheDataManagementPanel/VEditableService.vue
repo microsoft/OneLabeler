@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <!-- The method used to instantiated the process. -->
   <div style="display: flex; align-items: center;">

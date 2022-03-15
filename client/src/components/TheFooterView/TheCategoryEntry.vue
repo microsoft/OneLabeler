@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <div style="display: flex; align-items: center; border: thin solid rgba(0,0,0,.12);">
     <div

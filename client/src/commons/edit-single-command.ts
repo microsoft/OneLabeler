@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { IDataObject, ILabelCategory, ICommand } from '@/commons/types';
 
 export default class EditSingleCommand implements ICommand {

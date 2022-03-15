@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import axios from 'axios';
 import { ALGORITHM_URL, DATABASE_URL } from '@/services/http-params';
 import socket from './jupyter-api-plugin';

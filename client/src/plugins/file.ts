@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
 import { saveAs } from 'file-saver';

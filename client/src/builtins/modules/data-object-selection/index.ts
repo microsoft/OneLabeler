@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 // data object selection modules
 import Cluster from './cluster';
 import ClusterCentroids from './cluster-centroids';

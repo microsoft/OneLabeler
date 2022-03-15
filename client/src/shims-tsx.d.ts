@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import Vue, { VNode } from 'vue';
 import { ComponentRenderProxy } from '@vue/composition-api';
 

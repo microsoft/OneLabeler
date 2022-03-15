@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { lintWorkflow, LintMessageType } from '@/commons/workflow-utils/lint-workflow';
 import type { LintMessage } from '@/commons/workflow-utils/lint-workflow';
 import { WorkflowNodeType } from '@/commons/types';

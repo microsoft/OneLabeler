@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import ObjectId from 'bson-objectid';
 import type { ModelService } from '@/commons/types';
 

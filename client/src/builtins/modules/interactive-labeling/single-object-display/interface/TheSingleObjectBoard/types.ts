@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { Category, ILabelTextSpan } from '@/commons/types';
 
 export enum MouseOperationType {

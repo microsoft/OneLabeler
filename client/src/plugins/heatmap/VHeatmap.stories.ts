@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { Story } from '@storybook/vue';
 import VHeatmap, { BinDatum } from './VHeatmap.vue';
 

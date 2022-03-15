@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+
 from .masked_multi_argmax import masked_multi_argmax
 from .random_sampling import random_sampling
 

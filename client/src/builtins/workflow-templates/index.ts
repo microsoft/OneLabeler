@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import audioClassification from './templates/audio-classification';
 import audioTemporalSegmentation from './templates/audio-temporal-segmentation';
 import imageClassificationIML from './templates/image-classification-iml';

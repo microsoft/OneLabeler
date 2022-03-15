@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { IDataTypeSetup, UploadTarget } from '@/commons/types';
 import audio from './audio';
 import image from './image';

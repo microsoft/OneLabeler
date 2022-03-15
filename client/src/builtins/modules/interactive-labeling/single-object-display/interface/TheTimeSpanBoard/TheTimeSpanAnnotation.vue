@@ -1,3 +1,6 @@
+<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
 <template>
   <!-- Note: need position relative to ensure the
     descendent elements with position: absolute will not overflow -->

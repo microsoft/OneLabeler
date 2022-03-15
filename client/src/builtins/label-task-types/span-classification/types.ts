@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import type { Category, ILabelTextSpan } from '@/commons/types';
 
 export type ToolbarState = {
