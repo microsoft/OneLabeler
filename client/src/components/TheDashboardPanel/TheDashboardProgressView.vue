@@ -135,12 +135,12 @@ export default {
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count({ value: StatusType.Labeled });
+      return statuses.countByValue(StatusType.Labeled);
     },
     async getNSkipped(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null};
       if (statuses === null) return 0;
-      return statuses.count({ value: StatusType.Skipped });
+      return statuses.countByValue(StatusType.Skipped);
     },
     async getNTotal(): Promise<number> {
       const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };
@@ -153,13 +153,13 @@ export default {
       if (dataObjects === null || statuses === null) return 0;
       const nTotalDataObjects = await dataObjects.count();
       const nTotalStatuses = await statuses.count();
-      const nUnseen = await statuses.count({ value: StatusType.New });
+      const nUnseen = await statuses.countByValue(StatusType.New);
       return nUnseen + nTotalDataObjects - nTotalStatuses;
     },
     async getNViewing(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count({ value: StatusType.Viewed });
+      return statuses.countByValue(StatusType.Viewed);
     },
   },
 };

@@ -8,6 +8,8 @@
  * 
  * POST /statuses/count?auth={auth}
  *  Get the number of statuses (with optional filtering).
+ * POST /statuses/countByValue?auth={auth}
+ *  Get the number of statuses with filtering by value. 
  * POST /statuses/deleteAll?auth={auth}
  *  Delete all the statuses.
  * POST /statuses/get?auth={auth}
@@ -37,7 +39,7 @@ const factory = (
   /**
    * /statuses/count?auth={auth}:
    *   post:
-   *     description: Get the number of statuses (with optional filtering).
+   *     description: Get the number of statuses.
    *     responses:
    *       200:
    *         description: The number.
@@ -49,9 +51,36 @@ const factory = (
   router.post('/count', (req, res, next) => {
     const auth: string = req.query.auth as string;
     if (auth !== secrete) return res.sendStatus(401);
-    const query: FilterQuery<unknown> | undefined = req.body.query;
     
-    statuses.count(query)
+    statuses.count()
+      .then((count) => {
+        res.json(count);
+        next();
+      })
+      .catch((reason) => {
+        res.sendStatus(500);
+        next(reason);
+      });
+  });
+
+  /**
+   * /statuses/countByValue?auth={auth}:
+   *   post:
+   *     description: Get the number of statuses with filtering by value.
+   *     responses:
+   *       200:
+   *         description: The number.
+   *       401:
+   *         description: Unauthorized.
+   *       500:
+   *         description: Unable to get the number.
+   */
+   router.post('/countByValue', (req, res, next) => {
+    const auth: string = req.query.auth as string;
+    if (auth !== secrete) return res.sendStatus(401);
+    const value: unknown = req.body.value;
+    
+    statuses.count({ value: { $eq: value } })
       .then((count) => {
         res.json(count);
         next();

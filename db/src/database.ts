@@ -89,7 +89,7 @@ class DataObjectStorage implements IDataObjectStorage {
 
   async get(uuid: string): Promise<IDataObject | undefined> {
     const match: IDataObject | null = await this.#storage
-      .findOne({ uuid }).lean();
+      .findOne({ uuid: { $eq: uuid } }).lean();
     if (match === null) return undefined;
     return match;
   }
@@ -144,8 +144,8 @@ class DataObjectStorage implements IDataObjectStorage {
 
   async upsert(value: IDataObject): Promise<void> {
     await this.#storage.updateOne(
-      { uuid: value.uuid },
-      value,
+      { uuid: { $eq: value.uuid } },
+      { $set: value },
       { upsert: true },
     );
   }
@@ -153,7 +153,7 @@ class DataObjectStorage implements IDataObjectStorage {
   async upsertBulk(values: IDataObject[]): Promise<void> {
     const ops = values.map((d) => ({
       updateOne: {
-        filter: { uuid: d.uuid },
+        filter: { uuid: { $eq: d.uuid } },
         update: d,
         upsert: true,
       }
@@ -186,7 +186,7 @@ class LabelStorage implements ILabelStorage {
 
   async get(uuid: string): Promise<ILabel | undefined> {
     const match: ILabel | null = await this.#storage
-      .findOne({ uuid }).lean();
+      .findOne({ uuid: { $eq: uuid } }).lean();
     if (match === null) return undefined;
     return match;
   }
@@ -211,8 +211,8 @@ class LabelStorage implements ILabelStorage {
 
   async upsert(value: ILabel): Promise<void> {
     await this.#storage.updateOne(
-      { uuid: value.uuid },
-      value,
+      { uuid: { $eq: value.uuid } },
+      { $set: value },
       { upsert: true },
     );
   }
@@ -220,7 +220,7 @@ class LabelStorage implements ILabelStorage {
   async upsertBulk(values: ILabel[]): Promise<void> {
     const ops = values.map((d) => ({
       updateOne: {
-        filter: { uuid: d.uuid },
+        filter: { uuid: { $eq: d.uuid } },
         update: d,
         upsert: true,
       }
@@ -274,8 +274,8 @@ class StatusStorage implements IStatusStorage {
 
   async upsert(value: IStatus): Promise<void> {
     await this.#storage.updateOne(
-      { uuid: value.uuid },
-      value,
+      { uuid: { $eq: value.uuid } },
+      { $set: value },
       { upsert: true },
     );
   }
@@ -283,7 +283,7 @@ class StatusStorage implements IStatusStorage {
   async upsertBulk(values: IStatus[]): Promise<void> {
     const ops = values.map((d) => ({
       updateOne: {
-        filter: { uuid: d.uuid },
+        filter: { uuid: { $eq: d.uuid } },
         update: d,
         upsert: true,
       }

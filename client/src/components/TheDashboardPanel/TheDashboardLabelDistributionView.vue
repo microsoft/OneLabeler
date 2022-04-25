@@ -123,7 +123,7 @@ export default {
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count({ value: StatusType.Labeled });
+      return statuses.countByValue(StatusType.Labeled);
     },
     async getNLabeledOf(category: Category): Promise<number> {
       // Note: the number of labels of a category depends on both labels and statuses.

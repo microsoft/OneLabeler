@@ -120,11 +120,12 @@ class LabelStorage implements ILabelStorage {
     this.#storage = storage;
   }
 
-  async count(query?: FilterQuery<unknown>): Promise<number> {
-    if (query === undefined) {
-      return this.#storage.count();
-    }
-    const filter: ((item: unknown) => boolean) = sift(query);
+  async count(): Promise<number> {
+    return this.#storage.count();
+  }
+
+  async countByValue(value: unknown): Promise<number> {
+    const filter = (item: ILabel) => item.value === value;
     return this.#storage.filter(filter).count();
   }
 
@@ -169,11 +170,12 @@ class StatusStorage implements IStatusStorage {
     this.#storage = storage;
   }
 
-  async count(query?: FilterQuery<unknown>): Promise<number> {
-    if (query === undefined) {
-      return this.#storage.count();
-    }
-    const filter: ((item: unknown) => boolean) = sift(query);
+  async count(): Promise<number> {
+    return this.#storage.count();
+  }
+
+  async countByValue(value: unknown): Promise<number> {
+    const filter = (item: IStatus) => item.value === value;
     return this.#storage.filter(filter).count();
   }
 

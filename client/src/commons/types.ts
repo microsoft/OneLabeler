@@ -57,8 +57,10 @@ export interface IDataObjectStorage {
 
 /** The interface of label storage. */
 export interface ILabelStorage {
-  /** Count the number of stored labels with optional filter. */
-  count(query?: FilterQuery<unknown>): Promise<number>;
+  /** Count the number of stored labels. */
+  count(): Promise<number>;
+  /** Count the number of stored labels with filtering by value. */
+  countByValue(value: unknown): Promise<number>;
   /** Delete all the labels. */
   deleteAll(): Promise<void>;
   /** Get a label by uuid. */
@@ -79,8 +81,10 @@ export interface ILabelStorage {
 
 /** The interface of status storage. */
 export interface IStatusStorage {
-  /** Count the number of stored statuses with optional filter. */
-  count(query?: FilterQuery<unknown>): Promise<number>;
+  /** Count the number of stored statuses. */
+  count(): Promise<number>;
+  /** Count the number of stored statuses with filtering by value. */
+  countByValue(value: unknown): Promise<number>;
   /** Delete all the statuses. */
   deleteAll(): Promise<void>;
   /** Get a status by uuid. */

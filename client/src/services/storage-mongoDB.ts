@@ -92,8 +92,12 @@ class LabelStorage implements ILabelStorage {
     this.#path = (op: string) => path(this.#url, 'labels', `${op}?auth=${SECRETE}`);
   }
 
-  async count(query?: FilterQuery<unknown>): Promise<number> {
-    return (await axios.post(this.#path('count'), { query })).data;
+  async count(): Promise<number> {
+    return (await axios.post(this.#path('count'))).data;
+  }
+
+  async countByValue(value: unknown): Promise<number> {
+    return (await axios.post(this.#path('countByValue'), { value })).data;
   }
 
   async deleteAll(): Promise<void> {
@@ -147,8 +151,12 @@ class StatusStorage implements IStatusStorage {
     this.#path = (op: string) => path(this.#url, 'statuses', `${op}?auth=${SECRETE}`);
   }
 
-  async count(query?: FilterQuery<unknown>): Promise<number> {
-    return (await axios.post(this.#path('count'), { query })).data;
+  async count(): Promise<number> {
+    return (await axios.post(this.#path('count'))).data;
+  }
+
+  async countByValue(value: unknown): Promise<number> {
+    return (await axios.post(this.#path('countByValue'), { value })).data;
   }
 
   async deleteAll(): Promise<void> {

@@ -42,7 +42,7 @@ const useStatuses = (statuses: Ref<IStatusStorage | null>) => {
   const nLabeled: Ref<number> = ref(0);
   const updateNLabeled = async (): Promise<void> => {
     if (statuses.value === null) nLabeled.value = 0;
-    else nLabeled.value = await statuses.value.count({ value: StatusType.Labeled });
+    else nLabeled.value = await statuses.value.countByValue(StatusType.Labeled);
   };
   onMounted(updateNLabeled);
   watch(statuses, updateNLabeled);
@@ -91,7 +91,7 @@ export default {
     async getNLabeled(): Promise<number> {
       const { statuses } = this as { statuses: IStatusStorage | null };
       if (statuses === null) return 0;
-      return statuses.count({ value: StatusType.Labeled });
+      return statuses.countByValue(StatusType.Labeled);
     },
     async getNTotal(): Promise<number> {
       const { dataObjects } = this as { dataObjects: IDataObjectStorage | null };

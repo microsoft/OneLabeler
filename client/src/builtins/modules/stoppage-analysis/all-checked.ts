@@ -20,7 +20,7 @@ export default {
     },
   ): Promise<{ stop: boolean }> => {
     const { nDataObjects, statuses } = inputs;
-    const nLabeled = await statuses.count({ value: StatusType.Labeled });
+    const nLabeled = await statuses.countByValue(StatusType.Labeled);
     const stop = nDataObjects === nLabeled;
     return { stop };
   },

@@ -7,7 +7,9 @@
  * All the apis are idempotent.
  * 
  * GET /labels/count?auth={auth}
- *  Get the number of labels (with optional filtering).
+ *  Get the number of labels.
+ * GET /labels/count/value?auth={auth}
+ *  Get the number of labels with filtering by value. 
  * DELETE /labels/items?auth={auth}
  *  Delete all the labels.
  * GET /labels/items/{uuid}?auth={auth}
@@ -35,7 +37,7 @@ const factory = (
   /**
    * /labels/count?auth={auth}:
    *   get:
-   *     description: Get the number of labels (with optional filtering).
+   *     description: Get the number of labels.
    *     responses:
    *       200:
    *         description: The number.
@@ -48,9 +50,37 @@ const factory = (
   router.get('/count', (req, res, next) => {
     const auth: string = req.query.auth as string;
     if (auth !== secrete) return res.sendStatus(401);
-    const query: FilterQuery<unknown> | undefined = req.body.query;
 
-    labels.count(query)
+    labels.count()
+      .then((count) => {
+        res.json(count);
+        next();
+      })
+      .catch((reason) => {
+        res.sendStatus(500);
+        next(reason);
+      });
+  });
+
+  /**
+   * /labels/count/{value}?auth={auth}:
+   *   get:
+   *     description: Get the number of labels with filtering by value.
+   *     responses:
+   *       200:
+   *         description: The number.
+   *       401:
+   *         description: Unauthorized.
+   *       500:
+   *         description: Unable to get the number.
+   * example: http://localhost:8887/labels/count/0?auth=UKBumAJziW5eL8t
+   */
+   router.get('/count/:value', (req, res, next) => {
+    const auth: string = req.query.auth as string;
+    if (auth !== secrete) return res.sendStatus(401);
+    const value: string = req.params.value;
+
+    labels.count({ value: { $eq: value } })
       .then((count) => {
         res.json(count);
         next();

@@ -7,7 +7,9 @@
  * All the apis are idempotent.
  * 
  * POST /labels/count?auth={auth}
- *  Get the number of labels (with optional filtering).
+ *  Get the number of labels.
+ * POST /labels/countByValue?auth={auth}
+ *  Get the number of labels with filtering by value.
  * POST /labels/deleteAll?auth={auth}
  *  Delete all the labels.
  * POST /labels/get?auth={auth}
@@ -37,7 +39,7 @@ const factory = (
   /**
    * /labels/count?auth={auth}:
    *   post:
-   *     description: Get the number of labels (with optional filtering).
+   *     description: Get the number of labels.
    *     responses:
    *       200:
    *         description: The number.
@@ -49,9 +51,36 @@ const factory = (
   router.post('/count', (req, res, next) => {
     const auth: string = req.query.auth as string;
     if (auth !== secrete) return res.sendStatus(401);
-    const query: FilterQuery<unknown> | undefined = req.body.query;
 
-    labels.count(query)
+    labels.count()
+      .then((count) => {
+        res.json(count);
+        next();
+      })
+      .catch((reason) => {
+        res.sendStatus(500);
+        next(reason);
+      });
+  });
+
+  /**
+   * /labels/countByValue?auth={auth}:
+   *   post:
+   *     description: Get the number of labels with filtering by value.
+   *     responses:
+   *       200:
+   *         description: The number.
+   *       401:
+   *         description: Unauthorized.
+   *       500:
+   *         description: Unable to get the number.
+   */
+   router.post('/countByValue', (req, res, next) => {
+    const auth: string = req.query.auth as string;
+    if (auth !== secrete) return res.sendStatus(401);
+    const value: unknown = req.body.value;
+
+    labels.count({ value: { $eq: value } })
       .then((count) => {
         res.json(count);
         next();
