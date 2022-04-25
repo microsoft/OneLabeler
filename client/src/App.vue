@@ -46,7 +46,7 @@
           />
         </v-dialog>
       </template>
-      <template v-else-if="dockSide !== DockSideType.Hide">
+      <template v-else-if="dockSide !== DockSideType.Hide && dockSide !== DockSideType.Minimap">
         <v-divider
           v-if="dockSide !== DockSideType.FullScreen"
           style="border-width: 2px;"
@@ -59,6 +59,16 @@
         />
       </template>
     </div>
+    <template v-if="dockSide === DockSideType.Minimap">
+      <TheWorkflowMinimap
+        style="position: absolute; pointer-events: none;
+        width: 800px; height: 400px;
+        transform: scale(0.5); transform-origin: 0% 0% 0px;
+        margin-top: 80px;
+        margin-left: 10px;
+        opacity: 0.9"
+      />
+    </template>
   </v-app>
 </template>
 
@@ -77,6 +87,7 @@ import TheSelectionView from '@/components/TheSelectionView/TheSelectionView.vue
 import TheFooterView from '@/components/TheFooterView/TheFooterView.vue';
 import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 import TheDevPanel from '@/components/TheDevPanel/TheDevPanel.vue';
+import TheWorkflowMinimap from '@/components/TheWorkflowMinimap/TheWorkflowMinimap.vue';
 
 export default {
   name: 'App',
@@ -85,6 +96,7 @@ export default {
     TheFooterView,
     TheMessageView,
     TheDevPanel,
+    TheWorkflowMinimap,
   },
   data() {
     return { DockSideType };

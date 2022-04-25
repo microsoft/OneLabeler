@@ -131,6 +131,7 @@ const icons = {
   python: 'fab fa-python',
   fullScreen: 'far fa-square',
   changeDirection: 'fas fa-exchange-alt',
+  minimap: 'fa-solid fa-map-location-dot',
   drawCircle: {
     name: 'drawCircle',
     component: IconDotCircle,

@@ -180,4 +180,6 @@ export enum DockSideType {
   Bottom = 'Bottom',
   /** Dock on the right of the created system. */
   Right = 'Right',
+  /** Show as a minimap. */
+  Minimap = 'Minimap',
 }

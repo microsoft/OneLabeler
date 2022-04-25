@@ -76,6 +76,22 @@
     </v-btn>
 
     <v-btn
+      title="Dock to Minimap"
+      color="white"
+      icon
+      tile
+      small
+      @click="$emit('set:dock-side', DockSideType.Minimap)"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.minimap
+      </v-icon>
+    </v-btn>
+
+    <v-btn
       title="Close"
       color="white"
       icon

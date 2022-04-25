@@ -445,7 +445,8 @@ export default {
       );
     },
     onClickWorkflowButton(): void {
-      const updatedDockSide = this.dockSide === DockSideType.Hide
+      const { dockSide } = this;
+      const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
         ? DockSideType.Window
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
