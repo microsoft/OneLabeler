@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import type { IModule } from '@/commons/types';
+import type BaseModule from '@/builtins/modules/base-module';
 import Initialization from './initialization/base';
 import dataObjectSelection from './data-object-selection';
 import defaultLabeling from './default-labeling';
@@ -25,4 +25,4 @@ export default [
   ...modelTraining,
   ...stoppageAnalysis,
   ...labelIdeation,
-] as IModule[];
+] as (typeof BaseModule)[];

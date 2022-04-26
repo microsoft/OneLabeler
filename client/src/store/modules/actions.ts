@@ -13,7 +13,6 @@ import type {
   IStatus,
   IStorageStore,
   LabelTaskType,
-  IModule,
   SourceService,
   StorageService,
   TaskWindow,
@@ -21,6 +20,7 @@ import type {
   DockSideType,
 } from '@/commons/types';
 import { isNodeInteractive } from '@/commons/utils';
+import BaseModule from '@/builtins/modules/base-module';
 import * as types from './mutation-types';
 import { IState, createInitialState } from './state';
 
@@ -128,7 +128,7 @@ export const updatedTaskWindowsByNodes = (
   const nodesWithInterface = nodes.filter((d) => isNodeInteractive(d));
   const updatedTaskWindows: TaskWindow[] = [];
   nodesWithInterface.forEach((node) => {
-    const process = node.value as IModule;
+    const process = node.value as BaseModule;
     // Check if the task window is already created.
     const match = taskWindows.find((d) => (
       d.node.id === node.id && d.process.id === process.id

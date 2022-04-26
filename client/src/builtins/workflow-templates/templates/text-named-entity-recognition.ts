@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { cloneDeep, merge } from 'lodash';
 import {
   DataType,
   LabelTaskType,
@@ -28,25 +27,19 @@ export default parseWorkflow({
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: merge(cloneDeep(BaseInitialization), {
-        params: {
-          dataType: { value: DataType.Text },
-          labelTasks: {
-            value: [
-              LabelTaskType.SpanClassification,
-              LabelTaskType.AnnotationRelation,
-            ],
-          },
-        },
+      value: new BaseInitialization({
+        dataType: DataType.Text,
+        labelTasks: [
+          LabelTaskType.SpanClassification,
+          LabelTaskType.AnnotationRelation,
+        ],
       }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
       label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
-      value: merge(cloneDeep(DOSRandom), {
-        params: { nBatch: { value: 1 } },
-      }),
+      value: new DOSRandom({ nBatch: 1 }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -55,7 +48,7 @@ export default parseWorkflow({
     {
       label: 'single object display',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: ILSingleObjectDisplay,
+      value: new ILSingleObjectDisplay(),
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -64,7 +57,7 @@ export default parseWorkflow({
     {
       label: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
-      value: SAAllChecked,
+      value: new SAAllChecked(),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,

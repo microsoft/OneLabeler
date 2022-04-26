@@ -12,6 +12,7 @@ import type {
   ILabel,
   IDataObjectStorage,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import MnistData from './mnist';
 
 // Reference: https://www.tensorflow.org/js/tutorials/training/handwritten_digit_cnn
@@ -135,18 +136,28 @@ const urls2tensor = async (urls: string[]): Promise<tf.Tensor4D> => {
   return tf.stack(tensors, 0) as tf.Tensor4D;
 };
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'CNN-classification',
-  id: 'CNN-classification-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  dataTypes: [DataType.Image],
-  labelTasks: [LabelTaskType.Classification],
-  run: async (
+export default class CnnClassification extends BaseModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-CNNClassification';
+
+  readonly label = 'CNN classification';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly labelTasks = [LabelTaskType.Classification];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       queryUuids: string[],
@@ -161,5 +172,5 @@ export default {
       category: String(d),
     }));
     return { labels };
-  },
-};
+  }
+}

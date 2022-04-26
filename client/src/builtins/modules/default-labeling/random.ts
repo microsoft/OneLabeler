@@ -3,25 +3,33 @@
 
 import { xor4096 } from 'seedrandom';
 import { LabelTaskType, ModuleType } from '@/commons/types';
-import type { Category, ILabel } from '@/commons/types';
+import type { ILabel } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 const SEED = '20';
 const random = xor4096(SEED);
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'Random (Debug)',
-  id: 'Random',
-  inputs: ['queryUuids', 'categories'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  labelTasks: [LabelTaskType.Classification],
-  run: async (
+export default class Random extends BaseModule {
+  readonly inputs = ['queryUuids', 'categories'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-Random';
+
+  readonly label = 'Random (Debug)';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly labelTasks = [LabelTaskType.Classification];
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       queryUuids: string[],
-      categories: Category[],
+      categories: string[],
     },
   ): Promise<{ labels: ILabel[] }> => {
     const { queryUuids, categories } = inputs;
@@ -31,5 +39,5 @@ export default {
       category: categories[Math.floor(random() * nCategories)],
     }));
     return { labels };
-  },
-};
+  }
+}

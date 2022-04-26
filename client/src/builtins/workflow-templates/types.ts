@@ -7,6 +7,7 @@ import type {
   ParamSpecification,
   IModule,
 } from '@/commons/types';
+import type BaseModule from '@/builtins/modules/base-module';
 
 export enum WorkflowNodeType {
   Initialization = 'Initialization',
@@ -30,7 +31,7 @@ export interface WorkflowNode {
   label: string;
   type: WorkflowNodeType;
   /** The chosen implementation (null when not chosen). */
-  value: IModule | null;
+  value: BaseModule | null;
   /**
    * The layout specifying where the node should
    * be rendered and the size of the node.

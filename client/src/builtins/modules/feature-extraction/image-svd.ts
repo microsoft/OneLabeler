@@ -4,22 +4,32 @@
 import axios from 'axios';
 import { DataType, ModuleType } from '@/commons/types';
 import type { IDataObject, IDataObjectStorage } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import { ALGORITHM_URL } from '@/services/http-params';
 import bindErrorHandler from './utils/handle-error';
 
 type RunReturn = { features: number[][], featureNames: string[] };
 
-export default {
-  type: ModuleType.FeatureExtraction,
-  label: 'SVD (Unsupervised)',
-  id: 'image-SVD-25940167',
-  inputs: ['dataObjects'],
-  outputs: ['features'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
-  dataTypes: [DataType.Image],
-  run: async (
+export default class ImageSVD extends BaseModule {
+  readonly inputs = ['dataObjects'];
+
+  readonly outputs = ['features'];
+
+  readonly id = 'FeatureExtraction-ImageSVD';
+
+  readonly label = 'SVD (Unsupervised)';
+
+  readonly type = ModuleType.FeatureExtraction;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = false;
+
+  readonly run = async (
     inputs: { dataObjects: IDataObjectStorage },
   ): Promise<RunReturn> => {
     const dataObjects: IDataObject[] = await inputs.dataObjects.getAll();
@@ -28,5 +38,5 @@ export default {
       JSON.stringify({ dataObjects }),
     ));
     return response.data as RunReturn;
-  },
-};
+  }
+}

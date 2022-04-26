@@ -116,7 +116,7 @@
 
     <!-- The parameters of the implementation. -->
     <VModuleParams
-      v-if="method.params !== undefined"
+      v-if="method.params !== undefined && Object.keys(method.params).length !== 0"
       :params="method.params"
       @click:param-option="onEditMethodParam(
         $event.paramKey,
@@ -129,9 +129,9 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { cloneDeep } from 'lodash';
 import { ModuleType } from '@/commons/types';
-import type { ModelService, IModule } from '@/commons/types';
+import type { ModelService } from '@/commons/types';
+import type BaseModule from '@/builtins/modules/base-module';
 import VModuleArgs from './VModuleArgs.vue';
 import VModuleLabel from './VModuleLabel.vue';
 import VModuleModel from './VModuleModel.vue';
@@ -147,7 +147,7 @@ export default defineComponent({
   },
   props: {
     method: {
-      type: Object as PropType<IModule>,
+      type: Object as PropType<BaseModule>,
       required: true,
     },
     models: {
@@ -195,17 +195,15 @@ export default defineComponent({
     },
   },
   methods: {
-    onUpsertModule(partial: Partial<IModule>): void {
-      const newValue: IModule = { ...this.method, ...partial };
+    onUpsertModule(partial: Partial<BaseModule>): void {
+      const newValue = this.method.clone().upsert(partial);
       this.$emit('update:module', newValue);
     },
     onEditMethodParam(paramKey: string, value: unknown): void {
       const { method } = this;
       const { params } = method;
       if (params === undefined) return;
-      const newValue = cloneDeep(method);
-      if (newValue.params === undefined) return;
-      newValue.params[paramKey].value = value;
+      const newValue = method.clone().storeOptions({ [paramKey]: value });
       this.$emit('update:module', newValue);
     },
     onEditModelLabel(label: string): void {

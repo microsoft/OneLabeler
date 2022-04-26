@@ -2,18 +2,26 @@
 // Licensed under the MIT License.
 
 import { ModuleType } from '@/commons/types';
-import type { IModule } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
-export default {
-  inputs: ['stop'],
-  outputs: [],
-  id: 'BaseConditionalBranching',
-  label: 'Base Conditional Branching',
-  type: ModuleType.Decision,
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  params: {
+export default class BaseDecisionModule extends BaseModule {
+  readonly inputs = ['stop'];
+
+  readonly outputs = [];
+
+  readonly id = 'ConditionalBranching-Base';
+
+  readonly label = 'Base Conditional Branching';
+
+  readonly type = ModuleType.Decision;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  params = {
     criteria: {
       value: 'stop == true ?',
       label: 'Branching Criteria',
@@ -22,6 +30,7 @@ export default {
         value: 'stop == true ?',
       }],
     },
-  },
-  run: (inputs: { stop: boolean }): boolean => inputs.stop,
-} as IModule;
+  };
+
+  run = (inputs: { stop: boolean }): boolean => inputs.stop;
+}

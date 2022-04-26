@@ -3,36 +3,39 @@
 
 import { WorkflowNodeType } from '@/commons/types';
 import type { WorkflowNode } from '@/commons/types';
+import type BaseModule from '@/builtins/modules/base-module';
 import type { IModuleTrimmed } from './parse-module';
 import { parseModule } from './parse-module';
 
-export type TrimmedNode = Partial<WorkflowNode> & Omit<WorkflowNode, 'id' | 'layout'>;
+export type TrimmedNode = {
+  /** The id of the node. */
+  id?: string;
+  /** The name of the node as appear in the interface. */
+  label: string;
+  type: WorkflowNodeType;
+  /** The chosen implementation (null when not chosen). */
+  value?: BaseModule | null;
+  /**
+   * The layout specifying where the node should
+   * be rendered and the size of the node.
+   */
+  layout?: {
+    /** The position of the top left corner of the node. */
+    x: number;
+    y: number;
+    /** The size of the node. */
+    width?: number;
+    height?: number;
+  };
+}
 
 /** Get default { width, height } for a node given node type. */
 export const getDefaultNodeSize = (
   type: WorkflowNodeType,
 ): { width: number, height: number } => {
-  const INITIAL_NODE_WIDTH = 120;
-  const INITIAL_NODE_HEIGHT = 80;
-  const DECISION_NODE_WIDTH = 120;
-  const DECISION_NODE_HEIGHT = 80;
-  const EXIT_NODE_WIDTH = 120;
-  const EXIT_NODE_HEIGHT = 80;
-  const MODULE_NODE_WIDTH = 120;
-  const MODULE_NODE_HEIGHT = 80;
-
-  let width = MODULE_NODE_WIDTH;
-  let height = MODULE_NODE_HEIGHT;
-  if (type === WorkflowNodeType.Initialization) {
-    [width, height] = [INITIAL_NODE_WIDTH, INITIAL_NODE_HEIGHT];
-  }
-  if (type === WorkflowNodeType.Decision) {
-    [width, height] = [DECISION_NODE_WIDTH, DECISION_NODE_HEIGHT];
-  }
-  if (type === WorkflowNodeType.Exit) {
-    [width, height] = [EXIT_NODE_WIDTH, EXIT_NODE_HEIGHT];
-  }
-  return { width, height };
+  const NODE_WIDTH = 120;
+  const NODE_HEIGHT = 80;
+  return { width: NODE_WIDTH, height: NODE_HEIGHT };
 };
 
 /** Get default { x, y } for a node given node index. */

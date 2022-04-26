@@ -2,11 +2,8 @@
 // Licensed under the MIT License.
 
 import { WorkflowNodeType } from '@/commons/types';
-import type {
-  IInitializationNode,
-  IModule,
-  WorkflowNode,
-} from '@/commons/types';
+import type { IInitializationNode, WorkflowNode } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import { ErrorCategory, LintMessageType } from '../types';
 import type { LintMessage } from '../types';
 
@@ -61,15 +58,11 @@ const checkModuleImplemented = (
     if (node.type === WorkflowNodeType.Decision) return;
     if (node.type === WorkflowNodeType.Exit) return;
 
-    const instance = node.value as IModule | null;
+    const instance = node.value as BaseModule | null;
 
     // Check an implementation is chosen for the node.
     const isModuleImplemented = instance !== null
-      && (
-        (instance.run !== undefined && instance.run !== null)
-        || (instance.render !== undefined && instance.render !== null)
-        || (instance.api !== undefined && instance.api !== null && instance.api !== '')
-      )
+      && ((instance.run !== undefined) || (instance.run !== undefined))
       && (
         !instance.inputs.includes('model')
         || (instance.model !== undefined && instance.model !== null)

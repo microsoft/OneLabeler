@@ -3,10 +3,10 @@
 
 import type {
   ModelService,
-  IModule,
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import type { IState } from './state';
 import * as types from './mutation-types';
 
@@ -37,7 +37,7 @@ export default {
   },
   [types.SET_MODULES](
     state: IState,
-    processes: IModule[],
+    processes: (typeof BaseModule)[],
   ): void {
     state.processes = processes;
   },

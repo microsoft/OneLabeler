@@ -7,10 +7,10 @@ import { WorkflowNodeType } from '@/commons/types';
 import type {
   DataType,
   LabelTaskType,
-  IModule,
   WorkflowNode,
   IInitializationNode,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import type { IState } from './state';
 
 export const startNode = (state: IState): WorkflowNode | null => {
@@ -46,7 +46,7 @@ export const dataType = (state: IState): DataType | null => {
   return node?.value?.params.dataType.value ?? null;
 };
 
-export const validModules = (state: IState): IModule[] => {
+export const validModules = (state: IState): (typeof BaseModule)[] => {
   const { processes } = state;
   const dataTypeValue = dataType(state);
   const labelTasksValue = labelTasks(state);

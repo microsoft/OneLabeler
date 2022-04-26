@@ -70,6 +70,7 @@ import type {
   IModule,
   WorkflowNode,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import { cardElevated, cardHeader } from '@/style';
 import VNodeEditableLabel from './VNodeEditableLabel.vue';
 import VNodeSelectMethod from './VNodeSelectMethod.vue';
@@ -128,8 +129,8 @@ export default defineComponent({
     isExit(): boolean {
       return this.node.type === WorkflowNodeType.Exit;
     },
-    method(): IModule | null {
-      return this.node.value as IModule | null;
+    method(): BaseModule | null {
+      return this.node.value as BaseModule | null;
     },
     menuOfMethods(): { label: string, options: { value: IModule, label: string }[] } {
       return {
@@ -142,7 +143,7 @@ export default defineComponent({
     },
   },
   methods: {
-    onEditMethod(newValue: IModule): void {
+    onEditMethod(newValue: BaseModule): void {
       this.$emit('edit:node', { ...this.node, value: newValue });
       this.$emit('update:module', newValue);
     },

@@ -3,7 +3,6 @@
 
 import type { ActionContext } from 'vuex';
 import showProgressBar from '@/plugins/nprogress-interceptor';
-import * as API from '@/services/data-labeling-api';
 import createStorage from '@/services/storage';
 import dataTypeSetups from '@/builtins/data-types/index';
 import {
@@ -15,19 +14,18 @@ import {
   Category,
 } from '@/commons/types';
 import type {
-  ModuleParams,
   WorkflowEdge,
   WorkflowGraph,
   WorkflowNode,
   ILabel,
   IStatus,
   ModelService,
-  IModule,
   IDataObject,
   StorageService,
   IStorageStore,
   SourceService,
 } from '@/commons/types';
+import type BaseModule from '@/builtins/modules/base-module';
 import * as types from './mutation-types';
 import * as rootTypes from '../mutation-types';
 import type { IState } from './state';
@@ -160,7 +158,7 @@ export const editModelService = (
 
 export const pushModules = (
   { commit, state }: ActionContext<IState, IRootState>,
-  process: IModule,
+  process: BaseModule,
 ): void => {
   const { processes } = state;
   commit(types.SET_MODULES, [...processes, process]);
@@ -168,7 +166,7 @@ export const pushModules = (
 
 export const editModule = (
   { commit, state }: ActionContext<IState, IRootState>,
-  processUpdated: IModule,
+  processUpdated: BaseModule,
 ): void => {
   const { processes } = state;
   const idx = processes.findIndex((d) => d.id === processUpdated.id);
@@ -202,7 +200,7 @@ const handleAlgorithmServiceError = (
 
 export const executeModule = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
-  moduleInstance: IModule,
+  moduleInstance: BaseModule,
 ): Promise<void> => {
   if (moduleInstance.run === undefined || moduleInstance.run === null) {
     throw Error('Method not implemented');
@@ -339,64 +337,6 @@ export const executeDataObjectExtraction = showProgressBar(async (
   commit(rootTypes.SET_DATA_OBJECTS, dataObjects.shallowCopy(), { root: true });
 });
 
-export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
-  moduleInstance: IModule,
-): Promise<void> => {
-  const {
-    labels,
-    statuses,
-    queryUuids,
-    unlabeledMark,
-  } = rootState;
-
-  if (labels === null || statuses === null) return;
-
-  // Set the label status of samples in the last batch labeled.
-  await Promise.all(queryUuids.map(async (uuid: string) => {
-    const label: ILabel | undefined = await labels.get(uuid);
-    const status: IStatus = {
-      uuid,
-      value: (label === undefined || label.category === unlabeledMark)
-        ? StatusType.Skipped
-        : StatusType.Labeled,
-    };
-    await statuses.upsert(status);
-  }));
-  commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
-
-  // Sample data objects.
-  const { dataObjects } = rootState;
-  if (dataObjects === null) throw Error('Data object storage not initialized.');
-  const model = moduleInstance.model as ModelService;
-  const nBatch = (moduleInstance.params as ModuleParams).nBatch.value as number;
-
-  let newQueryUuids: string[] = [];
-  try {
-    newQueryUuids = (await API.dataObjectSelection(
-      moduleInstance,
-      dataObjects,
-      statuses,
-      nBatch,
-      model,
-    ));
-    commit(rootTypes.SET_QUERY_UUIDS, newQueryUuids, { root: true });
-  } catch (e) {
-    handleAlgorithmServiceError(e, commit);
-    return;
-  }
-
-  // Set the labels status of samples in the current batch.
-  // If the samples had been labeled, keep it unchanged.
-  // Else, set it to be viewed.
-  await Promise.all(newQueryUuids.map(async (uuid: string) => {
-    const status: IStatus | undefined = await statuses.get(uuid);
-    if (status !== undefined && status.value === StatusType.Labeled) return;
-    await statuses.upsert({ uuid, value: StatusType.Viewed });
-  }));
-  commit(rootTypes.SET_STATUSES, statuses.shallowCopy(), { root: true });
-});
-
 export const executeDataObjectSelectionManual = showProgressBar(async (
   { commit, rootState }: ActionContext<IState, IRootState>,
   newQueryUuids: string[],
@@ -467,21 +407,13 @@ export const executeWorkflow = async (
     || node.type === WorkflowNodeType.StoppageAnalysis
     || node.type === WorkflowNodeType.ModelTraining
     || node.type === WorkflowNodeType.Base
+    || node.type === WorkflowNodeType.DataObjectSelection
   ) {
-    if (node.value?.blocking === true) {
-      await executeModule(store, node.value as IModule);
-    } else {
-      executeModule(store, node.value as IModule);
-    }
-  }
-
-  if (node.type === WorkflowNodeType.DataObjectSelection) {
-    const moduleInstance = node.value as IModule;
-    if (moduleInstance.render === undefined) {
-      if (node.value?.blocking === true) {
-        await executeDataObjectSelectionAlgorithmic(store, moduleInstance);
+    if (node.value !== null) {
+      if (node.value.blocking === true) {
+        await executeModule(store, node.value);
       } else {
-        executeDataObjectSelectionAlgorithmic(store, moduleInstance);
+        executeModule(store, node.value);
       }
     }
   }

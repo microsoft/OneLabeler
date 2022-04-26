@@ -23,10 +23,10 @@ import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import type {
   ModelService,
-  IModule,
   WorkflowEdge,
   WorkflowNode,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import TheEdgeDetails from './TheEdgeDetails.vue';
 import TheElementDetailsSelectionEmpty from './TheElementDetailsSelectionEmpty.vue';
 import TheElementDetailsSelectionMultiple from './TheElementDetailsSelectionMultiple.vue';
@@ -40,7 +40,7 @@ export default defineComponent({
   name: 'TheElementDetails',
   props: {
     methods: {
-      type: Array as PropType<IModule[]>,
+      type: Array as PropType<BaseModule[]>,
       default: () => [],
     },
     models: {

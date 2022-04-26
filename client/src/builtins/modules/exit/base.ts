@@ -2,15 +2,22 @@
 // Licensed under the MIT License.
 
 import { ModuleType } from '@/commons/types';
-import type { IModule } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
-export default {
-  type: ModuleType.Exit,
-  label: 'Base Exit',
-  id: 'BaseExit',
-  inputs: ['labels'],
-  outputs: [],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-} as IModule;
+export default class BaseExitModule extends BaseModule {
+  readonly inputs = ['labels'];
+
+  readonly outputs = [];
+
+  readonly id = 'Exit-Base';
+
+  readonly label = 'Base Exit';
+
+  readonly type = ModuleType.Exit;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+}

@@ -2,19 +2,29 @@
 // Licensed under the MIT License.
 
 import { ModuleType } from '@/commons/types';
-import TheGridMatrix from './interface/index.vue';
+import BaseModule from '@/builtins/modules/base-module';
+import TheInterface from './interface/index.vue';
 
-export default {
-  type: ModuleType.InteractiveLabeling,
-  label: 'Grid Matrix',
-  id: 'GridMatrix-89670576',
-  inputs: ['dataObjects', 'labels', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  persistent: true,
-  isBuiltIn: true,
-  isServerless: true,
-  params: {
+export default class GridMatrix extends BaseModule {
+  readonly inputs = ['dataObjects', 'labels', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'InteractiveLabeling-GridMatrix';
+
+  readonly label = 'Grid Matrix';
+
+  readonly type = ModuleType.InteractiveLabeling;
+
+  readonly blocking = true;
+
+  readonly persistent = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  params = {
     nRows: {
       value: 6,
       label: 'Number of Objects per Column',
@@ -37,6 +47,7 @@ export default {
         { value: 12, label: '12' },
       ],
     },
-  },
-  render: () => TheGridMatrix,
-};
+  };
+
+  readonly render = () => TheInterface;
+}

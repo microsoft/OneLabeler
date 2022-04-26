@@ -109,7 +109,7 @@ export default defineComponent({
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.InteractiveLabeling) return null;
       if (process.render === undefined) return null;
-      return process.render();
+      return process.render;
     },
     ready(): boolean {
       return (this.filteredDataObjects.length === this.filteredLabels.length)

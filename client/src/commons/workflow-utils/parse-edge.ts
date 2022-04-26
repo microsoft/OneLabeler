@@ -5,7 +5,37 @@ import { v4 as uuidv4 } from 'uuid';
 import { PortDirection } from '@/commons/types';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 
-export type TrimmedEdge = Partial<WorkflowEdge> & Omit<WorkflowEdge, 'id' | 'layout'>
+export type TrimmedEdge = {
+  /** The id of the source node. */
+  source: string;
+  /** The id of the target node. */
+  target: string;
+  /** The id of the edge itself. */
+  id?: string;
+  /** The condition bound to the edge for outward edges of conditional branching. */
+  condition?: boolean;
+  /** The layout specifying where the edge should be rendered in the interface. */
+  layout?: {
+    source: {
+      /**
+       * The relative position (as discrete state) of the port
+       * in the node containing the port.
+       */
+      direction: PortDirection,
+      /**
+       * The relative position (in pixels) of the port
+       * to the top left corner of the node containing the port.
+       */
+      dx?: number;
+      dy?: number;
+    },
+    target: {
+      direction: PortDirection,
+      dx?: number;
+      dy?: number;
+    }
+  };
+}
 type RecursivePartial<T> = { [P in keyof T]?: RecursivePartial<T[P]>; };
 
 /**

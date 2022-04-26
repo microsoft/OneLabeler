@@ -2,17 +2,27 @@
 // Licensed under the MIT License.
 
 import { ModuleType } from '@/commons/types';
-import TheSingleObjectDisplay from './interface/index.vue';
+import BaseModule from '@/builtins/modules/base-module';
+import TheInterface from './interface/index.vue';
 
-export default {
-  type: ModuleType.InteractiveLabeling,
-  label: 'Single Object Display',
-  id: 'SingleObjectDisplay-48263667',
-  inputs: ['dataObjects', 'labels', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  persistent: true,
-  isBuiltIn: true,
-  isServerless: true,
-  render: () => TheSingleObjectDisplay,
-};
+export default class SingleObjectDisplay extends BaseModule {
+  readonly inputs = ['dataObjects', 'labels', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'InteractiveLabeling-SingleObjectDisplay';
+
+  readonly label = 'Single Object Display';
+
+  readonly type = ModuleType.InteractiveLabeling;
+
+  readonly blocking = true;
+
+  readonly persistent = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly render = () => TheInterface;
+}

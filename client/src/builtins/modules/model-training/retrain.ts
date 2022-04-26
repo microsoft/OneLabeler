@@ -14,18 +14,27 @@ import type {
   ModelService,
 } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
+import BaseModule from '@/builtins/modules/base-module';
 import bindErrorHandler from './utils/handle-error';
 
-export default {
-  type: ModuleType.ModelTraining,
-  label: 'Retrain',
-  id: 'Retrain',
-  inputs: ['features', 'labels', 'model'],
-  outputs: ['model'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
-  run: async (
+export default class Retrain extends BaseModule {
+  readonly inputs = ['features', 'labels', 'model'];
+
+  readonly outputs = ['model'];
+
+  readonly id = 'ModelTraining-Retrain';
+
+  readonly label = 'Retrain';
+
+  readonly type = ModuleType.ModelTraining;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = false;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       labels: ILabelStorage,
@@ -51,5 +60,5 @@ export default {
       }),
     ));
     return response.data as { model: ModelService };
-  },
-};
+  }
+}

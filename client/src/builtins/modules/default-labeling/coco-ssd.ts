@@ -17,6 +17,7 @@ import type {
   ILabelShape,
   IDataObjectStorage,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd
 
@@ -29,18 +30,28 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
   })
 );
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'COCO-SSD-object-detection',
-  id: 'COCO-SSD-object-detection-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  dataTypes: [DataType.Image],
-  labelTasks: [LabelTaskType.ObjectDetection],
-  run: async (
+export default class CocoSsdObjectDetection extends BaseModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-COCO-SSD-object-detection';
+
+  readonly label = 'COCO-SSD-object-detection';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly labelTasks = [LabelTaskType.ObjectDetection];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       queryUuids: string[],
@@ -64,5 +75,5 @@ export default {
       return { shapes, uuid: dataObject.uuid };
     }));
     return { labels };
-  },
-};
+  }
+}

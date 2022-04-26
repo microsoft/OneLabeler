@@ -13,6 +13,7 @@ import type {
   ILabel,
   IDataObjectStorage,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/mobilenet
 
@@ -25,18 +26,28 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
   })
 );
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'MobileNet-classification',
-  id: 'MobileNet-classification-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  dataTypes: [DataType.Image],
-  labelTasks: [LabelTaskType.Classification],
-  run: async (
+export default class MobileNetClassification extends BaseModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-MobileNetClassification';
+
+  readonly label = 'MobileNet classification';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly labelTasks = [LabelTaskType.Classification];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       queryUuids: string[],
@@ -55,5 +66,5 @@ export default {
       category: String(d),
     }));
     return { labels };
-  },
-};
+  }
+}

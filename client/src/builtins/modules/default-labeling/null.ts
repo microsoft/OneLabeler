@@ -3,18 +3,28 @@
 
 import { LabelTaskType, ModuleType } from '@/commons/types';
 import type { ILabel } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'Null (Debug)',
-  id: 'Null',
-  inputs: ['queryUuids', 'categories'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  labelTasks: [LabelTaskType.Classification],
-  run: async (
+export default class Null extends BaseModule {
+  readonly inputs = ['queryUuids', 'categories'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-Null';
+
+  readonly label = 'Null (Debug)';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly labelTasks = [LabelTaskType.Classification];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       queryUuids: string[],
       unlabeledMark: string,
@@ -26,5 +36,5 @@ export default {
       category: unlabeledMark,
     }));
     return { labels };
-  },
-};
+  }
+}

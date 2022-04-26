@@ -5,7 +5,7 @@ import type { FilterQuery } from 'mongoose';
 import type { WorkflowNode } from '@/builtins/workflow-templates/types';
 import type { IDataObject } from '@/builtins/data-types/types';
 import type { ILabel } from '@/builtins/label-task-types/types';
-import type { IModule } from '@/builtins/modules/types';
+import type BaseModule from '@/builtins/modules/base-module';
 
 export * from '@/builtins/data-types/types';
 export * from '@/builtins/label-task-types/types';
@@ -141,7 +141,7 @@ export interface StorageService {
 
 export type TaskWindow = {
   node: WorkflowNode;
-  process: IModule;
+  process: BaseModule;
   isPinned: boolean;
   isMinimized: boolean;
 }

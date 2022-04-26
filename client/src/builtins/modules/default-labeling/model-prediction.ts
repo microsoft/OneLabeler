@@ -1,48 +1,26 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import axios from 'axios';
 import { ModuleType } from '@/commons/types';
-import type {
-  Category,
-  IDataObjectStorage,
-  ILabel,
-  ModelService,
-} from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
-import bindErrorHandler from './utils/handle-error';
+import BaseDefaultLabelingServerModule from './utils/base';
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'Model Prediction',
-  id: 'ModelPrediction-29967546',
-  inputs: ['features', 'model', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
-  model: undefined,
-  run: async (
-    inputs: {
-      dataObjects: IDataObjectStorage,
-      model: ModelService,
-      queryUuids: string[],
-      categories: Category[],
-      unlabeledMark: Category,
-    },
-  ): Promise<{ labels: ILabel[] }> => {
-    const queriedDataObjects = await inputs.dataObjects
-      .getBulk(inputs.queryUuids);
-    const { model, categories, unlabeledMark } = inputs;
-    const response = await bindErrorHandler(axios.post(
-      `${ALGORITHM_URL}/defaultLabels/ModelPrediction`,
-      JSON.stringify({
-        dataObjects: queriedDataObjects,
-        model,
-        categories,
-        unlabeledMark,
-      }),
-    ));
-    return response.data as { labels: ILabel[] };
-  },
-};
+export default class ModelPrediction extends BaseDefaultLabelingServerModule {
+  readonly inputs = ['features', 'queryUuids', 'model', 'categories'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-ModelPrediction';
+
+  readonly label = 'Model Prediction';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = false;
+
+  api = `${ALGORITHM_URL}/defaultLabels/ModelPrediction`;
+}

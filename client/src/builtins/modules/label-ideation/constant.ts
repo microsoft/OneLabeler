@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import { ModuleType } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 /*
 enum ParamType {
@@ -11,17 +12,25 @@ enum ParamType {
 */
 type RunReturn = { categories: string[] };
 
-export default {
-  type: ModuleType.LabelIdeation,
-  label: 'constant',
-  id: 'label-ideation-constant',
-  inputs: [],
-  outputs: ['categories'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
+export default class Constant extends BaseModule {
+  readonly inputs = [];
+
+  readonly outputs = ['categories'];
+
+  readonly id = 'Label Ideation Constant';
+
+  readonly label = 'LabelIdeation-Constant';
+
+  readonly type = ModuleType.DataObjectSelection;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
   /*
-  params: {
+  params = {
     categories: {
       value: [],
       label: 'Categories',
@@ -29,7 +38,8 @@ export default {
     },
   },
   */
-  run: (): RunReturn => ({
+
+  readonly run = (): RunReturn => ({
     categories: [],
-  }),
-};
+  });
+}

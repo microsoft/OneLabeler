@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { cloneDeep, merge } from 'lodash';
 import {
   DataType,
   LabelTaskType,
@@ -28,20 +27,16 @@ export default parseWorkflow({
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: merge(cloneDeep(BaseInitialization), {
-        params: {
-          dataType: { value: DataType.Webpage },
-          labelTasks: { value: [LabelTaskType.Classification] },
-        },
+      value: new BaseInitialization({
+        dataType: DataType.Webpage,
+        labelTasks: [LabelTaskType.Classification],
       }),
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
       label: 'random sampling',
       type: WorkflowNodeType.DataObjectSelection,
-      value: merge(cloneDeep(DOSRandom), {
-        params: { nBatch: { value: 2 } },
-      }),
+      value: new DOSRandom({ nBatch: 2 }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -50,12 +45,7 @@ export default parseWorkflow({
     {
       label: 'grid matrix',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: merge(cloneDeep(ILGridMatrix), {
-        params: {
-          nRows: { value: 1 },
-          nColumns: { value: 2 },
-        },
-      }),
+      value: new ILGridMatrix({ nRows: 1, nColumns: 2 }),
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -64,7 +54,7 @@ export default parseWorkflow({
     {
       label: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
-      value: SAAllChecked,
+      value: new SAAllChecked(),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,

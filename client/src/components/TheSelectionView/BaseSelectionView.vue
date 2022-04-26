@@ -87,7 +87,7 @@ export default defineComponent({
       const { node, process } = this.taskWindow;
       if (node.type !== WorkflowNodeType.DataObjectSelection) return null;
       if (process.render === undefined) return null;
-      return process.render();
+      return process.render;
     },
     filteredQueryUuids(): string[] {
       const { scopeUuids, queryUuids } = this;

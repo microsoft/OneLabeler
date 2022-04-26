@@ -1,40 +1,34 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import axios from 'axios';
 import {
   DataType,
-  IDataObjectStorage,
-  ILabel,
   LabelTaskType,
   ModuleType,
 } from '@/commons/types';
 import { ALGORITHM_URL } from '@/services/http-params';
-import bindErrorHandler from './utils/handle-error';
+import BaseDefaultLabelingServerModule from './utils/base';
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'POS-tagging',
-  id: 'POS-tagging-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
-  dataTypes: [DataType.Text],
-  labelTasks: [LabelTaskType.SpanClassification],
-  run: async (
-    inputs: {
-      dataObjects: IDataObjectStorage,
-      queryUuids: string[],
-    },
-  ): Promise<{ labels: ILabel[] }> => {
-    const queriedDataObjects = await inputs.dataObjects
-      .getBulk(inputs.queryUuids);
-    const response = await bindErrorHandler(axios.post(
-      `${ALGORITHM_URL}/defaultLabels/PosTagging`,
-      JSON.stringify({ dataObjects: queriedDataObjects }),
-    ));
-    return response.data as { labels: ILabel[] };
-  },
-};
+export default class PosTagging extends BaseDefaultLabelingServerModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-POS-tagging';
+
+  readonly label = 'POS-tagging';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly dataTypes = [DataType.Text];
+
+  readonly labelTasks = [LabelTaskType.SpanClassification];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = false;
+
+  api = `${ALGORITHM_URL}/defaultLabels/POS-tagging`;
+}

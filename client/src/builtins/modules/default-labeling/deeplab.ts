@@ -15,6 +15,7 @@ import type {
   ILabelMask,
 } from '@/commons/types';
 import { getBase64 } from '@/plugins/file';
+import BaseModule from '@/builtins/modules/base-module';
 
 // TODO: deeplab predicted mask not rendered, figure out why
 
@@ -29,18 +30,28 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
   })
 );
 
-export default {
-  type: ModuleType.DefaultLabeling,
-  label: 'DeepLab-segmentation',
-  id: 'DeepLab-segmentation-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  dataTypes: [DataType.Image],
-  labelTasks: [LabelTaskType.Segmentation2d],
-  run: async (
+export default class DeepLabSegmentation extends BaseModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['labels'];
+
+  readonly id = 'DefaultLabeling-DeepLabSegmentation';
+
+  readonly label = 'DeepLab segmentation';
+
+  readonly type = ModuleType.DefaultLabeling;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly labelTasks = [LabelTaskType.Segmentation2d];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       queryUuids: string[],
@@ -50,7 +61,6 @@ export default {
     const dataObjects = await inputs.dataObjects.getBulk(inputs.queryUuids) as IImage[];
     const labels = await Promise.all(dataObjects.map(async (d, i) => {
       const url = d.content as string;
-
       const image = await url2image(url);
       const pred = await model.segment(image);
       const predMask = pred.segmentationMap;
@@ -63,12 +73,10 @@ export default {
         width: pred.width,
       };
       return { uuid: dataObjects[i].uuid, mask };
-
       /*
       const url = d.content as string;
       const width = d.width as number;
       const height = d.height as number;
-
       const image = await url2image(url);
       const pred = await model.segment(image);
       const predMask = pred.segmentationMap;
@@ -90,5 +98,5 @@ export default {
     }));
 
     return { labels };
-  },
-};
+  }
+}

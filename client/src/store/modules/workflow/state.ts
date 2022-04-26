@@ -3,12 +3,12 @@
 
 import type {
   ModelService,
-  IModule,
   WorkflowNode,
   WorkflowEdge,
 } from '@/commons/types';
 import modelServices from '@/builtins/model-services';
 import processes from '@/builtins/modules';
+import BaseModule from '@/builtins/modules/base-module';
 import { TrimmedWorkflow, parseWorkflow } from '@/commons/workflow-utils';
 
 const DEFAULT_WORKFLOW = process.env.VUE_APP_DEFAULT_WORKFLOW;
@@ -25,8 +25,8 @@ export interface IState {
   edges: WorkflowEdge[];
   /** The collection of model services. */
   modelServices: ModelService[];
-  /** The collection of data labeling processes. */
-  processes: IModule[];
+  /** The collection of computation modules. */
+  processes: (typeof BaseModule)[];
 }
 
 export const createInitialState = (): IState => ({

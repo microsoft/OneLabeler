@@ -8,6 +8,17 @@ import Random3d from './random3d';
 import TextNmf from './text-nmf';
 // import Mobilenet from './mobilenet';
 
+/*
+export default [
+  new ImageBOW(),
+  new ImageLDA(),
+  new ImageSVD(),
+  new Random3D(),
+  new TextNMF(),
+  new MobilenetEmbedding(),
+];
+*/
+
 export default [
   ImageBow,
   ImageLda,

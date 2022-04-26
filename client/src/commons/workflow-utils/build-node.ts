@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 
 /* eslint-disable max-classes-per-file */
-import { IModule, WorkflowNodeType } from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 type Layout = {
   x: number;
@@ -24,7 +25,7 @@ export class WorkflowNode {
 
   type: WorkflowNodeType;
 
-  value: IModule;
+  value: BaseModule;
 
   layout?: {
     x: number;
@@ -37,7 +38,7 @@ export class WorkflowNode {
     id: string,
     label: string,
     type: WorkflowNodeType,
-    value: IModule,
+    value: BaseModule,
     layout: Layout,
   ) {
     this.id = id;
@@ -93,7 +94,7 @@ export class DataObjectSelectionNode extends DataLabelingWorkflowNode {
 }
 
 export class DefaultLabelingNode extends DataLabelingWorkflowNode {
-  static possibleInputs: string[] = ['queryUuids', 'features', 'model'];
+  static possibleInputs: string[] = ['queryUuids', 'features', 'model', 'categories'];
 
   static possibleOutputs: string[] = ['labels'];
 

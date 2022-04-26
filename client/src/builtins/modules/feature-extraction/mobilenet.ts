@@ -5,6 +5,7 @@ import '@tensorflow/tfjs-backend-webgl';
 import * as MobileNet from '@tensorflow-models/mobilenet';
 import { DataType, ModuleType } from '@/commons/types';
 import type { IImage, IDataObjectStorage } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 
 // Reference: https://github.com/tensorflow/tfjs-models/tree/master/mobilenet
 
@@ -17,17 +18,26 @@ const url2image = (url: string): Promise<HTMLImageElement> => (
   })
 );
 
-export default {
-  type: ModuleType.FeatureExtraction,
-  label: 'MobileNet-embedding',
-  id: 'MobileNet-embedding-438546',
-  inputs: ['dataObjects', 'queryUuids'],
-  outputs: ['features'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  dataTypes: [DataType.Image],
-  run: async (
+export default class MobileNetEmbedding extends BaseModule {
+  readonly inputs = ['dataObjects', 'queryUuids'];
+
+  readonly outputs = ['features'];
+
+  readonly id = 'FeatureExtraction-MobileNetEmbedding';
+
+  readonly label = 'MobileNet embedding';
+
+  readonly type = ModuleType.FeatureExtraction;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  readonly run = async (
     inputs: {
       dataObjects: IDataObjectStorage,
       queryUuids: string[],
@@ -45,5 +55,5 @@ export default {
       return [...embedding];
     }));
     return { features: embeddings };
-  },
-};
+  }
+}

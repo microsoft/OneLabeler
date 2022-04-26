@@ -87,8 +87,7 @@ import { defineComponent } from '@vue/composition-api';
 import type { ComponentInstance, PropType } from '@vue/composition-api';
 import { mapGetters } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
-import { cloneDeep } from 'lodash';
-import { IModule, WorkflowNodeType } from '@/commons/types';
+import { WorkflowNodeType } from '@/commons/types';
 import type {
   WorkflowEdge,
   WorkflowGraph,
@@ -99,6 +98,7 @@ import { getDefaultNodeSize } from '@/commons/workflow-utils/parse-node';
 import BaseInitialization from '@/builtins/modules/initialization/base';
 import BaseDecision from '@/builtins/modules/decision/base';
 import BaseExit from '@/builtins/modules/exit/base';
+import BaseModule from '@/builtins/modules/base-module';
 import VFlowchart from '../VFlowchart/VFlowchart.vue';
 import { PortDirection } from '../VFlowchart/types';
 import type { FlowchartEdge, FlowchartNode } from '../VFlowchart/types';
@@ -329,9 +329,9 @@ export default defineComponent({
         [WorkflowNodeType.Exit]: 'exit',
       } as Record<WorkflowNodeType, string>;
       const valueMapper = {
-        [WorkflowNodeType.Initialization]: cloneDeep(BaseInitialization),
-        [WorkflowNodeType.Decision]: cloneDeep(BaseDecision),
-        [WorkflowNodeType.Exit]: cloneDeep(BaseExit),
+        [WorkflowNodeType.Initialization]: new BaseInitialization(),
+        [WorkflowNodeType.Decision]: new BaseDecision(),
+        [WorkflowNodeType.Exit]: new BaseExit(),
         [WorkflowNodeType.FeatureExtraction]: null,
         [WorkflowNodeType.DataObjectSelection]: null,
         [WorkflowNodeType.DefaultLabeling]: null,
@@ -341,7 +341,7 @@ export default defineComponent({
         [WorkflowNodeType.QualityAssurance]: null,
         [WorkflowNodeType.LabelIdeation]: null,
         [WorkflowNodeType.Base]: null,
-      } as Record<WorkflowNodeType, IModule | null>;
+      } as Record<WorkflowNodeType, BaseModule | null>;
       const node: WorkflowNode = {
         id: uuidv4(),
         type,

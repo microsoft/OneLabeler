@@ -4,10 +4,10 @@
 import { ModuleType } from '@/commons/types';
 import type {
   DataType,
-  IModule,
   LabelTaskType,
   ParamSpecification,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import dataTypeSetups from '@/builtins/data-types/index';
 import labelTaskTypeSetups from '@/builtins/label-task-types/index';
 
@@ -20,16 +20,24 @@ const labelTaskTypeOptions = labelTaskTypeSetups.map((d) => ({
   label: d.label,
 }));
 
-export default {
-  type: ModuleType.Initialization,
-  label: 'Base Initialization',
-  id: 'BaseInitialization',
-  inputs: [],
-  outputs: ['dataObjects', 'labels'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: true,
-  params: {
+export default class BaseInitializationModule extends BaseModule {
+  readonly inputs = [];
+
+  outputs = ['dataObjects', 'labels'];
+
+  readonly id = 'Initialization-Base';
+
+  readonly label = 'Base Initialization';
+
+  readonly type = ModuleType.Initialization;
+
+  readonly blocking = true;
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = true;
+
+  params = {
     dataType: {
       value: null,
       label: 'Data Type',
@@ -51,5 +59,5 @@ export default {
         return validTasks.includes(value);
       },
     },
-  },
-} as IModule;
+  };
+}

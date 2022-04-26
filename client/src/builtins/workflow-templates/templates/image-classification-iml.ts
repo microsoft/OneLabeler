@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import { cloneDeep, merge } from 'lodash';
 import ObjectId from 'bson-objectid';
 import {
   DataType,
@@ -36,25 +35,25 @@ const model = {
   isValidSampler: false,
 };
 
+const initialization = new BaseInitialization({
+  dataType: DataType.Image,
+  labelTasks: [LabelTaskType.Classification],
+});
+initialization.outputs = ['dataObjects', 'labels', 'model'];
+
 export default parseWorkflow({
   label: 'Image Classification with IML',
   nodes: [
     {
       label: 'initialization',
       type: WorkflowNodeType.Initialization,
-      value: merge(cloneDeep(BaseInitialization), {
-        params: {
-          dataType: { value: DataType.Image },
-          labelTasks: { value: [LabelTaskType.Classification] },
-        },
-        outputs: ['dataObjects', 'labels', 'model'],
-      }),
+      value: initialization,
       layout: { x: MARGIN_LEFT, y: MARGIN_TOP },
     },
     {
       label: 'SVD features',
       type: WorkflowNodeType.FeatureExtraction,
-      value: FEImageSvd,
+      value: new FEImageSvd(),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -63,9 +62,7 @@ export default parseWorkflow({
     {
       label: 'clustering',
       type: WorkflowNodeType.DataObjectSelection,
-      value: merge(cloneDeep(DOSCluster), {
-        params: { nBatch: { value: 16 } },
-      }),
+      value: new DOSCluster({ nBatch: 16 }),
       layout: {
         x: MARGIN_LEFT + 2 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -74,7 +71,7 @@ export default parseWorkflow({
     {
       label: 'projection',
       type: WorkflowNodeType.DataObjectSelection,
-      value: DOSProjection,
+      value: new DOSProjection(),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -84,7 +81,7 @@ export default parseWorkflow({
       id: 'decision tree prelabel',
       label: 'decision tree prelabel',
       type: WorkflowNodeType.DefaultLabeling,
-      value: cloneDeep({ ...DLModelPrediction, model }),
+      value: new DLModelPrediction({ model }),
       layout: {
         x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP,
@@ -93,12 +90,7 @@ export default parseWorkflow({
     {
       label: 'grid matrix',
       type: WorkflowNodeType.InteractiveLabeling,
-      value: merge(cloneDeep(ILGridMatrix), {
-        params: {
-          nRows: { value: 4 },
-          nColumns: { value: 4 },
-        },
-      }),
+      value: new ILGridMatrix({ nRows: 4, nColumns: 4 }),
       layout: {
         x: MARGIN_LEFT + 4 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
@@ -107,7 +99,7 @@ export default parseWorkflow({
     {
       label: 'check all labeled',
       type: WorkflowNodeType.StoppageAnalysis,
-      value: SAAllChecked,
+      value: new SAAllChecked(),
       layout: {
         x: MARGIN_LEFT + 3 * (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),
@@ -124,7 +116,7 @@ export default parseWorkflow({
     {
       label: 'model training',
       type: WorkflowNodeType.ModelTraining,
-      value: cloneDeep({ ...MTRetrain, model }),
+      value: new MTRetrain({ model }),
       layout: {
         x: MARGIN_LEFT + (NODE_WIDTH + NODE_PADDING_X),
         y: MARGIN_TOP + (NODE_HEIGHT + NODE_PADDING_Y),

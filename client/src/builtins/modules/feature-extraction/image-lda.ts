@@ -11,24 +11,32 @@ import type {
   IStatus,
   IStatusStorage,
 } from '@/commons/types';
+import BaseModule from '@/builtins/modules/base-module';
 import { ALGORITHM_URL } from '@/services/http-params';
 import bindErrorHandler from './utils/handle-error';
 
 type RunReturn = { features: number[][], featureNames: string[] };
 
-export default {
-  type: ModuleType.FeatureExtraction,
-  label: 'LDA (Supervised)',
-  id: 'image-LDA-45100847',
-  inputs: ['dataObjects', 'labels'],
-  outputs: ['features'],
-  blocking: true,
-  isBuiltIn: true,
-  isServerless: false,
-  dataTypes: [DataType.Image],
-  run: async (
+export default class ImageLDA extends BaseModule {
+  readonly inputs = ['dataObjects', 'labels'];
+
+  readonly outputs = ['features'];
+
+  readonly id = 'FeatureExtraction-ImageLDA';
+
+  readonly label = 'LDA (Supervised)';
+
+  readonly type = ModuleType.FeatureExtraction;
+
+  readonly dataTypes = [DataType.Image];
+
+  readonly isBuiltIn = true;
+
+  readonly isServerless = false;
+
+  readonly run = async (
     inputs: {
-      dataObjects: IDataObjectStorage
+      dataObjects: IDataObjectStorage,
       labels: ILabelStorage,
       statuses: IStatusStorage,
     },
@@ -45,5 +53,5 @@ export default {
       }),
     ));
     return response.data as RunReturn;
-  },
-};
+  }
+}

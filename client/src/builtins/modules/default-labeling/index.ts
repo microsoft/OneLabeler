@@ -10,6 +10,20 @@ import PosTagging from './pos-tagging';
 // import CocoSsd from './coco-ssd';
 import Random from './random';
 
+/*
+export default [
+  // new CnnClassification(),
+  new CocoSsdObjectDetection(),
+  // new DeepLabSegmentation(),
+  new MobileNetClassification(),
+  new ModelPrediction(),
+  new Null(),
+  new PointNetSegmentation(),
+  new PosTagging(),
+  new Random(),
+];
+*/
+
 export default [
   ModelPrediction,
   // Null,
