@@ -35,7 +35,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   }
   if (err.keyword === 'type') {
     return {
-      content: `UPLOAD FAILED: ${err.dataPath} ${err.message}.`,
+      content: `UPLOAD FAILED: ${err.message}.`,
       type: MessageType.Error,
     };
   }

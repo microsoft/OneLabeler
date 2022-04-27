@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import type { Store } from 'vuex';
+import type { Plugin, Store } from 'vuex';
 import type { WorkflowNode } from '@/commons/types';
 import { updatedTaskWindowsByNodes } from './actions';
 import type { IState as IRootState } from './state';
@@ -11,7 +11,7 @@ import * as workflowTypes from './workflow/mutation-types';
 
 type IState = IRootState & { workflow: IWorkflowState };
 
-const plugin = (store: Store<IState>): void => {
+const plugin: Plugin<IState> = (store: Store<IState>): void => {
   store.subscribe(async (mutation, state: IState) => {
     if (mutation.type === types.SET_DATA_OBJECTS) {
       const { dataObjects } = state;
@@ -42,6 +42,6 @@ const plugin = (store: Store<IState>): void => {
   });
 };
 
-const plugins = [plugin];
+const plugins = [plugin] as Plugin<IRootState>[];
 
 export default plugins;

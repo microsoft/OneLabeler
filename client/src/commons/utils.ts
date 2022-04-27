@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import type { VueConstructor } from 'vue';
-import { WorkflowNodeType } from '@/commons/types';
+import { WorkflowNode, WorkflowNodeType } from '@/commons/types';
 
 export const getImgSize = (
   content: string,
@@ -13,25 +12,25 @@ export const getImgSize = (
   img.src = content;
 });
 
-export const isNodeControl = (node: { type: WorkflowNodeType }): boolean => (
+export const isNodeControl = (
+  node: Pick<WorkflowNode, 'type'>,
+): boolean => (
   node.type === WorkflowNodeType.Initialization
     || node.type === WorkflowNodeType.Decision
     || node.type === WorkflowNodeType.Exit
 );
 
-export const isNodeInteractive = (node: {
-  type: WorkflowNodeType,
-  value: { render?: () => VueConstructor } | null,
-}): boolean => {
+export const isNodeInteractive = (
+  node: Pick<WorkflowNode, 'type' | 'value'>,
+): boolean => {
   if (isNodeControl(node)) return false;
   if (node.value === null) return false;
   return node.value.render !== undefined;
 };
 
-export const isNodeServerless = (node: {
-  type: WorkflowNodeType,
-  value: { isServerless: boolean } | null,
-}): boolean => {
+export const isNodeServerless = (
+  node: Pick<WorkflowNode, 'type' | 'value'>,
+): boolean => {
   if (isNodeControl(node)) return true;
   if (node.value === null) return true;
   return node.value.isServerless;

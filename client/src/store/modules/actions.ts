@@ -25,7 +25,7 @@ import * as types from './mutation-types';
 import { IState, createInitialState } from './state';
 
 export const setLabelOf = async (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   label: ILabel,
 ): Promise<void> => {
   if (state.labels === null) return;
@@ -34,7 +34,7 @@ export const setLabelOf = async (
 };
 
 export const setLabelsOf = async (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   labels: ILabel[],
 ): Promise<void> => {
   if (state.labels === null) return;
@@ -43,7 +43,7 @@ export const setLabelsOf = async (
 };
 
 export const setStatusOf = async (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   status: IStatus,
 ): Promise<void> => {
   if (state.statuses === null) return;
@@ -52,7 +52,7 @@ export const setStatusOf = async (
 };
 
 export const setStatusesOf = async (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   statuses: IStatus[],
 ): Promise<void> => {
   if (state.statuses === null) return;
@@ -61,14 +61,14 @@ export const setStatusesOf = async (
 };
 
 export const setStop = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   stop: boolean,
 ): void => {
   commit(types.SET_STOP, stop);
 };
 
 export const addCategory = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   category: Category,
 ): void => {
   const { categoryTasks } = state;
@@ -76,7 +76,7 @@ export const addCategory = (
 };
 
 export const removeCategory = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   category: Category,
 ): void => {
   const { categoryTasks } = state;
@@ -86,14 +86,14 @@ export const removeCategory = (
 };
 
 export const setCategoryTasks = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   categoryTasks: Record<Category, LabelTaskType[] | null>,
 ): void => {
   commit(types.SET_CATEGORY_TASKS, categoryTasks);
 };
 
 export const pushCommandHistory = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   command: ICommand,
 ): void => {
   const { commandHistory } = state;
@@ -102,7 +102,7 @@ export const pushCommandHistory = (
 };
 
 export const popCommandHistory = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
 ): void => {
   const { commandHistory } = state;
   if (commandHistory.length === 0) {
@@ -114,14 +114,14 @@ export const popCommandHistory = (
 };
 
 export const setMessage = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   message: IMessage,
 ): void => {
   commit(types.SET_MESSAGE, message);
 };
 
 export const updatedTaskWindowsByNodes = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   nodes: WorkflowNode[],
 ): void => {
   const { taskWindows } = state;
@@ -144,7 +144,7 @@ export const updatedTaskWindowsByNodes = (
 };
 
 export const updateTaskWindow = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   newValue: TaskWindow,
 ): void => {
   const { taskWindows } = state;
@@ -158,7 +158,7 @@ export const updateTaskWindow = (
 };
 
 export const resetState = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
 ): void => {
   const {
     dataObjects,
@@ -192,7 +192,7 @@ type ProjectData = {
 }
 
 export const setProject = async (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   projectData: ProjectData,
 ): Promise<void> => {
   const { storageService } = state;
@@ -231,14 +231,14 @@ export const setProject = async (
 };
 
 export const setDockSide = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   dockSide: DockSideType,
 ): void => {
   commit(types.SET_DOCK_SIDE, dockSide);
 };
 
 export const upsertColorMapper = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   mapper: Record<string, string>,
 ): void => {
   const { colorMapper } = state;
@@ -247,14 +247,14 @@ export const upsertColorMapper = (
 };
 
 export const setSourceService = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   service: SourceService,
 ): void => {
   commit(types.SET_SOURCE_SERVICE, service);
 };
 
 export const pushSourceServices = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   service: SourceService,
 ): void => {
   const { sourceServices } = state;
@@ -262,7 +262,7 @@ export const pushSourceServices = (
 };
 
 export const editSourceService = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   serviceUpdated: SourceService,
 ): void => {
   const { sourceServices } = state;
@@ -273,14 +273,14 @@ export const editSourceService = (
 };
 
 export const setStorageService = (
-  { commit }: ActionContext<IState, IState>,
+  { commit }: Pick<ActionContext<IState, IState>, 'commit'>,
   service: StorageService,
 ): void => {
   commit(types.SET_STORAGE_SERVICE, service);
 };
 
 export const pushStorageServices = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   service: StorageService,
 ): void => {
   const { storageServices } = state;
@@ -288,7 +288,7 @@ export const pushStorageServices = (
 };
 
 export const editStorageService = (
-  { commit, state }: ActionContext<IState, IState>,
+  { commit, state }: Pick<ActionContext<IState, IState>, 'commit' | 'state'>,
   serviceUpdated: StorageService,
 ): void => {
   const { storageServices } = state;

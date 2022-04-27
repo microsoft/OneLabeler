@@ -35,21 +35,21 @@ import type { IState as IRootState } from '../state';
 import { dataType } from './getters';
 
 export const setCurrentNode = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
   node: WorkflowNode | null,
 ): void => {
   commit(types.SET_CURRENT_NODE, node);
 };
 
 export const setNodes = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
   nodes: WorkflowNode[],
 ): void => {
   commit(types.SET_NODES, nodes);
 };
 
 export const pushNodes = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   node: WorkflowNode,
 ): void => {
   const { nodes } = state;
@@ -57,7 +57,7 @@ export const pushNodes = (
 };
 
 export const editNode = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   nodeUpdated: WorkflowNode,
 ): void => {
   const { nodes } = state;
@@ -68,7 +68,7 @@ export const editNode = (
 };
 
 export const removeNode = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   node: WorkflowNode,
 ): void => {
   const { nodes } = state;
@@ -77,14 +77,14 @@ export const removeNode = (
 };
 
 export const setEdges = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
   edges: WorkflowEdge[],
 ): void => {
   commit(types.SET_EDGES, edges);
 };
 
 export const pushEdges = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   edge: WorkflowEdge,
 ): void => {
   const { edges } = state;
@@ -92,7 +92,7 @@ export const pushEdges = (
 };
 
 export const editEdge = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   edgeUpdated: WorkflowEdge,
 ): void => {
   const { edges } = state;
@@ -103,7 +103,7 @@ export const editEdge = (
 };
 
 export const removeEdge = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   edge: WorkflowEdge,
 ): void => {
   const { edges } = state;
@@ -112,7 +112,7 @@ export const removeEdge = (
 };
 
 export const setGraph = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
   graph: WorkflowGraph,
 ): void => {
   commit(types.SET_NODES, graph.nodes);
@@ -120,7 +120,7 @@ export const setGraph = (
 };
 
 export const resetGraph = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
 ): void => {
   commit(types.SET_NODES, []);
   commit(types.SET_EDGES, []);
@@ -128,14 +128,14 @@ export const resetGraph = (
 };
 
 export const setModelServices = (
-  { commit }: ActionContext<IState, IRootState>,
+  { commit }: Pick<ActionContext<IState, IRootState>, 'commit'>,
   services: ModelService[],
 ): void => {
   commit(types.SET_MODEL_SERVICES, services);
 };
 
 export const pushModelServices = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   service: ModelService,
 ): void => {
   const { modelServices } = state;
@@ -146,7 +146,7 @@ export const pushModelServices = (
 };
 
 export const editModelService = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   newValue: ModelService,
 ): void => {
   const { modelServices } = state;
@@ -159,7 +159,7 @@ export const editModelService = (
 };
 
 export const pushModules = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   process: IModule,
 ): void => {
   const { processes } = state;
@@ -167,7 +167,7 @@ export const pushModules = (
 };
 
 export const editModule = (
-  { commit, state }: ActionContext<IState, IRootState>,
+  { commit, state }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state'>,
   processUpdated: IModule,
 ): void => {
   const { processes } = state;
@@ -201,7 +201,7 @@ const handleAlgorithmServiceError = (
 };
 
 export const executeModule = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: Pick<ActionContext<IState, IRootState>, 'commit' | 'rootState'>,
   moduleInstance: IModule,
 ): Promise<void> => {
   if (moduleInstance.run === undefined || moduleInstance.run === null) {
@@ -299,7 +299,7 @@ export const executeModule = showProgressBar(async (
 });
 
 export const executeRegisterStorage = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: Pick<ActionContext<IState, IRootState>, 'commit' | 'rootState'>,
 ): Promise<void> => {
   // Initialize the storage.
   const { sourceService, storageService } = rootState;
@@ -324,7 +324,7 @@ export const executeRegisterStorage = showProgressBar(async (
 });
 
 export const executeDataObjectExtraction = showProgressBar(async (
-  { commit, state, rootState }: ActionContext<IState, IRootState>,
+  { commit, state, rootState }: Pick<ActionContext<IState, IRootState>, 'commit' | 'state' | 'rootState'>,
   input: File | FileList,
 ): Promise<void> => {
   const type = dataType(state);
@@ -340,7 +340,7 @@ export const executeDataObjectExtraction = showProgressBar(async (
 });
 
 export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: Pick<ActionContext<IState, IRootState>, 'commit' | 'rootState'>,
   moduleInstance: IModule,
 ): Promise<void> => {
   const {
@@ -398,7 +398,7 @@ export const executeDataObjectSelectionAlgorithmic = showProgressBar(async (
 });
 
 export const executeDataObjectSelectionManual = showProgressBar(async (
-  { commit, rootState }: ActionContext<IState, IRootState>,
+  { commit, rootState }: Pick<ActionContext<IState, IRootState>, 'commit' | 'rootState'>,
   newQueryUuids: string[],
 ): Promise<void> => {
   const {

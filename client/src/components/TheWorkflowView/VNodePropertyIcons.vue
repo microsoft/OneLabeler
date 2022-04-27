@@ -29,7 +29,7 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
-import type { WorkflowNodeType } from '@/commons/types';
+import type { WorkflowNode } from '@/commons/types';
 import {
   isNodeInteractive,
   isNodeServerless,
@@ -37,10 +37,7 @@ import {
 import IconServer from '@/plugins/icons/IconServer.vue';
 import IconUser from '@/plugins/icons/IconUser.vue';
 
-type TrimmedNode = {
-  type: WorkflowNodeType;
-  value: { isServerless: boolean } | null;
-} | null;
+type TrimmedNode = Pick<WorkflowNode, 'type' | 'value'> | null;
 
 const getPropertyIcons = (node: TrimmedNode): VueConstructor[] => {
   if (node === null) return [];

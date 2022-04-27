@@ -15,21 +15,21 @@ const schema: JSONSchemaType<TrimmedWorkflow> = {
         id: { type: 'string', nullable: true },
         label: { type: 'string' },
         type: { type: 'string' },
-        value: {
-          type: ['object', 'array'],
-          nullable: true,
-        },
         layout: {
-          type: 'object',
-          nullable: true,
           required: ['x', 'y', 'width', 'height'],
-          properties: {
-            x: { type: 'number' },
-            y: { type: 'number' },
-            width: { type: 'number' },
-            height: { type: 'number' },
-          },
+          $ref: '#/definitions/nodeLayout',
         },
+      },
+    },
+    nodeLayout: {
+      type: 'object',
+      nullable: true,
+      required: ['x', 'y', 'width', 'height'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' },
+        width: { type: 'number' },
+        height: { type: 'number' },
       },
     },
     edge: {

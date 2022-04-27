@@ -12,10 +12,10 @@ import type {
 
 export type ProjectData = {
   dataObjects: IDataObject[];
-  labels: ILabel[];
+  labels: Pick<ILabel, 'uuid'>[];
   statuses: IStatus[];
   categories: Category[];
-  categoryTasks: Record<Category, LabelTaskType[] | null>,
+  categoryTasks: Partial<Record<Category, LabelTaskType[] | null>>,
   unlabeledMark: Category;
   featureNames?: string[];
 }
@@ -42,27 +42,11 @@ const schema: JSONSchemaType<ProjectData> = {
       minItems: 2,
       maxItems: 2,
     },
-    labelShape: {
+    label: {
       type: 'object',
-      required: [
-        'category',
-        'shape',
-        'position',
-      ],
+      required: ['uuid'],
       properties: {
-        label: { type: 'string' },
-        shape: { type: 'string' },
-        uuid: { type: 'string', nullable: true },
-      },
-      additionalProperties: true,
-    },
-    labelMask: {
-      type: 'object',
-      required: ['path'],
-      properties: {
-        content: { type: 'string', nullable: true },
-        width: { type: 'number', nullable: true },
-        height: { type: 'number', nullable: true },
+        uuid: { type: 'string' },
       },
       additionalProperties: true,
     },
@@ -70,57 +54,37 @@ const schema: JSONSchemaType<ProjectData> = {
       type: 'object',
       required: ['uuid', 'value'],
       properties: {
-        uuid: { type: 'string' },
-        value: { type: 'string' },
+        uuid: {
+          description: 'The uuid of the data object that owns the label status.',
+          type: 'string',
+        },
+        value: {
+          $ref: '#/definitions/statusType',
+          description: 'The label status value.',
+        },
       },
+    },
+    statusType: {
+      description: 'The enum of label status types.',
+      enum: [
+        'Labeled',
+        'New',
+        'Skipped',
+        'Viewed',
+      ],
+      type: 'string',
     },
   },
   type: 'object',
   required: [
-    'dataObjects',
-    'statuses',
     'categories',
+    'categoryTasks',
+    'dataObjects',
+    'labels',
+    'statuses',
     'unlabeledMark',
   ],
   properties: {
-    dataObjects: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['uuid'],
-        $ref: '#/definitions/dataObject',
-      },
-    },
-    labels: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['uuid'],
-        properties: {
-          uuid: { type: 'string' },
-          category: { type: 'string', nullable: true },
-          shapes: {
-            $ref: '#/definitions/labelShape',
-            type: 'array',
-            nullable: true,
-          },
-          mask: {
-            $ref: '#/definitions/labelMask',
-            type: 'array',
-            nullable: true,
-          },
-        },
-        additionalProperties: true,
-      },
-    },
-    statuses: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['uuid', 'value'],
-        $ref: '#/definitions/status',
-      },
-    },
     categories: {
       type: 'array',
       items: { type: 'string' },
@@ -133,11 +97,38 @@ const schema: JSONSchemaType<ProjectData> = {
         items: { type: 'string' },
       },
     },
-    unlabeledMark: { type: 'string' },
+    dataObjects: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['uuid'],
+        $ref: '#/definitions/dataObject',
+      },
+    },
     featureNames: {
       type: 'array',
       nullable: true,
       items: { type: 'string' },
+    },
+    labels: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['uuid'],
+        $ref: '#/definitions/label',
+      },
+    },
+    statuses: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['uuid', 'value'],
+        $ref: '#/definitions/status',
+      },
+    },
+    unlabeledMark: {
+      description: 'The label category.',
+      type: 'string',
     },
   },
   additionalProperties: false,
