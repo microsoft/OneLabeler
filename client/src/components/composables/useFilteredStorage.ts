@@ -61,7 +61,7 @@ export const useFilteredStatuses = (
   filterUuids: Ref<string[] | null>,
   getEdited: Ref<boolean>,
 ) => {
-  const filteredStatuses: Ref<ILabel[]> = ref([]);
+  const filteredStatuses: Ref<IStatus[]> = ref([]);
   const getFilteredStatuses = async (): Promise<IStatus[]> => {
     if (getEdited.value) return statuses.value?.getAll() ?? [];
     if (dataObjects.value === null || statuses.value === null) return [];

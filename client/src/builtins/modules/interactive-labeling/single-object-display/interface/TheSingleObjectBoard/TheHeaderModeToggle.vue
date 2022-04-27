@@ -35,6 +35,13 @@ import type { Category } from '@/commons/types';
 import { MouseOperationType } from './types';
 import type { ToolbarState } from './types';
 
+type MouseOperationButton = {
+  title: string;
+  icon: string;
+  mouseOperation: MouseOperationType;
+  disabled: boolean;
+}
+
 export default defineComponent({
   name: 'TheHeaderModeToggle',
   props: {
@@ -58,24 +65,24 @@ export default defineComponent({
     mouseOperation(): MouseOperationType | null {
       return this.toolbarState?.mouseOperation ?? null;
     },
-    mouseOperationButtons() {
+    mouseOperationButtons(): MouseOperationButton[] {
       const { labelTasks } = this;
 
       const pan = {
         title: 'pan & zoom',
-        icon: this.$vuetify.icons.values.pan,
+        icon: this.$vuetify.icons.values.pan as string,
         mouseOperation: MouseOperationType.PanAndZoom,
         disabled: false,
       };
       const paint = {
         title: 'paint',
-        icon: this.$vuetify.icons.values.paint,
+        icon: this.$vuetify.icons.values.paint as string,
         mouseOperation: MouseOperationType.PaintBrush,
         disabled: this.filterCategories(LabelTaskType.Segmentation3d).length === 0,
       };
       const erase = {
         title: 'eraser',
-        icon: this.$vuetify.icons.values.eraser,
+        icon: this.$vuetify.icons.values.eraser as string,
         mouseOperation: MouseOperationType.PaintErase,
         disabled: this.filterCategories(LabelTaskType.Segmentation3d).length === 0,
       };
@@ -102,8 +109,7 @@ export default defineComponent({
     filterCategories(labelTask: LabelTaskType): Category[] {
       const { categoryTasks } = this;
       const categoriesFiltered: Category[] = Object.entries(categoryTasks)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([category, usedInTasks]) => (
+        .filter(([, usedInTasks]) => (
           usedInTasks === null || usedInTasks.includes(labelTask)
         )).map((d) => d[0]);
       return categoriesFiltered;

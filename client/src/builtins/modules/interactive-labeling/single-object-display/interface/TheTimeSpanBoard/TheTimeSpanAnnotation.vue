@@ -163,14 +163,14 @@ const useCreateSpan = (
   currentTime: Ref<number>,
   selectedSlot: Ref<string | null>,
   categories: Ref<string[]>,
-  emit: SetupContext['emit'],
+  onEndCrate: (newSpan: ILabelTimeSpan) => void,
 ) => {
   const newSpan: Ref<ILabelTimeSpan | null> = ref(null);
   const endCreateSpan = (): void => {
     if (newSpan.value === null) return;
     if (currentTime.value >= newSpan.value.start) newSpan.value.end = currentTime.value;
     if (newSpan.value.start === newSpan.value.end) return;
-    emit('create:span', newSpan.value);
+    onEndCrate(newSpan.value);
     newSpan.value = null;
   };
   const startCreateSpan = (): void => {
@@ -287,7 +287,7 @@ export default defineComponent({
       currentTime,
       selectedSlot,
       categories,
-      emit,
+      (span: ILabelTimeSpan) => emit('create:span', span),
     );
 
     const { slotClientXRange } = toRefs(props);

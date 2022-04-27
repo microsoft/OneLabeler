@@ -117,6 +117,13 @@ const MouseOperationType = {
 // eslint-disable-next-line no-redeclare
 type MouseOperationType = LabelMaskMouseOperationType | LabelShapesMouseOperationType;
 
+type MouseOperationButton = {
+  title: string;
+  icon: string;
+  mouseOperation: MouseOperationType;
+  disabled: boolean;
+}
+
 export default defineComponent({
   name: 'ThePaintBoardHeader',
   components: { VDataTypeIcon, VToolbar },
@@ -187,30 +194,30 @@ export default defineComponent({
     categoriesNotEmpty(): boolean {
       return this.categories.length !== 0;
     },
-    mouseOperationButtons() {
+    mouseOperationButtons(): MouseOperationButton[] {
       const { categoriesNotEmpty } = this;
       return [
         {
           title: 'pan & zoom',
-          icon: this.$vuetify.icons.values.pan,
+          icon: this.$vuetify.icons.values.pan as string,
           mouseOperation: MouseOperationType.PanAndZoom,
           disabled: false,
         },
         {
           title: 'edit shape',
-          icon: this.$vuetify.icons.values.hand,
+          icon: this.$vuetify.icons.values.hand as string,
           mouseOperation: MouseOperationType.EditShape,
           disabled: !categoriesNotEmpty,
         },
         {
           title: 'paint',
-          icon: this.$vuetify.icons.values.paint,
+          icon: this.$vuetify.icons.values.paint as string,
           mouseOperation: MouseOperationType.PaintBrush,
           disabled: !categoriesNotEmpty,
         },
         {
           title: 'eraser',
-          icon: this.$vuetify.icons.values.eraser,
+          icon: this.$vuetify.icons.values.eraser as string,
           mouseOperation: MouseOperationType.PaintErase,
           disabled: !categoriesNotEmpty,
         },
