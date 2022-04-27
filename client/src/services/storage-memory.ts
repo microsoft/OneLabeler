@@ -37,40 +37,40 @@ class DataObjectStorage implements IDataObjectStorage {
     this.#storage = storage;
   }
 
-  async count(): Promise<number> {
+  count(): number {
     return Object.keys(this.#storage).length;
   }
 
-  async deleteAll(): Promise<void> {
+  deleteAll(): void {
     this.#storage = {};
   }
 
-  async get(uuid: string): Promise<IDataObject | undefined> {
+  get(uuid: string): IDataObject | undefined {
     return this.#storage[uuid];
   }
 
-  async getAll(): Promise<IDataObject[]> {
+  getAll(): IDataObject[] {
     return Object.values(this.#storage);
   }
 
-  async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
+  getBulk(uuids: string[]): (IDataObject | undefined)[] {
     return uuids.map((d) => this.#storage[d]);
   }
 
-  async randomChoice(
+  randomChoice(
     size: number,
     random: () => number = Math.random,
-  ): Promise<IDataObject[]> {
+  ): IDataObject[] {
     // TODO: replace the random selection algorithm to improve time/space complexity
     // The current implementation has space complexity O(nDataObjects)
     // and time complexity O(nDataObjects).
-    const n = await this.count();
+    const n = this.count();
     const range = [...Array(n).keys()];
     const selection = randomChoice(range, size, random);
-    const uuids = await this.uuids();
-    const samples = await Promise.all(selection.map(
+    const uuids = this.uuids();
+    const samples = selection.map(
       (idx) => this.#storage[uuids[idx]],
-    )) as IDataObject[];
+    );
     return samples;
   }
 
@@ -78,31 +78,31 @@ class DataObjectStorage implements IDataObjectStorage {
     return new DataObjectStorage(this.#storage);
   }
 
-  async slice(begin?: number, end?: number): Promise<IDataObject[]> {
-    const uuids = await this.uuids();
+  slice(begin?: number, end?: number): IDataObject[] {
+    const uuids = this.uuids();
     if (begin !== undefined && end !== undefined) {
-      return this.getBulk(uuids.slice(begin, end)) as Promise<IDataObject[]>;
+      return this.getBulk(uuids.slice(begin, end)) as IDataObject[];
     }
     if (begin !== undefined && end === undefined) {
-      return this.getBulk(uuids.slice(begin)) as Promise<IDataObject[]>;
+      return this.getBulk(uuids.slice(begin)) as IDataObject[];
     }
     if (begin === undefined && end !== undefined) {
-      return this.getBulk(uuids.slice(undefined, end)) as Promise<IDataObject[]>;
+      return this.getBulk(uuids.slice(undefined, end)) as IDataObject[];
     }
     return Object.values(this.#storage);
   }
 
-  async upsert(value: IDataObject): Promise<void> {
+  upsert(value: IDataObject): void {
     this.#storage[value.uuid] = value;
   }
 
-  async upsertBulk(values: IDataObject[]): Promise<void> {
+  upsertBulk(values: IDataObject[]): void {
     values.forEach((value) => {
       this.#storage[value.uuid] = value;
     });
   }
 
-  async uuids(): Promise<string[]> {
+  uuids(): string[] {
     return Object.keys(this.#storage);
   }
 }
@@ -114,32 +114,32 @@ class LabelStorage implements ILabelStorage {
     this.#storage = storage;
   }
 
-  async count(): Promise<number> {
+  count(): number {
     return Object.keys(this.#storage).length;
   }
 
-  async countByValue(value: unknown): Promise<number> {
+  countByValue(value: unknown): number {
     const filter = (item: ILabel) => item.value === value;
     return Object.values(this.#storage).filter(filter).length;
   }
 
-  async deleteAll(): Promise<void> {
+  deleteAll(): void {
     this.#storage = {};
   }
 
-  async get(uuid: string): Promise<ILabel | undefined> {
+  get(uuid: string): ILabel | undefined {
     return this.#storage[uuid];
   }
 
-  async getAll(): Promise<ILabel[]> {
+  getAll(): ILabel[] {
     return Object.values(this.#storage);
   }
 
-  async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
+  getBulk(uuids: string[]): (ILabel | undefined)[] {
     return uuids.map((d) => this.#storage[d]);
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
+  getFiltered(query: FilterQuery<unknown>): ILabel[] {
     const filter: ((item: unknown) => boolean) = sift(query);
     return Object.values(this.#storage).filter(filter);
   }
@@ -148,11 +148,11 @@ class LabelStorage implements ILabelStorage {
     return new LabelStorage(this.#storage);
   }
 
-  async upsert(value: ILabel): Promise<void> {
+  upsert(value: ILabel): void {
     this.#storage[value.uuid] = value;
   }
 
-  async upsertBulk(values: ILabel[]): Promise<void> {
+  upsertBulk(values: ILabel[]): void {
     values.forEach((value) => {
       this.#storage[value.uuid] = value;
     });
@@ -166,32 +166,32 @@ class StatusStorage implements IStatusStorage {
     this.#storage = storage;
   }
 
-  async count(): Promise<number> {
+  count(): number {
     return Object.keys(this.#storage).length;
   }
 
-  async countByValue(value: unknown): Promise<number> {
+  countByValue(value: unknown): number {
     const filter = (item: IStatus) => item.value === value;
     return Object.values(this.#storage).filter(filter).length;
   }
 
-  async deleteAll(): Promise<void> {
+  deleteAll(): void {
     this.#storage = {};
   }
 
-  async get(uuid: string): Promise<IStatus | undefined> {
+  get(uuid: string): IStatus | undefined {
     return this.#storage[uuid];
   }
 
-  async getAll(): Promise<IStatus[]> {
+  getAll(): IStatus[] {
     return Object.values(this.#storage);
   }
 
-  async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
+  getBulk(uuids: string[]): (IStatus | undefined)[] {
     return uuids.map((d) => this.#storage[d]);
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+  getFiltered(query: FilterQuery<unknown>): IStatus[] {
     const filter: ((item: unknown) => boolean) = sift(query);
     return Object.values(this.#storage).filter(filter);
   }
@@ -200,11 +200,11 @@ class StatusStorage implements IStatusStorage {
     return new StatusStorage(this.#storage);
   }
 
-  async upsert(value: IStatus): Promise<void> {
+  upsert(value: IStatus): void {
     this.#storage[value.uuid] = value;
   }
 
-  async upsertBulk(values: IStatus[]): Promise<void> {
+  upsertBulk(values: IStatus[]): void {
     values.forEach((value) => {
       this.#storage[value.uuid] = value;
     });

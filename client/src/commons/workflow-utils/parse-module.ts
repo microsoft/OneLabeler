@@ -98,7 +98,7 @@ export const parseModule = (
           }],
         };
       } else {
-        (params as ModuleParams)[paramName] = param as MethodParam;
+        (params as ModuleParams)[paramName] = param;
       }
     });
   }

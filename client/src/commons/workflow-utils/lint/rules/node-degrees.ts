@@ -120,7 +120,7 @@ const checkNodeDegrees = (
             type: LintMessageType.Error,
             message: `conditions of outward edges of conditional branching node with label "${
               node.label
-            }" are all ${edge1.condition}`,
+            }" are all ${String(edge1.condition)}`,
             category: ErrorCategory.TopologyError,
             subjects: [edge1, edge2],
             rule: 'no-repeated-branching-condition',

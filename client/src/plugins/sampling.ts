@@ -15,12 +15,12 @@ export const upsample = <T extends (number[] | Uint8Array)>(
   newLength: number,
 ): T => {
   if (arr.length > newLength) throw new Error('Invalid new length: arr.length > new length');
-  const type = getType(arr);
+  const Type = getType(arr);
 
   // Moving 1 index forward in new array is same as moving stepSize forward in the original array
   const stepSize = (arr.length - 1) / (newLength - 1);
 
-  const newArr = new type(newLength).fill(0).map((d, i) => {
+  const newArr = new Type(newLength).fill(0).map((d, i) => {
     // Start the new array with the first element.
     if (i === 0) return arr[0];
     // End the new array with the last element.
@@ -55,12 +55,12 @@ export const downsample = <T extends (number[] | Uint8Array)>(
   newLength: number,
 ): T => {
   if (arr.length < newLength) throw new Error('Invalid new length: arr.length < new length');
-  const type = getType(arr);
+  const Type = getType(arr);
 
   const oldStep = 1 / arr.length;
   const newStep = 1 / newLength;
 
-  const newArr = new type(newLength).fill(0).map((d, i) => {
+  const newArr = new Type(newLength).fill(0).map((d, i) => {
     const newStart = i * newStep;
     const newEnd = (i + 1) * newStep;
 
@@ -91,8 +91,8 @@ export const resample = <T extends (number[] | Uint8Array)>(
   arr: T,
   newLength: number,
 ): T => {
-  const type = getType(arr);
-  if (arr.length === newLength) return new type(...arr) as T;
+  const Type = getType(arr);
+  if (arr.length === newLength) return new Type(...arr) as T;
   if (arr.length < newLength) return upsample(arr, newLength);
   return downsample(arr, newLength);
 };
@@ -104,7 +104,7 @@ const upsampleHeight = <T extends (number[] | Uint8Array)>(
 ): T[] => {
   if (matrix.length > newHeight) throw new Error('Invalid new length: matrix.length > new length');
   if (matrix.length === 0) return matrix;
-  const type = getType(matrix[0]);
+  const Type = getType(matrix[0]);
   const width = matrix[0].length;
 
   // Moving 1 index forward in new array is same as moving stepSize forward in the original array
@@ -120,8 +120,8 @@ const upsampleHeight = <T extends (number[] | Uint8Array)>(
     const before = Math.floor(location);
     const after = Math.ceil(location);
     const t = location - before;
-    const row = new type(width).fill(0);
-    return row.map((d, i) => linearInterpolate(matrix[before][i], matrix[after][i], t));
+    const row = new Type(width).fill(0);
+    return row.map((_, j: number) => linearInterpolate(matrix[before][j], matrix[after][j], t));
   });
 
   return newMatrix as T[];
@@ -134,7 +134,7 @@ const downsampleHeight = <T extends (number[] | Uint8Array)>(
 ): T[] => {
   if (matrix.length < newHeight) throw new Error('Invalid new length: matrix.length < new length');
   if (matrix.length === 0) return matrix;
-  const type = getType(matrix[0]);
+  const Type = getType(matrix[0]);
   const width = matrix[0].length;
 
   const oldStep = 1 / matrix.length;
@@ -154,7 +154,7 @@ const downsampleHeight = <T extends (number[] | Uint8Array)>(
 
     // Note: if replacing jMin with 0 and jMax with oldLength
     // the function will still work, but at a lower speed.
-    const row = new type(width).fill(0);
+    const row = new Type(width).fill(0);
     for (let j = jMin; j < jMax; j += 1) {
       const oldStart = j * oldStep;
       const oldEnd = oldStart + oldStep;
@@ -177,8 +177,8 @@ export const resampleHeight = <T extends (number[] | Uint8Array)>(
   newHeight: number,
 ): T[] => {
   if (matrix.length === 0) return matrix;
-  const type = getType(matrix[0]);
-  if (matrix.length === newHeight) return matrix.map((row) => new type(...row) as T);
+  const Type = getType(matrix[0]);
+  if (matrix.length === newHeight) return matrix.map((row) => new Type(...row) as T);
   if (matrix.length < newHeight) return upsampleHeight(matrix, newHeight);
   return downsampleHeight(matrix, newHeight);
 };

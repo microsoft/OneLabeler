@@ -73,6 +73,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import type { VueConstructor } from 'vue';
 import { mapActions, mapState } from 'vuex';
 import {
@@ -89,7 +90,7 @@ import TheMessageView from '@/components/TheMessageView/TheMessageView.vue';
 import TheDevPanel from '@/components/TheDevPanel/TheDevPanel.vue';
 import TheWorkflowMinimap from '@/components/TheWorkflowMinimap/TheWorkflowMinimap.vue';
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     TheNavBarView,
@@ -128,7 +129,7 @@ export default {
       return null;
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

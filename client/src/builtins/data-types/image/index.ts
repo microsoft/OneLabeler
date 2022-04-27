@@ -45,7 +45,7 @@ export default {
         height,
         filename,
       };
-      storage.upsert(dataObject);
+      await storage.upsert(dataObject);
     }));
   },
   handleExport: (

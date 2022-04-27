@@ -96,7 +96,7 @@ export default defineComponent({
     },
     /** The accessor of point radius. */
     rMap: {
-      type: Function as PropType<((d: Datum, i: number) => number) | null>,
+      type: Function as PropType<((d: Datum, i: number) => number)>,
       default: () => 3,
     },
     /** The width of the spared region. */
@@ -139,12 +139,12 @@ export default defineComponent({
     },
     /** The accessor of point color. */
     fillMap: {
-      type: Function as PropType<((d: Datum, i: number) => string) | null>,
+      type: Function as PropType<((d: Datum, i: number) => string)>,
       default: () => '#888888',
     },
     /** The accessor of point stroke. */
     strokeMap: {
-      type: Function as PropType<((d: Datum, i: number) => string) | null>,
+      type: Function as PropType<((d: Datum, i: number) => string)>,
       default: () => '#bbbbbb',
     },
   },
@@ -163,8 +163,10 @@ export default defineComponent({
     const xData = computed(() => data.value.map(xMap.value));
     const xDomain = computed(() => xAxis.value?.domain
       ?? [Math.min(...xData.value), Math.max(...xData.value)] as Range);
-    const xScale = computed(() => scaleLinear(xDomain.value,
-      [margin.value.left, width.value - margin.value.right]));
+    const xScale = computed(() => scaleLinear(
+      xDomain.value,
+      [margin.value.left, width.value - margin.value.right],
+    ));
     const xTickArguments = computed(() => {
       const tickNum = xAxis.value?.tickNum ?? null;
       return tickNum !== null ? [tickNum] as [number] : [];
@@ -173,8 +175,10 @@ export default defineComponent({
     const yData = computed(() => data.value.map(yMap.value));
     const yDomain = computed(() => yAxis.value?.domain
       ?? [Math.min(...yData.value), Math.max(...yData.value)] as Range);
-    const yScale = computed(() => scaleLinear(yDomain.value,
-      [height.value - margin.value.bottom, margin.value.top]));
+    const yScale = computed(() => scaleLinear(
+      yDomain.value,
+      [height.value - margin.value.bottom, margin.value.top],
+    ));
     const yTickArguments = computed(() => {
       const tickNum = yAxis.value?.tickNum ?? null;
       return tickNum !== null ? [tickNum] as [number] : [];

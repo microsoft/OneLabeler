@@ -16,7 +16,7 @@
 
     <!-- The closing line. -->
     <line
-      v-if="withinClosingDistance"
+      v-if="withinClosingDistance && firstPoint !== null && lastPoint !== null"
       :x1="lastPoint[0]"
       :y1="lastPoint[1]"
       :x2="firstPoint[0]"
@@ -112,11 +112,14 @@ export default defineComponent({
   },
   mounted() {
     const medium = this.$refs.medium as SVGRectElement;
+    // Note: use () => this.ended() instead of this.ended
+    // as parameter to avoid calling unbound methods,
+    // which may cause unintentional scoping of `this`.
     const drag = d3
       .drag()
-      .on('start', this.started)
-      .on('drag', this.dragged)
-      .on('end', this.ended);
+      .on('start', (e: MouseEvent) => this.started(e))
+      .on('drag', (e: MouseEvent) => this.dragged(e))
+      .on('end', () => this.ended());
     d3.select<Element, unknown>(medium).call(drag);
   },
   methods: {

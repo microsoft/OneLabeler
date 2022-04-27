@@ -28,7 +28,7 @@ const getDefaultPortPosition = (
   if (direction === PortDirection.Right) return { dx: width, dy: height / 2 };
   if (direction === PortDirection.Top) return { dx: width / 2, dy: 0 };
   if (direction === PortDirection.Bottom) return { dx: width / 2, dy: height };
-  throw new TypeError(`Invalid port direction: ${direction}`);
+  throw new TypeError(`Invalid port direction: ${String(direction)}`);
 };
 
 /** Get default [source, target] port direction given the angle in [0, 360). */
@@ -92,8 +92,8 @@ export const parseEdge = (
   // Create edge.layout if layout data structure not complete.
   const sourceNode = nodes.find((d) => d.id === edge.source);
   const targetNode = nodes.find((d) => d.id === edge.target);
-  if (sourceNode === undefined) throw new Error(`Edge source invalid: ${edge}`);
-  if (targetNode === undefined) throw new Error(`Edge source invalid: ${edge}`);
+  if (sourceNode === undefined) throw new Error(`Edge source invalid: ${String(edge)}`);
+  if (targetNode === undefined) throw new Error(`Edge source invalid: ${String(edge)}`);
   const layout = parseEdgeLayout(edge.layout, sourceNode, targetNode);
   return { ...edge, id, layout };
 };

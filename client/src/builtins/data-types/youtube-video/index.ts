@@ -63,7 +63,7 @@ export default {
         width,
         height,
       };
-      storage.upsert(dataObject);
+      await storage.upsert(dataObject);
     }));
   },
   handleExport: <T extends IDataObject>(

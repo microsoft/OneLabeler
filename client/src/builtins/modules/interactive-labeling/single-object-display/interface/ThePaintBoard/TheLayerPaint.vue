@@ -18,7 +18,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import Konva from 'konva';
 import type { ILabelMask } from '@/commons/types';
 import type { VueKonvaLayer } from './types';
@@ -35,7 +36,7 @@ const createImage = async (
   img.src = url;
 });
 
-export default {
+export default defineComponent({
   name: 'TheLayerPaint',
   props: {
     width: {
@@ -84,5 +85,5 @@ export default {
       layer.add(new Konva.Image({ image }));
     },
   },
-};
+});
 </script>

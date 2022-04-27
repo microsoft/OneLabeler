@@ -41,6 +41,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -50,7 +51,7 @@ import {
 import { cardElevated, cardHeader } from '@/style';
 import VEditableService from './VEditableService.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDataManagementView',
   components: { VEditableService },
   data() {
@@ -98,5 +99,5 @@ export default {
       });
     },
   },
-};
+});
 </script>

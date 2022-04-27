@@ -21,45 +21,44 @@ enum WindowFunction {
   triangular = 'triangular',
 }
 
+const bartlett = (len: number, i: number) => (2 / (len - 1))
+  * ((len - 1) / 2 - Math.abs(i - (len - 1) / 2));
+const bartlettHann = (len: number, i: number) => (
+  0.62
+  - 0.48 * Math.abs(i / (len - 1) - 0.5)
+  - 0.38 * Math.cos((Math.PI * 2 * i) / (len - 1))
+);
+const blackman = (len: number, i: number, alpha: number) => (
+  (1 - alpha) / 2
+  - 0.5 * Math.cos((Math.PI * 2 * i) / (len - 1))
+  + (alpha / 2) * Math.cos((4 * Math.PI * i) / (len - 1))
+);
+const cosine = (len: number, i: number) => (
+  Math.cos((Math.PI * i) / (len - 1) - Math.PI / 2)
+);
+const gauss = (len: number, i: number, alpha: number) => (
+  Math.E ** (-0.5 * (((i - (len - 1) / 2) / ((alpha * (len - 1)) / 2)) ** 2))
+);
+const hamming = (len: number, i: number) => (
+  0.54 - 0.46 * Math.cos((Math.PI * 2 * i) / (len - 1))
+);
+const hann = (len: number, i: number) => (
+  0.5 * (1 - Math.cos((Math.PI * 2 * i) / (len - 1)))
+);
+const lanczoz = (len: number, i: number) => (
+  Math.sin(Math.PI * ((2 * i) / (len - 1) - 1)) / (Math.PI * ((2 * i) / (len - 1) - 1))
+);
+const rectangular = () => 1;
+const triangular = (len: number, i: number) => (
+  (2 / len) * (len / 2 - Math.abs(i - (len - 1) / 2))
+);
+
 const computeWindowValues = (
   windowFunc: string,
   bufferSize: number,
   alpha: number | null = null,
 ): Float32Array => {
   let windowValues = new Float32Array(bufferSize).fill(0);
-
-  const bartlett = (len: number, i: number) => (2 / (len - 1))
-    * ((len - 1) / 2 - Math.abs(i - (len - 1) / 2));
-  const bartlettHann = (len: number, i: number) => (
-    0.62
-    - 0.48 * Math.abs(i / (len - 1) - 0.5)
-    - 0.38 * Math.cos((Math.PI * 2 * i) / (len - 1))
-  );
-  const blackman = (len: number, i: number, alpha: number) => (
-    (1 - alpha) / 2
-    - 0.5 * Math.cos((Math.PI * 2 * i) / (len - 1))
-    + (alpha / 2) * Math.cos((4 * Math.PI * i) / (len - 1))
-  );
-  const cosine = (len: number, i: number) => (
-    Math.cos((Math.PI * i) / (len - 1) - Math.PI / 2)
-  );
-  const gauss = (len: number, i: number, alpha: number) => (
-    Math.E ** (-0.5 * (((i - (len - 1) / 2) / ((alpha * (len - 1)) / 2)) ** 2))
-  );
-  const hamming = (len: number, i: number) => (
-    0.54 - 0.46 * Math.cos((Math.PI * 2 * i) / (len - 1))
-  );
-  const hann = (len: number, i: number) => (
-    0.5 * (1 - Math.cos((Math.PI * 2 * i) / (len - 1)))
-  );
-  const lanczoz = (len: number, i: number) => (
-    Math.sin(Math.PI * ((2 * i) / (len - 1) - 1)) /
-    (Math.PI * ((2 * i) / (len - 1) - 1))
-  );
-  const rectangular = () => 1;
-  const triangular = (len: number, i: number) => (
-    (2 / len) * (len / 2 - Math.abs(i - (len - 1) / 2))
-  );
 
   if (windowFunc === WindowFunction.bartlett) {
     windowValues = windowValues.map((d, i) => bartlett(bufferSize, i));
@@ -80,7 +79,7 @@ const computeWindowValues = (
   } else if (windowFunc === WindowFunction.lanczoz) {
     windowValues = windowValues.map((d, i) => lanczoz(bufferSize, i));
   } else if (windowFunc === WindowFunction.rectangular) {
-    windowValues = windowValues.map((d, i) => rectangular());
+    windowValues = windowValues.map(() => rectangular());
   } else if (windowFunc === WindowFunction.triangular) {
     windowValues = windowValues.map((d, i) => triangular(bufferSize, i));
   } else {

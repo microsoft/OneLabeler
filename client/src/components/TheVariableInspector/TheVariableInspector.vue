@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapGetters, mapState } from 'vuex';
 import modelServices from '@/builtins/model-services';
 import type {
@@ -29,7 +30,7 @@ const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
   return delta !== 0;
 };
 
-export default {
+export default defineComponent({
   name: 'TheVariableInspector',
   components: { BaseVariableInspector },
   computed: {
@@ -60,5 +61,5 @@ export default {
       return usedModels;
     },
   },
-};
+});
 </script>

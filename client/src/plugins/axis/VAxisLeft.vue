@@ -19,10 +19,11 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import VAxis, { Orient } from './VAxis.vue';
 
-export default {
+export default defineComponent({
   name: 'VAxisLeft',
   components: { VAxis },
   props: {
@@ -60,5 +61,5 @@ export default {
   data() {
     return { orient: Orient.Left };
   },
-};
+});
 </script>

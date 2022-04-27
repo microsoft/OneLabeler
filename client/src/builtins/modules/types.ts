@@ -57,6 +57,8 @@ export type StateNames = 'dataObjects'
 
 export type ModuleInputNames = StateNames | 'statuses' | 'unlabeledMark';
 
+type MaybePromise<T> = T | Promise<T>;
+
 /** The data labeling process class. */
 export interface IModule {
   inputs: string[];
@@ -88,7 +90,7 @@ export interface IModule {
   /** The implementation of algorithm module. */
   run?: (
     inputs: Partial<Record<ModuleInputNames, unknown>>,
-  ) => Promise<void | Partial<Record<StateNames, unknown>>> | boolean;
+  ) => MaybePromise<void | Partial<Record<StateNames, unknown>>> | boolean;
 
   /**
    * The implementation of interface module.

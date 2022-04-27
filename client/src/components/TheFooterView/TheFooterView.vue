@@ -32,11 +32,12 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import type { TaskWindow, WorkflowNode } from '@/commons/types';
 import TheFooterViewStats from './TheFooterViewStats.vue';
 
-export default {
+export default defineComponent({
   name: 'TheFooterView',
   components: { TheFooterViewStats },
   props: {
@@ -63,7 +64,7 @@ export default {
       });
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

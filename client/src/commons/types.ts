@@ -31,76 +31,78 @@ export interface IStatus {
   value: StatusType;
 }
 
+type MaybePromise<T> = T | Promise<T>;
+
 /** The interface of data object storage. */
 export interface IDataObjectStorage {
   /** Count the number of stored data objects. */
-  count(): Promise<number>;
+  count(): MaybePromise<number>;
   /** Delete all the data objects. */
-  deleteAll(): Promise<void>;
+  deleteAll(): MaybePromise<void>;
   /** Get a data object by uuid. */
-  get(uuid: string): Promise<IDataObject | undefined>;
+  get(uuid: string): MaybePromise<IDataObject | undefined>;
   /** Get all the data objects. */
-  getAll(): Promise<IDataObject[]>;
+  getAll(): MaybePromise<IDataObject[]>;
   /** Get an ordered list of data objects by uuids. */
-  getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]>;
+  getBulk(uuids: string[]): MaybePromise<(IDataObject | undefined)[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): IDataObjectStorage;
   /** Create a slice of the data objects by storage index range. */
-  slice(begin?: number, end?: number): Promise<IDataObject[]>;
+  slice(begin?: number, end?: number): MaybePromise<IDataObject[]>;
   /** Upsert a data object to the storage. */
-  upsert(dataObject: IDataObject): Promise<void>;
+  upsert(dataObject: IDataObject): MaybePromise<void>;
   /** Upsert a bulk of data objects to the storage. */
-  upsertBulk(dataObjects: IDataObject[]): Promise<void>;
+  upsertBulk(dataObjects: IDataObject[]): MaybePromise<void>;
   /** Get the uuids of stored data objects. */
-  uuids(): Promise<string[]>;
+  uuids(): MaybePromise<string[]>;
 }
 
 /** The interface of label storage. */
 export interface ILabelStorage {
   /** Count the number of stored labels. */
-  count(): Promise<number>;
+  count(): MaybePromise<number>;
   /** Count the number of stored labels with filtering by value. */
-  countByValue(value: unknown): Promise<number>;
+  countByValue(value: unknown): MaybePromise<number>;
   /** Delete all the labels. */
-  deleteAll(): Promise<void>;
+  deleteAll(): MaybePromise<void>;
   /** Get a label by uuid. */
-  get(uuid: string): Promise<ILabel | undefined>;
+  get(uuid: string): MaybePromise<ILabel | undefined>;
   /** Get all the labels. */
-  getAll(): Promise<ILabel[]>;
+  getAll(): MaybePromise<ILabel[]>;
   /** Get an ordered list of labels by uuids. */
-  getBulk(uuids: string[]): Promise<(ILabel | undefined)[]>;
+  getBulk(uuids: string[]): MaybePromise<(ILabel | undefined)[]>;
   /** Get a list of labels by filter. */
-  getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]>;
+  getFiltered(query: FilterQuery<unknown>): MaybePromise<ILabel[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): ILabelStorage;
   /** Upsert a label to the storage. */
-  upsert(label: ILabel): Promise<void>;
+  upsert(label: ILabel): MaybePromise<void>;
   /** Upsert a bulk of labels to the storage. */
-  upsertBulk(labels: ILabel[]): Promise<void>;
+  upsertBulk(labels: ILabel[]): MaybePromise<void>;
 }
 
 /** The interface of status storage. */
 export interface IStatusStorage {
   /** Count the number of stored statuses. */
-  count(): Promise<number>;
+  count(): MaybePromise<number>;
   /** Count the number of stored statuses with filtering by value. */
-  countByValue(value: unknown): Promise<number>;
+  countByValue(value: unknown): MaybePromise<number>;
   /** Delete all the statuses. */
-  deleteAll(): Promise<void>;
+  deleteAll(): MaybePromise<void>;
   /** Get a status by uuid. */
-  get(uuid: string): Promise<IStatus | undefined>;
+  get(uuid: string): MaybePromise<IStatus | undefined>;
   /** Get all the statuses. */
-  getAll(): Promise<IStatus[]>;
+  getAll(): MaybePromise<IStatus[]>;
   /** Get an ordered list of statuses by uuids. */
-  getBulk(uuids: string[]): Promise<(IStatus | undefined)[]>;
+  getBulk(uuids: string[]): MaybePromise<(IStatus | undefined)[]>;
   /** Get a list of statuses by filter. */
-  getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]>;
+  getFiltered(query: FilterQuery<unknown>): MaybePromise<IStatus[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): IStatusStorage;
   /** Upsert a status to the storage. */
-  upsert(status: IStatus): Promise<void>;
+  upsert(status: IStatus): MaybePromise<void>;
   /** Upsert a bulk of statuses to the storage. */
-  upsertBulk(statuses: IStatus[]): Promise<void>;
+  upsertBulk(statuses: IStatus[]): MaybePromise<void>;
 }
 
 /** The interface of merged storage of data object, label, status. */

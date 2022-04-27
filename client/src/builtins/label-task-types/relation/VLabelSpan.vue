@@ -26,11 +26,12 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { ILabelTextSpan } from '@/commons/types';
 import { card as styleCard } from '@/style';
 
-export default {
+export default defineComponent({
   name: 'VLabelSpan',
   props: {
     labelSpan: {
@@ -45,5 +46,5 @@ export default {
   data() {
     return { styleCard };
   },
-};
+});
 </script>

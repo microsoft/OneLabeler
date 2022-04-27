@@ -43,16 +43,17 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import * as d3 from 'd3';
-import VAxisLeft from '../axis/VAxisLeft.vue';
+import VAxisLeft from '@/plugins/axis/VAxisLeft.vue';
 
 export type Datum = Record<string | number, number>;
 export type Margin = { top: number, right: number, bottom: number, left: number };
 export type Range = [number, number];
 export type Point = [number, number];
 
-export default {
+export default defineComponent({
   name: 'VParallelCoordinates',
   components: { VAxisLeft },
   props: {
@@ -123,5 +124,5 @@ export default {
       return d3.line()(points);
     },
   },
-};
+});
 </script>

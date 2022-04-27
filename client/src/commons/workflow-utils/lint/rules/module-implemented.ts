@@ -61,7 +61,7 @@ const checkModuleImplemented = (
     if (node.type === WorkflowNodeType.Decision) return;
     if (node.type === WorkflowNodeType.Exit) return;
 
-    const instance = node.value as IModule | null;
+    const instance: IModule | null = node.value;
 
     // Check an implementation is chosen for the node.
     const isModuleImplemented = instance !== null

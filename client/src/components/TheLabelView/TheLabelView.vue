@@ -20,7 +20,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type {
@@ -31,7 +32,7 @@ import type {
 } from '@/commons/types';
 import BaseLabelView from './BaseLabelView.vue';
 
-export default {
+export default defineComponent({
   name: 'TheLabelView',
   components: { BaseLabelView },
   props: {
@@ -61,7 +62,9 @@ export default {
       'setStatusOf',
       'setStatusesOf',
     ]),
-    async onUpsertLabels(newValue: Partial<ILabel> & { uuid: string }): Promise<void> {
+    async onUpsertLabels(
+      newValue: Partial<ILabel> & { uuid: string },
+    ): Promise<void> {
       const { uuid } = newValue;
       const { labels } = this as { labels: ILabelStorage };
       const label: ILabel | undefined = await labels.get(uuid);
@@ -80,7 +83,9 @@ export default {
       this.pushCommandHistory(editSingleCommand);
       */
     },
-    async onUpsertBulkLabels(newValues: (Partial<ILabel> & { uuid: string })[]) {
+    async onUpsertBulkLabels(
+      newValues: (Partial<ILabel> & { uuid: string })[],
+    ): Promise<void> {
       const { labels } = this as { labels: ILabelStorage | null };
       if (labels === null) return;
       const uuids = newValues.map((d) => d.uuid);
@@ -112,5 +117,5 @@ export default {
       */
     },
   },
-};
+});
 </script>

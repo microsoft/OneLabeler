@@ -17,10 +17,11 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import TheDevPanelBody from './TheDevPanelBody.vue';
 import TheDevPanelHeader from './TheDevPanelHeader.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDevPanel',
   components: {
     TheDevPanelBody,
@@ -32,5 +33,5 @@ export default {
       showInspector: true,
     };
   },
-};
+});
 </script>

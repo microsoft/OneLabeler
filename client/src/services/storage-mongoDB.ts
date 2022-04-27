@@ -34,7 +34,7 @@ class DataObjectStorage implements IDataObjectStorage {
   }
 
   async count(): Promise<number> {
-    return (await axios.post(this.#path('count'))).data;
+    return (await axios.post(this.#path('count'))).data as number;
   }
 
   async deleteAll(): Promise<void> {
@@ -45,20 +45,20 @@ class DataObjectStorage implements IDataObjectStorage {
     const value: IDataObject | null = (await axios.post(
       this.#path('get'),
       { uuid },
-    )).data;
-    return value === null ? undefined : value;
+    )).data as IDataObject | null;
+    return value ?? undefined;
   }
 
   async getAll(): Promise<IDataObject[]> {
-    return (await axios.post(this.#path('getAll'))).data;
+    return (await axios.post(this.#path('getAll'))).data as IDataObject[];
   }
 
   async getBulk(uuids: string[]): Promise<(IDataObject | undefined)[]> {
     const values: (IDataObject | null)[] = (await axios.post(
       this.#path('getBulk'),
       { uuids },
-    )).data;
-    return values.map((d) => (d === null ? undefined : d));
+    )).data as (IDataObject | null)[];
+    return values.map((d) => (d ?? undefined));
   }
 
   shallowCopy(): IDataObjectStorage {
@@ -66,7 +66,7 @@ class DataObjectStorage implements IDataObjectStorage {
   }
 
   async slice(begin?: number, end?: number): Promise<IDataObject[]> {
-    return (await axios.post(this.#path('slice'), { begin, end })).data;
+    return (await axios.post(this.#path('slice'), { begin, end })).data as IDataObject[];
   }
 
   async upsert(value: IDataObject): Promise<void> {
@@ -78,7 +78,7 @@ class DataObjectStorage implements IDataObjectStorage {
   }
 
   async uuids(): Promise<string[]> {
-    return (await axios.post(this.#path('uuids'))).data;
+    return (await axios.post(this.#path('uuids'))).data as string[];
   }
 }
 
@@ -93,11 +93,11 @@ class LabelStorage implements ILabelStorage {
   }
 
   async count(): Promise<number> {
-    return (await axios.post(this.#path('count'))).data;
+    return (await axios.post(this.#path('count'))).data as number;
   }
 
   async countByValue(value: unknown): Promise<number> {
-    return (await axios.post(this.#path('countByValue'), { value })).data;
+    return (await axios.post(this.#path('countByValue'), { value })).data as number;
   }
 
   async deleteAll(): Promise<void> {
@@ -108,24 +108,24 @@ class LabelStorage implements ILabelStorage {
     const value: ILabel | null = (await axios.post(
       this.#path('get'),
       { uuid },
-    )).data;
-    return value === null ? undefined : value;
+    )).data as ILabel | null;
+    return value ?? undefined;
   }
 
   async getAll(): Promise<ILabel[]> {
-    return (await axios.post(this.#path('getAll'))).data;
+    return (await axios.post(this.#path('getAll'))).data as ILabel[];
   }
 
   async getBulk(uuids: string[]): Promise<(ILabel | undefined)[]> {
     const values: (ILabel | null)[] = (await axios.post(
       this.#path('getBulk'),
       { uuids },
-    )).data;
-    return values.map((d) => (d === null ? undefined : d));
+    )).data as (ILabel | null)[];
+    return values.map((d) => (d ?? undefined));
   }
 
   async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
-    return (await axios.post(this.#path('getFiltered'), { query })).data;
+    return (await axios.post(this.#path('getFiltered'), { query })).data as ILabel[];
   }
 
   shallowCopy(): ILabelStorage {
@@ -152,11 +152,11 @@ class StatusStorage implements IStatusStorage {
   }
 
   async count(): Promise<number> {
-    return (await axios.post(this.#path('count'))).data;
+    return (await axios.post(this.#path('count'))).data as number;
   }
 
   async countByValue(value: unknown): Promise<number> {
-    return (await axios.post(this.#path('countByValue'), { value })).data;
+    return (await axios.post(this.#path('countByValue'), { value })).data as number;
   }
 
   async deleteAll(): Promise<void> {
@@ -167,24 +167,24 @@ class StatusStorage implements IStatusStorage {
     const value: IStatus | null = (await axios.post(
       this.#path('get'),
       { uuid },
-    )).data;
-    return value === null ? undefined : value;
+    )).data as IStatus | null;
+    return value ?? undefined;
   }
 
   async getAll(): Promise<IStatus[]> {
-    return (await axios.post(this.#path('getAll'))).data;
+    return (await axios.post(this.#path('getAll'))).data as IStatus[];
   }
 
   async getBulk(uuids: string[]): Promise<(IStatus | undefined)[]> {
     const values: (IStatus | null)[] = (await axios.post(
       this.#path('getBulk'),
       { uuids },
-    )).data;
+    )).data as (IStatus | null)[];
     return values.map((d) => (d === null ? undefined : d));
   }
 
   async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
-    return (await axios.post(this.#path('getFiltered'), { query })).data;
+    return (await axios.post(this.#path('getFiltered'), { query })).data as IStatus[];
   }
 
   shallowCopy(): IStatusStorage {

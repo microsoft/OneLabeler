@@ -39,7 +39,7 @@ export default {
         uuid: uuidv4(),
         content,
       };
-      storage.upsert(dataObject);
+      await storage.upsert(dataObject);
     }));
   },
   handleExport: <T extends IDataObject>(

@@ -16,7 +16,7 @@ export const PCA = showProgressBar(async (
       formatter('PCA'),
       JSON.stringify({ X, nComponents }),
     )
-  ).data;
+  ).data as { projection: number[][] };
   return projection;
 });
 
@@ -29,7 +29,7 @@ export const MDS = showProgressBar(async (
       formatter('MDS'),
       JSON.stringify({ X, nComponents }),
     )
-  ).data;
+  ).data as { projection: number[][] };
   return projection;
 });
 
@@ -42,6 +42,6 @@ export const TSNE = showProgressBar(async (
       formatter('TSNE'),
       JSON.stringify({ X, nComponents }),
     )
-  ).data;
+  ).data as { projection: number[][] };
   return projection;
 });

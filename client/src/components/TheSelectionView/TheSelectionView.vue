@@ -17,12 +17,13 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import type { TaskWindow } from '@/commons/types';
 import BaseSelectionView from './BaseSelectionView.vue';
 
-export default {
+export default defineComponent({
   name: 'TheSelectionView',
   components: { BaseSelectionView },
   props: {
@@ -59,5 +60,5 @@ export default {
       await this.executeWorkflow({ node: taskWindow.node });
     },
   },
-};
+});
 </script>

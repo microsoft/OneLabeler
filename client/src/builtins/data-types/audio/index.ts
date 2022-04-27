@@ -47,7 +47,7 @@ const handleFile = async (
     duration,
     filename,
   };
-  storage.upsert(dataObject);
+  await storage.upsert(dataObject);
 };
 
 export default {

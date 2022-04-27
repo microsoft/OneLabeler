@@ -42,7 +42,7 @@ const aStar = (
   const { found, path } = cy.elements().aStar({
     root: cy.getElementById(root.id),
     goal: cy.getElementById(goal.id),
-    weight: (d) => d.data('weight'),
+    weight: (d) => (d as cytoscape.EdgeSingular).data('weight') as number,
     directed: true,
   });
 

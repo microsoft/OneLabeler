@@ -16,10 +16,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type { Line, FlowchartNode } from './types';
 
-export default {
+export default defineComponent({
   name: 'VGuidelines',
   props: {
     /** The node for which guidelines are created. */
@@ -71,5 +72,5 @@ export default {
       return guidelines;
     },
   },
-};
+});
 </script>

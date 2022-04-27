@@ -58,7 +58,8 @@
 </template>
 
 <script lang="ts">
-import { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import type {
   NumberValue,
   ScaleContinuousNumeric,
@@ -112,7 +113,7 @@ const center = (scale: ScaleBand<unknown> | ScalePoint<unknown>, offset: number)
   return (d: unknown): number => +scale(d) + offsetUpdated;
 };
 
-export default {
+export default defineComponent({
   name: 'VAxis',
   props: {
     /** The axis orientation. */
@@ -196,5 +197,5 @@ export default {
       return number(scale.copy());
     },
   },
-};
+});
 </script>

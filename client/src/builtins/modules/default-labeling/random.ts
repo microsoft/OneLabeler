@@ -18,12 +18,12 @@ export default {
   isBuiltIn: true,
   isServerless: true,
   labelTasks: [LabelTaskType.Classification],
-  run: async (
+  run: (
     inputs: {
       queryUuids: string[],
       categories: Category[],
     },
-  ): Promise<{ labels: ILabel[] }> => {
+  ): { labels: ILabel[] } => {
     const { queryUuids, categories } = inputs;
     const nCategories = categories.length;
     const labels = queryUuids.map((d) => ({

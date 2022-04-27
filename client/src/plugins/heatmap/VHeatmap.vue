@@ -102,7 +102,7 @@ const binning = (
   // initialize 3d array of size (nRows, nColumns, 0)
   const binMatrix: number[][][] = new Array(nRows).fill(null).map(() => (
     new Array(nColumns).fill(null).map(
-      () => new Array(0),
+      () => new Array(0) as number[],
     )
   ));
 

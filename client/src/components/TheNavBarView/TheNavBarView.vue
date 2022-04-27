@@ -170,7 +170,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { DefinedError } from 'ajv';
 import { saveJsonFile, parseJsonFile } from '@/plugins/file';
@@ -206,7 +207,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   }
   if (err.keyword === 'type') {
     return {
-      content: `UPLOAD FAILED: ${err.dataPath} ${err.message}.`,
+      content: `UPLOAD FAILED: ${err.message}.`,
       type: MessageType.Error,
     };
   }
@@ -219,7 +220,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
   return null;
 };
 
-export default {
+export default defineComponent({
   name: 'TheNavBarView',
   components: {
     VUploadButton,
@@ -452,5 +453,5 @@ export default {
       this.setDockSide(updatedDockSide);
     },
   },
-};
+});
 </script>

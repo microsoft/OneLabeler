@@ -49,7 +49,8 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
+import { defineComponent } from '@vue/composition-api';
+import type { PropType } from '@vue/composition-api';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import type { WorkflowEdge, WorkflowNode } from '@/commons/types';
 import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
@@ -57,7 +58,7 @@ import TheWorkflowView from '../TheWorkflowView/TheWorkflowView.vue';
 import TheConsoleView from '../TheConsoleView/TheConsoleView.vue';
 import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.vue';
 
-export default {
+export default defineComponent({
   name: 'TheDevPanelBody',
   components: {
     TheElementDetails,
@@ -120,5 +121,5 @@ export default {
       'editEdge',
     ]),
   },
-};
+});
 </script>

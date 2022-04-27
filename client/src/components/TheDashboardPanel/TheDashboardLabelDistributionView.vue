@@ -63,6 +63,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapGetters, mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type {
@@ -78,7 +79,7 @@ const isOverlapping = (a: Set<unknown>, b: Set<unknown>): boolean => {
   return delta !== 0;
 };
 
-export default {
+export default defineComponent({
   name: 'TheDashboardLabelDistributionView',
   data() {
     return {
@@ -146,5 +147,5 @@ export default {
       return nLabeledByCategory;
     },
   },
-};
+});
 </script>

@@ -32,6 +32,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
@@ -50,7 +51,7 @@ const useStatuses = (statuses: Ref<IStatusStorage | null>) => {
 };
 */
 
-export default {
+export default defineComponent({
   name: 'TheFooterView',
   components: { TheClassesDialog },
   data() {
@@ -99,7 +100,7 @@ export default {
       return dataObjects.count();
     },
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

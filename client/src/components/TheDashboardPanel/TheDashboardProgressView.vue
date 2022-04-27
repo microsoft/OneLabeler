@@ -54,12 +54,13 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from '@vue/composition-api';
 import { mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
 import { cardElevated, cardHeader } from '@/style';
 
-export default {
+export default defineComponent({
   name: 'TheDashboardProgressView',
   data() {
     return {
@@ -73,7 +74,7 @@ export default {
   },
   computed: {
     ...mapState(['dataObjects', 'labels', 'statuses']),
-    statusList() {
+    statusList(): { label: string, value: number, color: string }[] {
       const {
         nLabeled,
         nSkipped,
@@ -89,7 +90,7 @@ export default {
         { label: 'Viewing', value: nViewing, color: '#ea8d18' },
       ];
     },
-    stackedBars() {
+    stackedBars(): { height: string, color: string }[] {
       const {
         nLabeled,
         nSkipped,
@@ -162,5 +163,5 @@ export default {
       return statuses.countByValue(StatusType.Viewed);
     },
   },
-};
+});
 </script>
