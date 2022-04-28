@@ -6,5 +6,6 @@ module.exports = {
   // support monorepos
   projects: [
     './client', // shorthand for only root.
+    './client/packages/object-inspector', // shorthand for only root.
   ]
 }

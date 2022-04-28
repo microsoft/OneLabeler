@@ -1,0 +1,47 @@
+.tree-view-outline {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.tree-node {
+  color: rgb(213, 213, 213);
+  background-color: rgb(36, 36, 36);
+
+  line-height: 1.2;
+  cursor: default;
+
+  box-sizing: border-box;
+  list-style: none;
+
+  font-family: Menlo, monospace;
+  font-size: 11px;
+}
+
+// .tree-node-preview-container {
+// }
+
+.tree-node-placeholder {
+  white-space: pre;
+
+  font-size: 12px;
+  margin-right: 3px;
+}
+
+.tree-node-arrow {
+  color: rgb(145, 145, 145);
+  display: inline-block;
+  font-size: 12px;
+  margin-right: 3px;
+}
+.tree-node-arrow-expanded {
+  transform: rotate(90deg);
+}
+.tree-node-arrow-collapsed {
+  transform: rotate(0deg);
+}
+
+.tree-node-child-nodes-container {
+  margin: 0;
+  padding-left: 12px;
+}

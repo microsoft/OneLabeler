@@ -1,0 +1,45 @@
+.object-name {
+  color: rgb(227, 110, 236);
+}
+
+.object-name-dimmed {
+  opacity: 0.6;
+}
+
+.object-preview-desc {
+  font-style: italic;
+}
+
+.object-preview {
+  font-style: italic;
+}
+
+.object-value-null {
+  color: rgb(127, 127, 127);
+}
+.object-value-undefined {
+  color: rgb(127, 127, 127);
+}
+.object-value-regexp {
+  color: rgb(233, 63, 59);
+}
+.object-value-string {
+  color: rgb(233, 63, 59);
+}
+.object-value-symbol {
+  color: rgb(233, 63, 59);
+}
+.object-value-number {
+  color: hsl(252, 100%, 75%);
+}
+.object-value-boolean {
+  color: hsl(252, 100%, 75%);
+}
+.object-value-function-prefix {
+  // color: rgb(13, 34, 170);
+  color: rgb(85, 106, 242);
+  font-style: italic;
+}
+.object-value-function-name {
+  font-style: italic;
+}

@@ -103,5 +103,8 @@
     "typescript": "^4.6.2",
     "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-template-compiler": "^2.6.14"
-  }
+  },
+  "workspaces": [
+    "packages\\object-inspector"
+  ]
 }
