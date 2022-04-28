@@ -35,7 +35,7 @@
       }[message.type] }}
     </v-icon>
     <span
-      v-if="shouldShowArrow"
+      v-if="showArrow"
       :class="expanded ? 'tree-node-arrow-expanded' : 'tree-node-arrow-collapsed'"
       class="tree-node-arrow"
       style="cursor: pointer"
@@ -96,7 +96,7 @@ export default defineComponent({
       const { subjects } = this.message;
       return subjects === null || subjects === undefined || subjects.length === 0;
     },
-    shouldShowArrow(): boolean {
+    showArrow(): boolean {
       const { type } = this.message;
       return type !== LintMessageType.Success;
     },

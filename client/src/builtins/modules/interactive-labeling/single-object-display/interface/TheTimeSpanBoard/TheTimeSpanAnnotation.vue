@@ -103,7 +103,6 @@ import {
 import type {
   PropType,
   Ref,
-  SetupContext,
 } from '@vue/composition-api';
 import { v4 as uuidv4 } from 'uuid';
 import { color as d3color } from 'd3';
