@@ -20,10 +20,9 @@
     >
       {{ nTotal }} data objects exist, only load first {{ maxVisible }}
     </div>
-    <ObjectInspector
+    <VObjectInspector
       :data="filteredDataObjects"
       :array-max-properties="5"
-      theme="chromeLight"
       style="padding: 4px;"
     />
   </div>
@@ -32,7 +31,7 @@
 <script lang="ts">
 import { defineComponent, toRefs } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import ObjectInspector from 'vue-object-inspector';
+import VObjectInspector from '@/../packages/object-inspector';
 import type { IDataObjectStorage } from '@/commons/types';
 import { useFilteredDataObjects } from '@/components/composables/useFilteredStorage';
 import { cardHeader } from '@/style';
@@ -40,7 +39,7 @@ import useNTotal from './utils/useNTotal';
 
 export default defineComponent({
   name: 'VInspectDataObjects',
-  components: { ObjectInspector },
+  components: { VObjectInspector },
   props: {
     dataObjects: {
       type: Object as PropType<IDataObjectStorage | null>,

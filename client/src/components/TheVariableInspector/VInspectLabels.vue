@@ -35,10 +35,9 @@
     >
       {{ nTotal }} labels exist, only load first {{ maxVisible }}
     </div>
-    <ObjectInspector
+    <VObjectInspector
       :data="filteredLabels"
       :array-max-properties="5"
-      theme="chromeLight"
       style="padding: 4px;"
     />
   </div>
@@ -51,7 +50,7 @@ import {
   toRefs,
 } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import ObjectInspector from 'vue-object-inspector';
+import VObjectInspector from '@/../packages/object-inspector';
 import type { IDataObjectStorage, ILabelStorage } from '@/commons/types';
 import { useFilteredLabels } from '@/components/composables/useFilteredStorage';
 import { cardHeader } from '@/style';
@@ -59,7 +58,7 @@ import useNTotal from './utils/useNTotal';
 
 export default defineComponent({
   name: 'VInspectLabels',
-  components: { ObjectInspector },
+  components: { VObjectInspector },
   props: {
     dataObjects: {
       type: Object as PropType<IDataObjectStorage | null>,

@@ -13,7 +13,7 @@
       </v-icon>
       Stop
     </div>
-    <ObjectInspector
+    <VObjectInspector
       :data="stop"
       :array-max-properties="5"
       theme="chromeLight"
@@ -25,12 +25,12 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import ObjectInspector from 'vue-object-inspector';
+import VObjectInspector from '@/../packages/object-inspector';
 import { cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'VInspectStop',
-  components: { ObjectInspector },
+  components: { VObjectInspector },
   props: {
     stop: {
       type: Boolean as PropType<boolean>,

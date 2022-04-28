@@ -70,12 +70,6 @@ import VInspectCategories from './VInspectCategories.vue';
 import VInspectStop from './VInspectStop.vue';
 import VInspectModel from './VInspectModel.vue';
 
-/**
- * @reference
- * 1. https://github.com/storybookjs/react-inspector
- * 2. https://github.com/vikyd/vue-object-inspector
- */
-
 export default defineComponent({
   name: 'BaseVariableInspector',
   components: {

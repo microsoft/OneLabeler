@@ -14,10 +14,9 @@
       </v-icon>
       Categories
     </div>
-    <ObjectInspector
+    <VObjectInspector
       :data="categories"
       :array-max-properties="5"
-      theme="chromeLight"
       style="padding: 4px;"
     />
   </div>
@@ -26,13 +25,13 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import ObjectInspector from 'vue-object-inspector';
+import VObjectInspector from '@/../packages/object-inspector';
 import type { Category } from '@/commons/types';
 import { cardHeader } from '@/style';
 
 export default defineComponent({
   name: 'VInspectCategories',
-  components: { ObjectInspector },
+  components: { VObjectInspector },
   props: {
     categories: {
       type: Array as PropType<Category[]>,
