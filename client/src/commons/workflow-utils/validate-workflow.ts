@@ -16,6 +16,7 @@ const schema: JSONSchemaType<TrimmedWorkflow> = {
         label: { type: 'string' },
         type: { type: 'string' },
         layout: {
+          type: 'object',
           required: ['x', 'y', 'width', 'height'],
           $ref: '#/definitions/nodeLayout',
         },
