@@ -117,11 +117,9 @@
     />
 
     <v-divider
-      class="app-header-divider"
+      class="app-header-divider mr-1"
       vertical
     />
-
-    <v-spacer />
 
     <v-btn-toggle
       :value="showElementSettings"
@@ -169,14 +167,28 @@
     <TheNetworkMenu />
 
     <v-divider
-      class="app-header-divider"
+      class="app-header-divider mx-1"
       vertical
     />
 
-    <VDockSideButtons
-      class="mr-1"
-      @set:dock-side="setDockSide($event)"
-    />
+    <!-- The run preview button. -->
+    <v-btn
+      class="subtitle-1 text-none px-1"
+      title="Run and Debug"
+      color="white"
+      plain
+      tile
+      @click="onClickPreviewButton"
+    >
+      <v-icon
+        class="pr-2"
+        aria-hidden="true"
+        small
+      >
+        $vuetify.icons.values.play
+      </v-icon>
+      Preview
+    </v-btn>
   </div>
 </template>
 
@@ -185,13 +197,12 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
-import { MessageType } from '@/commons/types';
+import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import TheNetworkMenu from './TheNetworkMenu.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
-import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
 
 export default defineComponent({
@@ -200,7 +211,6 @@ export default defineComponent({
     Icon,
     TheNetworkMenu,
     VTemplateMenu,
-    VDockSideButtons,
     VUploadWorkflowButton,
   },
   props: {
@@ -220,6 +230,7 @@ export default defineComponent({
     return { CompileType };
   },
   computed: {
+    ...mapState(['dockSide']),
     ...mapState('workflow', ['nodes', 'edges']),
     workflow(): WorkflowGraph {
       const { nodes, edges } = this;
@@ -242,6 +253,13 @@ export default defineComponent({
           type: MessageType.Error,
         });
       }
+    },
+    onClickPreviewButton(): void {
+      const { dockSide } = this;
+      const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
+        ? DockSideType.Window
+        : DockSideType.Hide;
+      this.setDockSide(updatedDockSide);
     },
   },
 });

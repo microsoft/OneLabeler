@@ -50,22 +50,11 @@
     <!-- The dashboard dialog button. -->
     <TheDialogButtonDashboard />
 
-    <!-- The workflow dialog button. -->
-    <v-btn
+    <VDockSideButtons
       v-if="isDeveloperMode"
-      class="app-header-button mr-1 text-none subtitle-1"
-      title="Workflow"
-      @click="onClickWorkflowButton"
-    >
-      <v-icon
-        class="pr-1"
-        aria-hidden="true"
-        small
-      >
-        $vuetify.icons.values.config
-      </v-icon>
-      Development
-    </v-btn>
+      class="mr-1"
+      @set:dock-side="setDockSide($event)"
+    />
   </div>
 </template>
 
@@ -74,6 +63,7 @@ import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState } from 'vuex';
 import { DockSideType } from '@/commons/types';
+import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import TheButtonExecute from './TheButtonExecute.vue';
 import TheButtonLabelExport from './TheButtonLabelExport.vue';
 import TheButtonProjectLoad from './TheButtonProjectLoad.vue';
@@ -88,6 +78,7 @@ const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
 export default defineComponent({
   name: 'TheNavBarView',
   components: {
+    VDockSideButtons,
     TheButtonExecute,
     TheButtonLabelExport,
     TheButtonProjectLoad,

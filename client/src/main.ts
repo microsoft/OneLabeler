@@ -6,7 +6,7 @@ import VueCompositionAPI from '@vue/composition-api';
 import VueKonva from 'vue-konva';
 import vuetify from './vuetify';
 import iconifyInit from './iconify';
-import App from './App.vue';
+import App from './apps/App.vue';
 import store from './store';
 import './style/scrollbar.css';
 import './style/style.scss';

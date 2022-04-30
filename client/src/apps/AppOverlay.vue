@@ -41,7 +41,7 @@
           content-class="rounded-0"
         >
           <TheDevPanel
-            style="height: 600px; width: 1700px;"
+            style="height: 80vh; width: 80vw;"
             @click:close="setDockSide(DockSideType.Hide)"
           />
         </v-dialog>

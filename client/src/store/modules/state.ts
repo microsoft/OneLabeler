@@ -77,7 +77,7 @@ export const createInitialState = (): IState => ({
   commandHistory: [],
   message: null,
   taskWindows: [],
-  dockSide: isDeveloperMode ? DockSideType.Window : DockSideType.Hide,
+  dockSide: isDeveloperMode ? DockSideType.Hide : DockSideType.Window,
   colorMapper: {},
   sourceService: sourceServices[0],
   sourceServices,
