@@ -21,39 +21,17 @@
         Templates
       </v-btn>
     </template>
-    <v-list dense>
-      <v-list-item
-        v-for="(template, i) in templates"
-        :key="i"
-        class="subtitle-2"
-        style="min-height: 30px"
-        @click="$emit('set:workflow', template)"
-      >
-        {{ template.label }}
-      </v-list-item>
-    </v-list>
+    <VTemplateList @set:workflow="$emit('set:workflow', $event)" />
   </v-menu>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import type { PropType } from '@vue/composition-api';
-import type { WorkflowGraph } from '@/commons/types';
-import templates from '@/builtins/workflow-templates/index';
+import VTemplateList from './VTemplateList.vue';
 
 export default defineComponent({
   name: 'VTemplateMenu',
-  props: {
-    workflow: {
-      type: Object as PropType<WorkflowGraph>,
-      required: true,
-    },
-  },
-  emits: {
-    'set:workflow': null,
-  },
-  data() {
-    return { templates };
-  },
+  components: { VTemplateList },
+  emits: { 'set:workflow': null },
 });
 </script>

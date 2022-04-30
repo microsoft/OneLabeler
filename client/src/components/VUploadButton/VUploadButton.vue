@@ -2,28 +2,40 @@
      Licensed under the MIT License. -->
 
 <template>
-  <v-btn
+  <BaseButton
     :title="title"
-    :color="color"
     :disabled="disabled"
-    icon
-    tile
-    small
+    :icon="!isTextButton"
+    :x-small="xSmall"
+    :small="small"
+    :large="large"
+    :x-large="xLarge"
+    :style="{
+      opacity: 1,
+      color,
+    }"
     @click="onClick"
   >
-    <v-icon
-      aria-hidden="true"
+    <BaseIcon
+      :class="icon"
+      :x-small="xSmall"
       :small="small"
-    >
-      {{ icon }}
-    </v-icon>
-  </v-btn>
+      :large="large"
+      :x-large="xLarge"
+      :style="isTextButton ? 'margin-right: 8px;' : ''"
+    />
+    <template v-if="isTextButton">
+      {{ text }}
+    </template>
+  </BaseButton>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { UploadTarget } from '@/commons/types';
+import BaseButton from '@/components/BaseButton/BaseButton.vue';
+import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 
 type ExtendedEvent = Event & { path: Array<{files: FileList}> }
 type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
@@ -31,10 +43,18 @@ type KeyboardTrigger = ((e: KeyboardEvent) => boolean) | null
 
 export default defineComponent({
   name: 'VUploadButton',
+  components: {
+    BaseButton,
+    BaseIcon,
+  },
   props: {
     title: {
-      type: String,
+      type: String as PropType<string>,
       default: 'Upload',
+    },
+    text: {
+      type: String as PropType<string>,
+      default: null,
     },
     type: {
       type: String as PropType<UploadTarget>,
@@ -45,10 +65,6 @@ export default defineComponent({
       default: 'black',
     },
     multiple: {
-      type: Boolean,
-      default: false,
-    },
-    small: {
       type: Boolean,
       default: false,
     },
@@ -64,10 +80,31 @@ export default defineComponent({
       type: Function as PropType<KeyboardTrigger | null>,
       default: null,
     },
+    xSmall: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    small: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    large: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
+    xLarge: {
+      type: Boolean as PropType<boolean>,
+      default: false,
+    },
   },
   emits: {
     'upload:file': null,
     'upload:files': null,
+  },
+  computed: {
+    isTextButton(): boolean {
+      return this.text !== null;
+    },
   },
   created(): void {
     if (this.keyboardTrigger !== null) {

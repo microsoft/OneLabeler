@@ -3,48 +3,56 @@
 
 <template>
   <div style="display: flex; gap: 4px;">
-    <div
-      style="flex: 1 1 60%; display: grid; grid-template-rows: repeat(3, 1fr);"
-    >
-      <TheWorkflowView
-        style="grid-area: 1 / 1 / 4 / 2"
-        :selected-node-ids.sync="selectedNodeIds"
-        :selected-edge-ids.sync="selectedEdgeIds"
-        :hovered-node-ids.sync="hoveredNodeIds"
-        :hovered-edge-ids.sync="hoveredEdgeIds"
+    <template v-if="showGetStarted">
+      <TheGetStartedView
+        style="flex: 1 1 auto"
+        @window:close="showGetStarted = false"
+      />
+    </template>
+    <template v-else>
+      <div
+        style="flex: 1 1 60%; display: grid; grid-template-rows: repeat(3, 1fr);"
+      >
+        <TheWorkflowView
+          style="grid-area: 1 / 1 / 4 / 2"
+          :selected-node-ids.sync="selectedNodeIds"
+          :selected-edge-ids.sync="selectedEdgeIds"
+          :hovered-node-ids.sync="hoveredNodeIds"
+          :hovered-edge-ids.sync="hoveredEdgeIds"
+        />
+
+        <!-- The graph grammar checking console. -->
+        <TheConsoleView
+          :graph="{ nodes, edges }"
+          style="margin: 4px; grid-area: 3 / 1 / 4 / 2; min-height: 0px;"
+          @select:nodes="selectedNodeIds = $event"
+          @select:edges="selectedEdgeIds = $event"
+          @hover:nodes="hoveredNodeIds = $event"
+          @hover:edges="hoveredEdgeIds = $event"
+        />
+      </div>
+
+      <!-- The workflow element setting panel. -->
+      <TheElementDetails
+        v-if="showElementSettings"
+        :methods="validModules"
+        :models="modelServices"
+        :selection="selection"
+        style="flex: 0 1 30%"
+        @edit:node="editNode($event)"
+        @create:module="pushModules($event)"
+        @update:module="editModule($event)"
+        @create:model="pushModelServices($event)"
+        @edit:model="editModelService($event)"
+        @edit:edge="editEdge($event)"
       />
 
-      <!-- The graph grammar checking console. -->
-      <TheConsoleView
-        :graph="{ nodes, edges }"
-        style="margin: 4px; grid-area: 3 / 1 / 4 / 2; min-height: 0px;"
-        @select:nodes="selectedNodeIds = $event"
-        @select:edges="selectedEdgeIds = $event"
-        @hover:nodes="hoveredNodeIds = $event"
-        @hover:edges="hoveredEdgeIds = $event"
+      <!-- The variable inspector. -->
+      <TheVariableInspector
+        v-if="showInspector"
+        style="flex: 0 1 30%"
       />
-    </div>
-
-    <!-- The workflow element setting panel. -->
-    <TheElementDetails
-      v-if="showElementSettings"
-      :methods="validModules"
-      :models="modelServices"
-      :selection="selection"
-      style="flex: 0 1 30%"
-      @edit:node="editNode($event)"
-      @create:module="pushModules($event)"
-      @update:module="editModule($event)"
-      @create:model="pushModelServices($event)"
-      @edit:model="editModelService($event)"
-      @edit:edge="editEdge($event)"
-    />
-
-    <!-- The variable inspector. -->
-    <TheVariableInspector
-      v-if="showInspector"
-      style="flex: 0 1 30%"
-    />
+    </template>
   </div>
 </template>
 
@@ -57,6 +65,7 @@ import TheElementDetails from '../TheElementDetails/TheElementDetails.vue';
 import TheWorkflowView from '../TheWorkflowView/TheWorkflowView.vue';
 import TheConsoleView from '../TheConsoleView/TheConsoleView.vue';
 import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.vue';
+import TheGetStartedView from '../TheGetStartedView/TheGetStartedView.vue';
 
 export default defineComponent({
   name: 'TheDevPanelBody',
@@ -65,6 +74,7 @@ export default defineComponent({
     TheWorkflowView,
     TheConsoleView,
     TheVariableInspector,
+    TheGetStartedView,
   },
   props: {
     showElementSettings: {
@@ -78,6 +88,7 @@ export default defineComponent({
   },
   data() {
     return {
+      showGetStarted: true,
       // Note: store the node/edge ids instead of directly storing the nodes/edges
       // in case the node/edge properties stored in the child component is not up to date.
       selectedNodeIds: [] as string[],

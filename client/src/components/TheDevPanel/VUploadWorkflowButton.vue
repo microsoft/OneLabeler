@@ -6,8 +6,7 @@
     :icon="$vuetify.icons.values.open"
     title="Open Workflow File"
     type="File"
-    color="white"
-    small
+    v-bind="$attrs"
     @upload:file="onUploadFile"
   />
 </template>

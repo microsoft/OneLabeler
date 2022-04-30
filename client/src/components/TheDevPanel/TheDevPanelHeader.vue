@@ -6,7 +6,19 @@
     class="app-header"
     style="display: flex; align-items: center; height: 35px;"
   >
-    <div class="app-header-logo px-2">
+    <div
+      class="app-header-logo px-2"
+      style="display: flex; align-items: center;"
+    >
+      <BaseIcon
+        style="display: contents"
+        small
+      >
+        <IconOneLabeler
+          class="mr-2"
+          style="width: inherit; height: inherit;"
+        />
+      </BaseIcon>
       OneLabeler
     </div>
 
@@ -16,10 +28,7 @@
     />
 
     <!-- The workflow upload button. -->
-    <VUploadWorkflowButton
-      @set:workflow="setGraph($event)"
-      @set:message="setMessage($event)"
-    />
+    <TheButtonWorkflowUpload />
 
     <!-- The workflow export button. -->
     <v-btn
@@ -111,10 +120,7 @@
       vertical
     />
 
-    <VTemplateMenu
-      :workflow="workflow"
-      @set:workflow="setGraph($event)"
-    />
+    <VTemplateMenu @set:workflow="setGraph($event)" />
 
     <v-divider
       class="app-header-divider mr-1"
@@ -201,17 +207,21 @@ import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
+import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
+import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
+import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
-import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
   components: {
+    BaseIcon,
     Icon,
+    IconOneLabeler,
+    TheButtonWorkflowUpload,
     TheNetworkMenu,
     VTemplateMenu,
-    VUploadWorkflowButton,
   },
   props: {
     showElementSettings: {
