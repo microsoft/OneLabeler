@@ -32,7 +32,7 @@
 import TheDashboardPanel from '../TheDashboardPanel/TheDashboardPanel.vue';
 
 export default {
-  name: 'TheNavBarViewDashboardDialogButton',
+  name: 'TheDialogButtonDashboard',
   components: { TheDashboardPanel },
   data() {
     return { dialog: false };

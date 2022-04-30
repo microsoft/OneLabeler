@@ -45,7 +45,7 @@
       icon
       tile
       small
-      @click="tryCompileInstaller"
+      @click="tryCompile(CompileType.Installer)"
     >
       <v-icon
         aria-hidden="true"
@@ -62,7 +62,7 @@
       icon
       tile
       small
-      @click="tryCompileBundleZip"
+      @click="tryCompile(CompileType.Bundle)"
     >
       <v-icon
         aria-hidden="true"
@@ -79,7 +79,7 @@
       icon
       tile
       small
-      @click="tryCompileSourceZip"
+      @click="tryCompile(CompileType.Source)"
     >
       <v-icon
         aria-hidden="true"
@@ -188,14 +188,10 @@ import { Icon } from '@iconify/vue2';
 import { MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
 import { saveJsonFile } from '@/plugins/file';
-import {
-  compileBundleZip,
-  compileInstaller,
-  compileSourceZip,
-} from '@/services/compile-api';
+import compile, { CompileType } from '@/services/compile-api';
 import TheNetworkMenu from './TheNetworkMenu.vue';
 import VTemplateMenu from './VTemplateMenu.vue';
-import VDockSideButtons from './VDockSideButtons.vue';
+import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import VUploadWorkflowButton from './VUploadWorkflowButton.vue';
 
 export default defineComponent({
@@ -220,6 +216,9 @@ export default defineComponent({
   emits: {
     'toggle:inspect': null,
   },
+  data() {
+    return { CompileType };
+  },
   computed: {
     ...mapState('workflow', ['nodes', 'edges']),
     workflow(): WorkflowGraph {
@@ -234,29 +233,9 @@ export default defineComponent({
       'setGraph',
       'resetGraph',
     ]),
-    async tryCompileBundleZip(): Promise<void> {
+    async tryCompile(type: CompileType): Promise<void> {
       try {
-        await compileBundleZip(this.workflow);
-      } catch (e) {
-        this.setMessage({
-          content: (e as Error).message,
-          type: MessageType.Error,
-        });
-      }
-    },
-    async tryCompileInstaller(): Promise<void> {
-      try {
-        await compileInstaller(this.workflow);
-      } catch (e) {
-        this.setMessage({
-          content: (e as Error).message,
-          type: MessageType.Error,
-        });
-      }
-    },
-    async tryCompileSourceZip(): Promise<void> {
-      try {
-        await compileSourceZip(this.workflow);
+        await compile(this.workflow, type);
       } catch (e) {
         this.setMessage({
           content: (e as Error).message,

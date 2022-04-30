@@ -32,7 +32,7 @@
 import TheDataManagementPanel from '../TheDataManagementPanel/TheDataManagementPanel.vue';
 
 export default {
-  name: 'TheNavBarViewDashboardDialogButton',
+  name: 'TheDialogButtonDataManagement',
   components: { TheDataManagementPanel },
   data() {
     return { dialog: false };

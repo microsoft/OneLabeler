@@ -58,7 +58,7 @@ export const compileInstaller = (workflow: WorkflowGraph): Promise<void> => (
 );
 
 /** Compile a zip of the bundled code given the labeling tool's workflow. */
-export const compileBundleZip = (workflow: WorkflowGraph): Promise<void> => (
+export const compileBundle = (workflow: WorkflowGraph): Promise<void> => (
   compile(
     workflow,
     formatter('zip/bundle'),
@@ -67,10 +67,25 @@ export const compileBundleZip = (workflow: WorkflowGraph): Promise<void> => (
 );
 
 /** Compile a zip of the source code given the labeling tool's workflow. */
-export const compileSourceZip = (workflow: WorkflowGraph): Promise<void> => (
+export const compileSource = (workflow: WorkflowGraph): Promise<void> => (
   compile(
     workflow,
     formatter('zip/source'),
     'labeling-tool-source.zip',
   )
 );
+
+export enum CompileType {
+  Installer = 'Installer',
+  Bundle = 'Bundle',
+  Source = 'Source',
+}
+
+export default (
+  workflow: WorkflowGraph,
+  type: CompileType,
+): void => {
+  if (type === CompileType.Installer) compileInstaller(workflow);
+  if (type === CompileType.Bundle) compileBundle(workflow);
+  if (type === CompileType.Source) compileSource(workflow);
+};
