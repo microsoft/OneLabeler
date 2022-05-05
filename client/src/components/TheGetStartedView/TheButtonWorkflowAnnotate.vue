@@ -1,6 +1,6 @@
 <template>
   <VUploadWorkflowButton
-    text="Modify Labeling Project"
+    text="Start Labeling"
     style="font-size: 1.5rem; color: #3794ff;"
     @set:workflow="onSetWorkflow($event)"
     @set:message="setMessage($event)"
@@ -14,7 +14,7 @@ import type { WorkflowGraph } from '@/commons/types';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
 
 export default defineComponent({
-  name: 'TheButtonWorkflowUpload',
+  name: 'TheButtonWorkflowAnnotate',
   components: { VUploadWorkflowButton },
   emits: { 'set:workflow': null },
   methods: {
