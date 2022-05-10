@@ -17,7 +17,7 @@
           :class="$vuetify.icons.values.new"
           style="margin-right: 8px;"
         />
-        New Labeling Workflow
+        New Labeling Project
       </BaseButton>
     </template>
     <div
