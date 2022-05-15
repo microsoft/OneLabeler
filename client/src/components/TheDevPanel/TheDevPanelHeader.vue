@@ -120,7 +120,7 @@
       vertical
     />
 
-    <VTemplateMenu @set:workflow="setGraph($event)" />
+    <!-- <VTemplateMenu @set:workflow="setGraph($event)" /> -->
 
     <v-divider
       class="app-header-divider mr-1"
@@ -195,6 +195,26 @@
       </v-icon>
       Preview
     </v-btn>
+
+    <v-spacer />
+
+    <!-- The close window button. -->
+    <v-btn
+      title="Close"
+      x-small
+      icon
+      tile
+      @click="onClickClose"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+        color="white"
+        class="px-0"
+      >
+        $vuetify.icons.values.close
+      </v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -211,7 +231,7 @@ import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
-import VTemplateMenu from './VTemplateMenu.vue';
+// import VTemplateMenu from './VTemplateMenu.vue';
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
@@ -221,7 +241,7 @@ export default defineComponent({
     IconOneLabeler,
     TheButtonWorkflowUpload,
     TheNetworkMenu,
-    VTemplateMenu,
+    // VTemplateMenu,
   },
   props: {
     showElementSettings: {
@@ -233,9 +253,8 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: {
-    'toggle:inspect': null,
-  },
+  emits: [{ 'toggle:inspect': null }, 'showGetStartedEvent'],
+
   data() {
     return { CompileType };
   },
@@ -270,6 +289,11 @@ export default defineComponent({
         ? DockSideType.Window
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
+    },
+    onClickClose(): void {
+      if (window.confirm('Save and close the project?')) {
+        this.$emit('showGetStartedEvent', true);
+      }
     },
   },
 });

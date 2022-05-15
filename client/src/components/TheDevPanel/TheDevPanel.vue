@@ -6,13 +6,15 @@
     <TheDevPanelHeader v-show="showToolbar"
       :show-element-settings.sync="showElementSettings"
       :show-inspector.sync="showInspector"
+      @showGetStartedEvent="(arg) => this.showGetStartedHandler(arg)"
     />
     <TheDevPanelBody
       :show-element-settings="showElementSettings"
       :show-inspector="showInspector"
       class="pa-1"
       style="flex: 1 1 auto; overflow: hidden;"
-      @showToolbarEvent="(arg) => this.showToolbar = true"
+      @showGetStartedEvent="(arg) => this.showGetStartedHandler(arg)"
+      :showGetStarted = showStartPage
     />
   </div>
 </template>
@@ -33,7 +35,14 @@ export default defineComponent({
       showElementSettings: true,
       showInspector: true,
       showToolbar: false,
+      showStartPage: true,
     };
+  },
+  methods: {
+    showGetStartedHandler(show: boolean): void {
+      this.showStartPage = show;
+      this.showToolbar = !show;
+    },
   },
 });
 </script>

@@ -6,7 +6,6 @@
     <template v-if="showGetStarted">
       <TheGetStartedView
         style="flex: 1 1 auto"
-        @window:close="showGetStarted = false"
         v-on="$listeners"
       />
     </template>
@@ -86,10 +85,13 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       required: true,
     },
+    showGetStarted: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
-      showGetStarted: true,
       // Note: store the node/edge ids instead of directly storing the nodes/edges
       // in case the node/edge properties stored in the child component is not up to date.
       selectedNodeIds: [] as string[],
