@@ -7,6 +7,7 @@
       <TheGetStartedView
         style="flex: 1 1 auto"
         @window:close="showGetStarted = false"
+        v-on="$listeners"
       />
     </template>
     <template v-else>

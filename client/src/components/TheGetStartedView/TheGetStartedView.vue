@@ -37,7 +37,7 @@
         Start
       </div>
       <div>
-        <TheButtonWorkflowNew @set:workflow="$emit('window:close')" />
+        <TheButtonWorkflowNew @set:workflow="$emit('window:close')" v-on="$listeners" />
       </div>
       <div>
         <TheButtonWorkflowUpload @set:workflow="$emit('window:close')" />

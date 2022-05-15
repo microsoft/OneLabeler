@@ -3,7 +3,7 @@
 
 <template>
   <div style="background-color: white; display: flex; flex-direction: column;">
-    <TheDevPanelHeader
+    <TheDevPanelHeader v-show="showToolbar"
       :show-element-settings.sync="showElementSettings"
       :show-inspector.sync="showInspector"
     />
@@ -12,6 +12,7 @@
       :show-inspector="showInspector"
       class="pa-1"
       style="flex: 1 1 auto; overflow: hidden;"
+      @showToolbarEvent="(arg) => this.showToolbar = true"
     />
   </div>
 </template>
@@ -31,6 +32,7 @@ export default defineComponent({
     return {
       showElementSettings: true,
       showInspector: true,
+      showToolbar: false,
     };
   },
 });
