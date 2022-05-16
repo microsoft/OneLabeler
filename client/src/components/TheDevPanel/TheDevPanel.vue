@@ -3,27 +3,45 @@
 
 <template>
   <div style="background-color: white; display: flex; flex-direction: column;">
-    <TheDevPanelHeader v-show="showToolbar"
+    <TheDevPanelHeader
+      v-show="showToolbar"
       :show-element-settings.sync="showElementSettings"
       :show-inspector.sync="showInspector"
-      @showGetStartedEvent="(arg) => this.showGetStartedHandler(arg)"
+      @showGetStartedEvent="(arg) => showGetStartedHandler(arg)"
     />
-    <div v-show="showToolbar" style="margin: 2px" />
-    <div v-show="showToolbar" :class='{"tabs__light": true}'>
-      <ul class='tabs__header'>
-        <li :class='{"tab__selected": (this.curSelectedTab == 0)}' @click='this.workflowTabClicked'>Workflow</li>
-        <li :class='{"tab__selected": (this.curSelectedTab == 1)}' @click='this.tabTabClicked'>Config</li>
+    <div
+      v-show="showToolbar"
+      style="margin: 2px"
+    />
+    <div
+      v-show="showToolbar"
+      :class="{'tabs__light': true}"
+    >
+      <ul class="tabs__header">
+        <li
+          :class="{'tab__selected': (curSelectedTab == 0)}"
+          @click="workflowTabClicked"
+        >
+          Workflow
+        </li>
+        <li
+          :class="{'tab__selected': (curSelectedTab == 1)}"
+          @click="tabTabClicked"
+        >
+          Config
+        </li>
       </ul>
     </div>
-    <TheDevPanelProjectWorkflow v-show="this.curSelectedTab == 0"
-      :showElementSettings="showElementSettings"
-      :showInspector="showInspector"
+    <TheDevPanelProjectWorkflow
+      v-show="curSelectedTab == 0"
+      :show-element-settings="showElementSettings"
+      :show-inspector="showInspector"
+      :show-get-started="showStartPage"
       class="pa-1"
       style="flex: 1 1 auto; overflow: hidden;"
-      @showGetStartedEvent="(arg) => this.showGetStartedHandler(arg)"
-      :showGetStarted = showStartPage
+      @showGetStartedEvent="(arg) => showGetStartedHandler(arg)"
     />
-    <TheDevPanelProjectConfig v-show="this.curSelectedTab == 1"/>
+    <TheDevPanelProjectConfig v-show="curSelectedTab == 1" />
   </div>
 </template>
 
@@ -56,12 +74,12 @@ export default defineComponent({
       this.curSelectedTab = 0;
     },
     workflowTabClicked(): void {
-      if (this.curSelectedTab != 0) {
+      if (this.curSelectedTab !== 0) {
         this.curSelectedTab = 0;
       }
     },
     tabTabClicked(): void {
-      if (this.curSelectedTab != 1) {
+      if (this.curSelectedTab !== 1) {
         this.curSelectedTab = 1;
       }
     },
