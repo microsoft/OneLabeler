@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import axios from 'axios';
-import type { FilterQuery } from 'mongoose';
+import type { Query } from 'sift';
 import type {
   IDataObject,
   IDataObjectStorage,
@@ -124,7 +124,7 @@ class LabelStorage implements ILabelStorage {
     return values.map((d) => (d ?? undefined));
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
+  async getFiltered(query: Query<unknown>): Promise<ILabel[]> {
     return (await axios.post(this.#path('getFiltered'), { query })).data as ILabel[];
   }
 
@@ -183,7 +183,7 @@ class StatusStorage implements IStatusStorage {
     return values.map((d) => (d === null ? undefined : d));
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+  async getFiltered(query: Query<unknown>): Promise<IStatus[]> {
     return (await axios.post(this.#path('getFiltered'), { query })).data as IStatus[];
   }
 

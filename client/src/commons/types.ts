@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import type { FilterQuery } from 'mongoose';
+import type { Query } from 'sift';
 import type { WorkflowNode } from '@/builtins/workflow-templates/types';
 import type { IDataObject } from '@/builtins/data-types/types';
 import type { ILabel } from '@/builtins/label-task-types/types';
@@ -72,7 +72,7 @@ export interface ILabelStorage {
   /** Get an ordered list of labels by uuids. */
   getBulk(uuids: string[]): MaybePromise<(ILabel | undefined)[]>;
   /** Get a list of labels by filter. */
-  getFiltered(query: FilterQuery<unknown>): MaybePromise<ILabel[]>;
+  getFiltered(query: Query<unknown>): MaybePromise<ILabel[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): ILabelStorage;
   /** Upsert a label to the storage. */
@@ -96,7 +96,7 @@ export interface IStatusStorage {
   /** Get an ordered list of statuses by uuids. */
   getBulk(uuids: string[]): MaybePromise<(IStatus | undefined)[]>;
   /** Get a list of statuses by filter. */
-  getFiltered(query: FilterQuery<unknown>): MaybePromise<IStatus[]>;
+  getFiltered(query: Query<unknown>): MaybePromise<IStatus[]>;
   /** Create a copy of the storage object pointing to the same storage. */
   shallowCopy(): IStatusStorage;
   /** Upsert a status to the storage. */

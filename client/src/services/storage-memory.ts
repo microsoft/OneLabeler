@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-import type { FilterQuery } from 'mongoose';
+import type { Query } from 'sift';
 import sift from 'sift';
 import type {
   IDataObject,
@@ -139,7 +139,7 @@ class LabelStorage implements ILabelStorage {
     return uuids.map((d) => this.#storage[d]);
   }
 
-  getFiltered(query: FilterQuery<unknown>): ILabel[] {
+  getFiltered(query: Query<unknown>): ILabel[] {
     const filter: ((item: unknown) => boolean) = sift(query);
     return Object.values(this.#storage).filter(filter);
   }
@@ -191,7 +191,7 @@ class StatusStorage implements IStatusStorage {
     return uuids.map((d) => this.#storage[d]);
   }
 
-  getFiltered(query: FilterQuery<unknown>): IStatus[] {
+  getFiltered(query: Query<unknown>): IStatus[] {
     const filter: ((item: unknown) => boolean) = sift(query);
     return Object.values(this.#storage).filter(filter);
   }

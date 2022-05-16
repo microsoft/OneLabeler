@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 import Dexie from 'dexie';
-import type { FilterQuery } from 'mongoose';
 import sift from 'sift';
+import type { Query } from 'sift';
 import type {
   IDataObject,
   IDataObjectStorage,
@@ -145,7 +145,7 @@ class LabelStorage implements ILabelStorage {
     return this.#storage.bulkGet(uuids);
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<ILabel[]> {
+  async getFiltered(query: Query<unknown>): Promise<ILabel[]> {
     const filter: ((item: unknown) => boolean) = sift(query);
     return this.#storage.filter(filter).toArray();
   }
@@ -195,7 +195,7 @@ class StatusStorage implements IStatusStorage {
     return this.#storage.bulkGet(uuids);
   }
 
-  async getFiltered(query: FilterQuery<unknown>): Promise<IStatus[]> {
+  async getFiltered(query: Query<unknown>): Promise<IStatus[]> {
     const filter: ((item: unknown) => boolean) = sift(query);
     return this.#storage.filter(filter).toArray();
   }
