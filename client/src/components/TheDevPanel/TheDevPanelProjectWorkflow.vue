@@ -68,7 +68,7 @@ import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.v
 import TheGetStartedView from '../TheGetStartedView/TheGetStartedView.vue';
 
 export default defineComponent({
-  name: 'TheDevPanelBody',
+  name: 'TheDevPanelProjectWorkflow',
   components: {
     TheElementDetails,
     TheWorkflowView,
