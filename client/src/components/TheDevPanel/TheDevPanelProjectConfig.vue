@@ -2,14 +2,14 @@
      Licensed under the MIT License. -->
 
 <template>
-  <div style="margin: 10px; background-color: yellow">
-    <div style="display: flex; background-color: blue">
+  <div style="margin: 10px">
+    <div style="display: flex; margin-bottom: 10px">
       <p style="height: 26px">
         source folder:
       </p>
       <input
         v-model="sourceFolder"
-        style="height: 26px; margin-left: 5px; border: 1px solid"
+        style="height: 26px; margin-left: 5px; border: 1px solid; padding-left: 4px"
         size="60"
       >
       <v-btn
@@ -28,23 +28,30 @@
         </v-icon>
       </v-btn>
     </div>
+    <div style="display: flex; height: 26px">
+      <p style="height: 26px">
+        Create classes:
+      </p>
 
-    <span class="footer-text">
-      {{ `${categories.length} classes` }}
-    </span>
+      <span style="margin-left: 10px">
+        {{ `${categories.length} classes` }}
+      </span>
 
-    <!-- The create new class option button. -->
-    <TheClassesDialog
-      :categories="categories"
-      :category-tasks="categoryTasks"
-      :label-tasks="labelTasks"
-      :unlabeled-mark="unlabeledMark"
-      :label2color="label2color"
-      @add:category="addCategory($event)"
-      @remove:category="removeCategory($event)"
-      @set:category-tasks="setCategoryTasks($event)"
-      @upsert:color-mapper="upsertColorMapper($event)"
-    />
+      <!-- The create new class option button. -->
+      <div style="background: grey; margin-left: 5px; padding-left: 7px">
+        <TheClassesDialog
+          :categories="categories"
+          :category-tasks="categoryTasks"
+          :label-tasks="labelTasks"
+          :unlabeled-mark="unlabeledMark"
+          :label2color="label2color"
+          @add:category="addCategory($event)"
+          @remove:category="removeCategory($event)"
+          @set:category-tasks="setCategoryTasks($event)"
+          @upsert:color-mapper="upsertColorMapper($event)"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -110,13 +117,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-@import '~vuetify/src/styles/main.sass';
-
-.footer-text {
-  @extend .subtitle-2;
-  @extend .grey--text;
-  @extend .text--lighten-2;
-}
-</style>

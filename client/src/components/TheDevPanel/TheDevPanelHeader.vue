@@ -291,6 +291,7 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     onClickClose(): void {
+      // eslint-disable-next-line
       if (window.confirm('Save and close the project?')) {
         this.$emit('showGetStartedEvent', true);
       }
