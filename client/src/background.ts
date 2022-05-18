@@ -38,8 +38,21 @@ const createWindow = (): void => {
     win.loadURL('app://./index.html');
   }
 
-  win.on('closed', (): void => {
-    win = null;
+  win.on('close', (event): void => {
+    const dialog = require('electron').dialog;
+    const options = {
+      type: 'question',
+      buttons: ['Yes', 'No'],
+      defaultId: 1,
+      title: 'OneLabeler',
+      message: 'Do you want to close Onelabeler?',
+    };
+  
+    if (dialog.showMessageBoxSync(options) === 0) {
+      win = null;
+    } else {
+      event.preventDefault();
+    }
   });
 };
 
