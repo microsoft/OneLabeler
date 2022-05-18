@@ -3,7 +3,7 @@
 
 <template>
   <div style="display: flex; gap: 4px;">
-    <template v-if="showGetStarted">
+    <template v-if="showStartPage">
       <TheGetStartedView
         style="flex: 1 1 auto"
         v-on="$listeners"
@@ -85,7 +85,7 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       required: true,
     },
-    showGetStarted: {
+    showStartPage: {
       type: Boolean,
       required: true,
     },

@@ -4,44 +4,44 @@
 <template>
   <div style="background-color: white; display: flex; flex-direction: column;">
     <TheDevPanelHeader
-      v-show="showToolbar"
+      v-if="showToolbar"
       :show-element-settings.sync="showElementSettings"
       :show-inspector.sync="showInspector"
-      @showGetStartedEvent="(arg) => showGetStartedHandler(arg)"
+      @update:showStartPage="onUpdateShowStartPage"
     />
     <div
-      v-show="showToolbar"
+      v-if="showToolbar"
       style="margin: 2px"
     />
     <div
-      v-show="showToolbar"
+      v-if="showToolbar"
       :class="{'tabs__light': true}"
     >
       <ul class="tabs__header">
         <li
-          :class="{'tab__selected': (curSelectedTab == 0)}"
-          @click="workflowTabClicked"
+          :class="{'tab__selected': (curSelectedTab === 0)}"
+          @click="curSelectedTab = 0"
         >
           Workflow
         </li>
         <li
-          :class="{'tab__selected': (curSelectedTab == 1)}"
-          @click="tabTabClicked"
+          :class="{'tab__selected': (curSelectedTab === 1)}"
+          @click="curSelectedTab = 1"
         >
           Config
         </li>
       </ul>
     </div>
     <TheDevPanelProjectWorkflow
-      v-show="curSelectedTab == 0"
+      v-if="curSelectedTab === 0"
       :show-element-settings="showElementSettings"
       :show-inspector="showInspector"
-      :show-get-started="showStartPage"
+      :show-start-page="showStartPage"
       class="pa-1"
       style="flex: 1 1 auto; overflow: hidden;"
-      @showGetStartedEvent="(arg) => showGetStartedHandler(arg)"
+      @update:showStartPage="onUpdateShowStartPage"
     />
-    <TheDevPanelProjectConfig v-show="curSelectedTab == 1" />
+    <TheDevPanelProjectConfig v-if="curSelectedTab === 1" />
   </div>
 </template>
 
@@ -62,26 +62,19 @@ export default defineComponent({
     return {
       showElementSettings: true,
       showInspector: true,
-      showToolbar: false,
       showStartPage: true,
       curSelectedTab: 0,
     };
   },
+  computed: {
+    showToolbar(): boolean {
+      return !this.showStartPage;
+    },
+  },
   methods: {
-    showGetStartedHandler(show: boolean): void {
+    onUpdateShowStartPage(show: boolean): void {
       this.showStartPage = show;
-      this.showToolbar = !show;
       this.curSelectedTab = 0;
-    },
-    workflowTabClicked(): void {
-      if (this.curSelectedTab !== 0) {
-        this.curSelectedTab = 0;
-      }
-    },
-    tabTabClicked(): void {
-      if (this.curSelectedTab !== 1) {
-        this.curSelectedTab = 1;
-      }
     },
   },
 });

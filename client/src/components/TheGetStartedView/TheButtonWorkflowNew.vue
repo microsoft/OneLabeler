@@ -71,7 +71,7 @@ export default defineComponent({
       this.setGraph(workflow);
       this.dialog = false;
       this.$emit('set:workflow');
-      this.$emit('showGetStartedEvent', false);
+      this.$emit('update:showStartPage', false);
     },
   },
 });

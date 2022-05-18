@@ -253,8 +253,10 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: [{ 'toggle:inspect': null }, 'showGetStartedEvent'],
-
+  emits: {
+    'toggle:inspect': null,
+    'update:showStartPage': null,
+  },
   data() {
     return { CompileType };
   },
@@ -293,7 +295,7 @@ export default defineComponent({
     onClickClose(): void {
       // eslint-disable-next-line
       if (window.confirm('Save and close the project?')) {
-        this.$emit('showGetStartedEvent', true);
+        this.$emit('update:showStartPage', true);
       }
     },
   },
