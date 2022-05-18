@@ -37,7 +37,7 @@
       icon
       tile
       small
-      @click="saveJsonFile(workflow, 'workflow.config.json')"
+      @click="saveWorkflow"
     >
       <v-icon
         aria-hidden="true"
@@ -269,7 +269,9 @@ export default defineComponent({
     },
   },
   methods: {
-    saveJsonFile,
+    saveWorkflow(): void {
+      saveJsonFile(this.workflow, 'workflow.config.json');
+    },
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
@@ -295,6 +297,7 @@ export default defineComponent({
     onClickClose(): void {
       // eslint-disable-next-line
       if (window.confirm('Save and close the project?')) {
+        this.saveWorkflow();
         this.$emit('update:showStartPage', true);
       }
     },
