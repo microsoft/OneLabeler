@@ -4,6 +4,7 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import * as remoteMain from '@electron/remote/main';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -23,7 +24,15 @@ protocol.registerSchemesAsPrivileged([{
 
 const createWindow = (): void => {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600 });
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      // https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/1234
+      // https://github.com/electron/electron/issues/11608
+      nodeIntegration: true,
+      contextIsolation: false,
+  }});
 
   // remove default menu
   win.setMenu(null);
@@ -54,6 +63,9 @@ const createWindow = (): void => {
       event.preventDefault();
     }
   });
+
+  remoteMain.initialize();
+  remoteMain.enable(win.webContents);
 };
 
 // Quit when all windows are closed.
