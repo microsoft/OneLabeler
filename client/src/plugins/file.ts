@@ -5,6 +5,9 @@
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
 
+// https://stackoverflow.com/questions/41219542/how-to-import-js-modules-into-typescript-file
+// https://bobbyhadz.com/blog/typescript-import-javascript-files
+
 export const getBase64 = (
   file: File | Blob,
 ): Promise<string> => new Promise((resolve, reject) => {

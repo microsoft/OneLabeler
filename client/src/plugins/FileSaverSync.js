@@ -1,6 +1,6 @@
 /* eslint-disable */
 /*
-* FileSaver.js
+* FileSaverSync.js
 * A saveAs() FileSaver implementation.
 *
 * By Eli Grey, http://eligrey.com
@@ -8,6 +8,9 @@
 * License : https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md (MIT)
 * source  : http://purl.eligrey.com/github/FileSaver.js
 */
+
+// https://stackoverflow.com/questions/41219542/how-to-import-js-modules-into-typescript-file
+// https://bobbyhadz.com/blog/typescript-import-javascript-files
 
 // The one and only way of getting global scope in all environments
 // https://stackoverflow.com/q/3277182/1008999
