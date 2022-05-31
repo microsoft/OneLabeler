@@ -4,6 +4,7 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import * as remoteMain from '@electron/remote/main';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -21,9 +22,31 @@ protocol.registerSchemesAsPrivileged([{
   },
 }]);
 
+// https://stackoverflow.com/questions/36637201/requiring-electron-dialog-from-render-process-is-undefined
+// const { ipcMain, dialog } = require("electron");
+
+// const remoteMessageBoxOptions = {
+//   type: 'question',
+//   buttons: ['Yes', 'No'],
+//   defaultId: 1,
+//   title: 'Save File',
+//   message: 'Please specify where the file to save.',
+// };
+
+// ipcMain.handle("showDialog", (e, message) => {
+//     if (dialog.showMessageBoxSync(remoteMessageBoxOptions) === 0) {
+//     }
+// });
+
 const createWindow = (): void => {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600 });
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+  }});
 
   // remove default menu
   win.setMenu(null);
@@ -54,6 +77,9 @@ const createWindow = (): void => {
       event.preventDefault();
     }
   });
+
+  remoteMain.initialize();
+  remoteMain.enable(win.webContents);
 };
 
 // Quit when all windows are closed.

@@ -272,6 +272,7 @@ export default defineComponent({
     saveWorkflow(): void {
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
+    ...mapActions(['resetState']),
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
       'setGraph',
@@ -299,6 +300,7 @@ export default defineComponent({
       if (window.confirm('Save and close the project?')) {
         this.saveWorkflow();
         this.$emit('update:showStartPage', true);
+        this.resetState();
       }
     },
   },

@@ -1,9 +1,9 @@
+/* eslint-disable */
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
-import { saveAs } from 'file-saver';
 
 export const getBase64 = (
   file: File | Blob,
@@ -31,8 +31,32 @@ export const saveJsonFile = (
   filename: string,
 ): void => {
   const json = JSON.stringify(data);
-  const blob = new Blob([json], { type: 'application/json' });
-  saveAs(blob, filename);
+  const path = require('path');
+  const fs = require('fs');
+
+  // https://stackoverflow.com/questions/59477396/typeerror-fs-existssync-is-not-a-function-reactjs-and-electron
+  const dialog = window.require('@electron/remote').dialog;
+
+  // https://stackoverflow.com/questions/36637201/requiring-electron-dialog-from-render-process-is-undefined
+  // const { ipcRenderer } = window.require("electron");
+  // ipcRenderer.invoke("showDialog", "message");
+
+  const saveOptions = {
+    title: 'Select the File Path to save',
+    defaultPath: path.join(__dirname, 'project.json'),
+    buttonLabel: 'Save',
+    filters: [
+        {
+            name: 'Json Files',
+            extensions: ['json']
+        }, ],
+    properties: []
+  };
+
+  const saveFilePath = dialog.showSaveDialogSync(saveOptions);
+  if (saveFilePath) {
+    console.log(saveFilePath);
+  }
 };
 
 export const parseJsonFile = (file: File): Promise<unknown> => {
