@@ -225,7 +225,7 @@ import { mapActions, mapState } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
-import { saveJsonFile } from '@/plugins/file';
+import { saveJsonFile, saveJsonFileAsync } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
@@ -272,6 +272,9 @@ export default defineComponent({
     saveWorkflow(): void {
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
+    async saveProject(): Promise<void> {
+      await saveJsonFileAsync(this.workflow, 'project.json');
+    },
     ...mapActions(['resetState']),
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
@@ -295,10 +298,10 @@ export default defineComponent({
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
     },
-    onClickClose(): void {
+    async onClickClose(): Promise<void> {
       // eslint-disable-next-line
       if (window.confirm('Save and close the project?')) {
-        this.saveWorkflow();
+        await this.saveProject();
         this.$emit('update:showStartPage', true);
         this.resetState();
       }

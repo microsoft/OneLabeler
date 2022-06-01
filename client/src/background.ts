@@ -22,12 +22,41 @@ protocol.registerSchemesAsPrivileged([{
   },
 }]);
 
+const path = require('path');
+const { ipcMain, dialog } = require("electron");
+
+ipcMain.handle("showDialog", (e, message) => {
+  console.log('showDialog message received');
+  const filename = message;
+  const saveOptions = {
+    title: 'Select the File Path to save',
+    defaultPath: path.join(__dirname, filename),
+    buttonLabel: 'Save',
+    filters: [
+      {
+        name: 'Json Files',
+        extensions: ['json'],
+      }],
+    properties: [],
+  };
+  const saveFilePath = dialog.showSaveDialogSync(saveOptions);
+  if (saveFilePath) {
+    console.log(saveFilePath);
+    return saveFilePath;
+  }
+  return null;
+});
+
+declare const __static: string;
+
 const createWindow = (): void => {
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
+      // https://stackoverflow.com/questions/60814430/electron-builder-with-browserwindow-and-preload-js-unable-to-load-preload-scrip
+      preload: path.join(__static, "preload.js"),
       // https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/1234
       // https://github.com/electron/electron/issues/11608
       nodeIntegration: true,
@@ -54,7 +83,7 @@ const createWindow = (): void => {
       buttons: ['Yes', 'No'],
       defaultId: 1,
       title: 'OneLabeler',
-      message: 'Do you want to close Onelabeler?',
+      message: 'Please make sure you have saved your data. Do you want to close OneLabeler now?',
     };
   
     if (dialog.showMessageBoxSync(options) === 0) {
@@ -66,6 +95,8 @@ const createWindow = (): void => {
 
   remoteMain.initialize();
   remoteMain.enable(win.webContents);
+
+  // console.log(`Running in Electron? ${window.isElectron}`);
 };
 
 // Quit when all windows are closed.

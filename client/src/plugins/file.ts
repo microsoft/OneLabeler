@@ -3,6 +3,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
+import { saveAs } from 'file-saver';
 
 export const getBase64 = (
   file: File | Blob,
@@ -29,29 +30,43 @@ export const saveJsonFile = (
   data: unknown,
   filename: string,
 ): void => {
-  // const json = JSON.stringify(data);
-  const path = window.require('path');
-  // const fs = require('fs');
+  const json = JSON.stringify(data);
+  const blob = new Blob([json], { type: 'application/json' });
+  saveAs(blob, filename);
+};
 
-  // https://stackoverflow.com/questions/59477396/typeerror-fs-existssync-is-not-a-function-reactjs-and-electron
-  const { dialog } = window.require('@electron/remote');
+export const saveJsonFileAsync = async (
+  data: unknown,
+  filename: string,
+): Promise<string> => {
+  const json = JSON.stringify(data);
+  const { ipcRenderer } = window.require('electron');
+  const filePath = await ipcRenderer.invoke('showDialog', filename);
+  console.log(`ilePath = ${filePath}`);
+  return filePath;
+  //   const path = window.require('path');
+  //   try {
+  //     // https://stackoverflow.com/questions/59477396/typeerror-fs-existssync-is-not-a-function-reactjs-and-electron
+  //     const { dialog } = window.require('@electron/remote');
+  //     const saveOptions = {
+  //       title: 'Select the File Path to save',
+  //       defaultPath: path.join(__dirname, filename),
+  //       buttonLabel: 'Save',
+  //       filters: [
+  //         {
+  //           name: 'Json Files',
+  //           extensions: ['json'],
+  //         }],
+  //       properties: [],
+  //     };
 
-  const saveOptions = {
-    title: 'Select the File Path to save',
-    defaultPath: path.join(__dirname, filename),
-    buttonLabel: 'Save',
-    filters: [
-      {
-        name: 'Json Files',
-        extensions: ['json'],
-      }],
-    properties: [],
-  };
-
-  const saveFilePath = dialog.showSaveDialogSync(saveOptions);
-  if (saveFilePath) {
-    console.log(saveFilePath);
-  }
+  //     const saveFilePath = dialog.showSaveDialogSync(saveOptions);
+  //     if (saveFilePath) {
+  //       console.log(saveFilePath);
+  //     }
+  //   } catch (e) {
+  //   }
+  // }
 };
 
 export const parseJsonFile = (file: File): Promise<unknown> => {
