@@ -41,8 +41,7 @@ export const saveJsonFileAsync = async (
 ): Promise<string> => {
   const json = JSON.stringify(data);
   const { ipcRenderer } = window.require('electron');
-  const filePath = await ipcRenderer.invoke('showDialog', filename);
-  console.log(`ilePath = ${filePath}`);
+  const filePath = await ipcRenderer.invoke('callSaveFileDialog', { file: filename, content: json });
   return filePath;
   //   const path = window.require('path');
   //   try {

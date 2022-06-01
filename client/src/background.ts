@@ -4,7 +4,7 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import * as remoteMain from '@electron/remote/main';
+import { registerNativeService } from './native-service'
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -22,31 +22,9 @@ protocol.registerSchemesAsPrivileged([{
   },
 }]);
 
+registerNativeService();
+
 const path = require('path');
-const { ipcMain, dialog } = require("electron");
-
-ipcMain.handle("showDialog", (e, message) => {
-  console.log('showDialog message received');
-  const filename = message;
-  const saveOptions = {
-    title: 'Select the File Path to save',
-    defaultPath: path.join(__dirname, filename),
-    buttonLabel: 'Save',
-    filters: [
-      {
-        name: 'Json Files',
-        extensions: ['json'],
-      }],
-    properties: [],
-  };
-  const saveFilePath = dialog.showSaveDialogSync(saveOptions);
-  if (saveFilePath) {
-    console.log(saveFilePath);
-    return saveFilePath;
-  }
-  return null;
-});
-
 declare const __static: string;
 
 const createWindow = (): void => {
@@ -92,11 +70,6 @@ const createWindow = (): void => {
       event.preventDefault();
     }
   });
-
-  remoteMain.initialize();
-  remoteMain.enable(win.webContents);
-
-  // console.log(`Running in Electron? ${window.isElectron}`);
 };
 
 // Quit when all windows are closed.
