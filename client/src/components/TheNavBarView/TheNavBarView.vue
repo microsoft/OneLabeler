@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation.
+`<!-- Copyright (c) Microsoft Corporation.
      Licensed under the MIT License. -->
 
 <template>
@@ -8,10 +8,10 @@
     :style="{ height: `${height}px` }"
   >
     <!-- The new project button. -->
-    <TheButtonProjectNew />
+    <!-- <TheButtonProjectNew /> -->
 
     <!-- The load project button. -->
-    <TheButtonProjectLoad />
+    <!-- <TheButtonProjectLoad /> -->
 
     <!-- The save label project button. -->
     <TheButtonProjectSave />
@@ -61,13 +61,13 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { mapActions, mapState } from 'vuex';
-import { DockSideType } from '@/commons/types';
+import { mapActions, mapState, mapGetters } from 'vuex';
+import { DockSideType, MessageType } from '@/commons/types';
 import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import TheButtonExecute from './TheButtonExecute.vue';
 import TheButtonLabelExport from './TheButtonLabelExport.vue';
-import TheButtonProjectLoad from './TheButtonProjectLoad.vue';
-import TheButtonProjectNew from './TheButtonProjectNew.vue';
+// import TheButtonProjectLoad from './TheButtonProjectLoad.vue';
+// import TheButtonProjectNew from './TheButtonProjectNew.vue';
 import TheButtonProjectReset from './TheButtonProjectReset.vue';
 import TheButtonProjectSave from './TheButtonProjectSave.vue';
 import TheDialogButtonDashboard from './TheDialogButtonDashboard.vue';
@@ -81,8 +81,8 @@ export default defineComponent({
     VDockSideButtons,
     TheButtonExecute,
     TheButtonLabelExport,
-    TheButtonProjectLoad,
-    TheButtonProjectNew,
+    // TheButtonProjectLoad,
+    // TheButtonProjectNew,
     TheButtonProjectReset,
     TheButtonProjectSave,
     TheDialogButtonDashboard,
@@ -99,15 +99,37 @@ export default defineComponent({
   },
   computed: {
     ...mapState(['dockSide']),
+    ...mapGetters('workflow', ['startNode']),
+  },
+  mounted() {
+    this.onNewProject(window.dataFiles);
   },
   methods: {
     ...mapActions(['setDockSide']),
+    ...mapActions(['setMessage']),
+    ...mapActions('workflow', [
+      'executeRegisterStorage',
+      'executeDataObjectExtraction',
+      'executeWorkflow',
+    ]),
     onClickWorkflowButton(): void {
       const { dockSide } = this;
       const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
-        ? DockSideType.Window
+        ? DockSideType.FullScreen
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
+    },
+    async onNewProject(input: File | FileList): Promise<void> {
+      if (input === null || input === undefined) return;
+      await this.executeRegisterStorage();
+      await this.executeDataObjectExtraction(input);
+      this.setMessage({
+        content: 'Project Data Uploaded.',
+        type: MessageType.Success,
+      });
+      if (this.startNode === null) return;
+
+      await this.executeWorkflow({ node: this.startNode });
     },
   },
 });

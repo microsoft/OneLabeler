@@ -294,7 +294,7 @@ export default defineComponent({
     onClickPreviewButton(): void {
       const { dockSide } = this;
       const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
-        ? DockSideType.Window
+        ? DockSideType.FullScreen
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
     },
@@ -304,6 +304,7 @@ export default defineComponent({
         await this.saveProject();
         this.$emit('update:showStartPage', true);
         this.resetState();
+        window.dataFiles = null;
       }
     },
   },

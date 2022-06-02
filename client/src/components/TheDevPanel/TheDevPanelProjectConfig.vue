@@ -4,21 +4,16 @@
 <template>
   <div style="margin: 10px">
     <div style="display: flex; margin-bottom: 10px">
-      <p style="height: 26px">
-        source folder:
+      <p style="height: 26px; margin-top: 3px">
+        Choose source folder:
       </p>
-      <input
-        v-model="sourceFolder"
-        style="height: 26px; margin-left: 5px; border: 1px solid; padding-left: 4px"
-        size="60"
-      >
       <v-btn
         title="Reset Settings"
         color="black"
         icon
         tile
         small
-        @click="browse()"
+        @click="browseOnClick()"
       >
         <v-icon
           aria-hidden="true"
@@ -27,6 +22,9 @@
           $vuetify.icons.values.open
         </v-icon>
       </v-btn>
+      <p style="height: 26px; margin-left: 5px; margin-top: 3px">
+        {{ sourceFolder }}
+      </p>
     </div>
     <div style="display: flex; height: 26px">
       <p style="height: 26px">
@@ -61,6 +59,9 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { StatusType } from '@/commons/types';
 import type { IDataObjectStorage, IStatusStorage } from '@/commons/types';
 import TheClassesDialog from '../TheFooterView/TheClassesDialog.vue';
+
+type ExtendedEvent = Event & { path: Array<{files: FileList}> }
+type ExtendedHTMLInputElement = HTMLInputElement & { webkitdirectory: boolean }
 
 export default defineComponent({
   name: 'TheDevPanelProjectConfig',
@@ -111,8 +112,43 @@ export default defineComponent({
       if (dataObjects === null) return 0;
       return dataObjects.count();
     },
-    browse(): void {
-      console.log('browse fired.');
+    browseOnClick(): void {
+      const input = document.createElement('input') as ExtendedHTMLInputElement;
+      input.type = 'file';
+      input.webkitdirectory = true;
+      input.onchange = (e: Event) => {
+        this.fileChanged(e as ExtendedEvent);
+      };
+      input.click();
+    },
+    fileChanged(e: ExtendedEvent): void {
+      if (e) {
+        const target = e.target as HTMLInputElement;
+        // this.$emit('upload:files', target.files);
+
+        if (target.files.length === 0) {
+          window.alert('No files found!');
+        }
+
+        this.sourceFolder = this.getDirectory(target.files[0].path);
+        window.dataFiles = target.files;
+      }
+    },
+    getDirectory(path: string): string {
+      if (!path) {
+        return path;
+      }
+
+      let pos = path.lastIndexOf('\\');
+      if (pos === -1) {
+        pos = path.lastIndexOf('/');
+      }
+
+      if (pos === -1) {
+        throw new Error(`invalid path - ${path}`);
+      }
+
+      return path.substring(0, pos);
     },
   },
 });

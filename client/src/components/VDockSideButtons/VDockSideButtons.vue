@@ -3,7 +3,7 @@
 
 <template>
   <div>
-    <v-btn
+    <!-- <v-btn
       title="Undock into separate window"
       color="white"
       icon
@@ -89,7 +89,7 @@
       >
         $vuetify.icons.values.minimap
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <v-btn
       title="Close"
@@ -111,12 +111,12 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import { Icon } from '@iconify/vue2';
+// import { Icon } from '@iconify/vue2';
 import { DockSideType } from '@/commons/types';
 
 export default defineComponent({
   name: 'VDockSideButtons',
-  components: { Icon },
+  // components: { Icon },
   emits: {
     'set:dock-side': null,
   },
