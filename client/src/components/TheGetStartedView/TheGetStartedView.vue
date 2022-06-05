@@ -55,7 +55,6 @@ export default defineComponent({
   methods: {
     ...mapActions(['setDockSide']),
     onStartLabeling(): void {
-      this.$emit('window:close');
       this.setDockSide(DockSideType.FullScreen);
     },
   },

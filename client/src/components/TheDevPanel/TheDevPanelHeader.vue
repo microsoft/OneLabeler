@@ -231,7 +231,14 @@ import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
-// import VTemplateMenu from './VTemplateMenu.vue';
+
+declare global {
+  interface Window {
+    isElectron: boolean,
+    dataFiles: any,
+    projectFile: string | null;
+  }
+}
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
@@ -272,9 +279,6 @@ export default defineComponent({
     saveWorkflow(): void {
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
-    async saveProject(): Promise<void> {
-      await saveJsonFileAsync(this.workflow, 'project.json');
-    },
     ...mapActions(['resetState']),
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', [
@@ -299,13 +303,16 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     async onClickClose(): Promise<void> {
-      // eslint-disable-next-line
-      if (window.confirm('Save and close the project?')) {
-        await this.saveProject();
-        this.$emit('update:showStartPage', true);
-        this.resetState();
-        window.dataFiles = null;
+      if (window.projectFile) {
+        await saveJsonFileAsync(this.workflow, window.projectFile, true);
+      } else if (window.confirm('Save and close the project?')) {
+        await saveJsonFileAsync(this.workflow, 'project.json');
       }
+
+      this.$emit('update:showStartPage', true);
+      this.resetState();
+      window.dataFiles = null;
+      window.projectFile = null;
     },
   },
 });

@@ -4,6 +4,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
 import { saveAs } from 'file-saver';
+import fs from 'fs';
 
 export const getBase64 = (
   file: File | Blob,
@@ -38,11 +39,19 @@ export const saveJsonFile = (
 export const saveJsonFileAsync = async (
   data: unknown,
   filename: string,
+  overwrite = false,
 ): Promise<string> => {
-  const json = JSON.stringify(data);
   const { ipcRenderer } = window.require('electron');
+  const json = JSON.stringify(data);
+
+  if (overwrite) {
+    await ipcRenderer.invoke('saveFile', { file: filename, content: json });
+    return '';
+  }
+
   const filePath = await ipcRenderer.invoke('callSaveFileDialog', { file: filename, content: json });
   return filePath;
+
   //   const path = window.require('path');
   //   try {
   //     // https://stackoverflow.com/questions/59477396/typeerror-fs-existssync-is-not-a-function-reactjs-and-electron
@@ -81,6 +90,13 @@ export const parseJsonFile = (file: File): Promise<unknown> => {
   return promise;
 };
 
+export const parseLocalJsonFile = async (file: string): Promise<any> => {
+  const { ipcRenderer } = window.require('electron');
+  const content = await ipcRenderer.invoke('getFileContent', file) as string;
+  const parsedObject = JSON.parse(content);
+  return parsedObject;
+};
+
 export const parseCsvFile = (file: File): Promise<unknown> => {
   const promise = new Promise((resolve) => {
     const reader = new FileReader();
@@ -108,3 +124,70 @@ export const canvasToFile = async (
     resolve(file);
   });
 });
+
+export const getDirectory = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  if (pos === -1) {
+    throw new Error(`invalid path - ${path}`);
+  }
+
+  return path.substring(0, pos);
+};
+
+export const getFile = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  if (pos === -1) {
+    return path;
+  }
+
+  return path.substring(pos + 1);
+};
+
+export const getFileWithoutExtension = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  let path2 = path;
+  if (pos > -1) {
+    path2 = path2.substring(pos + 1);
+  }
+
+  pos = path2.lastIndexOf('.');
+  return path2.substring(0, pos);
+};
+
+export const getWorkflowFileFromProjectFile = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  const directory = getDirectory(path);
+  const fileWithoutExtension = getFileWithoutExtension(path);
+  if (directory) {
+    return `${directory}\\${fileWithoutExtension}.workflow.json`;
+  }
+
+  return `${fileWithoutExtension}.workflow.json`;
+};
