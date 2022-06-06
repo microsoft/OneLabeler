@@ -67,7 +67,13 @@ export default defineComponent({
   },
   methods: {
     ...mapActions('workflow', ['setGraph']),
+    ...mapActions(['resetState']),
+
     onSetWorkflow(workflow: WorkflowGraph): void {
+      this.resetState();
+      window.dataFiles = null;
+      window.projectFile = null;
+
       this.setGraph(workflow);
       this.dialog = false;
       this.$emit('set:workflow');

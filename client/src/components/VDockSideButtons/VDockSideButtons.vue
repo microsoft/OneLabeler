@@ -97,7 +97,7 @@
       icon
       tile
       small
-      @click="$emit('set:dock-side', DockSideType.Hide)"
+      @click="onClose"
     >
       <v-icon
         aria-hidden="true"
@@ -111,17 +111,80 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-// import { Icon } from '@iconify/vue2';
+import { mapGetters, mapState, mapActions } from 'vuex';
 import { DockSideType } from '@/commons/types';
+import { saveJsonFileAsync, getWorkflowFileFromProjectFile } from '@/plugins/file';
+import type { WorkflowGraph } from '@/commons/types';
+import { ProjectData } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'VDockSideButtons',
-  // components: { Icon },
   emits: {
     'set:dock-side': null,
   },
   data() {
     return { DockSideType };
+  },
+  computed: {
+    ...mapGetters(['categories']),
+    ...mapState([
+      'dataObjects',
+      'labels',
+      'statuses',
+      'categoryTasks',
+      'unlabeledMark',
+      'featureNames',
+    ]),
+
+    ...mapState('workflow', ['nodes', 'edges']),
+    workflow(): WorkflowGraph {
+      const { nodes, edges } = this;
+      return { nodes, edges };
+    },
+  },
+  methods: {
+    ...mapActions('workflow', ['resetGraph']),
+    async onClose() {
+      const fileSpecified = !!window.projectFile;
+      const file = fileSpecified ? window.projectFile : 'project.json';
+      const filePath = await this.saveProject(file, fileSpecified);
+
+      if (!fileSpecified) {
+        window.projectFile = filePath;
+      }
+
+      const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
+      await saveJsonFileAsync(this.workflow, workflowFile, true);
+
+      if (fileSpecified || filePath) {
+        this.$emit('set:dock-side', DockSideType.Hide);
+      }
+    },
+    async saveProject(file: any, overwrite = true): Promise<string> {
+      const {
+        dataObjects,
+        categories,
+        categoryTasks,
+        labels,
+        statuses,
+        unlabeledMark,
+        featureNames,
+      } = this;
+      const dataObjs = dataObjects ? await dataObjects.getAll() : [];
+      const labelList = labels ? await labels.getAll() : [];
+      const statusList = statuses ? await statuses.getAll() : [];
+      const projectData: ProjectData = {
+        dataObjects: dataObjs,
+        categories,
+        categoryTasks,
+        labels: labelList,
+        statuses: statusList,
+        unlabeledMark,
+        featureNames: featureNames.length === 0
+          ? undefined : featureNames,
+      };
+      return saveJsonFileAsync(projectData, file, overwrite);
+    },
   },
 });
 </script>

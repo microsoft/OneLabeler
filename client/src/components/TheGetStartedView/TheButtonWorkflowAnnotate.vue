@@ -45,6 +45,7 @@ export default defineComponent({
   components: { VUploadWorkflowButton },
   emits: { 'set:workflow': null },
   methods: {
+    ...mapActions(['resetState']),
     ...mapActions(['setProject']),
     ...mapActions(['setMessage']),
     ...mapActions('workflow', ['setGraph']),
@@ -64,6 +65,7 @@ export default defineComponent({
       return false;
     },
     async onSetProject(projectFile: File): Promise<void> {
+      this.resetState();
       const workflowFile = getWorkflowFileFromProjectFile(projectFile.path);
       const succeed = await this.onSetWorkflow(workflowFile);
       if (!succeed) {
@@ -77,6 +79,7 @@ export default defineComponent({
           content: 'Project Progress Uploaded.',
           type: MessageType.Success,
         });
+        window.projectFile = projectFile.path;
         this.$emit('set:workflow');
       } else {
         const errors = validate.errors as DefinedError[];

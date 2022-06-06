@@ -120,8 +120,6 @@
       vertical
     />
 
-    <!-- <VTemplateMenu @set:workflow="setGraph($event)" /> -->
-
     <v-divider
       class="app-header-divider mr-1"
       vertical
@@ -221,16 +219,17 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
-import { saveJsonFile, saveJsonFileAsync } from '@/plugins/file';
+import { saveJsonFile, saveJsonFileAsync, getWorkflowFileFromProjectFile } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
+import { ProjectData } from '../TheNavBarView/load-project';
 
 declare global {
   interface Window {
@@ -248,7 +247,6 @@ export default defineComponent({
     IconOneLabeler,
     TheButtonWorkflowUpload,
     TheNetworkMenu,
-    // VTemplateMenu,
   },
   props: {
     showElementSettings: {
@@ -268,6 +266,16 @@ export default defineComponent({
     return { CompileType };
   },
   computed: {
+    ...mapGetters(['categories']),
+    ...mapState([
+      'dataObjects',
+      'labels',
+      'statuses',
+      'categoryTasks',
+      'unlabeledMark',
+      'featureNames',
+    ]),
+
     ...mapState(['dockSide']),
     ...mapState('workflow', ['nodes', 'edges']),
     workflow(): WorkflowGraph {
@@ -279,12 +287,8 @@ export default defineComponent({
     saveWorkflow(): void {
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
-    ...mapActions(['resetState']),
     ...mapActions(['setMessage', 'setDockSide']),
-    ...mapActions('workflow', [
-      'setGraph',
-      'resetGraph',
-    ]),
+    ...mapActions('workflow', ['resetGraph']),
     async tryCompile(type: CompileType): Promise<void> {
       try {
         await compile(this.workflow, type);
@@ -303,16 +307,44 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     async onClickClose(): Promise<void> {
-      if (window.projectFile) {
-        await saveJsonFileAsync(this.workflow, window.projectFile, true);
-      } else if (window.confirm('Save and close the project?')) {
-        await saveJsonFileAsync(this.workflow, 'project.json');
+      const fileSpecified = !!window.projectFile;
+      const file = fileSpecified ? window.projectFile : 'project.json';
+      const filePath = await this.saveProject(file, fileSpecified);
+
+      if (!fileSpecified) {
+        window.projectFile = filePath;
       }
 
-      this.$emit('update:showStartPage', true);
-      this.resetState();
+      const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
+      await saveJsonFileAsync(this.workflow, workflowFile, true);
+
       window.dataFiles = null;
-      window.projectFile = null;
+      this.$emit('update:showStartPage', true);
+    },
+    async saveProject(file: any, overwrite = true): Promise<string> {
+      const {
+        dataObjects,
+        categories,
+        categoryTasks,
+        labels,
+        statuses,
+        unlabeledMark,
+        featureNames,
+      } = this;
+      const dataObjs = dataObjects ? await dataObjects.getAll() : [];
+      const labelList = labels ? await labels.getAll() : [];
+      const statusList = statuses ? await statuses.getAll() : [];
+      const projectData: ProjectData = {
+        dataObjects: dataObjs,
+        categories,
+        categoryTasks,
+        labels: labelList,
+        statuses: statusList,
+        unlabeledMark,
+        featureNames: featureNames.length === 0
+          ? undefined : featureNames,
+      };
+      return saveJsonFileAsync(projectData, file, overwrite);
     },
   },
 });

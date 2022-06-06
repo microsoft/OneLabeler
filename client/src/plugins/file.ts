@@ -4,7 +4,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { csvParse } from 'd3';
 import { saveAs } from 'file-saver';
-import fs from 'fs';
 
 export const getBase64 = (
   file: File | Blob,

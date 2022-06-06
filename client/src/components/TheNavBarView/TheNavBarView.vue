@@ -103,6 +103,7 @@ export default defineComponent({
   },
   mounted() {
     this.onNewProject(window.dataFiles);
+    window.dataFiles = null;
   },
   methods: {
     ...mapActions(['setDockSide']),
@@ -120,14 +121,15 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     async onNewProject(input: File | FileList): Promise<void> {
-      if (input === null || input === undefined) return;
-      await this.executeRegisterStorage();
-      await this.executeDataObjectExtraction(input);
-      this.setMessage({
-        content: 'Project Data Uploaded.',
-        type: MessageType.Success,
-      });
       if (this.startNode === null) return;
+      if (input) {
+        await this.executeRegisterStorage();
+        await this.executeDataObjectExtraction(input);
+        this.setMessage({
+          content: 'Project Data Uploaded.',
+          type: MessageType.Success,
+        });
+      }
 
       await this.executeWorkflow({ node: this.startNode });
     },
