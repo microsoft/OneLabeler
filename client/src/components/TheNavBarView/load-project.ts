@@ -20,8 +20,17 @@ export type ProjectData = {
   featureNames?: string[];
 }
 
-export type ProjectEx = ProjectData & {
+export type ProjectDefinition = {
   sourcePath: string | null | undefined;
+  projectData?: ProjectData;
+  workflow?: unknown;
+}
+
+export type ProjectContext = {
+  projectDef?: ProjectDefinition | null,
+  projectFile?: string | null,
+  dataFiles?: unknown,
+  sourcePath?: string | null | undefined;
 }
 
 const ajv = new Ajv();

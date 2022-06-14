@@ -102,8 +102,8 @@ export default defineComponent({
     ...mapGetters('workflow', ['startNode']),
   },
   mounted() {
-    this.onNewProject(window.dataFiles);
-    window.dataFiles = null;
+    this.onNewProject(window.projectContext.dataFiles);
+    window.projectContext.dataFiles = null;
   },
   methods: {
     ...mapActions(['setDockSide']),

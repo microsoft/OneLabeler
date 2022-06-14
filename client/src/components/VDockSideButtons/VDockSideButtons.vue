@@ -113,9 +113,9 @@
 import { defineComponent } from '@vue/composition-api';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { DockSideType } from '@/commons/types';
-import { saveJsonFileSync, getWorkflowFileFromProjectFile } from '@/plugins/file';
+import { saveJsonFileSync } from '@/plugins/file';
 import type { WorkflowGraph } from '@/commons/types';
-import { ProjectEx } from '../TheNavBarView/load-project';
+import { ProjectDefinition, ProjectData } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'VDockSideButtons',
@@ -145,17 +145,14 @@ export default defineComponent({
   methods: {
     ...mapActions('workflow', ['resetGraph']),
     async onClose() {
-      const fileSpecified = !!window.projectFile;
-      const file = fileSpecified ? window.projectFile : 'project.json';
+      const fileSpecified = !!window.projectContext.projectFile;
+      const file = fileSpecified ? window.projectContext.projectFile : 'project.json';
       const filePath = await this.saveProject(file, fileSpecified);
 
       if (filePath) {
         if (!fileSpecified) {
-          window.projectFile = filePath;
+          window.projectContext.projectFile = filePath;
         }
-
-        const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
-        await saveJsonFileSync(this.workflow, workflowFile, true);
       }
 
       this.$emit('set:dock-side', DockSideType.Hide);
@@ -173,7 +170,7 @@ export default defineComponent({
       const dataObjs = dataObjects ? await dataObjects.getAll() : [];
       const labelList = labels ? await labels.getAll() : [];
       const statusList = statuses ? await statuses.getAll() : [];
-      const projectEx: ProjectEx = {
+      const prjData: ProjectData = {
         dataObjects: dataObjs,
         categories,
         categoryTasks,
@@ -182,9 +179,14 @@ export default defineComponent({
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
-        sourcePath: window.sourcePath,
       };
-      return saveJsonFileSync(projectEx, file, overwrite);
+
+      const projectDef: ProjectDefinition = {
+        sourcePath: window.projectContext.sourcePath,
+        projectData: prjData,
+        workflow: this.workflow,
+      };
+      return saveJsonFileSync(projectDef, file, overwrite);
     },
   },
 });

@@ -223,20 +223,18 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
-import { saveJsonFile, saveJsonFileSync, getWorkflowFileFromProjectFile } from '@/plugins/file';
+import { saveJsonFile, saveJsonFileSync } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
-import { ProjectEx } from '../TheNavBarView/load-project';
+import { ProjectDefinition, ProjectContext, ProjectData } from '../TheNavBarView/load-project';
 
 declare global {
   interface Window {
     isElectron: boolean,
-    dataFiles: unknown,
-    projectFile: string | null,
-    sourcePath: string | null,
+    projectContext: ProjectContext,
   }
 }
 
@@ -308,21 +306,18 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     async onClickClose(): Promise<void> {
-      const fileSpecified = !!window.projectFile;
-      const file = fileSpecified ? window.projectFile : 'project.json';
+      const fileSpecified = !!window.projectContext.projectFile;
+      const file = fileSpecified ? window.projectContext.projectFile : 'project.json';
       const filePath = await this.saveProject(file, fileSpecified);
 
       if (filePath) {
         if (!fileSpecified) {
-          window.projectFile = filePath;
+          window.projectContext.projectFile = filePath;
         }
-
-        const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
-        await saveJsonFileSync(this.workflow, workflowFile, true);
       }
 
-      window.dataFiles = null;
-      window.sourcePath = null;
+      window.projectContext.dataFiles = null;
+      window.projectContext.sourcePath = null;
       this.$emit('update:showStartPage', true);
     },
     async saveProject(file: string | null, overwrite = true): Promise<string> {
@@ -338,7 +333,7 @@ export default defineComponent({
       const dataObjs = dataObjects ? await dataObjects.getAll() : [];
       const labelList = labels ? await labels.getAll() : [];
       const statusList = statuses ? await statuses.getAll() : [];
-      const projectEx: ProjectEx = {
+      const prjData: ProjectData = {
         dataObjects: dataObjs,
         categories,
         categoryTasks,
@@ -347,9 +342,14 @@ export default defineComponent({
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
-        sourcePath: window.sourcePath,
       };
-      return saveJsonFileSync(projectEx, file, overwrite);
+
+      const projectDef: ProjectDefinition = {
+        sourcePath: window.projectContext.sourcePath,
+        projectData: prjData,
+        workflow: this.workflow,
+      };
+      return saveJsonFileSync(projectDef, file, overwrite);
     },
   },
 });

@@ -70,7 +70,7 @@ export default defineComponent({
     return {
       nTotal: 0,
       nLabeled: 0,
-      sourceFolder: window.sourcePath,
+      sourceFolder: window.projectContext.sourcePath,
     };
   },
   computed: {
@@ -130,8 +130,8 @@ export default defineComponent({
         }
 
         this.sourceFolder = this.getDirectory(target.files[0].path);
-        window.dataFiles = target.files;
-        window.sourcePath = this.sourceFolder;
+        window.projectContext.dataFiles = target.files;
+        window.projectContext.sourcePath = this.sourceFolder;
       }
     },
     getDirectory(path: string): string {

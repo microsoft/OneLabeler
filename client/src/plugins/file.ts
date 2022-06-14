@@ -174,17 +174,3 @@ export const getFileWithoutExtension = (path: string): string => {
   pos = path2.lastIndexOf('.');
   return path2.substring(0, pos);
 };
-
-export const getWorkflowFileFromProjectFile = (path: string): string => {
-  if (!path) {
-    return path;
-  }
-
-  const directory = getDirectory(path);
-  const fileWithoutExtension = getFileWithoutExtension(path);
-  if (directory) {
-    return `${directory}\\${fileWithoutExtension}.workflow.json`;
-  }
-
-  return `${fileWithoutExtension}.workflow.json`;
-};

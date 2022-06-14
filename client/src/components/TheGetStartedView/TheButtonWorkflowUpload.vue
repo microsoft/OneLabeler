@@ -11,11 +11,11 @@
 import { defineComponent } from '@vue/composition-api';
 import { mapActions } from 'vuex';
 import { MessageType, IMessage } from '@/commons/types';
-import { getWorkflowFileFromProjectFile, parseLocalJsonFile } from '@/plugins/file';
+import { parseLocalJsonFile } from '@/plugins/file';
 import { DefinedError } from 'ajv';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
-import { ProjectData, ProjectEx, validate } from '../TheNavBarView/load-project';
+import { ProjectDefinition, validate } from '../TheNavBarView/load-project';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -52,8 +52,7 @@ export default defineComponent({
     ...mapActions(['setProject']),
     ...mapActions(['setMessage']),
     ...mapActions('workflow', ['setGraph']),
-    async onSetWorkflow(file: string): Promise<boolean> {
-      const jsonGraph = await parseLocalJsonFile(file);
+    async onSetWorkflow(jsonGraph: unknown): Promise<boolean> {
       if (validateWorkflow(jsonGraph)) {
         const workflow = parseWorkflow(
           jsonGraph as TrimmedWorkflow,
@@ -69,37 +68,41 @@ export default defineComponent({
     },
     async onSetProject(projectFile: File): Promise<void> {
       this.resetState();
-      const workflowFile = getWorkflowFileFromProjectFile(projectFile.path);
-      const succeed = await this.onSetWorkflow(workflowFile);
-      if (!succeed) {
-        return;
-      }
 
-      const data = await parseLocalJsonFile(projectFile.path);
-      const projectEx = data as ProjectEx;
-      const projectData: ProjectData = {
-        dataObjects: projectEx.dataObjects,
-        categories: projectEx.categories,
-        categoryTasks: projectEx.categoryTasks,
-        labels: projectEx.labels,
-        statuses: projectEx.statuses,
-        unlabeledMark: projectEx.unlabeledMark,
-        featureNames: projectEx.featureNames,
-      };
-      if (validate(projectData)) {
-        this.setProject(projectData);
-        this.setMessage({
-          content: 'Project Progress Uploaded.',
-          type: MessageType.Success,
-        });
-        window.projectFile = projectFile.path;
-        window.sourcePath = projectEx.sourcePath;
-        this.$emit('set:workflow');
-        this.$emit('update:showStartPage', false);
-      } else {
-        const errors = validate.errors as DefinedError[];
-        const message = computeErrorMessage(errors[0]);
-        this.setMessage(message);
+      try {
+        console.log(projectFile.path);
+        const projectDef = await parseLocalJsonFile(projectFile.path) as ProjectDefinition;
+        console.log('1');
+        const succeed = await this.onSetWorkflow(projectDef.workflow);
+        console.log('2');
+        if (!succeed) {
+          // eslint-disable-next-line
+          window.alert('Fail to load workflow');
+          return;
+        }
+
+        console.log('3');
+        if (validate(projectDef.projectData)) {
+          this.setProject(projectDef.projectData);
+          this.setMessage({
+            content: 'Project Progress Uploaded.',
+            type: MessageType.Success,
+          });
+
+          window.projectContext = {
+            projectFile: projectFile.path,
+            sourcePath: projectDef.sourcePath,
+          };
+
+          this.$emit('set:workflow');
+          this.$emit('update:showStartPage', false);
+        } else {
+          const errors = validate.errors as DefinedError[];
+          const message = computeErrorMessage(errors[0]);
+          this.setMessage(message);
+        }
+      } catch (e) {
+        console.log(e);
       }
     },
   },
