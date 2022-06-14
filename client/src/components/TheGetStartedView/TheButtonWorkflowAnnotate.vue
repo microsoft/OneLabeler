@@ -11,7 +11,7 @@
 import { defineComponent } from '@vue/composition-api';
 import { mapActions } from 'vuex';
 import { MessageType, IMessage } from '@/commons/types';
-import { parseJsonFile, getWorkflowFileFromProjectFile, parseLocalJsonFile } from '@/plugins/file';
+import { getWorkflowFileFromProjectFile, parseLocalJsonFile } from '@/plugins/file';
 import { DefinedError } from 'ajv';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';

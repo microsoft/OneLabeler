@@ -11,7 +11,7 @@
         <TheButtonWorkflowNew @set:workflow="$emit('window:close')" v-on="$listeners" />
       </div>
       <div>
-        <TheButtonWorkflowUpload @set:workflow="$emit('window:close')" />
+        <TheButtonWorkflowUpload @set:workflow="$emit('window:close')" v-on="$listeners" />
       </div>
       <div>
         <TheButtonWorkflowAnnotate @set:workflow="onStartLabeling" />
