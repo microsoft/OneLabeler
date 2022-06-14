@@ -73,6 +73,7 @@ export default defineComponent({
       this.resetState();
       window.dataFiles = null;
       window.projectFile = null;
+      window.sourcePath = null;
 
       this.setGraph(workflow);
       this.dialog = false;

@@ -223,19 +223,20 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
-import { saveJsonFile, saveJsonFileAsync, getWorkflowFileFromProjectFile } from '@/plugins/file';
+import { saveJsonFile, saveJsonFileSync, getWorkflowFileFromProjectFile } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
-import { ProjectData } from '../TheNavBarView/load-project';
+import { ProjectEx } from '../TheNavBarView/load-project';
 
 declare global {
   interface Window {
     isElectron: boolean,
-    dataFiles: any,
-    projectFile: string | null;
+    dataFiles: unknown,
+    projectFile: string | null,
+    sourcePath: string | null,
   }
 }
 
@@ -311,17 +312,20 @@ export default defineComponent({
       const file = fileSpecified ? window.projectFile : 'project.json';
       const filePath = await this.saveProject(file, fileSpecified);
 
-      if (!fileSpecified) {
-        window.projectFile = filePath;
+      if (filePath) {
+        if (!fileSpecified) {
+          window.projectFile = filePath;
+        }
+
+        const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
+        await saveJsonFileSync(this.workflow, workflowFile, true);
       }
 
-      const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
-      await saveJsonFileAsync(this.workflow, workflowFile, true);
-
       window.dataFiles = null;
+      window.sourcePath = null;
       this.$emit('update:showStartPage', true);
     },
-    async saveProject(file: any, overwrite = true): Promise<string> {
+    async saveProject(file: string | null, overwrite = true): Promise<string> {
       const {
         dataObjects,
         categories,
@@ -334,7 +338,7 @@ export default defineComponent({
       const dataObjs = dataObjects ? await dataObjects.getAll() : [];
       const labelList = labels ? await labels.getAll() : [];
       const statusList = statuses ? await statuses.getAll() : [];
-      const projectData: ProjectData = {
+      const projectEx: ProjectEx = {
         dataObjects: dataObjs,
         categories,
         categoryTasks,
@@ -343,8 +347,9 @@ export default defineComponent({
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
+        sourcePath: window.sourcePath,
       };
-      return saveJsonFileAsync(projectData, file, overwrite);
+      return saveJsonFileSync(projectEx, file, overwrite);
     },
   },
 });

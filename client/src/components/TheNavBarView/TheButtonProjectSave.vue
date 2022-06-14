@@ -21,7 +21,7 @@
 import { defineComponent } from '@vue/composition-api';
 import { mapGetters, mapState } from 'vuex';
 import { saveJsonFile } from '@/plugins/file';
-import { ProjectData } from './load-project';
+import { ProjectEx } from './load-project';
 
 export default defineComponent({
   name: 'TheButtonProjectSave',
@@ -80,7 +80,7 @@ export default defineComponent({
         unlabeledMark,
         featureNames,
       } = this;
-      const projectData: ProjectData = {
+      const projectEx: ProjectEx = {
         dataObjects: await dataObjects.getAll(),
         categories,
         categoryTasks,
@@ -89,8 +89,9 @@ export default defineComponent({
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
+        sourcePath: window.sourcePath,
       };
-      saveJsonFile(projectData, 'project.json');
+      saveJsonFile(projectEx, 'project.json');
     },
   },
 });

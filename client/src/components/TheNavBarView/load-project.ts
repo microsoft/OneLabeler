@@ -20,6 +20,10 @@ export type ProjectData = {
   featureNames?: string[];
 }
 
+export type ProjectEx = ProjectData & {
+  sourcePath: string | null | undefined;
+}
+
 const ajv = new Ajv();
 const schema: JSONSchemaType<ProjectData> = {
   definitions: {

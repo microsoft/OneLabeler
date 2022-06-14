@@ -15,7 +15,7 @@ import { getWorkflowFileFromProjectFile, parseLocalJsonFile } from '@/plugins/fi
 import { DefinedError } from 'ajv';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
-import { ProjectData, validate } from '../TheNavBarView/load-project';
+import { ProjectData, ProjectEx, validate } from '../TheNavBarView/load-project';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -73,13 +73,24 @@ export default defineComponent({
       }
 
       const data = await parseLocalJsonFile(projectFile.path);
-      if (validate(data)) {
-        this.setProject(data as ProjectData);
+      const projectEx = data as ProjectEx;
+      const projectData: ProjectData = {
+        dataObjects: projectEx.dataObjects,
+        categories: projectEx.categories,
+        categoryTasks: projectEx.categoryTasks,
+        labels: projectEx.labels,
+        statuses: projectEx.statuses,
+        unlabeledMark: projectEx.unlabeledMark,
+        featureNames: projectEx.featureNames,
+      };
+      if (validate(projectData)) {
+        this.setProject(projectData);
         this.setMessage({
           content: 'Project Progress Uploaded.',
           type: MessageType.Success,
         });
         window.projectFile = projectFile.path;
+        window.sourcePath = projectEx.sourcePath;
         this.$emit('set:workflow');
       } else {
         const errors = validate.errors as DefinedError[];

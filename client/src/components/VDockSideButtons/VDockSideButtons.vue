@@ -113,9 +113,9 @@
 import { defineComponent } from '@vue/composition-api';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import { DockSideType } from '@/commons/types';
-import { saveJsonFileAsync, getWorkflowFileFromProjectFile } from '@/plugins/file';
+import { saveJsonFileSync, getWorkflowFileFromProjectFile } from '@/plugins/file';
 import type { WorkflowGraph } from '@/commons/types';
-import { ProjectData } from '../TheNavBarView/load-project';
+import { ProjectEx } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'VDockSideButtons',
@@ -149,18 +149,18 @@ export default defineComponent({
       const file = fileSpecified ? window.projectFile : 'project.json';
       const filePath = await this.saveProject(file, fileSpecified);
 
-      if (!fileSpecified) {
-        window.projectFile = filePath;
+      if (filePath) {
+        if (!fileSpecified) {
+          window.projectFile = filePath;
+        }
+
+        const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
+        await saveJsonFileSync(this.workflow, workflowFile, true);
       }
 
-      const workflowFile = getWorkflowFileFromProjectFile(window.projectFile);
-      await saveJsonFileAsync(this.workflow, workflowFile, true);
-
-      if (fileSpecified || filePath) {
-        this.$emit('set:dock-side', DockSideType.Hide);
-      }
+      this.$emit('set:dock-side', DockSideType.Hide);
     },
-    async saveProject(file: any, overwrite = true): Promise<string> {
+    async saveProject(file: string | null, overwrite = true): Promise<string> {
       const {
         dataObjects,
         categories,
@@ -173,7 +173,7 @@ export default defineComponent({
       const dataObjs = dataObjects ? await dataObjects.getAll() : [];
       const labelList = labels ? await labels.getAll() : [];
       const statusList = statuses ? await statuses.getAll() : [];
-      const projectData: ProjectData = {
+      const projectEx: ProjectEx = {
         dataObjects: dataObjs,
         categories,
         categoryTasks,
@@ -182,8 +182,9 @@ export default defineComponent({
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
+        sourcePath: window.sourcePath,
       };
-      return saveJsonFileAsync(projectData, file, overwrite);
+      return saveJsonFileSync(projectEx, file, overwrite);
     },
   },
 });

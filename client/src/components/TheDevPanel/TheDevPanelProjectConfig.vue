@@ -70,7 +70,7 @@ export default defineComponent({
     return {
       nTotal: 0,
       nLabeled: 0,
-      sourceFolder: '',
+      sourceFolder: window.sourcePath,
     };
   },
   computed: {
@@ -124,14 +124,14 @@ export default defineComponent({
     fileChanged(e: ExtendedEvent): void {
       if (e) {
         const target = e.target as HTMLInputElement;
-        // this.$emit('upload:files', target.files);
-
         if (target.files.length === 0) {
+          // eslint-disable-next-line
           window.alert('No files found!');
         }
 
         this.sourceFolder = this.getDirectory(target.files[0].path);
         window.dataFiles = target.files;
+        window.sourcePath = this.sourceFolder;
       }
     },
     getDirectory(path: string): string {

@@ -36,10 +36,7 @@ const saveFileDialog = (
     properties: [],
   };
   const saveFilePath = dialog.showSaveDialogSync(saveOptions);
-  if (saveFilePath) {
-    saveFile(json, saveFilePath);
-    return saveFilePath;
-  }
+  return saveFilePath;
 };
 
 const saveFile = (

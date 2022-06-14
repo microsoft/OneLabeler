@@ -35,20 +35,18 @@ export const saveJsonFile = (
   saveAs(blob, filename);
 };
 
-export const saveJsonFileAsync = async (
+export const saveJsonFileSync = async (
   data: unknown,
   filename: string,
   overwrite = false,
-): Promise<string> => {
+): Promise<string | null | undefined> => {
   const { ipcRenderer } = window.require('electron');
   const json = JSON.stringify(data);
 
-  if (overwrite) {
-    await ipcRenderer.invoke('saveFile', { file: filename, content: json });
-    return '';
+  const filePath = overwrite ? filename : await ipcRenderer.invoke('callSaveFileDialog', { file: filename });
+  if (filePath) {
+    await ipcRenderer.invoke('saveFile', { file: filePath, content: json });
   }
-
-  const filePath = await ipcRenderer.invoke('callSaveFileDialog', { file: filename, content: json });
   return filePath;
 
   //   const path = window.require('path');
@@ -89,7 +87,7 @@ export const parseJsonFile = (file: File): Promise<unknown> => {
   return promise;
 };
 
-export const parseLocalJsonFile = async (file: string): Promise<any> => {
+export const parseLocalJsonFile = async (file: string): Promise<unknown> => {
   const { ipcRenderer } = window.require('electron');
   const content = await ipcRenderer.invoke('getFileContent', file) as string;
   const parsedObject = JSON.parse(content);

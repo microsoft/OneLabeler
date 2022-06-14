@@ -2,7 +2,7 @@
   <VUploadWorkflowButton
     text="Modify Labeling Project"
     style="font-size: 1.5rem; color: #3794ff;"
-    @set:project="onSetWorkflow($event)"
+    @set:project="onSetProject($event)"
     @set:message="setMessage($event)"
   />
 </template>
@@ -15,7 +15,7 @@ import { getWorkflowFileFromProjectFile, parseLocalJsonFile } from '@/plugins/fi
 import { DefinedError } from 'ajv';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
-// import { ProjectData, validate } from '../TheNavBarView/load-project';
+import { ProjectData, ProjectEx, validate } from '../TheNavBarView/load-project';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -52,17 +52,54 @@ export default defineComponent({
     ...mapActions(['setProject']),
     ...mapActions(['setMessage']),
     ...mapActions('workflow', ['setGraph']),
-    async onSetWorkflow(projectFile: File): Promise<void> {
-      this.resetState();
-      const workflowFile = getWorkflowFileFromProjectFile(projectFile.path);
-      const jsonGraph = await parseLocalJsonFile(workflowFile);
+    async onSetWorkflow(file: string): Promise<boolean> {
+      const jsonGraph = await parseLocalJsonFile(file);
       if (validateWorkflow(jsonGraph)) {
         const workflow = parseWorkflow(
           jsonGraph as TrimmedWorkflow,
         );
         this.setGraph(workflow);
+        return true;
+      }
+
+      const errors = validateWorkflow.errors as DefinedError[];
+      const message = computeErrorMessage(errors[0]);
+      this.$emit('set:message', message);
+      return false;
+    },
+    async onSetProject(projectFile: File): Promise<void> {
+      this.resetState();
+      const workflowFile = getWorkflowFileFromProjectFile(projectFile.path);
+      const succeed = await this.onSetWorkflow(workflowFile);
+      if (!succeed) {
+        return;
+      }
+
+      const data = await parseLocalJsonFile(projectFile.path);
+      const projectEx = data as ProjectEx;
+      const projectData: ProjectData = {
+        dataObjects: projectEx.dataObjects,
+        categories: projectEx.categories,
+        categoryTasks: projectEx.categoryTasks,
+        labels: projectEx.labels,
+        statuses: projectEx.statuses,
+        unlabeledMark: projectEx.unlabeledMark,
+        featureNames: projectEx.featureNames,
+      };
+      if (validate(projectData)) {
+        this.setProject(projectData);
+        this.setMessage({
+          content: 'Project Progress Uploaded.',
+          type: MessageType.Success,
+        });
+        window.projectFile = projectFile.path;
+        window.sourcePath = projectEx.sourcePath;
         this.$emit('set:workflow');
         this.$emit('update:showStartPage', false);
+      } else {
+        const errors = validate.errors as DefinedError[];
+        const message = computeErrorMessage(errors[0]);
+        this.setMessage(message);
       }
     },
   },
