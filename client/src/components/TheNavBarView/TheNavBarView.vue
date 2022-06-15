@@ -7,12 +7,6 @@
     style="display: flex; align-items: center;"
     :style="{ height: `${height}px` }"
   >
-    <!-- The new project button. -->
-    <!-- <TheButtonProjectNew /> -->
-
-    <!-- The load project button. -->
-    <!-- <TheButtonProjectLoad /> -->
-
     <!-- The save label project button. -->
     <TheButtonProjectSave />
 
@@ -23,9 +17,6 @@
       class="app-header-divider"
       vertical
     />
-
-    <!-- The undo label editing button. -->
-    <!-- <TheButtonUndo /> -->
 
     <!-- The export labeling result button. -->
     <TheButtonLabelExport />
@@ -62,12 +53,10 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { DockSideType, MessageType } from '@/commons/types';
+import { MessageType } from '@/commons/types';
 import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import TheButtonExecute from './TheButtonExecute.vue';
 import TheButtonLabelExport from './TheButtonLabelExport.vue';
-// import TheButtonProjectLoad from './TheButtonProjectLoad.vue';
-// import TheButtonProjectNew from './TheButtonProjectNew.vue';
 import TheButtonProjectReset from './TheButtonProjectReset.vue';
 import TheButtonProjectSave from './TheButtonProjectSave.vue';
 import TheDialogButtonDashboard from './TheDialogButtonDashboard.vue';
@@ -81,8 +70,6 @@ export default defineComponent({
     VDockSideButtons,
     TheButtonExecute,
     TheButtonLabelExport,
-    // TheButtonProjectLoad,
-    // TheButtonProjectNew,
     TheButtonProjectReset,
     TheButtonProjectSave,
     TheDialogButtonDashboard,
@@ -102,7 +89,7 @@ export default defineComponent({
     ...mapGetters('workflow', ['startNode']),
   },
   mounted() {
-    this.onNewProject(window.projectContext.dataFiles);
+    this.onNewProject(window.projectContext.dataFiles as File | FileList);
     window.projectContext.dataFiles = null;
   },
   methods: {
@@ -113,13 +100,6 @@ export default defineComponent({
       'executeDataObjectExtraction',
       'executeWorkflow',
     ]),
-    onClickWorkflowButton(): void {
-      const { dockSide } = this;
-      const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
-        ? DockSideType.FullScreen
-        : DockSideType.Hide;
-      this.setDockSide(updatedDockSide);
-    },
     async onNewProject(input: File | FileList): Promise<void> {
       if (this.startNode === null) return;
       if (input) {

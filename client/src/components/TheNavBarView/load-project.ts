@@ -29,7 +29,7 @@ export type ProjectDefinition = {
 export type ProjectContext = {
   projectDef?: ProjectDefinition | null,
   projectFile?: string | null,
-  dataFiles?: unknown,
+  dataFiles?: File | FileList | null,
   sourcePath?: string | null | undefined;
 }
 

@@ -124,14 +124,16 @@ export default defineComponent({
     fileChanged(e: ExtendedEvent): void {
       if (e) {
         const target = e.target as HTMLInputElement;
-        if (target.files.length === 0) {
-          // eslint-disable-next-line
-          window.alert('No files found!');
+        if (target && target.files) {
+          if (target.files.length === 0) {
+            // eslint-disable-next-line
+            window.alert('No files found!');
+          } else {
+            this.sourceFolder = this.getDirectory(target.files[0].path);
+            window.projectContext.dataFiles = target.files;
+            window.projectContext.sourcePath = this.sourceFolder;
+          }
         }
-
-        this.sourceFolder = this.getDirectory(target.files[0].path);
-        window.projectContext.dataFiles = target.files;
-        window.projectContext.sourcePath = this.sourceFolder;
       }
     },
     getDirectory(path: string): string {

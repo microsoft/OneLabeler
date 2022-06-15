@@ -319,7 +319,7 @@ export default defineComponent({
       window.projectContext = { };
       this.$emit('update:showStartPage', true);
     },
-    async saveProject(file: string | null, overwrite = true): Promise<string> {
+    async saveProject(file: string | null, overwrite = true): Promise<string | null | undefined> {
       const {
         dataObjects,
         categories,

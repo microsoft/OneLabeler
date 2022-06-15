@@ -147,7 +147,7 @@ export default defineComponent({
     async onClose() {
       const pathSpecified = !!window.projectContext.projectFile;
       const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
-      const filePath = await this.saveProject(file, pathSpecified);
+      const filePath = await this.saveProject(file as string, pathSpecified);
 
       if (filePath) {
         if (!pathSpecified) {
@@ -157,7 +157,7 @@ export default defineComponent({
 
       this.$emit('set:dock-side', DockSideType.Hide);
     },
-    async saveProject(file: string | null, overwrite = true): Promise<string> {
+    async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {
       const {
         dataObjects,
         categories,
