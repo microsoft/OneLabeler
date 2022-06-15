@@ -15,7 +15,8 @@ import { parseLocalJsonFile } from '@/plugins/file';
 import { DefinedError } from 'ajv';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
-import { ProjectDefinition, validate } from '../TheNavBarView/load-project';
+import { ProjectDefinition, validate, WorkMode } from '../TheNavBarView/load-project';
+import { enterWorkMode } from '../../commons/utils';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -43,7 +44,7 @@ const computeErrorMessage = (err: DefinedError): IMessage | null => {
 export default defineComponent({
   name: 'TheButtonWorkflowAnnotate',
   components: { VUploadWorkflowButton },
-  emits: { 'set:workflow': null },
+  emits: { 'set:workflow': null, 'set:message': null },
   methods: {
     ...mapActions(['resetState']),
     ...mapActions(['setProject']),
@@ -84,6 +85,8 @@ export default defineComponent({
           projectFile: projectFile.path,
           sourcePath: projectDef.sourcePath,
         };
+
+        enterWorkMode(WorkMode.Labeling);
         this.$emit('set:workflow');
       } else {
         const errors = validate.errors as DefinedError[];

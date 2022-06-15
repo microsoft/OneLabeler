@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import { WorkflowNode, WorkflowNodeType } from '@/commons/types';
+import { WorkMode } from '../components/TheNavBarView/load-project';
 
 export const getImgSize = (
   content: string,
@@ -41,4 +42,17 @@ export const nodeTypeToColor = (type: WorkflowNodeType): string => {
   if (type === WorkflowNodeType.Decision) return '#f6e54c';
   if (type === WorkflowNodeType.Exit) return '#2c9b7c';
   return '#2b579a';
+};
+
+export const enterWorkMode = (
+  mode: WorkMode,
+): void => {
+  if (!window.projectContext) {
+    window.projectContext = { curWorkMode: mode };
+  } else {
+    window.projectContext.curWorkMode = mode;
+  }
+
+  const { ipcRenderer } = window.require('electron');
+  ipcRenderer.invoke('workModeChange', { workMode: mode });
 };

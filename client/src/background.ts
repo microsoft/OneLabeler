@@ -4,7 +4,8 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { registerNativeService } from './utils/native-service'
+import { registerNativeService, workMode } from './utils/native-service'
+import { WorkMode } from './components/TheNavBarView/load-project';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -55,19 +56,21 @@ const createWindow = (): void => {
   }
 
   win.on('close', (event): void => {
-    const dialog = require('electron').dialog;
-    const options = {
-      type: 'question',
-      buttons: ['Yes', 'No'],
-      defaultId: 1,
-      title: 'OneLabeler',
-      message: 'Please make sure you have saved your data. Do you want to close OneLabeler now?',
-    };
-  
-    if (dialog.showMessageBoxSync(options) === 0) {
-      win = null;
-    } else {
-      event.preventDefault();
+    if (workMode !== WorkMode.StartPage) {
+      const dialog = require('electron').dialog;
+      const options = {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        title: 'OneLabeler',
+        message: 'Please make sure you have saved your data. Do you want to close OneLabeler now?',
+      };
+    
+      if (dialog.showMessageBoxSync(options) === 0) {
+        win = null;
+      } else {
+        event.preventDefault();
+      }
     }
   });
 };

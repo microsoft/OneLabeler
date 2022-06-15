@@ -11,7 +11,7 @@
     <TheButtonProjectSave />
 
     <!-- The reset dataset button. -->
-    <TheButtonProjectReset />
+    <TheButtonProjectReset v-if="isPreview" />
 
     <v-divider
       class="app-header-divider"
@@ -61,6 +61,7 @@ import TheButtonProjectReset from './TheButtonProjectReset.vue';
 import TheButtonProjectSave from './TheButtonProjectSave.vue';
 import TheDialogButtonDashboard from './TheDialogButtonDashboard.vue';
 import TheDialogButtonDataManagement from './TheDialogButtonDataManagement.vue';
+import { WorkMode } from './load-project';
 
 const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
 
@@ -87,6 +88,10 @@ export default defineComponent({
   computed: {
     ...mapState(['dockSide']),
     ...mapGetters('workflow', ['startNode']),
+
+    isPreview(): boolean {
+      return !!window.projectContext && window.projectContext === WorkMode.Preview;
+    },
   },
   mounted() {
     this.onNewProject(window.projectContext.dataFiles as File | FileList);

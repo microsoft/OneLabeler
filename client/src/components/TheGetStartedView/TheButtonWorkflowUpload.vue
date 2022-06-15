@@ -15,7 +15,8 @@ import { parseLocalJsonFile } from '@/plugins/file';
 import { DefinedError } from 'ajv';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
-import { ProjectDefinition, validate } from '../TheNavBarView/load-project';
+import { ProjectDefinition, validate, WorkMode } from '../TheNavBarView/load-project';
+import { enterWorkMode } from '../../commons/utils';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -44,6 +45,7 @@ export default defineComponent({
   name: 'TheButtonWorkflowUpload',
   components: { VUploadWorkflowButton },
   emits: {
+    'set:message': null,
     'set:workflow': null,
     'update:showStartPage': null,
   },
@@ -90,6 +92,7 @@ export default defineComponent({
             sourcePath: projectDef.sourcePath,
           };
 
+          enterWorkMode(WorkMode.EditProject);
           this.$emit('set:workflow');
           this.$emit('update:showStartPage', false);
         } else {

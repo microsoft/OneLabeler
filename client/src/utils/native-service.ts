@@ -1,12 +1,16 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { WorkMode } from '../components/TheNavBarView/load-project';
+
 const { ipcMain, dialog } = require("electron");
 const path = require('path');
 
+export let workMode: WorkMode;
+
 export const registerNativeService = (): void => {
   ipcMain.handle("callSaveFileDialog", (e, eventArg) => {
-    return saveFileDialog(eventArg.content, eventArg.file);
+    return saveFileDialog(eventArg.file);
   });
 
   ipcMain.handle("saveFile", (e, eventArg) => {
@@ -17,11 +21,14 @@ export const registerNativeService = (): void => {
     return getFileContent(eventArg);
   });
 
+  ipcMain.handle("workModeChange", (e, eventArg) => {
+    return setWorkMode(eventArg.workMode);
+  });
+
   // More service here.
 };
 
 const saveFileDialog = (
-  json: string,
   filename: string,
 ): any => {
   const saveOptions = {
@@ -53,4 +60,10 @@ const getFileContent = (
   const fs = require('fs');
   const content = fs.readFileSync(file, {encoding:'utf8', flag:'r'}) as string;
   return content;
+};
+
+const setWorkMode = (
+  mode: WorkMode,
+): void => {
+  workMode = mode;
 };

@@ -115,7 +115,8 @@ import { mapGetters, mapState, mapActions } from 'vuex';
 import { DockSideType } from '@/commons/types';
 import { saveJsonFileSync } from '@/plugins/file';
 import type { WorkflowGraph } from '@/commons/types';
-import { ProjectDefinition, ProjectData } from '../TheNavBarView/load-project';
+import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
+import { enterWorkMode } from '../../commons/utils';
 
 export default defineComponent({
   name: 'VDockSideButtons',
@@ -145,16 +146,21 @@ export default defineComponent({
   methods: {
     ...mapActions('workflow', ['resetGraph']),
     async onClose() {
-      const pathSpecified = !!window.projectContext.projectFile;
-      const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
-      const filePath = await this.saveProject(file as string, pathSpecified);
+      if (window.projectContext.curWorkMode === WorkMode.Labeling) {
+        const pathSpecified = !!window.projectContext.projectFile;
+        const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
+        const filePath = await this.saveProject(file as string, pathSpecified);
 
-      if (filePath) {
-        if (!pathSpecified) {
-          window.projectContext.projectFile = filePath;
+        if (filePath) {
+          if (!pathSpecified) {
+            window.projectContext.projectFile = filePath;
+          }
         }
       }
 
+      const nextWorkMode = (window.projectContext.curWorkMode === WorkMode.Preview)
+        ? WorkMode.EditProject : WorkMode.StartPage;
+      enterWorkMode(nextWorkMode);
       this.$emit('set:dock-side', DockSideType.Hide);
     },
     async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {

@@ -229,14 +229,8 @@ import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheNetworkMenu from './TheNetworkMenu.vue';
-import { ProjectDefinition, ProjectContext, ProjectData } from '../TheNavBarView/load-project';
-
-declare global {
-  interface Window {
-    isElectron: boolean,
-    projectContext: ProjectContext,
-  }
-}
+import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
+import { enterWorkMode } from '../../commons/utils';
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
@@ -304,11 +298,12 @@ export default defineComponent({
         ? DockSideType.FullScreen
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
+      enterWorkMode(WorkMode.Preview);
     },
     async onClickClose(): Promise<void> {
       const pathSpecified = !!window.projectContext.projectFile;
       const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
-      const filePath = await this.saveProject(file, pathSpecified);
+      const filePath = await this.saveProject(file as string, pathSpecified);
 
       if (filePath) {
         if (!pathSpecified) {
@@ -316,10 +311,10 @@ export default defineComponent({
         }
       }
 
-      window.projectContext = { };
+      enterWorkMode(WorkMode.StartPage);
       this.$emit('update:showStartPage', true);
     },
-    async saveProject(file: string | null, overwrite = true): Promise<string | null | undefined> {
+    async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {
       const {
         dataObjects,
         categories,

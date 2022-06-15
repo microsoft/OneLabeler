@@ -39,6 +39,8 @@ import TheButtonSourceCode from './TheButtonSourceCode.vue';
 import TheButtonWorkflowNew from './TheButtonWorkflowNew.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheButtonWorkflowAnnotate from './TheButtonWorkflowAnnotate.vue';
+import { enterWorkMode } from '../../commons/utils';
+import { WorkMode } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'TheGetStartedView',
@@ -51,6 +53,9 @@ export default defineComponent({
   },
   data() {
     return { style: { cardElevated, cardHeader } };
+  },
+  mounted() {
+    enterWorkMode(WorkMode.StartPage);
   },
   methods: {
     ...mapActions(['setDockSide']),

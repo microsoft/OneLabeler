@@ -10,6 +10,13 @@ import type {
   LabelTaskType,
 } from '@/commons/types';
 
+export enum WorkMode {
+  StartPage = 'StartPage',
+  EditProject = 'EditProject', // For new and modify project page.
+  Preview = 'Preview',
+  Labeling = 'Labeling',
+}
+
 export type ProjectData = {
   dataObjects: IDataObject[];
   labels: Pick<ILabel, 'uuid'>[];
@@ -31,6 +38,14 @@ export type ProjectContext = {
   projectFile?: string | null,
   dataFiles?: File | FileList | null,
   sourcePath?: string | null | undefined;
+  curWorkMode?: WorkMode;
+}
+
+declare global {
+  interface Window {
+    isElectron: boolean,
+    projectContext: ProjectContext,
+  }
 }
 
 const ajv = new Ajv();
