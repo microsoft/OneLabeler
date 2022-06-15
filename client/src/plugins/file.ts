@@ -30,7 +30,7 @@ export const saveJsonFile = (
   data: unknown,
   filename: string,
 ): void => {
-  const json = JSON.stringify(data);
+  const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   saveAs(blob, filename);
 };
@@ -41,7 +41,7 @@ export const saveJsonFileSync = async (
   overwrite = false,
 ): Promise<string | null | undefined> => {
   const { ipcRenderer } = window.require('electron');
-  const json = JSON.stringify(data);
+  const json = JSON.stringify(data, null, 2);
 
   const filePath = overwrite ? filename : await ipcRenderer.invoke('callSaveFileDialog', { file: filename });
   if (filePath) {

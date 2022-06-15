@@ -80,12 +80,10 @@ export default defineComponent({
           type: MessageType.Success,
         });
 
-        if (!window.projectContext) {
-          window.projectContext = { };
-        }
-
-        window.projectContext.projectFile = projectFile.path;
-        window.projectContext.sourcePath = projectDef.sourcePath;
+        window.projectContext = {
+          projectFile: projectFile.path,
+          sourcePath: projectDef.sourcePath,
+        };
         this.$emit('set:workflow');
       } else {
         const errors = validate.errors as DefinedError[];

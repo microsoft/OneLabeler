@@ -43,7 +43,6 @@ import type { WorkflowGraph } from '@/commons/types';
 import BaseButton from '@/components/BaseButton/BaseButton.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import VTemplateList from '@/components/TheDevPanel/VTemplateList.vue';
-import { ProjectContext } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'TheButtonWorkflowNew',
@@ -72,11 +71,7 @@ export default defineComponent({
 
     onSetWorkflow(workflow: WorkflowGraph): void {
       this.resetState();
-      window.projectContext = {
-        projectDef: null,
-        projectFile: null,
-        dataFiles: null,
-      };
+      window.projectContext = { };
 
       this.setGraph(workflow);
       this.dialog = false;

@@ -70,18 +70,14 @@ export default defineComponent({
       this.resetState();
 
       try {
-        console.log(projectFile.path);
         const projectDef = await parseLocalJsonFile(projectFile.path) as ProjectDefinition;
-        console.log('1');
         const succeed = await this.onSetWorkflow(projectDef.workflow);
-        console.log('2');
         if (!succeed) {
           // eslint-disable-next-line
           window.alert('Fail to load workflow');
           return;
         }
 
-        console.log('3');
         if (validate(projectDef.projectData)) {
           this.setProject(projectDef.projectData);
           this.setMessage({

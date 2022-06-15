@@ -306,18 +306,17 @@ export default defineComponent({
       this.setDockSide(updatedDockSide);
     },
     async onClickClose(): Promise<void> {
-      const fileSpecified = !!window.projectContext.projectFile;
-      const file = fileSpecified ? window.projectContext.projectFile : 'project.json';
-      const filePath = await this.saveProject(file, fileSpecified);
+      const pathSpecified = !!window.projectContext.projectFile;
+      const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
+      const filePath = await this.saveProject(file, pathSpecified);
 
       if (filePath) {
-        if (!fileSpecified) {
+        if (!pathSpecified) {
           window.projectContext.projectFile = filePath;
         }
       }
 
-      window.projectContext.dataFiles = null;
-      window.projectContext.sourcePath = null;
+      window.projectContext = { };
       this.$emit('update:showStartPage', true);
     },
     async saveProject(file: string | null, overwrite = true): Promise<string> {
