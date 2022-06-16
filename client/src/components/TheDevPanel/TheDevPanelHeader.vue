@@ -281,10 +281,7 @@ export default defineComponent({
       saveJsonFile(this.workflow, 'workflow.config.json');
     },
     ...mapActions(['setMessage', 'setDockSide']),
-    ...mapActions('workflow', ['resetGraph']),
-    ...mapActions('workflow', ['setGraph']),
-    ...mapActions(['resetState']),
-    ...mapActions('workflow', ['executeRegisterStorage', 'executeDataObjectExtraction', 'executeWorkflow']),
+    ...mapActions('workflow', ['executeRegisterStorage', 'executeDataObjectExtraction']),
     async tryCompile(type: CompileType): Promise<void> {
       try {
         await compile(this.workflow, type);
@@ -315,7 +312,6 @@ export default defineComponent({
       enterWorkMode(WorkMode.Preview);
     },
     async onClickClose(): Promise<void> {
-      console.log('on header close');
       if (!window.projectContext.dataUploaded && !!window.projectContext.dataFiles) {
         await this.executeRegisterStorage();
         await this.executeDataObjectExtraction(window.projectContext.dataFiles);

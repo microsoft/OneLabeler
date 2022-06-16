@@ -49,7 +49,7 @@ export default defineComponent({
     ...mapActions(['resetState']),
     ...mapActions(['setProject']),
     ...mapActions(['setMessage']),
-    ...mapActions('workflow', ['setGraph']),
+    ...mapActions('workflow', ['setGraph', 'setCurrentNode']),
     async onSetWorkflow(jsonGraph: unknown): Promise<boolean> {
       if (validateWorkflow(jsonGraph)) {
         const workflow = parseWorkflow(
@@ -67,6 +67,24 @@ export default defineComponent({
     async onSetProject(projectFile: File): Promise<void> {
       this.resetState();
       const projectDef = await parseLocalJsonFile(projectFile.path) as ProjectDefinition;
+
+      if (!validate(projectDef.projectData)) {
+        const errors = validate.errors as DefinedError[];
+        const message = computeErrorMessage(errors[0]);
+        this.setMessage(message);
+        // eslint-disable-next-line
+        window.alert('Fail to load project data');
+        return;
+      }
+
+      // Project data must be set first to show data correctly.
+      await this.setProject(projectDef.projectData);
+      this.setMessage({
+        content: 'Project Progress Uploaded.',
+        type: MessageType.Success,
+      });
+
+      this.setCurrentNode(null);
       const succeed = await this.onSetWorkflow(projectDef.workflow);
       if (!succeed) {
         // eslint-disable-next-line
@@ -74,27 +92,13 @@ export default defineComponent({
         return;
       }
 
-      if (validate(projectDef.projectData)) {
-        this.setProject(projectDef.projectData);
-        this.setMessage({
-          content: 'Project Progress Uploaded.',
-          type: MessageType.Success,
-        });
+      window.projectContext = {
+        projectFile: projectFile.path,
+        sourcePath: projectDef.sourcePath,
+      };
 
-        window.projectContext = {
-          projectFile: projectFile.path,
-          sourcePath: projectDef.sourcePath,
-        };
-
-        enterWorkMode(WorkMode.Labeling);
-        this.$emit('set:workflow');
-      } else {
-        const errors = validate.errors as DefinedError[];
-        const message = computeErrorMessage(errors[0]);
-        this.setMessage(message);
-        // eslint-disable-next-line
-        window.alert('Fail to load project data');
-      }
+      enterWorkMode(WorkMode.Labeling);
+      this.$emit('set:workflow');
     },
   },
 });

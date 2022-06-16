@@ -53,7 +53,6 @@
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { MessageType } from '@/commons/types';
 import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import TheButtonExecute from './TheButtonExecute.vue';
 import TheButtonLabelExport from './TheButtonLabelExport.vue';
@@ -97,7 +96,6 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(['setDockSide']),
-    ...mapActions(['setMessage']),
     ...mapActions('workflow', ['executeWorkflow']),
 
     async onNewProject(): Promise<void> {
