@@ -88,34 +88,19 @@ export default defineComponent({
   computed: {
     ...mapState(['dockSide']),
     ...mapGetters('workflow', ['startNode']),
-
     isPreview(): boolean {
       return !!window.projectContext && window.projectContext === WorkMode.Preview;
     },
   },
-  mounted() {
-    this.onNewProject(window.projectContext.dataFiles as File | FileList);
-    window.projectContext.dataFiles = null;
+  async mounted() {
+    await this.onNewProject();
   },
   methods: {
     ...mapActions(['setDockSide']),
     ...mapActions(['setMessage']),
-    ...mapActions('workflow', [
-      'executeRegisterStorage',
-      'executeDataObjectExtraction',
-      'executeWorkflow',
-    ]),
-    async onNewProject(input: File | FileList): Promise<void> {
-      if (this.startNode === null) return;
-      if (input) {
-        await this.executeRegisterStorage();
-        await this.executeDataObjectExtraction(input);
-        this.setMessage({
-          content: 'Project Data Uploaded.',
-          type: MessageType.Success,
-        });
-      }
+    ...mapActions('workflow', ['executeWorkflow']),
 
+    async onNewProject(): Promise<void> {
       await this.executeWorkflow({ node: this.startNode });
     },
   },

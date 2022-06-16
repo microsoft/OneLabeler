@@ -48,7 +48,7 @@
     </v-btn>
 
     <!-- The export compilation result button. -->
-    <v-btn
+    <!-- <v-btn
       title="Compile Labeling Tool Installer (takes a few minutes!)"
       color="white"
       icon
@@ -62,10 +62,10 @@
       >
         $vuetify.icons.values.hammer
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The export bundled code button. -->
-    <v-btn
+    <!-- <v-btn
       title="Export bundled code"
       color="white"
       icon
@@ -79,10 +79,10 @@
       >
         $vuetify.icons.values.fileZip
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The export source code button. -->
-    <v-btn
+    <!-- <v-btn
       title="Export source code"
       color="white"
       icon
@@ -96,10 +96,10 @@
       >
         $vuetify.icons.values.fileCode
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The configuration reset button. -->
-    <v-btn
+    <!-- <v-btn
       title="Reset Settings"
       color="white"
       icon
@@ -113,7 +113,7 @@
       >
         $vuetify.icons.values.reset
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <v-divider
       class="app-header-divider"
@@ -168,7 +168,7 @@
       </v-btn>
     </v-btn-toggle>
 
-    <TheNetworkMenu />
+    <!-- <TheNetworkMenu /> -->
 
     <v-divider
       class="app-header-divider mx-1"
@@ -228,7 +228,7 @@ import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
-import TheNetworkMenu from './TheNetworkMenu.vue';
+// import TheNetworkMenu from './TheNetworkMenu.vue';
 import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
 import { enterWorkMode } from '../../commons/utils';
 
@@ -239,7 +239,7 @@ export default defineComponent({
     Icon,
     IconOneLabeler,
     TheButtonWorkflowUpload,
-    TheNetworkMenu,
+    // TheNetworkMenu,
   },
   props: {
     showElementSettings: {
@@ -282,6 +282,9 @@ export default defineComponent({
     },
     ...mapActions(['setMessage', 'setDockSide']),
     ...mapActions('workflow', ['resetGraph']),
+    ...mapActions('workflow', ['setGraph']),
+    ...mapActions(['resetState']),
+    ...mapActions('workflow', ['executeRegisterStorage', 'executeDataObjectExtraction', 'executeWorkflow']),
     async tryCompile(type: CompileType): Promise<void> {
       try {
         await compile(this.workflow, type);
@@ -292,7 +295,18 @@ export default defineComponent({
         });
       }
     },
-    onClickPreviewButton(): void {
+    async onClickPreviewButton(): Promise<void> {
+      if (window.projectContext.dataFiles) {
+        await this.executeRegisterStorage();
+        await this.executeDataObjectExtraction(window.projectContext.dataFiles);
+        this.setMessage({
+          content: 'Project Data Uploaded.',
+          type: MessageType.Success,
+        });
+        window.projectContext.dataUploaded = true;
+        window.projectContext.dataFiles = null;
+      }
+
       const { dockSide } = this;
       const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
         ? DockSideType.FullScreen
@@ -301,6 +315,12 @@ export default defineComponent({
       enterWorkMode(WorkMode.Preview);
     },
     async onClickClose(): Promise<void> {
+      console.log('on header close');
+      if (!window.projectContext.dataUploaded && !!window.projectContext.dataFiles) {
+        await this.executeRegisterStorage();
+        await this.executeDataObjectExtraction(window.projectContext.dataFiles);
+      }
+
       const pathSpecified = !!window.projectContext.projectFile;
       const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
       const filePath = await this.saveProject(file as string, pathSpecified);

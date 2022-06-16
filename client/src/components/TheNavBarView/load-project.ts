@@ -39,6 +39,9 @@ export type ProjectContext = {
   dataFiles?: File | FileList | null,
   sourcePath?: string | null | undefined;
   curWorkMode?: WorkMode;
+  // wehter the data has been uploaded by
+  // executeRegisterStorage & executeDataObjectExtraction
+  dataUploaded?: boolean; 
 }
 
 declare global {
