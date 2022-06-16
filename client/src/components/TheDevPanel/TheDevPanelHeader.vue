@@ -230,7 +230,7 @@ import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 // import TheNetworkMenu from './TheNetworkMenu.vue';
 import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
-import { enterWorkMode } from '../../commons/utils';
+import { setWorkMode } from '../../commons/utils';
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
@@ -309,7 +309,7 @@ export default defineComponent({
         ? DockSideType.FullScreen
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
-      enterWorkMode(WorkMode.Preview);
+      setWorkMode(WorkMode.Preview);
     },
     async onClickClose(): Promise<void> {
       if (!window.projectContext.dataUploaded && !!window.projectContext.dataFiles) {
@@ -327,7 +327,7 @@ export default defineComponent({
         }
       }
 
-      enterWorkMode(WorkMode.StartPage);
+      setWorkMode(WorkMode.StartPage);
       this.$emit('update:showStartPage', true);
     },
     async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {

@@ -43,7 +43,7 @@ import type { WorkflowGraph } from '@/commons/types';
 import BaseButton from '@/components/BaseButton/BaseButton.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import VTemplateList from '@/components/TheDevPanel/VTemplateList.vue';
-import { enterWorkMode } from '../../commons/utils';
+import { setWorkMode } from '../../commons/utils';
 import { WorkMode } from '../TheNavBarView/load-project';
 
 export default defineComponent({
@@ -68,16 +68,17 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions('workflow', ['setGraph']),
+    ...mapActions('workflow', ['setGraph', 'setCurrentNode']),
     ...mapActions(['resetState']),
 
     onSetWorkflow(workflow: WorkflowGraph): void {
       this.resetState();
+      this.setCurrentNode(null);
       this.setGraph(workflow);
       this.dialog = false;
 
       window.projectContext = { };
-      enterWorkMode(WorkMode.EditProject);
+      setWorkMode(WorkMode.EditProject);
 
       this.$emit('set:workflow');
       this.$emit('update:showStartPage', false);

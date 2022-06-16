@@ -39,7 +39,7 @@ import TheButtonSourceCode from './TheButtonSourceCode.vue';
 import TheButtonWorkflowNew from './TheButtonWorkflowNew.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
 import TheButtonWorkflowAnnotate from './TheButtonWorkflowAnnotate.vue';
-import { enterWorkMode } from '../../commons/utils';
+import { setWorkMode } from '../../commons/utils';
 import { WorkMode } from '../TheNavBarView/load-project';
 
 export default defineComponent({
@@ -55,7 +55,7 @@ export default defineComponent({
     return { style: { cardElevated, cardHeader } };
   },
   mounted() {
-    enterWorkMode(WorkMode.StartPage);
+    setWorkMode(WorkMode.StartPage);
   },
   methods: {
     ...mapActions(['setDockSide']),

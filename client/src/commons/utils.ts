@@ -44,7 +44,7 @@ export const nodeTypeToColor = (type: WorkflowNodeType): string => {
   return '#2b579a';
 };
 
-export const enterWorkMode = (
+export const setWorkMode = (
   mode: WorkMode,
 ): void => {
   if (!window.projectContext) {

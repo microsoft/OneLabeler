@@ -16,7 +16,7 @@ import { DefinedError } from 'ajv';
 import { TrimmedWorkflow, parseWorkflow, validateWorkflow } from '@/commons/workflow-utils';
 import VUploadWorkflowButton from '@/components/TheDevPanel/VUploadWorkflowButton.vue';
 import { ProjectDefinition, validate, WorkMode } from '../TheNavBarView/load-project';
-import { enterWorkMode } from '../../commons/utils';
+import { setWorkMode } from '../../commons/utils';
 
 /** Raise alert according to the error message when validation failed. */
 const computeErrorMessage = (err: DefinedError): IMessage | null => {
@@ -97,7 +97,7 @@ export default defineComponent({
         sourcePath: projectDef.sourcePath,
       };
 
-      enterWorkMode(WorkMode.Labeling);
+      setWorkMode(WorkMode.Labeling);
       this.$emit('set:workflow');
     },
   },

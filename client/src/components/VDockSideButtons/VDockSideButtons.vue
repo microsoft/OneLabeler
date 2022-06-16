@@ -116,7 +116,7 @@ import { DockSideType } from '@/commons/types';
 import { saveJsonFileSync } from '@/plugins/file';
 import type { WorkflowGraph } from '@/commons/types';
 import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
-import { enterWorkMode } from '../../commons/utils';
+import { setWorkMode } from '../../commons/utils';
 
 export default defineComponent({
   name: 'VDockSideButtons',
@@ -160,7 +160,7 @@ export default defineComponent({
 
       const nextWorkMode = (window.projectContext.curWorkMode === WorkMode.Preview)
         ? WorkMode.EditProject : WorkMode.StartPage;
-      enterWorkMode(nextWorkMode);
+      setWorkMode(nextWorkMode);
       this.$emit('set:dock-side', DockSideType.Hide);
     },
     async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {
