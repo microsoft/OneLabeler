@@ -41,7 +41,7 @@ export type ProjectContext = {
   curWorkMode?: WorkMode;
   // wehter the data has been uploaded by
   // executeRegisterStorage & executeDataObjectExtraction
-  dataUploaded?: boolean; 
+  dataUploaded?: boolean;
 }
 
 declare global {
