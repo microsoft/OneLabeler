@@ -30,9 +30,48 @@ export const saveJsonFile = (
   data: unknown,
   filename: string,
 ): void => {
-  const json = JSON.stringify(data);
+  const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   saveAs(blob, filename);
+};
+
+export const saveJsonFileSync = async (
+  data: unknown,
+  filename: string,
+  overwrite = false,
+): Promise<string | null | undefined> => {
+  const { ipcRenderer } = window.require('electron');
+  const json = JSON.stringify(data, null, 2);
+
+  const filePath = overwrite ? filename : await ipcRenderer.invoke('callSaveFileDialog', { file: filename });
+  if (filePath) {
+    await ipcRenderer.invoke('saveFile', { file: filePath, content: json });
+  }
+  return filePath;
+
+  //   const path = window.require('path');
+  //   try {
+  //     // https://stackoverflow.com/questions/59477396/typeerror-fs-existssync-is-not-a-function-reactjs-and-electron
+  //     const { dialog } = window.require('@electron/remote');
+  //     const saveOptions = {
+  //       title: 'Select the File Path to save',
+  //       defaultPath: path.join(__dirname, filename),
+  //       buttonLabel: 'Save',
+  //       filters: [
+  //         {
+  //           name: 'Json Files',
+  //           extensions: ['json'],
+  //         }],
+  //       properties: [],
+  //     };
+
+  //     const saveFilePath = dialog.showSaveDialogSync(saveOptions);
+  //     if (saveFilePath) {
+  //       console.log(saveFilePath);
+  //     }
+  //   } catch (e) {
+  //   }
+  // }
 };
 
 export const parseJsonFile = (file: File): Promise<unknown> => {
@@ -46,6 +85,13 @@ export const parseJsonFile = (file: File): Promise<unknown> => {
     reader.readAsText(file);
   }) as Promise<unknown>;
   return promise;
+};
+
+export const parseLocalJsonFile = async (file: string): Promise<unknown> => {
+  const { ipcRenderer } = window.require('electron');
+  const content = await ipcRenderer.invoke('getFileContent', file) as string;
+  const parsedObject = JSON.parse(content);
+  return parsedObject;
 };
 
 export const parseCsvFile = (file: File): Promise<unknown> => {
@@ -75,3 +121,56 @@ export const canvasToFile = async (
     resolve(file);
   });
 });
+
+export const getDirectory = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  if (pos === -1) {
+    throw new Error(`invalid path - ${path}`);
+  }
+
+  return path.substring(0, pos);
+};
+
+export const getFile = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  if (pos === -1) {
+    return path;
+  }
+
+  return path.substring(pos + 1);
+};
+
+export const getFileWithoutExtension = (path: string): string => {
+  if (!path) {
+    return path;
+  }
+
+  let pos = path.lastIndexOf('\\');
+  if (pos === -1) {
+    pos = path.lastIndexOf('/');
+  }
+
+  let path2 = path;
+  if (pos > -1) {
+    path2 = path2.substring(pos + 1);
+  }
+
+  pos = path2.lastIndexOf('.');
+  return path2.substring(0, pos);
+};

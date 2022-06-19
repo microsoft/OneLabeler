@@ -36,3 +36,10 @@ This will generate the interface as an installer named `one-labeler Setup ${vers
 
 - [Introduction](https://microsoft.github.io/OneLabeler-doc/#what-is-onelabeler)
 - [Examples](https://microsoft.github.io/OneLabeler-doc/gallery.html)
+- [Repository of Documentation Website](https://github.com/microsoft/OneLabeler-doc)
+
+## Citation
+
+If you use this software, please cite it as follows:
+
+*Yu Zhang, Yun Wang, Haidong Zhang, Bin Zhu, Siming Chen, and Dongmei Zhang. 2022. OneLabeler: A Flexible System for Building Data Labeling Tools. In CHI Conference on Human Factors in Computing Systems (CHI '22). Association for Computing Machinery, New York, NY, USA, Article 93, 1–22. https://doi.org/10.1145/3491102.3517612*

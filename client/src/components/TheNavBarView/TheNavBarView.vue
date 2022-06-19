@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation.
+`<!-- Copyright (c) Microsoft Corporation.
      Licensed under the MIT License. -->
 
 <template>
@@ -7,25 +7,16 @@
     style="display: flex; align-items: center;"
     :style="{ height: `${height}px` }"
   >
-    <!-- The new project button. -->
-    <TheButtonProjectNew />
-
-    <!-- The load project button. -->
-    <TheButtonProjectLoad />
-
     <!-- The save label project button. -->
     <TheButtonProjectSave />
 
     <!-- The reset dataset button. -->
-    <TheButtonProjectReset />
+    <TheButtonProjectReset v-if="isPreview" />
 
     <v-divider
       class="app-header-divider"
       vertical
     />
-
-    <!-- The undo label editing button. -->
-    <!-- <TheButtonUndo /> -->
 
     <!-- The export labeling result button. -->
     <TheButtonLabelExport />
@@ -61,17 +52,15 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { mapActions, mapState } from 'vuex';
-import { DockSideType } from '@/commons/types';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import VDockSideButtons from '../VDockSideButtons/VDockSideButtons.vue';
 import TheButtonExecute from './TheButtonExecute.vue';
 import TheButtonLabelExport from './TheButtonLabelExport.vue';
-import TheButtonProjectLoad from './TheButtonProjectLoad.vue';
-import TheButtonProjectNew from './TheButtonProjectNew.vue';
 import TheButtonProjectReset from './TheButtonProjectReset.vue';
 import TheButtonProjectSave from './TheButtonProjectSave.vue';
 import TheDialogButtonDashboard from './TheDialogButtonDashboard.vue';
 import TheDialogButtonDataManagement from './TheDialogButtonDataManagement.vue';
+import { WorkMode } from './load-project';
 
 const isDeveloperMode = process.env.VUE_APP_USER_TYPE === 'DEVELOPER';
 
@@ -81,8 +70,6 @@ export default defineComponent({
     VDockSideButtons,
     TheButtonExecute,
     TheButtonLabelExport,
-    TheButtonProjectLoad,
-    TheButtonProjectNew,
     TheButtonProjectReset,
     TheButtonProjectSave,
     TheDialogButtonDashboard,
@@ -99,15 +86,20 @@ export default defineComponent({
   },
   computed: {
     ...mapState(['dockSide']),
+    ...mapGetters('workflow', ['startNode']),
+    isPreview(): boolean {
+      return !!window.projectContext && window.projectContext === WorkMode.Preview;
+    },
+  },
+  async mounted() {
+    await this.onNewProject();
   },
   methods: {
     ...mapActions(['setDockSide']),
-    onClickWorkflowButton(): void {
-      const { dockSide } = this;
-      const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
-        ? DockSideType.Window
-        : DockSideType.Hide;
-      this.setDockSide(updatedDockSide);
+    ...mapActions('workflow', ['executeWorkflow']),
+
+    async onNewProject(): Promise<void> {
+      await this.executeWorkflow({ node: this.startNode });
     },
   },
 });

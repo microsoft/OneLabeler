@@ -19,9 +19,10 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
-import { mapGetters, mapState } from 'vuex';
-import { saveJsonFile } from '@/plugins/file';
-import { ProjectData } from './load-project';
+import { mapGetters, mapState, mapActions } from 'vuex';
+import type { WorkflowGraph } from '@/commons/types';
+import { saveJsonFileSync } from '@/plugins/file';
+import { ProjectDefinition, ProjectData } from './load-project';
 
 export default defineComponent({
   name: 'TheButtonProjectSave',
@@ -43,6 +44,12 @@ export default defineComponent({
     disabled(): boolean {
       return this.nDataObjects === 0;
     },
+
+    ...mapState('workflow', ['nodes', 'edges']),
+    workflow(): WorkflowGraph {
+      const { nodes, edges } = this;
+      return { nodes, edges };
+    },
   },
   watch: {
     async dataObjects() {
@@ -62,6 +69,7 @@ export default defineComponent({
     window.removeEventListener('keydown', this.onKey);
   },
   methods: {
+    ...mapActions('workflow', ['resetGraph']),
     onKey(e: KeyboardEvent): void {
       const { ctrlKey, key } = e;
       // shortcut for save: Ctrl + S
@@ -71,6 +79,17 @@ export default defineComponent({
       }
     },
     async onClickSave(): Promise<void> {
+      const pathSpecified = !!window.projectContext.projectFile;
+      const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
+      const filePath = await this.saveProject(file as string, pathSpecified);
+
+      if (filePath) {
+        if (!pathSpecified) {
+          window.projectContext.projectFile = filePath;
+        }
+      }
+    },
+    async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {
       const {
         dataObjects,
         categories,
@@ -80,17 +99,26 @@ export default defineComponent({
         unlabeledMark,
         featureNames,
       } = this;
-      const projectData: ProjectData = {
-        dataObjects: await dataObjects.getAll(),
+      const dataObjs = dataObjects ? await dataObjects.getAll() : [];
+      const labelList = labels ? await labels.getAll() : [];
+      const statusList = statuses ? await statuses.getAll() : [];
+      const prjData: ProjectData = {
+        dataObjects: dataObjs,
         categories,
         categoryTasks,
-        labels: await labels.getAll(),
-        statuses: await statuses.getAll(),
+        labels: labelList,
+        statuses: statusList,
         unlabeledMark,
         featureNames: featureNames.length === 0
           ? undefined : featureNames,
       };
-      saveJsonFile(projectData, 'project.json');
+
+      const projectDef: ProjectDefinition = {
+        sourcePath: window.projectContext.sourcePath,
+        projectData: prjData,
+        workflow: this.workflow,
+      };
+      return saveJsonFileSync(projectDef, file, overwrite);
     },
   },
 });

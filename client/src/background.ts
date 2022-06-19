@@ -4,6 +4,8 @@
 import { app, protocol, BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+import { registerNativeService, workMode } from './utils/native-service'
+import { WorkMode } from './components/TheNavBarView/load-project';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -21,9 +23,24 @@ protocol.registerSchemesAsPrivileged([{
   },
 }]);
 
+registerNativeService();
+
+const path = require('path');
+declare const __static: string;
+
 const createWindow = (): void => {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600 });
+  win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      // https://stackoverflow.com/questions/60814430/electron-builder-with-browserwindow-and-preload-js-unable-to-load-preload-scrip
+      preload: path.join(__static, "preload.js"),
+      // https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/1234
+      // https://github.com/electron/electron/issues/11608
+      nodeIntegration: true,
+      contextIsolation: false,
+  }});
 
   // remove default menu
   win.setMenu(null);
@@ -38,8 +55,23 @@ const createWindow = (): void => {
     win.loadURL('app://./index.html');
   }
 
-  win.on('closed', (): void => {
-    win = null;
+  win.on('close', (event): void => {
+    if (workMode !== WorkMode.StartPage) {
+      const dialog = require('electron').dialog;
+      const options = {
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        defaultId: 1,
+        title: 'OneLabeler',
+        message: 'Please make sure you have saved your data. Do you want to close OneLabeler now?',
+      };
+    
+      if (dialog.showMessageBoxSync(options) === 0) {
+        win = null;
+      } else {
+        event.preventDefault();
+      }
+    }
   });
 };
 

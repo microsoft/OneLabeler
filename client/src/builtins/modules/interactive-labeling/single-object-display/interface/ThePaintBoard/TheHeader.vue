@@ -125,7 +125,7 @@ type MouseOperationButton = {
 }
 
 export default defineComponent({
-  name: 'ThePaintBoardHeader',
+  name: 'TheHeader',
   components: { VDataTypeIcon, VToolbar },
   props: {
     dataType: {

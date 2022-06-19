@@ -37,7 +37,7 @@
       icon
       tile
       small
-      @click="saveJsonFile(workflow, 'workflow.config.json')"
+      @click="saveWorkflow"
     >
       <v-icon
         aria-hidden="true"
@@ -48,7 +48,7 @@
     </v-btn>
 
     <!-- The export compilation result button. -->
-    <v-btn
+    <!-- <v-btn
       title="Compile Labeling Tool Installer (takes a few minutes!)"
       color="white"
       icon
@@ -62,10 +62,10 @@
       >
         $vuetify.icons.values.hammer
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The export bundled code button. -->
-    <v-btn
+    <!-- <v-btn
       title="Export bundled code"
       color="white"
       icon
@@ -79,10 +79,10 @@
       >
         $vuetify.icons.values.fileZip
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The export source code button. -->
-    <v-btn
+    <!-- <v-btn
       title="Export source code"
       color="white"
       icon
@@ -96,10 +96,10 @@
       >
         $vuetify.icons.values.fileCode
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <!-- The configuration reset button. -->
-    <v-btn
+    <!-- <v-btn
       title="Reset Settings"
       color="white"
       icon
@@ -113,14 +113,12 @@
       >
         $vuetify.icons.values.reset
       </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <v-divider
       class="app-header-divider"
       vertical
     />
-
-    <VTemplateMenu @set:workflow="setGraph($event)" />
 
     <v-divider
       class="app-header-divider mr-1"
@@ -170,7 +168,7 @@
       </v-btn>
     </v-btn-toggle>
 
-    <TheNetworkMenu />
+    <!-- <TheNetworkMenu /> -->
 
     <v-divider
       class="app-header-divider mx-1"
@@ -195,23 +193,44 @@
       </v-icon>
       Preview
     </v-btn>
+
+    <v-spacer />
+
+    <!-- The close window button. -->
+    <v-btn
+      title="Close"
+      x-small
+      icon
+      tile
+      @click="onClickClose"
+    >
+      <v-icon
+        aria-hidden="true"
+        small
+        color="white"
+        class="px-0"
+      >
+        $vuetify.icons.values.close
+      </v-icon>
+    </v-btn>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import type { PropType } from '@vue/composition-api';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { Icon } from '@iconify/vue2';
 import { DockSideType, MessageType } from '@/commons/types';
 import type { WorkflowGraph } from '@/commons/types';
-import { saveJsonFile } from '@/plugins/file';
+import { saveJsonFile, saveJsonFileSync } from '@/plugins/file';
 import compile, { CompileType } from '@/services/compile-api';
 import IconOneLabeler from '@/plugins/icons/IconOneLabeler.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import TheButtonWorkflowUpload from './TheButtonWorkflowUpload.vue';
-import TheNetworkMenu from './TheNetworkMenu.vue';
-import VTemplateMenu from './VTemplateMenu.vue';
+// import TheNetworkMenu from './TheNetworkMenu.vue';
+import { ProjectDefinition, ProjectData, WorkMode } from '../TheNavBarView/load-project';
+import { setWorkMode } from '../../commons/utils';
 
 export default defineComponent({
   name: 'TheDevPanelHeader',
@@ -220,8 +239,7 @@ export default defineComponent({
     Icon,
     IconOneLabeler,
     TheButtonWorkflowUpload,
-    TheNetworkMenu,
-    VTemplateMenu,
+    // TheNetworkMenu,
   },
   props: {
     showElementSettings: {
@@ -235,11 +253,22 @@ export default defineComponent({
   },
   emits: {
     'toggle:inspect': null,
+    'update:showStartPage': null,
   },
   data() {
     return { CompileType };
   },
   computed: {
+    ...mapGetters(['categories']),
+    ...mapState([
+      'dataObjects',
+      'labels',
+      'statuses',
+      'categoryTasks',
+      'unlabeledMark',
+      'featureNames',
+    ]),
+
     ...mapState(['dockSide']),
     ...mapState('workflow', ['nodes', 'edges']),
     workflow(): WorkflowGraph {
@@ -248,12 +277,11 @@ export default defineComponent({
     },
   },
   methods: {
-    saveJsonFile,
+    saveWorkflow(): void {
+      saveJsonFile(this.workflow, 'workflow.config.json');
+    },
     ...mapActions(['setMessage', 'setDockSide']),
-    ...mapActions('workflow', [
-      'setGraph',
-      'resetGraph',
-    ]),
+    ...mapActions('workflow', ['executeRegisterStorage', 'executeDataObjectExtraction']),
     async tryCompile(type: CompileType): Promise<void> {
       try {
         await compile(this.workflow, type);
@@ -264,12 +292,74 @@ export default defineComponent({
         });
       }
     },
-    onClickPreviewButton(): void {
+    async onClickPreviewButton(): Promise<void> {
+      if (window.projectContext.dataFiles) {
+        await this.executeRegisterStorage();
+        await this.executeDataObjectExtraction(window.projectContext.dataFiles);
+        this.setMessage({
+          content: 'Project Data Uploaded.',
+          type: MessageType.Success,
+        });
+        window.projectContext.dataUploaded = true;
+        window.projectContext.dataFiles = null;
+      }
+
       const { dockSide } = this;
       const updatedDockSide = (dockSide === DockSideType.Hide || dockSide === DockSideType.Minimap)
-        ? DockSideType.Window
+        ? DockSideType.FullScreen
         : DockSideType.Hide;
       this.setDockSide(updatedDockSide);
+      setWorkMode(WorkMode.Preview);
+    },
+    async onClickClose(): Promise<void> {
+      if (!window.projectContext.dataUploaded && !!window.projectContext.dataFiles) {
+        await this.executeRegisterStorage();
+        await this.executeDataObjectExtraction(window.projectContext.dataFiles);
+      }
+
+      const pathSpecified = !!window.projectContext.projectFile;
+      const file = pathSpecified ? window.projectContext.projectFile : 'project.json';
+      const filePath = await this.saveProject(file as string, pathSpecified);
+
+      if (filePath) {
+        if (!pathSpecified) {
+          window.projectContext.projectFile = filePath;
+        }
+      }
+
+      setWorkMode(WorkMode.StartPage);
+      this.$emit('update:showStartPage', true);
+    },
+    async saveProject(file: string, overwrite = true): Promise<string | null | undefined> {
+      const {
+        dataObjects,
+        categories,
+        categoryTasks,
+        labels,
+        statuses,
+        unlabeledMark,
+        featureNames,
+      } = this;
+      const dataObjs = dataObjects ? await dataObjects.getAll() : [];
+      const labelList = labels ? await labels.getAll() : [];
+      const statusList = statuses ? await statuses.getAll() : [];
+      const prjData: ProjectData = {
+        dataObjects: dataObjs,
+        categories,
+        categoryTasks,
+        labels: labelList,
+        statuses: statusList,
+        unlabeledMark,
+        featureNames: featureNames.length === 0
+          ? undefined : featureNames,
+      };
+
+      const projectDef: ProjectDefinition = {
+        sourcePath: window.projectContext.sourcePath,
+        projectData: prjData,
+        workflow: this.workflow,
+      };
+      return saveJsonFileSync(projectDef, file, overwrite);
     },
   },
 });

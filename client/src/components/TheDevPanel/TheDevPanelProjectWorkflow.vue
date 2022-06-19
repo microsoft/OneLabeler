@@ -3,10 +3,10 @@
 
 <template>
   <div style="display: flex; gap: 4px;">
-    <template v-if="showGetStarted">
+    <template v-if="showStartPage">
       <TheGetStartedView
         style="flex: 1 1 auto"
-        @window:close="showGetStarted = false"
+        v-on="$listeners"
       />
     </template>
     <template v-else>
@@ -68,7 +68,7 @@ import TheVariableInspector from '../TheVariableInspector/TheVariableInspector.v
 import TheGetStartedView from '../TheGetStartedView/TheGetStartedView.vue';
 
 export default defineComponent({
-  name: 'TheDevPanelBody',
+  name: 'TheDevPanelProjectWorkflow',
   components: {
     TheElementDetails,
     TheWorkflowView,
@@ -85,10 +85,13 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       required: true,
     },
+    showStartPage: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
-      showGetStarted: true,
       // Note: store the node/edge ids instead of directly storing the nodes/edges
       // in case the node/edge properties stored in the child component is not up to date.
       selectedNodeIds: [] as string[],
