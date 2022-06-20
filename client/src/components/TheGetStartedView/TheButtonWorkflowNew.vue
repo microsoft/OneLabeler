@@ -44,7 +44,7 @@ import BaseButton from '@/components/BaseButton/BaseButton.vue';
 import BaseIcon from '@/components/BaseIcon/BaseIcon.vue';
 import VTemplateList from '@/components/TheDevPanel/VTemplateList.vue';
 import { setWorkMode } from '../../commons/utils';
-import { WorkMode } from '../TheNavBarView/load-project';
+import { WorkMode, FileExtensionsOfWorkflow } from '../TheNavBarView/load-project';
 
 export default defineComponent({
   name: 'TheButtonWorkflowNew',
@@ -77,7 +77,14 @@ export default defineComponent({
       this.setGraph(workflow);
       this.dialog = false;
 
-      window.projectContext = { };
+      if (this.nodes && this.nodes.length > 0) {
+        const node = this.nodes[0];
+        if (node?.value?.params?.dataType?.value) {
+          window.projectContext = {
+            supportedForamts: FileExtensionsOfWorkflow.get(node.value.params.dataType.value),
+          };
+        }
+      }
       setWorkMode(WorkMode.EditProject);
 
       this.$emit('set:workflow');

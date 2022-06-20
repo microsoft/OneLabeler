@@ -3,7 +3,7 @@
 
 <template>
   <div style="margin: 10px">
-    <div style="display: flex; margin-bottom: 10px">
+    <div style="display: flex; margin-bottom: 30px">
       <p style="height: 26px; margin-top: 3px">
         Choose source folder:
       </p>
@@ -24,6 +24,14 @@
       </v-btn>
       <p style="height: 26px; margin-left: 5px; margin-top: 3px">
         {{ sourceFolder }}
+      </p>
+    </div>
+    <div style="display: flex; margin-bottom: 30px">
+      <p style="height: 26px; margin-top: 3px">
+        Supported formats:
+      </p>
+      <p style="height: 26px; margin-left: 5px; margin-top: 3px">
+        {{ supportedFormats }}
       </p>
     </div>
     <div style="display: flex; height: 26px">
@@ -71,6 +79,7 @@ export default defineComponent({
       nTotal: 0,
       nLabeled: 0,
       sourceFolder: window.projectContext.sourcePath,
+      supportedFormats: window.projectContext.supportedForamts,
     };
   },
   computed: {
@@ -130,7 +139,13 @@ export default defineComponent({
             window.alert('No files found!');
           } else {
             this.sourceFolder = this.getDirectory(target.files[0].path);
-            window.projectContext.dataFiles = target.files;
+            let hitFiles = Array.from(target.files);
+            const { supportedForamts } = window.projectContext;
+            if (supportedForamts) {
+              // eslint-disable-next-line
+              hitFiles = hitFiles.filter((x) => { return supportedForamts.some(y => (x as File).name.toLowerCase().endsWith(y)); });
+            }
+            window.projectContext.dataFiles = hitFiles;
             window.projectContext.sourcePath = this.sourceFolder;
           }
         }

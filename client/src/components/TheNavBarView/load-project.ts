@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { DataType } from '@/commons/types';
 import Ajv, { JSONSchemaType } from 'ajv';
 import type {
   Category,
@@ -33,15 +34,20 @@ export type ProjectDefinition = {
   workflow?: unknown;
 }
 
+export const FileExtensionsOfWorkflow: Map<DataType, string[]> = new Map([
+  [DataType.Image, ['.apng', '.avif', '.bmp', '.gif', '.ico', '.cur', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.tif', '.tiff', '.webp']],
+]);
+
 export type ProjectContext = {
   projectDef?: ProjectDefinition | null,
   projectFile?: string | null,
-  dataFiles?: File | FileList | null,
+  dataFiles?: File | File[] | FileList | null,
   sourcePath?: string | null | undefined;
   curWorkMode?: WorkMode;
   // wehter the data has been uploaded by
   // executeRegisterStorage & executeDataObjectExtraction
   dataUploaded?: boolean;
+  supportedForamts?: string[];
 }
 
 declare global {
