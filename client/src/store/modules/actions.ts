@@ -221,8 +221,10 @@ export const setProject = async (
   await storage.statuses.upsertBulk(statuses);
 
   // Set the previously viewing data objects to be queried.
+  const statusesLabeled = await storage.statuses.getFiltered({ value: StatusType.Labeled });
   const statusesViewed = await storage.statuses.getFiltered({ value: StatusType.Viewed });
-  const queryUuids = statusesViewed.map((d) => d.uuid);
+  const statusesToView = statusesLabeled.concat(statusesViewed);
+  const queryUuids = statusesToView.map((d) => d.uuid);
 
   commit(types.SET_DATA_OBJECTS, storage.dataObjects);
   commit(types.SET_LABELS, storage.labels);

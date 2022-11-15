@@ -386,7 +386,7 @@ export default defineComponent({
     async onLoadProject(file: File): Promise<void> {
       const data = await parseJsonFile(file);
       if (validate(data)) {
-        this.setProject(data as ProjectData);
+        await this.setProject(data as ProjectData);
         this.setMessage({
           content: 'Project Progress Uploaded.',
           type: MessageType.Success,
