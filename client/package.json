@@ -93,7 +93,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-vue": "^8.5.0",
-    "mongoose": "^6.2.6",
+    "mongoose": "^6.11.3",
     "plop": "^3.0.5",
     "plop-pack-remove": "^1.1.0",
     "sass": "^1.32.13",
